@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:," />
+<title>TypeScript SPA — Poora TypeScript, Hinglish me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#121316; --bg2:#0d0e11; --surface:#1b1b1f; --surface2:#292a2d; --border:#343538;
+  --text:#e3e2e6; --muted:#c1cab0; --dim:#8b947d;
+  --lime:#9ee939; --lime2:#84cc16; --lime-soft:#acf847; --blue:#7bd0ff; --blue2:#a1dbff;
+  --danger:#ffb4ab;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.65}
+h1,h2,h3{font-family:"Plus Jakarta Sans","Inter",sans-serif;line-height:1.25;margin:0}
+code,kbd{font-family:"JetBrains Mono",monospace}
+a{color:var(--blue2)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+/* ---------- Top bar (mobile) ---------- */
+.topbar{display:none;position:sticky;top:0;z-index:60;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;align-items:center;gap:12px}
+.topbar .tb-title{font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--lime);letter-spacing:.04em}
+.menu-btn{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;min-width:44px;min-height:44px;font-size:20px;line-height:1}
+
+/* ---------- Layout ---------- */
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:308px;flex:0 0 308px;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--bg2);border-right:1px solid var(--border);padding:20px 14px 32px}
+.sidebar .brand{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;padding:0 8px}
+.sidebar .brand b{display:block;font-family:"Plus Jakarta Sans",sans-serif;font-size:22px;color:var(--text);letter-spacing:0;text-transform:none;margin-top:4px}
+.sidebar .brand b span{color:var(--lime)}
+.search-wrap{padding:12px 8px 4px}
+.search-wrap input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:11px 12px;font-size:15px;min-height:44px}
+.search-wrap input::placeholder{color:var(--dim)}
+.nav-group{margin-top:18px}
+.nav-group h3{font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.nav-group h3 .gcount{color:var(--lime2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px}
+.nav-item{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:transparent;border:0;border-radius:8px;color:var(--text);padding:9px 8px;min-height:44px;font-size:14.5px;line-height:1.4}
+.nav-item:hover{background:var(--surface)}
+.nav-item.active{background:var(--surface2);box-shadow:inset 3px 0 0 var(--lime)}
+.chip{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;color:#121f00;background:var(--lime);border-radius:5px;padding:2px 6px;margin-top:2px;white-space:nowrap}
+.chip.ghost{background:var(--surface2);color:var(--lime);border:1px solid var(--border)}
+.nav-item .nt{flex:1}
+.progress-wrap{padding:14px 8px 0}
+.progress-wrap .plabel{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--dim);letter-spacing:.08em;display:flex;justify-content:space-between}
+.progress{height:8px;background:var(--surface2);border-radius:6px;margin-top:6px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--lime2);width:0%}
+
+.main{flex:1;min-width:0;padding:34px 30px 70px}
+.wrap{max-width:860px;margin:0 auto}
+article.lesson{display:none}
+article.lesson.show{display:block}
+.crumb{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);margin-bottom:10px}
+article.lesson h2{font-size:32px;font-weight:800;margin-bottom:8px}
+.lede{color:var(--muted);font-size:16.5px;margin:0 0 22px}
+.point{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:0 0 12px}
+.point p{margin:0}
+.point b{color:var(--lime-soft)}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;margin:0 0 16px}
+pre code{font-size:13.5px;line-height:1.6;color:#d8e6c3;white-space:pre}
+.takeaway{background:#1f2b10;border:1px solid #416900;border-radius:10px;padding:14px 16px;margin:0 0 16px}
+.takeaway .tk-label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--lime);text-transform:uppercase;display:block;margin-bottom:4px}
+.takeaway p{margin:0}
+.source-box{background:var(--surface);border:1px dashed var(--dim);border-radius:10px;padding:12px 16px;margin:22px 0 8px;font-size:14px;word-break:break-all}
+.source-box .s-label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;display:block;margin-bottom:2px}
+.pager{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.pager button{flex:1;min-width:200px;min-height:52px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-align:left;font-size:14.5px}
+.pager button:hover{border-color:var(--lime2)}
+.pager button .dir{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--lime);letter-spacing:.1em;text-transform:uppercase;display:block}
+.pager button:disabled{opacity:.35;cursor:default}
+.done-btn{background:transparent;border:1px solid var(--lime2);color:var(--lime);border-radius:8px;min-height:44px;padding:10px 18px;font-size:14.5px;margin-top:14px}
+.done-btn.is-done{background:var(--lime2);color:#121f00;font-weight:600}
+
+/* ---------- Labs ---------- */
+.lab{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin:0 0 20px}
+.lab h3{font-size:20px;margin-bottom:6px}
+.lab .lab-tag{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--lime);letter-spacing:.12em;text-transform:uppercase}
+.lab p{color:var(--muted)}
+.lab select,.lab input[type="text"]{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:15px;min-height:44px;font-family:"JetBrains Mono",monospace}
+.lab textarea{width:100%;background:var(--bg2);color:#d8e6c3;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.6;min-height:110px}
+.lab .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.lab .go{background:var(--lime2);color:#121f00;border:0;border-radius:8px;min-height:44px;padding:10px 20px;font-weight:600;font-size:15px}
+.lab .ghost-btn{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;min-height:44px;padding:10px 16px;font-size:14.5px}
+.lab .out{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-family:"JetBrains Mono",monospace;font-size:14px;white-space:pre-wrap;word-break:break-word;min-height:52px}
+.lab .out .ok{color:var(--lime)} .lab .out .err{color:var(--danger)} .lab .out .inf{color:var(--blue2)}
+.chipbtn{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:20px;min-height:40px;padding:8px 16px;font-size:14px;font-family:"JetBrains Mono",monospace}
+.chipbtn.sel{background:var(--lime2);color:#121f00;border-color:var(--lime2);font-weight:600}
+
+/* ---------- FAQ ---------- */
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:0 0 12px;overflow:hidden}
+.faq-item summary{padding:16px;min-height:52px;cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;gap:10px;align-items:flex-start}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary .qn{font-family:"JetBrains Mono",monospace;color:var(--lime);font-size:13px;margin-top:3px}
+.faq-item .fa{padding:0 16px 16px 46px;color:var(--muted)}
+.faq-item .fa p{margin:0 0 8px}
+.faq-item .fa code{color:var(--lime-soft);font-size:.92em}
+
+/* ---------- Sources / Trust ---------- */
+.src-list{margin:0;padding:0;list-style:none}
+.src-list li{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:0 0 8px;font-size:13.5px;word-break:break-all;display:flex;gap:10px;align-items:flex-start}
+.src-list .chip{margin-top:1px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}
+th{background:var(--surface2);font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td{background:var(--surface)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.stat .num{font-family:"JetBrains Mono",monospace;font-size:30px;font-weight:600;color:var(--lime);display:block}
+.stat .lbl{font-size:13px;color:var(--muted)}
+.check-result{font-family:"JetBrains Mono",monospace;font-size:16px;padding:16px;border-radius:10px;margin-top:14px;display:none}
+.check-result.pass{display:block;background:#1f2b10;border:1px solid var(--lime2);color:var(--lime)}
+.check-result.fail{display:block;background:#3a1512;border:1px solid var(--danger);color:var(--danger)}
+.note-list li{margin-bottom:8px;color:var(--muted)}
+.note-list li b{color:var(--text)}
+footer.foot{color:var(--dim);font-size:13px;text-align:center;padding:26px 10px 0;font-family:"JetBrains Mono",monospace}
+
+@media (max-width:900px){
+  .topbar{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:80;width:86vw;max-width:320px;transform:translateX(-105%);transition:transform .25s ease;display:none}
+  .sidebar.open{display:block;transform:translateX(0)}
+  .main{padding:22px 16px 60px}
+  article.lesson h2{font-size:26px}
+  .faq-item .fa{padding-left:16px}
+  pre code{white-space:pre-wrap;overflow-wrap:anywhere}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sidebar{transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Sidebar kholo ya band karo">☰</button>
+  <span class="tb-title">TYPESCRIPT · SPA</span>
+</div>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="Saare topics">
+    <div class="brand">Hinglish me Seekho<b>Type<span>Script</span></b></div>
+    <div class="search-wrap"><input type="search" id="navSearch" placeholder="Topic search karo…" aria-label="Topic search karo" /></div>
+    <div class="progress-wrap">
+      <div class="plabel"><span>Aage badhna (is session)</span><span id="progPct">0%</span></div>
+      <div class="progress"><i id="progBar"></i></div>
+    </div>
+    <nav id="sideNav"></nav>
+  </aside>
+  <main class="main"><div class="wrap" id="content"></div>
+  <footer class="foot">TypeScript SPA · Saara matter typescriptlang.org/docs se · Hinglish me samjhaya gaya</footer>
+  </main>
+</div>
+<script>
+"use strict";
+/* ================= DATA — 74 docs pages ================= */
+var GROUPS=["Get Started","Handbook","Reference","Modules Reference","Tutorials","Declaration Files","JavaScript","Project Configuration","Docs Home","Setup"];
+var S=[
+{n:1,g:0,t:"TS for the New Programmer",u:"https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html",
+p:["JavaScript chhoti browser scripting language se badi apps tak pahunch gayi, lekin uske quirks bhi saath aaye — <b><code>\"\" == 0</code> true hai</b>, aur galat property naam (<code>obj.heigth</code>) error ki jagah chup-chaap <code>NaN</code> de deta hai.",
+"<b>Static checking</b> matlab code ko bina run kiye galti pakadna. <b>Static type checking</b> me galti values ke <i>kinds</i> (types) se judge hoti hai — TypeScript yahi karta hai: run se pehle, types ke basis par errors.",
+"TypeScript <b>JavaScript ka typed superset</b> hai: saara JS syntax valid TS hai, TS sirf ye extra rules jodta hai ki kis type ki value kahan use ho sakti hai. <code>console.log(4 / [])</code> JS me <code>Infinity</code> dega, TS error dega.",
+"<b>Runtime behavior kabhi nahi badalta</b> — TS check ke baad types ko <b>erase</b> kar deta hai; emitted JS bilkul waisa hi chalta hai. TS koi runtime library bhi nahi jodta.",
+"Isiliye TS seekhne ke liye pehle JS aana zaroori hai — syntax aur runtime dono shared hain."],
+c:"const obj = { width: 10, height: 15 };\n// Error: Property 'heigth' does not exist on type\n// '{ width: number; height: number; }'.\n// Did you mean 'height'?\nconst area = obj.width * obj.heigth;",
+k:"TS = JS + static type checking. Types sirf compile time par hain; run time par sab erase ho jata hai."},
+{n:2,g:0,t:"TypeScript for JS Programmers",u:"https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html",
+p:["Jo JS code pehle se chal raha hai, wo TS code bhi hai — TS uske upar <b>type system ki extra layer</b> jodta hai aur unexpected behavior ko pehle hi highlight kar deta hai.",
+"<b>Types by inference:</b> <code>let helloWorld = \"Hello World\"</code> likhte hi TS khud samajh jata hai ki type <code>string</code> hai. Common cases me extra syntax ki zaroorat hi nahi.",
+"Object ka shape batane ke liye <b><code>interface</code></b> use hota hai. Galat property doge to error: <i>Object literal may only specify known properties</i>. Interfaces classes aur function parameters/returns par bhi lagte hain.",
+"Primitives ke alawa TS jodta hai: <code>any</code> (sab allow), <code>unknown</code> (use se pehle khud declare karo kya hai), <code>never</code> (jo kabhi ho hi nahi sakta), <code>void</code> (kuch return nahi). Heuristic: pehle <code>interface</code> prefer karo, specific feature chahiye to <code>type</code>.",
+"<b>Unions</b> se ek value kai types me se ek ho sakti hai — <code>\"open\" | \"closed\"</code> jaise literal unions bhi. <code>typeof</code> aur <code>Array.isArray</code> se union ko <b>narrow</b> karke use karte hain.",
+"<b>Generics</b> = types ke andar variable: <code>Array&lt;string&gt;</code>, ya apna <code>Backpack&lt;Type&gt;</code> — galat type doge to compile time par error.",
+"<b>Structural typing (duck typing):</b> TS naam nahi, <b>shape</b> dekhta hai. Jisme <code>x, y</code> hain wo <code>Point</code> hai — declare kiya ho ya na ho. Extra fields bhi chal jate hain."],
+c:"interface User { name: string; id: number; }\nconst user: User = { name: \"Hayes\", id: 0 };\n\ntype WindowStates = \"open\" | \"closed\" | \"minimized\";\n\ninterface Backpack<Type> {\n  add: (obj: Type) => void;\n  get: () => Type;\n}\ndeclare const backpack: Backpack<string>;\nbackpack.add(23); // Error: number, string nahi hai",
+k:"Inference, interface, union + narrowing, generics aur structural typing — ye paanch cheezein TS ki neev hain."},
+{n:3,g:0,t:"TS for Java/C# Programmers",u:"https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-oop.html",
+p:["Java/C# walo ko TS se wahi fayde milte hain — better completion, jaldi errors, saaf communication — lekin JS ka model alag hai: <b>functions kahin bhi reh sakte hain</b>, data bina class ke freely pass hota hai. Singleton/static-class patterns TS me zaroori nahi.",
+"<b>Nominal systems (Java/C#)</b> me har value ka ek exact type hota hai, types runtime par exist karte hain (<code>getClass()</code>), aur do same-shape classes bina inheritance ke ek dusre ki jagah nahi aa sakti.",
+"<b>TS me types = sets.</b> Ek value ek saath kai sets ki member ho sakti hai. <code>string | number</code> bas do sets ka union hai — isiliye union/intersection TS me itne natural hain.",
+"Types <b>erased aur structural</b> hain: jo object interface ki shape satisfy kare, wahi chalega — declared relationship ki zaroorat nahi. <code>Pointlike</code> runtime par exist hi nahi karta.",
+"Consequences: <b>empty class <code>class Empty {}</code> sab kuch accept kar leti hai</b> (koi property hi nahi jo fail ho), aur same-shape wali <code>Car</code>/<code>Golfer</code> classes ek dusre me assign ho jati hain — ye bug nahi, structural system ka nature hai.",
+"<b>Reflection nahi hai:</b> generic type info runtime par erase ho jati hai. <code>typeof (new Car())</code> sirf <code>\"object\"</code> dega, <code>Car</code> nahi."],
+c:"class Empty {}\nfunction fn(arg: Empty) { return arg; }\nfn({ k: 10 }); // OK! Empty ke paas koi property nahi jo miss ho\n\nclass Car { drive() {} }\nclass Golfer { drive() {} }\nlet w: Car = new Golfer(); // Koi error nahi — shapes same hain",
+k:"Nominal → structural, reified → erased, class → set: Java/C# walo ko ye teen switch samajhne hain."},
+{n:4,g:0,t:"TS for Functional Programmers",u:"https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html",
+p:["Haskell/ML walo ke liye: TS ke types postfix hain — <code>x: string</code> (C-style), aur type system JS code ko model karne ke liye bana hai: powerful, interesting, thoda messy.",
+"Key types: <code>unknown</code> = top type, <code>never</code> = bottom type, tuples <code>[T, T]</code> fixed-length lekin mutable hain, aur <code>[T, T]</code>, <code>T[]</code> ka subtype hai. Boxed types (<code>Number</code>) primitive (<code>number</code>) se alag hain — primitives hi use karo.",
+"<b><code>any</code> = gradual typing ka escape hatch:</b> checker band ho jata hai, aur <code>any</code> <b>contagious</b> hai — jahan jayega wahan checking khatm. <code>noImplicitAny</code> / <code>strict</code> on karke isko roko.",
+"<b>Unions untagged hain</b> (Haskell <code>data</code> jaise nahi) — discriminate karne ke liye <code>typeof</code>, <code>Array.isArray</code> jaise runtime predicates chahiye. Naye code ke liye <b>discriminated unions</b> banao.",
+"<b>Literal widening:</b> <code>let s = \"right\"</code> ka type <code>string</code> ban jata hai, isliye <code>\"left\" | \"right\"</code> wale parameter me fail hoga — annotation ya <code>as const</code> se fix karo.",
+"<b>Contextual typing:</b> inference ulta bhi chalta hai — <code>map</code> ke callback ke parameter ka type array se infer ho jata hai, recursively bhi.",
+"<code>const</code> reference ko immutable banata hai, referent ko nahi. Sachi immutability ke liye <code>readonly</code>, <code>Readonly&lt;T&gt;</code>, <code>readonly T[]</code> aur <code>as const</code>. Higher-kinded types (<code>T&lt;U&gt;</code>) TS me nahi hain."],
+c:"let anys: any[] = [];\nanys.push(1); anys.push(\"oh no\"); // sab chalega\nlet sepsis = anys[0] + anys[1]; // sepsis bhi any — contagion!\n\ntype FString = string & { __compileTimeOnly: any };\n// ^ newtype jaisa trick: string me assign hoga, ulta nahi",
+k:"any contagious hai, unions untagged hain, literals widen hote hain — FP walo ke liye ye teen gotchas sabse bade hain."},
+{n:5,g:0,t:"TypeScript Tooling in 5 minutes",u:"https://www.typescriptlang.org/docs/handbook/typescript-tooling-in-5-minutes.html",
+p:["Install: <code>npm install -g typescript</code> ya Visual Studio plugins se. Pehli file <code>greeter.ts</code> me plain JS bhi chalega — <code>.ts</code> extension hi kaafi hai.",
+"<code>tsc greeter.ts</code> compile karke <code>greeter.js</code> banata hai. <b>Type annotation</b> contract record karta hai: <code>greeter(person: string)</code> ko array doge to compile time par <code>error TS2345</code>.",
+"Yaad rakho: <b>errors emit ko nahi rokte</b> — galat code par bhi <code>greeter.js</code> ban jata hai (jab tak <code>noEmitOnError</code> na lagao). TS maanta hai ki tum JS se migrate kar rahe ho.",
+"<b>Interfaces</b> shape describe karte hain — object ko bas wo shape rakhna hai, explicit <code>implements</code> zaroori nahi (structural compatibility).",
+"<b>Classes</b> me constructor parameter par <code>public</code> lagana shorthand hai — usi naam ki property khud ban jati hai. Classes JS ke prototype model ka hi shorthand hain, emitted JS same rehta hai.",
+"Editor tooling hi asli jaadu hai: hover par inferred types, completion lists, F12 go-to-definition, rename refactoring — sab type-checker se powered."],
+c:"function greeter(person: string) {\n  return \"Hello, \" + person;\n}\nlet user = [0, 1, 2];\n// error TS2345: Argument of type 'number[]' is not\n// assignable to parameter of type 'string'.\ndocument.body.textContent = greeter(user);\n// Phir bhi greeter.js emit ho jayega!",
+k:"tsc = check + emit. Errors ke bawjud emit hona migration-friendly design hai, bug nahi."},
+{n:6,g:1,t:"The TypeScript Handbook",u:"https://www.typescriptlang.org/docs/handbook/intro.html",
+p:["JS chhoti scripts se har size ki apps tak badh gaya, lekin code units ke beech relationships express karne ki taqat utni nahi badhi — isiliye bade JS codebases manage karna mushkil hota hai. Sabse common programmer errors asal me <b>type errors</b> hote hain.",
+"TypeScript ka goal ek line me: <b>JavaScript programs ke liye static typechecker</b> — code run hone se pehle (static) types check karna.",
+"Handbook ke do hisse hain: <b>(1) The Handbook</b> — everyday programmer ke liye comprehensive guide, upar se neeche padhne layak. <b>(2) Reference Files</b> — ek-ek concept ki gehri explanation, bina continuity ke.",
+"Handbook khatm karke tum: common TS syntax/patterns padh aur samajh sakoge, important compiler options ka effect bata sakoge, aur zyadaatar cases me type system ka behavior sahi predict kar sakoge.",
+"Non-goals bhi saaf hain: ye JS basics (functions, classes, closures) nahi sikhata, language spec nahi hai, aur webpack/React/Babel jaise tools ke saath interaction iske scope me nahi."],
+c:"",
+k:"Handbook = roz ke TS ki complete guide; Reference = ek concept, gehrai me. JS basics pehle se aani chahiye."},
+{n:7,g:1,t:"The Basics",u:"https://www.typescriptlang.org/docs/handbook/2/basic-types.html",
+p:["Ek <b>type</b> batata hai ki kaunsi values function ko pass ho sakti hain aur kaunsi crash karengi. JS me ye sirf run karke pata chalta hai (dynamic typing); TS pehle se predict karta hai (static typing).",
+"<code>message()</code> jahan <code>message</code> ek string hai — TS run se pehle hi error dega: <i>This expression is not callable.</i>",
+"<b>Non-exception failures:</b> JS missing property par throw nahi karta, <code>undefined</code> deta hai — TS phir bhi flag karta hai. Typos (<code>toLocaleLowercase</code>), uncalled functions (<code>Math.random &lt; 0.5</code>) aur unreachable logic bhi pakda jata hai.",
+"Type-checker hi editor tooling ko power karta hai — completions, quick fixes, refactorings, find-all-references, sab isi par bane hain.",
+"<code>tsc hello.ts</code>: error nahi to chup-chaap saaf, readable <code>hello.js</code> emit. Error ho to bhi emit (default) — <code>tsc --noEmitOnError</code> se roko.",
+"<b>Erased types:</b> output me annotations gayab — runtime behavior par types ka zero asar. <b>Downleveling:</b> naya JS purane target (default ES5) me rewrite hota hai; <code>--target es2015</code> se template strings bache rehte hain.",
+"<b>Strictness ek dial hai, switch nahi:</b> default lenient (migration ke liye), <code>\"strict\": true</code> se saare strict flags ek saath on. Do sabse bade: <code>noImplicitAny</code> aur <code>strictNullChecks</code> (null/undefined ki galti — 'billion dollar mistake')."],
+c:"const message = \"hello!\";\nmessage();\n// Error: This expression is not callable.\n// Type 'String' has no call signatures.\n\nfunction greet(person: string, date: Date) { /* ... */ }\ngreet(\"Maddison\", Date()); // Error: Date() string deta hai\ngreet(\"Maddison\", new Date()); // OK",
+k:"Static checking + erased types + strict dial — TS ka pura philosophy is ek page me hai."},
+{n:8,g:1,t:"Everyday Types",u:"https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+p:["Primitives: <code>string</code>, <code>number</code> (int/float ka koi farak nahi), <code>boolean</code>. Capital wale <code>String/Number/Boolean</code> boxed types hain — hamesha lowercase use karo. Arrays: <code>number[]</code> ya <code>Array&lt;number&gt;</code> — dono same; <code>[number]</code> tuple hai, array nahi.",
+"<code>any</code> saari checking band kar deta hai — kabhi-kabhi kaam ka, lekin khatarnak. <code>noImplicitAny</code> un jagahon ko flag karta hai jahan TS chup-chaap <code>any</code> maan leta.",
+"Annotations hamesha cheez ke <b>baad</b> aate hain (<code>let myName: string</code>), aur zyadaatar inference se kaam chal jata hai — jitna sochoge usse kam annotations lagegi. Functions me parameter aur return annotations; async ke liye <code>Promise&lt;number&gt;</code>.",
+"<b>Optional properties</b> (<code>last?: string</code>) padhne par <code>string | undefined</code> milta hai — use se pehle check zaroori. <b>Unions</b> (<code>number | string</code>) par sirf wahi operations chalengi jo HAR member par valid hon.",
+"<b>Type alias vs interface:</b> interface hamesha extendable/re-openable hai (declaration merging), type re-open nahi hota. Interface <code>extends</code> se, type intersection (<code>&amp;</code>) se extend hota hai. Heuristic: <code>interface</code> jab tak <code>type</code> ki feature na chahiye.",
+"<b>Type assertions</b> (<code>as</code>) compile time par hat jati hain — <b>koi runtime check nahi</b>. Galat assertion chup-chaap galat value dega. Sirf overlapping types par allowed hai.",
+"<b>Literal types:</b> <code>let</code> widen karta hai (<code>string</code>), <code>const</code> literal rakhta hai. <code>\"left\" | \"right\" | \"center\"</code> jaise unions aur <code>as const</code> (poora object literal types me badal deta hai) roz ke kaam ke hain.",
+"<code>strictNullChecks</code> on ho to <code>null</code>/<code>undefined</code> ko narrow karke hi use karo. <b>Non-null assertion <code>!</code></b> (<code>x!.toFixed()</code>) koi runtime check nahi karta — sirf pakka yakeen ho tabhi. <code>bigint</code> aur <code>symbol</code> kam-common primitives hain; enums runtime feature hain (Enums section dekho)."],
+c:"function printCoord(pt: { x: number; y: number }) {}\nfunction printName(obj: { first: string; last?: string }) {\n  if (obj.last !== undefined) { console.log(obj.last); }\n}\ntype ID = number | string;\nconst req = { url: \"https://example.com\", method: \"GET\" } as const;\n// req.method ab \"GET\" literal hai, string nahi",
+k:"any se bacho, interface pehle, as/! par runtime bharosa mat karo, aur as const literal widening ka ilaaj hai."},
+{n:9,g:1,t:"Narrowing",u:"https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+p:["<b>Narrowing</b> = control flow dekh kar declared type ko kisi point par zyada specific type me badalna. TS JS ke <code>if/else</code>, loops, truthiness aur assignments par type analysis overlay karta hai. Jo checks narrowing karte hain unhe <b>type guards</b> kehte hain.",
+"<b><code>typeof</code> guards:</b> sirf <code>\"string\" \"number\" \"bigint\" \"boolean\" \"symbol\" \"undefined\" \"object\" \"function\"</code> return hote hain. Gotcha: <code>typeof null === \"object\"</code> — isliye <code>string | string[] | null</code> par object-check sirf <code>string[] | null</code> tak narrow karega.",
+"<b>Truthiness:</b> falsy values hain <code>0, NaN, \"\", 0n, null, undefined</code>. Pitfall: poori body ko <code>if (strs)</code> me lapetne se empty-string case chup-chaap skip ho jata hai — TS complain nahi karega.",
+"<b>Equality:</b> <code>===</code>/<code>switch</code> common type par narrow karte hain. <code>x == null</code> ek saath <code>null</code> AUR <code>undefined</code> dono hata deta hai.",
+"<code>in</code> operator (<code>\"swim\" in animal</code>), <code>instanceof</code> (prototype chain) aur <b>assignments</b> (observed type badalta hai, lekin assignability hamesha declared type se check hoti hai) — sab narrowing karte hain.",
+"<b>Type predicates:</b> apna guard banao — <code>function isFish(pet: Fish | Bird): pet is Fish</code>. <code>filter</code> ke saath <code>Fish[]</code> milta hai. Classes me <code>this is Type</code> bhi chalta hai.",
+"<b>Discriminated unions:</b> har member me common property par alag literal (<code>kind: \"circle\"</code>) — check karte hi sahi member narrow. Ek hi interface me optional <code>radius?</code>/<code>sideLength?</code> rakhna bad encoding hai.",
+"<b>Exhaustiveness:</b> sab possibilities khatm ho jayein to type <code>never</code> ban jata hai. <code>default: const _exhaustiveCheck: never = shape;</code> — naya union member judte hi error, taaki koi case miss na ho."],
+c:"function padLeft(padding: number | string, input: string) {\n  if (typeof padding === \"number\") {\n    return \" \".repeat(padding) + input; // padding: number\n  }\n  return padding + input; // padding: string\n}\ninterface Circle { kind: \"circle\"; radius: number; }\ninterface Square { kind: \"square\"; sideLength: number; }\ntype Shape = Circle | Square;",
+k:"typeof, truthiness, ==, in, instanceof, predicates, discriminated unions, never-check — narrowing ki poori toolkit yahi hai."},
+{n:10,g:1,t:"More on Functions",u:"https://www.typescriptlang.org/docs/handbook/2/functions.html",
+p:["<b>Function type expressions:</b> <code>(a: string) =&gt; void</code> — parameter ka NAAM zaroori hai; <code>(string) =&gt; void</code> ka matlab hai parameter named <code>string</code> of type <code>any</code>! Alias bana lo: <code>type GreetFunction = (a: string) =&gt; void</code>.",
+"Functions me properties bhi ho sakti hain — <b>call signatures</b> object type me likhte hain (<code>:</code> se, <code>=&gt;</code> se nahi). <b>Construct signatures</b> (<code>new (s: string): T</code>) <code>Date</code> jaise callable+constructible values ke liye.",
+"<b>Generic functions</b> input-output types ko jodte hain: <code>firstElement&lt;Type&gt;(arr: Type[]): Type | undefined</code> — call site par inference khud type nikaal leta hai. <b>Constraints</b> (<code>Type extends { length: number }</code>) batate hain ki type ke paas kam se kam kya hona chahiye.",
+"Constraint wali common galti: function SAME type return karne ka vaada karta hai, sirf constraint match karne wala nahi — isliye <code>{ length: minimum }</code> return karna error hai.",
+"<b>Achhe generics ke 3 rules:</b> (1) type parameter ko constraint ki jagah khud use karo (push down), (2) kam se kam type parameters, (3) har type parameter kam se kam do jagah appear ho — ek jagah wala parameter bekaar hai.",
+"<b>Optional parameters</b> ka type <code>T | undefined</code> hota hai. Callback pitfall: callback type me optional parameter likhna matlab implementation use pass hi na kare — rule: jab tak bina us argument ke call karne ka iraada na ho, callback me optional mat likho.",
+"<b>Overloads:</b> kai signatures + ek implementation (jo bahar se callable NAHI hoti). Jahan union parameter chal jaye wahan overloads se bacho — union argument kisi ek overload se match hi nahi karta.",
+"<code>void</code> ≠ <code>undefined</code>; <code>unknown</code> = safe <code>any</code>; <code>never</code> = kabhi return na karne wala; global <code>Function</code> type se bacho. <b>Rest/spread pitfall:</b> <code>[8, 5]</code> <code>number[]</code> infer hota hai, spread ke liye tuple chahiye — <code>as const</code> fix hai.",
+"<b><code>void</code> return quirk:</b> contextual <code>() =&gt; void</code> type wali function kuch bhi return kar sakti hai (value ignore hoti hai) — isiliye <code>forEach((el) =&gt; dst.push(el))</code> legal hai. Lekin khud declare ki hui <code>: void</code> function kuch return nahi kar sakti."],
+c:"function firstElement<Type>(arr: Type[]): Type | undefined {\n  return arr[0];\n}\nfirstElement([\"a\", \"b\", \"c\"]); // string\nfunction longest<Type extends { length: number }>(a: Type, b: Type) {\n  return a.length >= b.length ? a : b;\n}\nconst args = [8, 5] as const;\nMath.atan2(...args); // as const se tuple — spread OK",
+k:"Generics ke 3 rules, overloads-vs-union, aur void quirk — interview me yehi teen sabse zyada poochhe jate hain."},
+{n:11,g:1,t:"Object Types",u:"https://www.typescriptlang.org/docs/handbook/2/objects.html",
+p:["Object type teen tarike se banta hai: anonymous (<code>{ name: string }</code>), <code>interface</code>, ya <code>type</code> alias — teeno same shape describe karte hain. Property modifiers: type, optional (<code>?</code>), <code>readonly</code>.",
+"<code>readonly</code> sirf top-level re-write rokta hai — <code>home.resident.age++</code> chalega, <code>home.resident = {...}</code> nahi. Aur compatibility check me TS <code>readonly</code> ko ignore karta hai.",
+"<b>Index signatures:</b> <code>[index: number]: string</code>. Number aur string dono indexers hon to number wala string wale ka subtype hona chahiye (JS number keys ko string bana deta hai). String index signature HAR property ko usi type ka hone par majboor karta hai — alag types chahiye to union index type use karo.",
+"<b>Excess property checks:</b> fresh object literals me unknown property = error (<code>colour</code> vs <code>color</code> typo yahi pakadta hai). Workarounds: type assertion, string index signature, ya pehle variable me assign karna. Zyadaatar ye errors asli bugs hote hain.",
+"<code>interface</code> <code>extends</code> se aur <code>type</code> intersection (<code>&amp;</code>) se banta hai — farak conflict me dikhta hai: same-naam interfaces incompatible hon to error; intersections conflict ko <code>never</code> bana dete hain (compile hoga, use nahi hoga).",
+"<b>Generic object types:</b> <code>interface Box&lt;Type&gt; { contents: Type }</code> — <code>NumberBox/StringBox</code> ki bheed ki jagah ek hi pattern. <code>Array</code>, <code>Map&lt;K,V&gt;</code>, <code>Set&lt;T&gt;</code>, <code>Promise&lt;T&gt;</code> sab isi par bane hain.",
+"<b><code>ReadonlyArray</code>:</b> mutating methods gayab, constructor nahi, shorthand <code>readonly string[]</code>. Assignability one-way hai: <code>string[]</code> → <code>readonly string[]</code> OK, ulta error.",
+"<b>Tuples:</b> <code>[string, number]</code> — fixed length, typed positions. Optional elements sirf end me, rest elements kahin bhi (positions fixed rehte hain). <code>as const</code> se <code>readonly [3, 4]</code> banta hai jo mutable tuple ko assign NAHI hota — common gotcha."],
+c:"interface Box<Type> { contents: Type; }\nlet box: Box<string> = { contents: \"hello\" };\n\ntype StringNumberPair = [string, number];\ntype Either2dOr3d = [number, number, number?]; // length: 2 | 3\ntype StringBoolNum = [string, ...boolean[], number];\n\nfunction doSomething(pair: readonly [string, number]) {\n  const [inputString, hash] = pair; // destructuring OK\n}",
+k:"Excess property checks, index signature rules, readonly ki shallowness, aur tuple/as-const gotcha — object types ka saar."},
+{n:12,g:1,t:"Creating Types from Types",u:"https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+p:["TS ka type system types ko <b>dusre types ke terms me</b> express karne deta hai — types ke upar computation, bilkul values ki tarah.",
+"Is section ke tools: <b>Generics</b> (parameters wale types), <b>Keyof</b>, <b>Typeof</b>, <b>Indexed Access Types</b> (<code>Type['a']</code>), <b>Conditional Types</b> (type system ke if-statements), <b>Mapped Types</b> (har property par map), <b>Template Literal Types</b> (string patterns se types).",
+"Ye saare operators milkar complex transformations ko chhote, composable expressions me badal dete hote hain — aage ke 7 sections ek-ek operator ko gehrai se kholte hain."],
+c:"// Ek jhalak — ye sab aage detail me hai:\ntype Keys = keyof Point;              // \"x\" | \"y\"\ntype XType = Point[\"x\"];              // number\ntype OnlyNums<T> = T extends number ? T : never;\ntype ReadonlyAll<T> = { readonly [K in keyof T]: T[K] };",
+k:"Ye intro page hai — asli masala aage ke Generics se Template Literal Types tak ke 7 sections me hai."},
+{n:13,g:1,t:"Generics",u:"https://www.typescriptlang.org/docs/handbook/2/generics.html",
+p:["<b>Identity function</b> se samjho: <code>arg: number</code> bahut narrow hai, <code>arg: any</code> return type ki jaankari kho deta hai. Hal: <b>type variable</b> — <code>function identity&lt;Type&gt;(arg: Type): Type</code> input type ko capture karke return me reuse karta hai. Call par inference khud type nikaal leta hai.",
+"Type variable ko 'koi bhi type' maan kar treat karo — <code>arg.length</code> error dega. Type ka hissa bana kar use karo: <code>loggingIdentity&lt;Type&gt;(arg: Type[])</code> me <code>.length</code> mil jayega.",
+"<b>Generic types</b> kai roop lete hain: function type, call-signature object, interface par parameter (sab members ko visible) ya sirf call signature par. <b>Generic classes</b> sirf instance side par generic hoti hain — static members class type parameter use NAHI kar sakte. Generic enums/namespaces nahi hote.",
+"<b>Constraints:</b> <code>Type extends Lengthwise</code> — ab <code>loggingIdentity(3)</code> error, <code>{ length: 10 }</code> OK. Type parameter dusre parameter ko bhi constrain kar sakta hai: <code>getProperty&lt;Type, Key extends keyof Type&gt;</code> — galat key par allowed keys ki list ke saath error.",
+"<b>Factories:</b> class type ko generic me pass karna ho to constructor signature likho — <code>create&lt;Type&gt;(c: { new (): Type })</code>. Yahi pattern mixins ki neev hai.",
+"<b>Generic parameter defaults</b> ke rules: default wala parameter optional; required, optional ke baad nahi aa sakta; default ko constraint satisfy karna hoga; inference fail ho to default use hota hai.",
+"<b>Variance annotations</b> (<code>in T</code>, <code>out T</code>) advanced/rare hain — structural system me variance khud emerge hoti hai aur TS infer kar leta hai. Galat annotation par TS error deta hai; annotations structural comparison ko force nahi kar sakti."],
+c:"function identity<Type>(arg: Type): Type { return arg; }\nlet output = identity(\"myString\"); // Type = string (inference)\n\ninterface Lengthwise { length: number; }\nfunction loggingIdentity<Type extends Lengthwise>(arg: Type): Type {\n  console.log(arg.length); return arg;\n}\nfunction getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {\n  return obj[key];\n}",
+k:"Type variable = capture + reuse. Constraints, keyof-in-constraint aur factory pattern — generics ki teen seedhiyan."},
+{n:14,g:1,t:"Keyof Type Operator",u:"https://www.typescriptlang.org/docs/handbook/2/keyof-types.html",
+p:["<code>keyof</code> ek object type lekar uske keys ka <b>string/numeric literal union</b> deta hai: <code>keyof Point</code> → <code>\"x\" | \"y\"</code>.",
+"Index signature ho to jawab badal jata hai: number index wale type ka <code>keyof</code> → <code>number</code>; string index wale ka → <code>string | number</code> — kyunki JS me object keys hamesha string me coerce hoti hain (<code>obj[0]</code> === <code>obj[\"0\"]</code>).",
+"<code>keyof</code> sabse zyada kaam <b>mapped types</b> ke saath aata hai — wahan ye iteration ki list deta hai."],
+c:"type Point = { x: number; y: number };\ntype P = keyof Point; // \"x\" | \"y\"\n\ntype Arrayish = { [n: number]: unknown };\ntype A = keyof Arrayish; // number\n\ntype Mapish = { [k: string]: boolean };\ntype M = keyof Mapish; // string | number",
+k:"keyof = keys ka union. String index signature par number bhi judta hai — JS key coercion ki wajah se."},
+{n:15,g:1,t:"Typeof Type Operator",u:"https://www.typescriptlang.org/docs/handbook/2/typeof-types.html",
+p:["JS ka <code>typeof</code> expression me runtime type batata hai. TS <b>type position</b> me <code>typeof</code> deta hai — kisi variable/property ka type uthane ke liye: <code>let n: typeof s</code> → <code>string</code>.",
+"Asli taqat combinations me hai: <code>ReturnType&lt;typeof f&gt;</code> kisi function ka return type nikaal leta hai — bina function ko dobara describe kiye.",
+"Values aur types alag cheezein hain: <code>ReturnType&lt;f&gt;</code> error dega (<i>'f' refers to a value… Did you mean 'typeof f'?</i>) — pehle <code>typeof</code> se value ko type me badlo.",
+"<b>Limitation:</b> <code>typeof</code> sirf identifiers (variable naam) ya unki properties par legal hai. <code>typeof msgbox(\"...\")</code> jaisi call-expression par syntax error — warna aisa code likha jata jo dikhta execute hota hua, par hota nahi."],
+c:"function f() { return { x: 10, y: 3 }; }\ntype P = ReturnType<typeof f>; // { x: number; y: number }\n\nlet s = \"hello\";\nlet n: typeof s; // string",
+k:"typeof type position me = value se type. ReturnType<typeof fn> sabse common real-world use hai."},
+{n:16,g:1,t:"Indexed Access Types",u:"https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html",
+p:["Kisi property ka type lookup karna ho to <code>Person[\"age\"]</code> → <code>number</code>. Index khud ek <b>type</b> hai — union, <code>keyof</code> ya koi bhi type chalega.",
+"<code>Person[\"age\" | \"name\"]</code> → <code>string | number</code>; <code>Person[keyof Person]</code> → saare property types ka union. Missing property par error (<code>Person[\"alve\"]</code>).",
+"Array ka element type nikaalna: index me <code>number</code> do. <code>typeof</code> ke saath ye array literals se types capture karta hai: <code>type Person = typeof MyArray[number]</code> — array badlo, type khud badal jayega.",
+"Sirf TYPES index kar sakte hain — <code>const key = \"age\"; Person[key]</code> error dega. Type alias banao: <code>type key = \"age\"; Person[key]</code>."],
+c:"const MyArray = [\n  { name: \"Alice\", age: 15 },\n  { name: \"Bob\", age: 23 },\n];\ntype Person = typeof MyArray[number]; // { name: string; age: number }\ntype Age = typeof MyArray[number][\"age\"]; // number",
+k:"T[K] — type ko type se lookup. typeof arr[number] array se element type nikaalne ka standard trick hai."}
+];
+var S2=[
+{n:17,g:1,t:"Conditional Types",u:"https://www.typescriptlang.org/docs/handbook/2/conditional-types.html",
+p:["Form: <code>SomeType extends OtherType ? TrueType : FalseType</code> — left, right ko assignable ho to true branch, warna false. <code>Dog extends Animal ? number : string</code> → <code>number</code>.",
+"Asli taqat generics ke saath aati hai: overloads ki badhti hui list ki jagah ek conditional generic — <code>NameOrId&lt;T&gt;</code> input type dekh kar label type chun leta hai.",
+"True branch generic ko aur constrain karta hai (narrowing jaisa). Isi se <code>MessageOf&lt;T&gt;</code> pattern banta hai: <code>message</code> property ho to uska type, warna <code>never</code>. Aur <code>Flatten&lt;T&gt;</code> array ho to element type, warna type khud.",
+"<b><code>infer</code></b> true branch me naya type variable declare karta hai: <code>Type extends Array&lt;infer Item&gt; ? Item : Type</code>. Isi se <code>ReturnType</code> jaise helpers bante hain. Overloaded functions par inference LAST signature use karti hai.",
+"<b>Distributive conditional types:</b> generic par conditional union ke har member par alag-alag apply hota hai — <code>ToArray&lt;string | number&gt;</code> → <code>string[] | number[]</code>. Rokna ho to dono side tuple me lapeto: <code>[Type] extends [any]</code>."],
+c:"type MessageOf<T> = T extends { message: unknown } ? T[\"message\"] : never;\ntype Flatten<Type> = Type extends Array<infer Item> ? Item : Type;\ntype ToArray<Type> = Type extends any ? Type[] : never;\ntype Res = ToArray<string | number>; // string[] | number[]",
+k:"extends ? : + infer + distributivity — type-level programming ke teen pillars yahi hain."},
+{n:18,g:1,t:"Mapped Types",u:"https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+p:["Mapped type ek type se dusra type banata hai — keys par iterate karke (index signature syntax par based): <code>{ [Property in keyof Type]: boolean }</code> har property ko <code>boolean</code> bana deta hai.",
+"<b>Mapping modifiers:</b> <code>readonly</code> aur <code>?</code> ko <code>+</code>/<code>-</code> prefix se jodo ya hatao. <code>-readonly</code> readonly hatata hai, <code>-?</code> optionality hatakar sab required bana deta hai. Prefix na ho to <code>+</code> maana jata hai.",
+"<b>Key remapping (<code>as</code>, TS 4.1+):</b> template literals ke saath naye keys banao — <code>Getters&lt;Person&gt;</code> → <code>{ getName: () =&gt; string; getAge: () =&gt; number }</code>. Kisi key ko <code>never</code> bana do to wo key filter out ho jati hai.",
+"Mapped types sirf <code>string | number | symbol</code> keys par nahi — arbitrary unions par bhi map ho sakte hain (event-handler config pattern). Conditional types ke saath milkar per-property decisions bhi possible hain (jaise PII detection)."],
+c:"type OptionsFlags<Type> = { [Property in keyof Type]: boolean };\ntype CreateMutable<Type> = { -readonly [Property in keyof Type]: Type[Property] };\ntype Concrete<Type> = { [Property in keyof Type]-?: Type[Property] };\ntype Getters<Type> = {\n  [Property in keyof Type as `get${Capitalize<string & Property>}`]: () => Type[Property];\n};",
+k:"{ [K in keyof T]: … } + -readonly/-? + as-remapping — Partial, Readonly jaise saare helpers isi se bane hain."},
+{n:19,g:1,t:"Template Literal Types",u:"https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html",
+p:["Template literal types string literal types par bante hain — JS template literal wala hi syntax, lekin type position me. Concrete literals jud jate hain: <code>`hello ${World}`</code> → <code>\"hello world\"</code>.",
+"Interpolated position me <b>union ho to cross-multiplication</b> hota hai — har combination banta hai. Do positions par unions hon to combinations aur badh jate hain (12, 100, …). Bade unions ke liye ahead-of-time generation recommend hai.",
+"Watched-object pattern: event naam <code>`${string &amp; keyof Type}Changed`</code> type ka ho to galat event naam (<code>\"firstName\"</code>) aur typos dono compile time par error.",
+"Generic <code>on&lt;Key extends string &amp; keyof Type&gt;</code> ke saath TS string ko tod kar <code>Key</code> infer karta hai, phir <code>Type[Key]</code> se callback ka argument type khud nikaal leta hai — <b>inference strings ko deconstruct/reconstruct</b> kar sakti hai.",
+"<b>Intrinsic string types</b> (compiler built-in, .d.ts me nahi): <code>Uppercase</code>, <code>Lowercase</code>, <code>Capitalize</code>, <code>Uncapitalize</code>. Ye locale-aware nahi hain — runtime string kaam ke liye JS functions hi use karo."],
+c:"type EmailLocaleIDs = \"welcome_email\" | \"email_heading\";\ntype FooterLocaleIDs = \"footer_title\" | \"footer_sendoff\";\ntype AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_id`;\n// \"welcome_email_id\" | \"email_heading_id\" | \"footer_title_id\" | \"footer_sendoff_id\"\ntype ASCIICacheKey<Str extends string> = `ID-${Uppercase<Str>}`;",
+k:"Unions ka cross-product + keyof ke saath inference — template literal types strings ko type-safe bana dete hain."},
+{n:20,g:1,t:"Classes",u:"https://www.typescriptlang.org/docs/handbook/2/classes.html",
+p:["Fields bina annotation ke implicit <code>any</code> hain. <b><code>strictPropertyInitialization</code></b> fields ko constructor me initialize karne par majboor karta hai — pakka ho ki value kahin aur se aayegi to definite assignment <code>name!: string</code> lagao. <code>readonly</code> fields sirf constructor me assign hote hain.",
+"Constructors par type parameters nahi lagte (wo class par hote hain), return annotation bhi nahi. Derived constructor me <code>this</code> se pehle <code>super()</code> zaroori hai. Methods ko fields hamesha <code>this.</code> se access karne hote hain.",
+"Getters/setters: sirf getter ho to property <code>readonly</code>; TS 4.3+ se get/set ke types alag ho sakte hain.",
+"<b>Heritage:</b> <code>implements</code> sirf check karta hai — class ka type ya inference NAHI badalta, optional properties create bhi nahi karta. <code>extends</code> me derived class ko base ka subtype rehna hoga — optional parameter ko required banana contract tod deta hai.",
+"<b><code>declare</code> fields</b> runtime effect ke bina inherited field ka sahi type re-declare karte hain (ES2022 field semantics me zaroori). <b>Initialization order:</b> base fields → base constructor → derived fields → derived constructor.",
+"<b>Visibility:</b> <code>public</code> default; <code>protected</code> sirf class+subclasses (sibling class access nahi); <code>private</code> subclasses ko bhi nahi, lekin same class ke dusre instance ko hai. Ye sab <b>compile-time only</b> hain — JS <code>#</code> fields hi hard private hain.",
+"<b>Statics</b> class par rehte hain, type parameters use nahi kar sakte (types erased hain — ek hi slot sab instantiations ke liye). Static blocks initialization code ko private access dete hain. 'Static class' TS me nahi hoti — plain object/function use karo.",
+"<b><code>this</code> types</b> fluent chaining ko subclasses me sahi type dete hain; <code>this is Type</code> guards object ko narrow karte hain. <b>Parameter properties</b> (<code>constructor(public readonly x: number)</code>) field + assignment ek saath.",
+"<b><code>abstract</code></b> classes instantiate nahi hotin; subclasses ko saare abstract members implement karne hote hain. Aur yaad rakho — classes bhi structural hain: identical classes interchangeable, aur <b>empty class sab ki supertype</b> hai — empty class mat likho!"],
+c:"class Point {\n  x: number; y: number;\n  constructor(x = 0, y = 0) { this.x = x; this.y = y; }\n}\nclass Box<Type> {\n  contents: Type;\n  constructor(value: Type) { this.contents = value; }\n}\nclass Octopus {\n  readonly name: string;\n  readonly numberOfLegs: number = 8;\n  constructor(theName: string) { this.name = theName; }\n}",
+k:"strictPropertyInitialization, implements≠type-change, soft-vs-hard private, this types — classes ke interview points yahi hain."},
+{n:21,g:1,t:"Modules",u:"https://www.typescriptlang.org/docs/handbook/2/modules.html",
+p:["Jis file me top-level <code>import</code>/<code>export</code> ho wo <b>module</b> hai — apna scope, bahar kuch visible nahi jab tak export na karo. Bina import/export wali file <b>script</b> hai — global scope. File ko zabardasti module banana ho to <code>export {};</code> likh do.",
+"Module ke teen concerns: <b>syntax</b> (import/export), <b>module resolution</b> (naam → file), <b>output target</b> (emitted JS ki shape).",
+"ES Modules hi standard hain: default export, named exports, rename (<code>import { pi as π }</code>), namespace import (<code>import * as math</code>), aur side-effect import (<code>import \"./maths.js\"</code>).",
+"Types bhi same syntax se export hote hain. <b><code>import type</code></b> aur inline <code>type</code> imports (<code>import { createCatName, type Cat }</code>) Babel/swc jaise transpilers ko batate hain ki ye import surakshit tareeke se hataya ja sakta hai.",
+"CommonJS: <code>module.exports</code> / <code>require</code>. <code>esModuleInterop</code> flag CJS aur ESM ke default-import semantics ke beech ki friction kam karta hai. TS-specific <code>import fs = require(\"fs\")</code> CJS output se 1:1 match karta hai.",
+"<b>Resolution</b> ki do strategies: Classic (purani, sirf backwards-compat) aur Node (Node.js jaisi lookup + .ts/.d.ts checks). <code>target</code> JS features decide karta hai, <code>module</code> loader code ki shape.",
+"<b>Namespaces</b> TS ka apna purana module format hai — deprecated nahi, DefinitelyTyped me ab bhi use hota hai, lekin naye code ke liye ES Modules hi recommended hain."],
+c:"// maths.ts\nexport var pi = 3.14;\nexport default function helloWorld() { console.log(\"Hello, world!\"); }\n// main.ts\nimport helloWorld, { pi as π } from \"./maths.js\";\nimport type { Cat, Dog } from \"./animals.js\";\nimport { createCatName, type Cat as Cat2 } from \"./animals.js\";",
+k:"Module vs script, import type ka maksad, aur target-vs-module ka farak — modules ka core yahi hai."},
+{n:22,g:2,t:"Utility Types",u:"https://www.typescriptlang.org/docs/handbook/utility-types.html",
+p:["TS ke global utility types common transformations ke shortcuts hain — sab mapped/conditional types se bane hain.",
+"<code>Partial&lt;T&gt;</code> sab properties optional; <code>Required&lt;T&gt;</code> uska ulta; <code>Readonly&lt;T&gt;</code> sab readonly. <code>Record&lt;Keys, Type&gt;</code> fixed keys wala object type banata hai.",
+"<code>Pick&lt;T, Keys&gt;</code> kuch properties chunta hai; <code>Omit&lt;T, Keys&gt;</code> unhe chhod kar baaki sab — dono ek dusre ke opposite.",
+"Union helpers: <code>Exclude</code> members hatata hai, <code>Extract</code> members rakhta hai, <code>NonNullable</code> <code>null</code>/<code>undefined</code> nikaal deta hai.",
+"Function helpers: <code>Parameters&lt;T&gt;</code> parameter tuple, <code>ReturnType&lt;T&gt;</code> return type, <code>ConstructorParameters</code> aur <code>InstanceType</code> classes ke liye. Overloads par hamesha LAST signature use hoti hai.",
+"<code>Awaited&lt;T&gt;</code> Promises ko recursively unwrap karta hai (await jaisa). <code>NoInfer&lt;T&gt;</code> (5.4) kisi position ko inference se rokta hai. <code>ThisParameterType</code>/<code>OmitThisParameter</code>/<code>ThisType</code> <code>this</code> ko type karne ke tools hain."],
+c:"interface Todo { title: string; description: string; completed: boolean; }\ntype TodoPreview = Pick<Todo, \"title\" | \"completed\">;\ntype TodoInfo = Omit<Todo, \"completed\">;\ntype T2 = Exclude<\"a\" | \"b\" | \"c\", \"a\">; // \"b\" | \"c\"\ntype T4 = Awaited<Promise<Promise<number>>>; // number",
+k:"Partial/Pick/Omit/Record roz ke kaam ke; Exclude/Extract union surgery ke; Parameters/ReturnType meta-programming ke."},
+{n:23,g:2,t:"Cheat Sheets",u:"https://www.typescriptlang.org/cheatsheets/",
+p:["Cheat Sheets typescriptlang.org ki <b>downloadable syntax reference pages</b> hain — HTML pages nahi, images/PDFs hain.",
+"Chaaron sheets: <b>Control Flow Analysis</b>, <b>Classes</b>, <b>Interfaces</b>, <b>Types</b> — roz ke TS code ke sabse common patterns ek-ek page par.",
+"Saari sheets ek zip me milti hain: <a href=\"https://www.typescriptlang.org/assets/typescript-cheat-sheets.zip\">typescript-cheat-sheets.zip</a> — print karke desk par rakhne ke liye perfect quick reference."],
+c:"",
+k:"Cheat sheets padhne ki cheez nahi, download karke paas rakhne ki cheez hain — 4 topics: Control Flow, Classes, Interfaces, Types."},
+{n:24,g:2,t:"Decorators",u:"https://www.typescriptlang.org/docs/handbook/decorators.html",
+p:["<b>Note:</b> ye page <b>experimental stage-2 decorators</b> document karta hai. Stage-3 decorators TS 5.0 se supported hain. Stage-2 ke liye <code>experimentalDecorators</code> on karo.",
+"Decorator = <code>@expression</code> — class/method/accessor/property/parameter par lagta hai; expression ek function return karta hai jo runtime par declaration ki jaankari ke saath call hota hai (meta-programming).",
+"<b>Decorator factories</b> decorator ko customize karte hain (<code>@color(\"red\")</code>). <b>Composition</b> me factory expressions upar-se-neeche evaluate hote hain, lekin decorators neeche-se-upar call hote hain — function composition jaisa.",
+"<b>Evaluation order:</b> instance members ke parameter→method/accessor/property decorators, phir static members, phir constructor parameters, phir class decorator.",
+"<b>Class decorator</b> constructor ko observe/modify/replace kar sakta hai — lekin <b>type system ko naya member nahi dikhta</b>: runtime par jodi gayi <code>reportingURL</code> property type-check me error degi.",
+"Method decorator ko (target, naam, PropertyDescriptor) milta hai — descriptor badal sakta hai (<code>@enumerable(false)</code>). Accessor par sirf PEHLE accessor par lagta hai. <b>Property aur parameter decorators sirf observe kar sakte hain</b> — return value ignore hoti hai; ye metadata record karne ke liye hain.",
+"<code>reflect-metadata</code> + <code>emitDecoratorMetadata</code> se compiler <code>design:type</code> metadata emit karta hai — runtime par type info mil jati hai (experimental, bharosa karke production design mat karo)."],
+c:"function sealed(constructor: Function) {\n  Object.seal(constructor);\n  Object.seal(constructor.prototype);\n}\n@sealed\nclass BugReport {\n  type = \"report\";\n  constructor(public title: string) {}\n}",
+k:"Factory order ulta chalta hai, class decorator type nahi badalta, property decorators sirf dekh sakte hain — ye teen interview points hain."},
+{n:25,g:2,t:"Declaration Merging",u:"https://www.typescriptlang.org/docs/handbook/declaration-merging.html",
+p:["<b>Declaration merging:</b> same naam ki do+ declarations ko compiler ek definition me jod deta hai — TS ki unique feature, existing JS ke saath kaam karne me bahut kaam ki.",
+"Har declaration teen groups me se kuch banata hai: <b>namespace</b>, <b>type</b>, <b>value</b>. Interface sirf type; class aur enum type+value; function sirf value.",
+"<b>Interfaces merge</b> hote hain: members jud jate hain; non-function members same type ke hone chahiye warna error. Same-naam functions overloads ban jate hain — <b>baad wali interface ko zyada precedence</b> milti hai, aur single string-literal parameter wali specialized signatures sabse upar bubble ho jati hain.",
+"<b>Namespaces merge</b> hote hain — exported members judte hain, lekin non-exported members sirf apni original declaration me visible rehte hain. Namespace ko us declaration ke BAAD aana hota hai jisse wo merge ho raha hai (inner classes, function par properties, enum par static functions — ye patterns yahi se aate hain).",
+"<b>Classes merge nahi hotin</b> — dusri class ya variable ke saath bilkul mana hai (uske liye Mixins hain).",
+"<b>Module augmentation:</b> <code>declare module \"./observable\" { interface Observable&lt;T&gt; { … } }</code> se kisi module ko patch kar sakte ho — nayi top-level declarations nahi bana sakte, sirf existing ko badha sakte ho; default exports augment nahi hote. <b>Global augmentation</b> (<code>declare global</code>) global scope ke liye wahi kaam karti hai."],
+c:"interface Box { height: number; width: number; }\ninterface Box { scale: number; }\nlet box: Box = { height: 5, width: 6, scale: 10 }; // merged!\n\ndeclare global {\n  interface Array<T> { toObservable(): Observable<T>; }\n}",
+k:"Interface merging + overload precedence + module/global augmentation — merging ka pura khel in teen me hai."},
+{n:26,g:2,t:"Enums",u:"https://www.typescriptlang.org/docs/handbook/enums.html",
+p:["Enums TS ki un ginichuni features me se hain jo <b>runtime par bhi exist</b> karti hain (type-level extension nahi). Named constants ka set — intent document karne aur distinct cases banane ke liye.",
+"<b>Numeric enums</b> auto-increment karte hain (<code>Up = 1</code> ke baad Down=2, Left=3…). Initializer na ho to 0 se shuru. Jiska initializer computed ho, uske baad wale member ko initializer dena hi hoga.",
+"<b>String enums</b> me har member ko string literal dena hota hai — auto-increment nahi, lekin runtime values readable hote hain (serialization/debugging asaan). Mixed (heterogeneous) enums allowed hain par avoid karo.",
+"Members <b>constant</b> ya <b>computed</b> hote hain — constant expressions (literals, pehle ke constant members, arithmetic on constants) compile time par evaluate hote hain; <code>\"123\".length</code> jaisa computed hai. NaN/Infinity wale constant expressions error hain.",
+"Sab members literal hon to enum members khud <b>types</b> ban jate hain aur enum ek <b>union</b> ki tarah behave karta hai — impossible comparisons (<code>x !== E.Foo || x !== E.Bar</code>) par 'no overlap' error milta hai.",
+"<b>Reverse mapping</b> sirf numeric enums me: compiled JS <code>Enum[Enum[\"A\"] = 0] = \"A\"</code> banata hai — value se naam mil jata hai. String enums me reverse mapping NAHI hoti. Keys ka union chahiye to <code>keyof typeof LogLevel</code>.",
+"<b><code>const</code> enums</b> compile time par poori tarah hat jate hain — members use-site par inline ho jate hain. Pitfalls: <code>isolatedModules</code> ke saath incompatible, ambient const enums ke version-mismatch bugs. Kai teams linter se const enums ban kar deti hain.",
+"Modern alternative: <code>const obj = { Up: 0, … } as const</code> + <code>typeof</code> se type nikaalna — codebase pure JS ke aligned rehta hai; keemat: parameter type ke liye ek extra type line."],
+c:"enum Direction { Up = 1, Down, Left, Right }\nenum LogLevel { ERROR, WARN, INFO, DEBUG }\ntype LogLevelStrings = keyof typeof LogLevel;\n// \"ERROR\" | \"WARN\" | \"INFO\" | \"DEBUG\"\nconst ODirection = { Up: 0, Down: 1 } as const;\ntype Direction2 = typeof ODirection[keyof typeof ODirection];",
+k:"Numeric=reverse mapping + auto-increment, string=readable lekin no reverse, const enum=inlined par risky — objects-as-const modern raasta hai."},
+{n:27,g:2,t:"Iterators and Generators",u:"https://www.typescriptlang.org/docs/handbook/iterators-and-generators.html",
+p:["Jo object <code>Symbol.iterator</code> implement kare wo <b>iterable</b> hai. Built-ins me ye pehle se hai: <code>Array</code>, <code>Map</code>, <code>Set</code>, <code>String</code>, typed arrays.",
+"<code>Iterable&lt;X&gt;</code> interface se generic helpers bante hain: <code>function toArray&lt;X&gt;(xs: Iterable&lt;X&gt;): X[] { return [...xs]; }</code>.",
+"<b><code>for..of</code> VALUES deta hai, <code>for..in</code> KEYS deta hai</b> (indexes strings ke roop me). <code>for..in</code> kisi bhi object ki properties ghumta hai (object par jodi gayi <code>species</code> property bhi dikhegi); <code>for..of</code> sirf iterables par — Set par jodi property nahi dikhegi.",
+"<b>Code generation:</b> ES5 target par <code>for..of</code> sirf Arrays par allowed hai — non-Array iterable par error, chahe wo <code>Symbol.iterator</code> implement kare; compiler simple index loop emit karta hai. ES2015+ target par native <code>for..of</code> emit hota hai.",
+"<i>Cross-reference (JS/MDN se, is page se nahi):</i> generator functions <code>function*</code> se bante hain, <code>yield</code> se values dete hain, aur unka type <code>Generator&lt;T, TReturn, TNext&gt;</code> hota hai — ye JS language ka hissa hai."],
+c:"let pets = new Set([\"Cat\", \"Dog\", \"Hamster\"]);\nfor (let pet of pets) { console.log(pet); } // values: Cat, Dog…\nfor (let pet in pets) { console.log(pet); } // keys/indexes\n\nfunction toArray<X>(xs: Iterable<X>): X[] { return [...xs]; }",
+k:"for..of = values, for..in = keys. ES5 target ki array-only pabandi yaad rakho."},
+{n:28,g:2,t:"JSX",u:"https://www.typescriptlang.org/docs/handbook/jsx.html",
+p:["JSX XML-jaisi embeddable syntax hai jo valid JS me transform hoti hai. TS JSX ko embed, type-check aur compile — teeno support karta hai. Files <code>.tsx</code> rakho aur <code>jsx</code> option set karo.",
+"<b>Modes:</b> <code>preserve</code> (JSX as-is, aage Babel jaisa step), <code>react</code> classic (<code>React.createElement</code>), <code>react-native</code>, <code>react-jsx</code> automatic (<code>_jsx(...)</code> calls), <code>react-jsxdev</code> (dev info ke saath). Factory <code>jsxFactory</code> se badal sakte ho.",
+"<code>.tsx</code> me angle-bracket assertions (<code>&lt;Foo&gt;bar</code>) <b>mana</b> hain — JSX se takraav hota hai. Hamesha <code>as</code> use karo.",
+"Elements do tarah ke: <b>intrinsic</b> (lowercase, <code>div</code> — string ban kar emit, attributes <code>JSX.IntrinsicElements</code> se check) aur <b>value-based</b> (uppercase components — function component pehle try hota hai, phir class component).",
+"<b><code>JSX</code> namespace ki location mode par nirbhar hai:</b> classic modes me factory ke top identifier par (<code>React.JSX</code>, Preact ke liye <code>h.JSX</code>); automatic modes me <code>jsxImportSource/jsx-runtime</code> se export. Na mile to global <code>JSX</code> namespace fallback hai.",
+"Attribute checking: required/optional props enforce hote hain, unknown props error — lekin invalid-identifier naam (<code>data-*</code>) exempt hain. <code>JSX.IntrinsicAttributes</code> framework props (React ka <code>key</code>) deta hai. Children bhi ek attribute ki tarah type hote hain (<code>JSX.ElementChildrenAttribute</code>).",
+"Default JSX result type <code>any</code> hai; <code>JSX.Element</code> se customize karo. TS 5.1 se <code>JSX.ElementType</code> batata hai ki valid component kya count hoga — props hamesha component ke pehle argument se aate hain."],
+c:"// tsconfig: \"jsx\": \"react-jsx\"\nconst x = bar as Foo; // .tsx me <Foo>bar mana hai\ninterface FooProps { name: string; age?: number; }\nfunction Foo(props: FooProps) { return <div>{props.name}</div>; }\nconst el = <Foo name=\"vai\" />; // age optional, name zaroori",
+k:"jsx modes, as-vs-angle-bracket, intrinsic-vs-value-based, JSX namespace ki do jagah — JSX ke chaar interview pillars."},
+{n:29,g:2,t:"Mixins",u:"https://www.typescriptlang.org/docs/handbook/mixins.html",
+p:["Mixins = chhoti partial classes ko jod kar class banana — traditional OO hierarchy ka alternative (Scala traits jaisa pattern, JS me popular).",
+"<b>Pattern:</b> generics + class expression. Ek <code>Constructor</code> type (<code>new (...args: any[]) =&gt; {}</code>) aur ek factory jo base ko extend karke nayi class return kare: <code>const EightBitSprite = Scale(Sprite)</code>. Mixin me <code>private</code>/<code>protected</code> properties NAHI rakh sakte — ES2020 <code>#</code> fields use karo.",
+"<b>Constrained mixins:</b> <code>GConstructor&lt;T&gt;</code> se base ko constrain karo — <code>Jumpable</code> sirf un bases par lagega jinke paas <code>setPos</code> hai, aur mixin khud <code>this.setPos()</code> call kar sakta hai.",
+"Purana alternative pattern: runtime aur type hierarchies alag bana kar declaration merging se jodna (<code>applyMixins</code>) — sync rakhna codebase ki zimmedari hai, compiler ki nahi.",
+"<b>Limits:</b> decorator se mixin NAHI ban sakta (decorator ka type merge nahi hota — <code>player.shouldFreeze</code> error dega; manual type composition workaround hai). Aur class-expression pattern singletons banata hai, isliye static properties ko alag variable types par map nahi kar sakte."],
+c:"type Constructor = new (...args: any[]) => {};\nfunction Scale<TBase extends Constructor>(Base: TBase) {\n  return class Scaling extends Base {\n    #scale = 1;\n    setScale(scale: number) { this.#scale = scale; }\n    get scale() { return this.#scale; }\n  };\n}",
+k:"Mixin = generic factory returning class expression. Constrained base + # fields; decorators is kaam ke nahi."},
+{n:30,g:2,t:"Namespaces",u:"https://www.typescriptlang.org/docs/handbook/namespaces.html",
+p:["Terminology: TS 1.5 me 'internal modules' ka naam <b>namespaces</b> pada aur 'external modules' ka <b>modules</b>. <code>module X {}</code> purana syntax hai — <code>namespace X {}</code> use karo, 'module' shabd overload mat karo.",
+"Namespaces code ko organize karte hain aur naam ke takraav (collisions) rokte hain — global namespace saaf rehta hai. Namespace ke andar <code>export</code> wale members hi bahar dikhte hain; bina export wale implementation details rehte hain.",
+"Ek namespace kai files me faila ho sakta hai — files ke beech dependency <b>triple-slash reference tags</b> (<code>/// &lt;reference path=\"...\" /&gt;</code>) se declare hoti hai.",
+"Compiled output load karne ke do tareeqe: <code>outFile</code> se ek concatenated file (order reference tags se), ya har .js ko sahi order me <code>&lt;script&gt;</code> tags se.",
+"<b>Aliases:</b> <code>import polygons = Shapes.Polygons;</code> lamba naam chhota karta hai — ye <code>import x = require()</code> (module load) se alag hai. Alias values ke liye distinct reference hota hai.",
+"Dusri JS libraries ke liye <b>ambient namespaces</b> .d.ts files me likhte hain — jaise script-tag se aane wale global <code>d3</code> ke liye <code>declare namespace D3 { … }</code>."],
+c:"namespace Validation {\n  export interface StringValidator { isAcceptable(s: string): boolean; }\n  const lettersRegexp = /^[A-Za-z]+$/; // bahar nahi dikhega\n  export class LettersOnlyValidator implements StringValidator {\n    isAcceptable(s: string) { return lettersRegexp.test(s); }\n  }\n}\nlet v = new Validation.LettersOnlyValidator();",
+k:"Namespace = global pollution ke bina organization. Aaj ke naye code me modules preferred hain, namespaces .d.ts duniya me zinda hain."},
+{n:31,g:2,t:"Namespaces and Modules",u:"https://www.typescriptlang.org/docs/handbook/namespaces-and-modules.html",
+p:["<b>Modules</b> code + declarations rakhte hain, module loader (CommonJS/ESM runtime) par chalte hain — behtar reuse, mazboot isolation, behtar tooling. Node.js apps me default yahi hai; ES2015 ke baad modules language ka native hissa hain — <b>naye projects ke liye modules hi recommended</b>.",
+"<b>Namespaces</b> TS-specific hain — global namespace me named JS objects. Kai files me fail sakte hain, <code>outFile</code> se jud sakte hain. <code>&lt;script&gt;</code>-tag wali web apps me fit hain; badi apps me dependencies pehchanna mushkil ho jata hai.",
+"<b>Pitfall 1:</b> module file ko <code>/// &lt;reference&gt;</code> se refer karna galat hai — modules ke liye <code>import</code> use karo. Reference tag ka kaam ambient module declaration wali .d.ts ko locate karna hai (jaise <code>node.d.ts</code>).",
+"<b>Pitfall 2 — needless namespacing:</b> module ke andar <code>export namespace Shapes {}</code> lapetne se consumers ko <code>shapes.Shapes.Triangle()</code> likhna padta hai. File hi grouping hai — seedha <code>export class Triangle {}</code> likho.",
+"<b>Trade-off:</b> module source files aur emitted JS files ka 1:1 sambandh hai — <code>outFile</code> concatenation <code>commonjs</code>/<code>umd</code> ke saath possible NAHI, sirf <code>amd</code>/<code>system</code> ke saath hai."],
+c:"// Galat: export namespace Shapes { export class Triangle {} }\n// Sahi — file hi namespace hai:\nexport class Triangle { /* ... */ }\nexport class Square { /* ... */ }\n// consumer: import * as shapes from \"./shapes\"; new shapes.Triangle();",
+k:"Naya project = modules. Reference≠import, aur module ke andar namespace lapetna sabse common bewakoofi hai."},
+{n:32,g:2,t:"Symbols",u:"https://www.typescriptlang.org/docs/handbook/symbols.html",
+p:["<code>symbol</code> (ES2015) ek primitive type hai — <code>Symbol()</code> ya <code>Symbol(\"key\")</code> se banta hai. Symbols <b>immutable aur UNIQUE</b> hain: <code>Symbol(\"key\") === Symbol(\"key\")</code> hamesha <code>false</code>.",
+"Symbols object-property keys ban sakte hain (<code>{ [sym]: \"value\" }</code>) aur computed property declarations se class members bhi.",
+"<b><code>unique symbol</code></b> <code>symbol</code> ka special subtype hai — sirf <code>Symbol()</code>/<code>Symbol.for()</code> ya explicit annotation se banta hai, sirf <code>const</code> declarations aur <code>readonly static</code> properties par allowed hai. Kisi specific unique symbol ko refer karna ho to <code>typeof</code> use karo. Do unique symbols kabhi assignable/comparable nahi hote.",
+"<b>Well-known symbols</b> language ke internal behaviors ko represent karte hain: <code>Symbol.iterator</code> (for-of), <code>Symbol.hasInstance</code> (instanceof), <code>Symbol.asyncIterator</code>, <code>Symbol.toPrimitive</code>, <code>Symbol.toStringTag</code>, <code>Symbol.species</code>, <code>Symbol.match/replace/search/split</code> (String ke RegExp methods), <code>Symbol.isConcatSpreadable</code>, <code>Symbol.unscopables</code>."],
+c:"const sym1 = Symbol(\"key\");\nconst sym2 = Symbol(\"key\");\nsym1 === sym2; // false — har Symbol unique hai\nconst sym3: unique symbol = Symbol();\nlet sym4: typeof sym3 = sym3; // specific symbol refer karna",
+k:"Symbol = guaranteed-unique key. unique symbol sirf const/readonly-static par, typeof se refer hota hai."},
+{n:33,g:2,t:"Triple-Slash Directives",u:"https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html",
+p:["Triple-slash directives single-line comments me single XML tag hote hain — compiler directives. <b>Sirf file ke sabse upar</b> valid hain (unse pehle sirf comments aa sakte hain); kisi statement ke baad ye aam comments ban jate hain.",
+"<code>/// &lt;reference path=\"...\" /&gt;</code> files ke beech dependency declare karta hai aur <code>outFile</code> output ka order bhi tay karta hai. Preprocessing depth-first, dikhne ke order me hoti hai. TS 5.5 se directives output me tabhi emit hote hain jab <code>preserve=\"true\"</code> laga ho.",
+"<code>/// &lt;reference types=\"...\" /&gt;</code> kisi PACKAGE par dependency hai (<code>/// &lt;reference types=\"node\" /&gt;</code> → <code>@types/node</code>) — declaration packages ke liye <code>import</code> jaisa. .ts files me iski jagah tsconfig ka <code>types</code> option prefer karo.",
+"<code>/// &lt;reference lib=\"...\" /&gt;</code> built-in lib file explicitly include karta hai (naam <code>lib</code> option jaisa, bina <code>lib.</code> prefix ke) — .d.ts authors ke liye upyogi.",
+"<code>no-default-lib=\"true\"</code> file ko default library mark karta hai (compiler default lib include nahi karega). <code>/// &lt;amd-module name=\"...\" /&gt;</code> AMD modules ko naam deta hai; <code>amd-dependency</code> DEPRECATED hai — <code>import \"moduleName\"</code> use karo."],
+c:"/// <reference types=\"node\" />\n/// <reference lib=\"es2017.string\" />\n// ab \"foo\".padStart(4) available hai\n/// <reference path=\"./validation.ts\" />",
+k:"path=files, types=packages, lib=built-ins — teeno reference directives ka kaam alag hai, jagah sirf file-top."},
+{n:34,g:2,t:"Type Compatibility",u:"https://www.typescriptlang.org/docs/handbook/type-compatibility.html",
+p:["TS me compatibility <b>sirf members</b> par based hai (structural subtyping) — nominal systems (C#/Java) se ulta. <code>class Dog { name: string }</code> bina <code>implements</code> ke <code>interface Pet { name: string }</code> ko assign ho jati hai. Dhyaan do: TS poori tarah 'sound' nahi hai — kuch unsound spots jaan-boojh kar rakhe gaye hain.",
+"<b>Basic rule:</b> <code>x</code>, <code>y</code> se compatible hai agar <code>y</code> ke paas <code>x</code> ke kam se kam saare members hon. Extra properties chalti hain — lekin <b>fresh object literals par excess property check</b> lagta hai.",
+"<b>Functions compare karna:</b> parameter NAAM mayne nahi rakhte, sirf types. Kam parameters wala function zyada wale ki jagah chal jata hai (extra args ignore — <code>forEach</code> callbacks isiliye kaam karte hain). Return type me source ko target ka subtype hona chahiye.",
+"<b>Parameter bivariance:</b> assignment tab bhi succeed hota hai jab parameter type kisi bhi direction me assignable ho — unsound, lekin event-handler jaise common JS patterns isi se chalte hain. <code>strictFunctionTypes</code> isko strict bana deta hai.",
+"Optional aur rest parameters compatibility me interchangeable maane jate hain. Overloads me target ki har signature ko source par match hona chahiye. Enums numbers se dono taraf compatible hain, lekin <b>alag enum types ke values aapas me incompatible</b> hain.",
+"<b>Classes</b> me sirf instance members compare hote hain (statics/constructors nahi). Lekin <b>private/protected members compatibility tod dete hain</b> — target me private member ho to source ka private member USI class se aana chahiye.",
+"<b>Generics</b> me type parameters sirf tab mayne rakhte hain jab kisi member ke type me consume hon — <code>Empty&lt;number&gt;</code> aur <code>Empty&lt;string&gt;</code> compatible hain, <code>NotEmpty</code> wale nahi. Unspecified type args <code>any</code> maane jate hain.",
+"Assignability table ka saar: <code>any</code> dono taraf sab se (sirf <code>never</code> ko nahi); <code>unknown</code> sab accept karta hai par sirf <code>any</code> ko assign hota hai; <code>never</code> sab ko assign hota hai, use kuch assign nahi hota."],
+c:"interface Pet { name: string; }\nclass Dog { name = \"Rex\"; owner = \"vai\"; }\nlet pet: Pet = new Dog(); // OK — extra 'owner' chalega\nlet dog2: Pet = { name: \"Lassie\", owner: \"x\" }; // Error: literal par excess check",
+k:"Members hi sab kuch — par private members, literals aur bivariance is rule ke teen bade exception-hain."},
+{n:35,g:2,t:"Type Inference",u:"https://www.typescriptlang.org/docs/handbook/type-inference.html",
+p:["Jahan explicit annotation nahi, wahan TS type <b>infer</b> karta hai — variable initialization, member defaults, function returns par. <code>let x = 3</code> → <code>x: number</code>.",
+"<b>Best common type:</b> kai expressions se inference ho to TS wo type chunne ki koshish karta hai jo sab candidates se compatible ho. <code>[0, 1, null]</code> → <code>(number | null)[]</code>.",
+"Koi ek type sab ka supertype na ho to result <b>union</b> banta hai: <code>[new Rhino(), new Elephant(), new Snake()]</code> → <code>(Rhino | Elephant | Snake)[]</code>, <code>Animal[]</code> NAHI. <code>Animal[]</code> chahiye to khud annotate karo.",
+"<b>Contextual typing</b> inference ki ulti disha hai — expression ka type uski LOCATION se aata hai. <code>window.onmousedown = function (mouseEvent) {…}</code> me <code>mouseEvent: MouseEvent</code> khud infer ho jata hai; galat property (<code>.kangaroo</code>) par error.",
+"Contextual positions: function-call arguments, assignment ke RHS, type assertions, object/array literal members, return statements. Explicit annotation contextual type ko override kar deti hai. Contextual type best-common-type calculation me candidate bhi banta hai."],
+c:"let zoo = [new Rhino(), new Elephant(), new Snake()];\n// (Rhino | Elephant | Snake)[] — Animal[] nahi!\nlet zoo2: Animal[] = [new Rhino(), new Elephant()]; // annotation se fix\nwindow.onmousedown = function (mouseEvent) {\n  console.log(mouseEvent.button); // OK — MouseEvent infer hua\n};",
+k:"Best common type na mile to union; type location se bhi aata hai — inference dono dishaon me chalta hai."},
+{n:36,g:2,t:"Variable Declaration",u:"https://www.typescriptlang.org/docs/handbook/variable-declarations.html",
+p:["<b><code>var</code> function-scoped hai</b> — block ke bahar bhi dikhta hai, dobara declare ho sakta hai (inner loop ka <code>var i</code> bahar wale ko overwrite kar deta hai — classic <code>sumMatrix</code> bug). Sabse mashhoor quirk: <code>for (var i…)</code> + <code>setTimeout</code> <b>10 baar '10' print</b> karta hai — sab callbacks ek hi <code>i</code> share karte hain.",
+"<b><code>let</code> block-scoped hai:</b> declaration se pehle use = error (<b>temporal dead zone</b>); re-declaration error; nested block me shadowing possible (par clarity ke liye avoid karo). Har loop iteration ko fresh binding milti hai — <code>setTimeout</code> wala example <code>0..9</code> print karta hai.",
+"<b><code>const</code></b> rebinding rokta hai, value ko immutable NAHI banata — <code>kitty.name = \"Rory\"</code> chalega, <code>kitty = {…}</code> nahi. Principle of least privilege: jo reassign nahi karna, use <code>const</code> banao.",
+"<b>Destructuring:</b> arrays (<code>[first, ...rest]</code>, holes, swap) aur objects (<code>{ a, b }</code>, <code>...passthrough</code>). Object renaming me colon type NAHI hai — <code>{ a: newName }</code> rename hai; type poore pattern ke baad aata hai. Bina declaration ke assignment par parentheses zaroori: <code>({ a, b } = obj);</code>",
+"<b>Spread</b> destructuring ka ulta hai — shallow copy, baad wali properties pehle walon ko overwrite karti hain. Limits: sirf own enumerable properties (class instance spread karne se methods gayab), generic type parameters spread nahi hote.",
+"<b><code>using</code> declarations</b> (Explicit Resource Management): <code>const</code> jaise, lekin block khatm hote hi <code>[Symbol.dispose]()</code> call hota hai — error aaye tab bhi cleanup pakka. <b><code>await using</code></b> async version hai (<code>Symbol.asyncDispose</code>), sirf async contexts/top-level modules me. <code>for..of</code> me har iteration ke end par disposal hota hai."],
+c:"for (var i = 0; i < 3; i++) { setTimeout(() => console.log(\"var:\", i)); } // 3 3 3\nfor (let j = 0; j < 3; j++) { setTimeout(() => console.log(\"let:\", j)); } // 0 1 2\nlet [first, , third, ...rest] = [1, 2, 3, 4, 5];\nfunction f({ a = \"\", b = 0 } = {}) { /* defaults pattern */ }",
+k:"var ki 10×10 wali gaddi, TDZ, const≠immutable, aur using se pakka cleanup — variable declarations ka pura sach."}
+];
+var S3=[
+{n:37,g:3,t:"Introduction",u:"https://www.typescriptlang.org/docs/handbook/modules/introduction.html",
+p:["Ye page Modules Reference section ka <b>roadmap</b> hai — chaar hisse: <b>Theory</b> (TS modules ko kaise dekhta hai), <b>Guides</b> (real-world kaam, khaaskar naye project ke compilation settings chunna), <b>Reference</b> (syntax/config ki detail), <b>Appendices</b> (complex topics gehrai me).",
+"SPA me bhi wahi arc rakho: pehle theory samjho, phir options chuno, phir reference."],
+c:"",
+k:"Modules Reference ka naksha: theory → choosing options → reference → appendices."},
+{n:38,g:3,t:"Theory",u:"https://www.typescriptlang.org/docs/handbook/modules/theory.html",
+p:["Purane JS me modules nahi the — saare <code>&lt;script&gt;</code> ek hi GLOBAL scope share karte the. Module system har file ko apna scope deta hai + code share karne ka tareeqa. TS kai systems emit karta hai; docs ka focus do par hai: <b>ESM</b> (language built-in) aur <b>CJS</b> (Node ka original system).",
+"TS ka kaam: compile time par runtime errors pakadna. Ek import ke liye compiler ko host se jude kai sawaalon ke jawab chahiye — output kahan load hoga, kis format me, lookup kahan hoga, naam ko kya type milega. <b>Host</b> = wo system jo output consume karta hai (Node runtime, bundler, browser+server). TS khud host NAHI hai, aur transpiler bhi host nahi hota agar wo imports na chhede.",
+"Isiliye TS lagbhag hamesha <b>OUTPUT JS files</b> ke terms me sochta hai, input TS files ke nahi (esbuild/Bun jaise TS-first runtimes apwaad hain). Teen kaam: valid output format me compile karna, output imports resolve honge ye pakka karna, imported naamo ke types jaanna.",
+"<b><code>module</code> option</b> host ki ummeed batata hai — emitted format ke saath-saath format detection, cross-format import rules, <code>import.meta</code>/top-level await ki availability bhi. Node projects ke liye <b>sirf <code>node16</code>/<code>nodenext</code> sahi hain</b> — <code>esnext</code>/<code>commonjs</code> galat hain, chahe emitted JS same dikhe, kyunki type checking alag hoti hai.",
+"<b>Node format detection:</b> <code>.mjs</code> hamesha ESM, <code>.cjs</code> hamesha CJS, <code>.js</code> nearest package.json ke <code>\"type\"</code> par nirbhar. Galat format = crash. Input files par bhi wahi algorithm (<code>.mts</code>/<code>.cts</code>).",
+"Input syntax aur output format <b>decoupled</b> hain — ESM <code>import</code> CJS <code>require</code> ban kar emit ho sakta hai. <b><code>verbatimModuleSyntax</code></b> (5.0) us form me likhne par majboor karta hai jo sabse kam transform ho.",
+"<b>Interop ke teen camps:</b> ESM-only (browsers), bundler-like (Babel ke permissive rules — de facto standard), Node.js (apne sakht rules). TS <code>node16/nodenext</code> par Node rules enforce karta hai; baaki settings + <code>esModuleInterop</code> bundler-like dete hain.",
+"<b>Specifiers transform NAHI hote</b> — import string as-written emit hoti hai (TS 5.7 ka <code>rewriteRelativeImportExtensions</code> apwaad). <b>Resolution host-defined hai</b> — <code>moduleResolution</code> modes: <code>classic</code> (naye projects me mat use karo, TS 6.0 me deprecation scheduled), <code>node10</code> (purana Node), <code>node16</code>/<code>nodenext</code>, <code>bundler</code> (module: esnext ke saath).",
+"Declaration files: compiler pehle TS/.d.ts files dhoondta hai. Extension mapping yaad rakho: <code>.d.ts ↔ .js ↔ .ts</code>, <code>.d.mts ↔ .mjs ↔ .mts</code>, <code>.d.cts ↔ .cjs ↔ .cts</code>. <b>Library authors</b> ke liye strictest raasta: <code>module: node18</code> — Node-compatible code bundlers me bhi lagbhag hamesha chalta hai; <code>moduleResolution: bundler</code> 'infectious' hai (locally pass, Node me fail)."],
+c:"// Node detection: .mjs=ESM, .cjs=CJS, .js=package.json \"type\" par\n// Sirf ye do Node ke liye sahi:\n// \"module\": \"node16\"  ya  \"module\": \"nodenext\"",
+k:"Host samjho, output ke terms me socho, Node par node16/nodenext hi lagao — theory ka saar yahi hai."},
+{n:39,g:3,t:"Choosing Compiler Options",u:"https://www.typescriptlang.org/docs/handbook/modules/guides/choosing-compiler-options.html",
+p:["<b>Ek tsconfig = ek environment.</b> Server, DOM, worker, tests, shared code — har ek ka apna tsconfig, project references se jude hue. Ye guide har tsconfig ke liye ek baar use karo.",
+"<b>App + bundler:</b> <code>module: esnext</code>, <code>moduleResolution: bundler</code>, <code>noEmit: true</code>, <code>verbatimModuleSyntax: true</code>, <code>allowImportingTsExtensions: true</code>. Bundler projects me abhi <code>\"type\": \"module\"</code> ya <code>.mts</code> mat use karo — kuch bundlers ki interop TS analyze nahi kar sakta.",
+"<b>App jo Node me compile + run ho:</b> <code>module: nodenext</code> (moduleResolution, esModuleInterop, target khud imply ho jate hain) + <code>verbatimModuleSyntax: true</code>. ESM emit karna ho to <code>\"type\": \"module\"</code> ya <code>.mts</code>.",
+"ts-node Node wale settings par chalta hai; <b>tsx bundler jaisa behave karta hai</b> — bundler settings use karo. Browser ESM bina bundler ke: <code>nodenext</code> + <code>paths</code> se approximate karo (import maps ke saath).",
+"<b>Library alag jaanwar hai:</b> app ek known host ke liye banti hai, library har consumer ke host par chalti hai — isiliye <b>strictest settings</b>: <code>module: node18</code>, <code>target</code> = sabse purana supported version, <code>strict: true</code>, <code>verbatimModuleSyntax: true</code>, <code>declaration: true</code>, <code>sourceMap</code>/<code>declarationMap: true</code>, alag <code>rootDir: src</code>/<code>outDir: dist</code>.",
+"Libraries ko bundle karna risky hai: TS split resolution model nahi kar sakta, aur .d.ts files bhi bundle honi chahiye warna Node users ko errors + <code>any</code> infection milta hai. Behtar: library bundle hi mat karo.",
+"<b>Dual-emit</b> (CJS+ESM dono) ek type-check se dono outputs ki guarantee nahi de sakta — publish se pehle saare output bundles test + analyze karo. <code>verbatimModuleSyntax</code> dual emit se fundamentally incompatible hai."],
+c:"// Library template:\n{ \"compilerOptions\": {\n  \"module\": \"node18\", \"target\": \"es2020\", \"strict\": true,\n  \"verbatimModuleSyntax\": true, \"declaration\": true,\n  \"sourceMap\": true, \"declarationMap\": true,\n  \"rootDir\": \"src\", \"outDir\": \"dist\" } }",
+k:"Bundler app, Node app, library — teen templates yaad kar lo; library hamesha strictest."},
+{n:40,g:3,t:"Reference",u:"https://www.typescriptlang.org/docs/handbook/modules/reference.html",
+p:["TS standard ESM syntax ke saath CJS ke kai forms (JS files me) aur TS-specific extensions pehchanta hai. Exported types named exports me reh sakte hain; namespace import se types sirf TYPE position me milte hain.",
+"<b>Type-only imports/exports:</b> TS type-position me hi use hone wale imports ko default se elide kar deta hai; <code>import type</code>/<code>export type</code>/inline <code>type</code> elision ki GUARANTEE dete hain. <code>import type</code> wala value sirf non-emitting positions me use ho sakta hai; type-only import ek saath default + named nahi rakh sakta.",
+"<b><code>import()</code> types:</b> <code>type X = import(\"fs\").WriteFileOptions</code> — bina import declaration ke kisi module ka type refer karo (JSDoc me khaas upyogi). <code>export =</code> / <code>import = require()</code> CJS ke <code>module.exports</code>/<code>require</code> ke analog hain.",
+"<b>Ambient modules:</b> script file me <code>declare module \"path\" {…}</code> runtime-provided module declare karta hai; module file me wahi syntax <b>module augmentation</b> ban jata hai — same syntax, alag matlab! Wildcard patterns (<code>declare module \"*.html\"</code>) custom loaders ke liye.",
+"<b><code>module</code> modes ki sachchai:</b> <code>node16/node18/nodenext</code> Node ke pure dual-format system ko describe karte hain — per-file detection se ESM ya CJS emit. node18 import attributes jodta hai, nodenext <code>require</code>(ESM) bhi. <code>preserve</code> (5.4) har statement ka format as-written rakhta hai — bundlers/Bun ke liye best. <code>commonjs</code>/<code>amd</code>/<code>umd</code>/<code>system</code> naye projects ke liye nahi.",
+"<b>Resolution detail:</b> extension substitution (<code>/mod.js</code> → <code>.ts/.tsx/.d.ts</code> koshish), Node ESM <code>import</code> me extensionless/directory imports NAHI chalte (<code>require</code> me chalte hain). <code>paths</code> sirf TS ko batata hai — <b>emit par koi asar nahi</b>; libraries <code>paths</code> publish kabhi na karein.",
+"<code>package.json</code> <b><code>\"exports\"</code></b> maujud ho to unlisted subpaths BLOCK ho jate hain (<code>\"main\"</code> bhi nahi chalega); TS hamesha <code>\"types\"</code> + <code>\"default\"</code> conditions match karta hai. <code>\"typesVersions\"</code> TS-version ke hisaab se redirect karta hai — lekin <code>\"exports\"</code> padha jaye to ye nahi padha jata. <code>\"imports\"</code> (<code>#</code>-prefixed) aur self-name imports bhi supported hain.",
+"<code>moduleResolution: bundler</code> ko <code>module: esnext/preserve</code> ke saath pair karo; <code>node10</code> aur <code>classic</code> ab use mat karo."],
+c:"type WriteFileOptions = import(\"fs\").WriteFileOptions;\ndeclare module \"*.html\" { const content: string; export default content; }\n// exports field ka asar:\n// { \"exports\": { \".\": { \"types\": \"./index.d.ts\", \"default\": \"./index.js\" } } }\n// → unlisted subpath import = blocked, chahe file exist kare",
+k:"Type-only elision, ambient-vs-augmentation, node modes ka table, exports-blocks-subpaths — reference ka core."},
+{n:41,g:3,t:"ESM/CJS Interoperability",u:"https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html",
+p:["<b>2015 ki problem:</b> transpilers ESM ko CJS me badalte the, lekin CJS ke <code>module.exports = function(){}</code> jaisi shape ke liye koi ESM export exist hi nahi karta. Interop behavior kahin specified nahi tha — transpilers ko GUESS karna pada.",
+"Transpilers ka hal: default import ko poore <code>exports</code> se link karna, aur transpiled modules ko <code>__esModule</code> flag se pehchanna (<code>__esModule ? mod.default : mod</code>). Traceur se shuru, Babel/Webpack ne अपनाया.",
+"<b><code>allowSyntheticDefaultImports</code></b> (TS 1.8) sirf type-checking badalta tha, emit nahi — isiliye incomplete aur <code>--module commonjs</code> + Node par khatarnak (build error chhup gaya, runtime crash bacha).",
+"<b><code>esModuleInterop</code></b> (TS 2.7) ne checking + emit dono theek kiye: <code>__importDefault</code>/<code>__importStar</code> helpers, namespace imports hamesha objects. TS, uska emit aur transpiler ecosystem ek hi scheme par aa gaye. <code>importHelpers</code> se helpers <code>tslib</code> se aa sakte hain.",
+"<b>Node ki apni dikkat:</b> Node hamesha synthetic default banata hai — <b>'double default' problem</b> (Node ESM me <code>pkg.default()</code>, transpiled me <code>pkg()</code>). Named exports static analysis se bante hain — runtime par banaye gaye exports (<code>exports[\"wor\"+\"d\"]</code>) Node me MISSING rahenge. Node v22.12 se pehle CJS, ESM ko <code>require</code> nahi kar sakta tha.",
+"<b>Conclusions:</b> sahi <code>module</code> option sabse critical hai. CJS apps hamesha <code>esModuleInterop</code> on rakhein; <code>allowSyntheticDefaultImports</code> akele (bina esModuleInterop) avoid karo. <b>Libraries default exports se bachein</b> — access har consumer par alag banta hai; single main export ke liye <code>export =</code>, warna named exports."],
+c:"// __esModule ka khel:\n// exports.__esModule = true; exports.default = fn;\n// transpiled import:  mod.__esModule ? mod.default : mod\n// Node ESM import:    hamesha synthetic default = poora exports\n// => pkg() vs pkg.default() — 'double default' problem",
+k:"__esModule ki kahani, double-default, aur 'library me default export mat do' — interop ka final sabak."},
+{n:42,g:4,t:"ASP.NET Core",u:"https://www.typescriptlang.org/docs/handbook/asp-net-core.html",
+p:["<b>Legacy note:</b> ye tutorial Visual Studio 2015/2017 ke zamane ka hai — setup walkthrough ke roop me padho, aaj ki best practice ke roop me nahi (modern setups <code>dotnet new</code> + Vite/esbuild use karte hain).",
+"Flow: Empty template se ASP.NET Core Web App banao → NuGet se <code>Microsoft.AspNetCore.StaticFiles</code> aur <code>Microsoft.TypeScript.MSBuild</code> → <code>Startup.cs</code> me <code>app.UseDefaultFiles(); app.UseStaticFiles();</code>.",
+"<code>scripts/app.ts</code> me TS likho (DOM inputs ko <code>as HTMLInputElement</code> se cast karke), aur <code>scripts/tsconfig.json</code> me <code>noEmitOnError</code>, <code>noImplicitAny</code>, <code>sourceMap</code>, <code>target: es6</code> + <code>compileOnSave: true</code>.",
+"NPM + gulp se build outputs <code>wwwroot/scripts</code> me copy hote hain (clean + default tasks). <code>wwwroot/index.html</code> compiled <code>app.js</code> load karti hai.",
+"Debugging source maps ki badaulat Edge ke F12 debugger me seedha <code>.ts</code> file par breakpoint lagta hai."],
+c:"// scripts/tsconfig.json\n{ \"compilerOptions\": { \"noEmitOnError\": true, \"noImplicitAny\": true,\n  \"sourceMap\": true, \"target\": \"es6\" },\n  \"files\": [\"./app.ts\"], \"compileOnSave\": true }",
+k:"MSBuild package + compileOnSave + source-map debugging — ye tutorial ke teen takeaway; baaki sab dated setup hai."},
+{n:43,g:4,t:"Gulp",u:"https://www.typescriptlang.org/docs/handbook/gulp.html",
+p:["Quick-start: <b>gulp</b> se TS build karna, phir Browserify, Watchify, terser aur Babel (Babelify) jodna. Project: <code>src/</code> (TS in) aur <code>dist/</code> (JS out); dev deps me <code>typescript</code>, <code>gulp@4</code>, <code>gulp-typescript</code>.",
+"<code>gulpfile.js</code> me <code>ts.createProject(\"tsconfig.json\")</code> aur default task: <code>tsProject.src() → tsProject() → .js → gulp.dest(\"dist\")</code>. Modules jodne par ES2015 syntax andar, CommonJS bahar (Node default) — <code>module</code> option se badalta hai.",
+"<b>Browserify</b> saare modules ko browser ke liye ek file me bundle karta hai; <code>tsify</code> uska TS plugin hai, <code>vinyl-source-stream</code> Browserify output ko gulp ki vinyl duniya me wapas lata hai. <code>debug: true</code> se inline source maps — browser me original TS debug hota hai.",
+"<b>Watchify</b> save par incremental re-bundle karta hai (<code>on(\"update\", bundle)</code>, <code>on(\"log\", fancy_log)</code>) — gulp chalta rehta hai, edit-save-refresh cycle ban jata hai.",
+"<b>Terser</b> minify karta hai — pipeline me <code>buffer()</code> + <code>sourcemaps.init({ loadMaps: true })</code> zaroori hai warna maps toot jayenge. <b>Babelify</b> ko <code>.ts</code> process karane ke liye <code>extensions: [\".ts\"]</code> dena padta hai, aur TS ka target <code>es2015</code> rakho taaki Babel ES5 bana sake."],
+c:"const tsProject = ts.createProject(\"tsconfig.json\");\ngulp.task(\"default\", () =>\n  tsProject.src().pipe(tsProject()).js.pipe(gulp.dest(\"dist\")));",
+k:"gulp-typescript seedha compile ke liye, tsify Browserify ke andar; source maps har step par sambhal kar rakho."},
+{n:44,g:4,t:"DOM Manipulation",u:"https://www.typescriptlang.org/docs/handbook/dom-manipulation.html",
+p:["DOM browser ka wo programming interface hai jo static HTML ko functional banata hai — jQuery/React/Angular sab isi ke upar bane hain. TS DOM ke types <code>lib.dom.d.ts</code> (20,000+ lines) me ship karta hai; is duniya ki backbone type hai <b><code>HTMLElement</code></b>.",
+"<code>document.getElementById</code> ka return type <code>HTMLElement | null</code> hai — element runtime se pehle pakka exist karta hai ya nahi, koi nahi jaanta; isiliye <code>app?.appendChild(p)</code> me optional chaining.",
+"<code>createElement</code> <b>overloaded + generic</b> hai: <code>HTMLElementTagNameMap</code> se tag naam se exact type milta hai — <code>\"a\"</code> → <code>HTMLAnchorElement</code>, <code>\"p\"</code> → <code>HTMLParagraphElement</code>. Dusra string overload custom tags ke liye hai.",
+"<code>HTMLElement</code> extends <code>Element</code> extends <code>Node</code> — <code>appendChild&lt;T extends Node&gt;</code> generic hai, <code>T</code> argument se infer hota hai.",
+"<b><code>children</code> vs <code>childNodes</code>:</b> <code>children</code> sirf ELEMENTS ka <code>HTMLCollection</code>; <code>childNodes</code> saare nodes (text, comments sab) ka <code>NodeList</code>. Ek <code>&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt; TypeScript!&lt;/div&gt;</code> me children=1, childNodes=2.",
+"<code>querySelector(All)</code> bhi same tag-map generics use karte hain — <code>querySelectorAll(\"li\")</code> → <code>NodeListOf&lt;HTMLLIElement&gt;</code>. <code>NodeListOf</code> poora array NAHI hai — sirf <code>length</code>, <code>item()</code>, <code>forEach</code>, indexing."],
+c:"const app = document.getElementById(\"app\");\nconst p = document.createElement(\"p\"); // HTMLParagraphElement\np.textContent = \"Hello, World!\";\napp?.appendChild(p); // app: HTMLElement | null — isiliye ?. \nconst items = document.querySelectorAll(\"li\"); // NodeListOf<HTMLLIElement>",
+k:"getElementById ka | null, tag-map generic trick, aur children-vs-childNodes — DOM typing ke teen sawal interview me pakke."},
+{n:45,g:4,t:"Migrating from JavaScript",u:"https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html",
+p:["JS codebase ko TS me badalna tedious hai, mushkil nahi. Pehla kadam: input/output directories alag rakho taaki TS tumhari <code>.js</code> files overwrite na kare.",
+"Bare-bones tsconfig: <code>allowJs: true</code> (JS inputs accept), <code>outDir: \"./built\"</code>, <code>target</code>, <code>include: [\"./src/**/*\"]</code>. <code>tsc</code> chalao — <code>built/</code> me mirror ban jayega. Koi file badle bina hi editor tooling aur <code>noImplicitReturns</code>/<code>noFallthroughCasesInSwitch</code> jaise bug-catchers mil jate hain.",
+"<b>Asli migration bas rename hai:</b> ek <code>.js</code> ko <code>.ts</code> karo (<code>.tsx</code> JSX ke liye). Red squiggles Word ke spell-check jaise hain — TS phir bhi emit karta hai. Strict settings file-editing se PEHLE on karo.",
+"Common errors ka ilaaj: <code>require</code> ke liye <code>module</code> option + TS import syntax; missing module types ke liye <code>npm i -S @types/lodash</code>; <code>module.exports = foo</code> ke liye <code>export = foo</code>; <code>arguments</code> object wale functions ke liye overloads; sequentially jodi gayi properties ke liye <code>{} as Options</code> pattern.",
+"<code>any</code> vs <code>Object</code> vs <code>{}</code>: <code>any</code> sabse flexible par checking gayab; <code>Object</code> par <code>.toLowerCase()</code> bhi nahi chalega; <code>{}</code> ko <code>Object</code> par prefer karo.",
+"Aakhir me strictness badhao: <code>noImplicitAny</code>, <code>strictNullChecks</code> (null ke liye unions + pakka ho to <code>!</code>), <code>noImplicitThis</code> (<code>this</code> parameter se fix). Webpack ke liye <code>ts-loader</code> + <code>source-map-loader</code>."],
+c:"// pehla tsconfig — migration ki shuruaat\n{ \"compilerOptions\": { \"outDir\": \"./built\", \"allowJs\": true,\n  \"target\": \"es5\" }, \"include\": [\"./src/**/*\"] }\n// phir: file.js → file.ts, squiggles ek-ek karke saaf karo",
+k:"allowJs + rename + dheere-dheere strict — migration ka yehi teen-step raasta hai, big-bang rewrite nahi."},
+{n:46,g:4,t:"Using Babel with TypeScript",u:"https://www.typescriptlang.org/docs/handbook/babel-with-typescript.html",
+p:["Babel ya <code>tsc</code>? Heuristic saaf hai: build output lagbhag source jaisa hi hai to <code>tsc</code>; pipeline se kai outputs chahiye to <b>Babel transpiling ke liye + tsc type checking ke liye</b>. Frameworks (tsdx, Angular, NestJS) aksar ye faisla tumhare liye kar dete hain.",
+"Hybrid pattern: Babel ka <code>preset-typescript</code> JS banata hai (tez, kyunki type check nahi karta), TS type checking aur <code>.d.ts</code> generation sambhalta hai. Existing pipelines ke saath ye aaram se fit hota hai.",
+"Babel ki do kamzoriyan: (1) TS→JS ke dauran koi type checking nahi — editor me chhuti galti production tak ja sakti hai; (2) Babel <code>.d.ts</code> files nahi bana sakta — libraries ke liye dikkat.",
+"Ilaaj: ek tsc type-check command jodo jiska tsconfig ye teen flags rakhe — <code>declaration: true</code>, <code>emitDeclarationOnly: true</code> (sirf .d.ts, .js nahi), <code>isolatedModules: true</code> (har file akeli safely transpile ho sake — Babel ke liye zaroori guarantee)."],
+c:"{ \"compilerOptions\": {\n  \"declaration\": true,        // .d.ts banao\n  \"emitDeclarationOnly\": true, // .js Babel banayega\n  \"isolatedModules\": true } }  // per-file transpile safe",
+k:"Babel = speed, tsc = sachchai. Dono chalao: Babel emit kare, tsc check kare."},
+{n:47,g:4,t:"React & Webpack",u:"https://www.typescriptlang.org/docs/handbook/react-&-webpack.html",
+p:["<b>Ye page TypeScript docs par hosted content nahi hai</b> — page khulte hi <code>window.location.href</code> se <b>webpack ki official TypeScript guide</b> par redirect ho jata hai.",
+"React + Webpack + TypeScript setup ke liye seedha wahi guide padho: <a href=\"https://webpack.js.org/guides/typescript/\">webpack.js.org/guides/typescript/</a>",
+"Us guide ka core (webpack docs se): <code>ts-loader</code> + <code>resolve.extensions</code> me <code>.ts/.tsx</code> — is SPA ke Migrating from JavaScript section me webpack config ka pattern bhi diya hai."],
+c:"// is page par koi TS code/hosted example nahi hai\n// → https://webpack.js.org/guides/typescript/",
+k:"React & Webpack ke liye TS docs tumhe webpack ki guide par bhejti hai — wahi source of truth hai."},
+{n:48,g:5,t:"Introduction",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html",
+p:["Ye Declaration Files section ka roadmap hai — high-quality <code>.d.ts</code> files likhna sikhata hai. Basic TS familiarity maani gayi hai (pehle Handbook, khaaskar types aur modules).",
+"Sections: <b>Declaration Reference</b> (common API patterns), <b>Library Structures</b> (library ka format .d.ts ki shape tay karta hai — naye authors pehle ye padhein), <b>Templates</b> (starter .d.ts files), <b>Do's and Don'ts</b> (sabke liye), <b>Deep Dive</b> (advanced mechanics), <b>Publishing</b>, <b>Consumption</b>.",
+"Sabse common case — bina types wali npm package ko type karna hai to seedha 'Modules .d.ts' template par jao."],
+c:"",
+k:"Declaration files = JS libraries ke liye type contracts. Structure pehchano, phir template uthao."},
+{n:49,g:5,t:"Declaration Reference",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/declaration-reference.html",
+p:["Har pattern ke saath teen cheezein: API documentation, sample usage, aur usi ki declaration. (Is SPA me page ke 8 patterns cover hain, Global Functions tak.)",
+"<b>Objects with Properties:</b> global <code>myLib</code> ke liye <code>declare namespace myLib { function makeGreeting(s: string): string; let numberOfGreetings: number; }</code> — dotted notation se access hone wale types/values ke liye <code>declare namespace</code>.",
+"<b>Overloaded Functions:</b> <code>getWidget(43)</code> aur <code>getWidget(\"all\")</code> ke liye do <code>declare function</code> overloads.",
+"<b>Reusable Types:</b> option objects ke liye interfaces (<code>GreetingSettings</code> — mandatory + optional mila kar); string/function/instance teeno chal sakein to type alias union (<code>type GreetingLike = string | (() =&gt; string) | MyGreeter</code>). Option interfaces ko namespace me organize karo — nested namespaces bhi chalte hain (<code>GreetingLib.Options.Log</code>).",
+"<b>Classes:</b> <code>declare class Greeter { constructor(greeting: string); greeting: string; showGreeting(): void; }</code> — properties, methods, constructor sab describe hota hai.",
+"<b>Globals:</b> variable ke liye <code>declare var foo: number</code> (read-only ho to <code>const</code>, block-scoped ho to <code>let</code>); function ke liye <code>declare function greet(greeting: string): void</code>."],
+c:"declare namespace myLib {\n  function makeGreeting(s: string): string;\n  let numberOfGreetings: number;\n}\ninterface GreetingSettings { greeting: string; duration?: number; color?: string; }\ndeclare function greet(setting: GreetingSettings): void;",
+k:"declare namespace/class/var/function — chaar shabdon se lagbhag har library describe ho jati hai."},
+{n:50,g:5,t:"Library Structures",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/library-structures.html",
+p:[".d.ts ki structure is par nirbhar hai ki library <b>consume kaise hoti hai</b>. Pehle usage/code se structure pehchano, phir matching template uthao.",
+"<b>Modular libraries</b> (aaj ki lagbhag saari Node libraries, jaise express): sirf module loader ke saath. Nishaaniyan: <code>require</code>/<code>define</code> calls, <code>import</code>/<code>export</code>, <code>exports</code>/<code>module.exports</code> assignments. Templates: module.d.ts (overview), module-function (callable), module-class (<code>new</code> se), module-plugin (dusre modules ko badalne wali).",
+"<b>Global libraries</b> (jQuery ka <code>$</code>): bina import ke global scope se. Nishaaniyan: docs me <code>&lt;script&gt;</code> tag, top-level <code>var</code>/<code>function</code>, <code>window.x</code> assignments, koi loader nahi. Template: global.d.ts.",
+"<b>UMD:</b> module bhi, global bhi (Moment, lodash). Nishaan: file ke upar <code>typeof define</code>/<code>typeof module</code>/<code>typeof window</code> check karne wala wrapper; docs me Node aur browser dono examples.",
+"<b>Dependencies consume karna:</b> global library par <code>/// &lt;reference types=\"...\" /&gt;</code>; module par <code>import</code>; UMD par — global file se reference, module/UMD file se import. Module se UMD ke liye reference tag KABHI mat use karo.",
+"<b>Name-conflict rule:</b> global .d.ts me types sirf library ke global variable ke namespace me rakho (<code>declare namespace cats {…}</code>), top-level naam kabhi nahi. Aur ES6 loaders me module object callable nahi ho sakta — callable cheez ke liye <code>default</code> export + <code>esModuleInterop</code> ka pattern hai."],
+c:"// UMD wrapper ki pehchan:\n// (function (global, factory) {\n//   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :\n//   typeof define === 'function' && define.amd ? define(['exports'], factory) :\n//   (global = global || self, factory(global.myLib = {}));\n// }(this, function (exports) { /* ... */ }));",
+k:"Pehle library ki kism pehchano (modular/global/UMD), phir template — ulta karoge to .d.ts galat banega."},
+{n:51,g:5,t:"Modules .d.ts",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html",
+p:["CommonJS module (<code>module.exports</code> wala) ki .d.ts ES-Module jaisi syntax me likhi jati hai — <code>export function getArrayLength(arr: any[]): number; export const maxInterval: 12;</code>. TS Playground JS code ki .d.ts equivalent dikha sakta hai.",
+"<b>Default/CJS exports:</b> <code>module.exports = /regex/</code> → <code>declare const helloWorld: RegExp; export = helloWorld;</code>. Function ke saath extra fields hon to declaration merging: <code>declare function</code> + <code>declare namespace</code> same naam par, phir <code>export =</code>.",
+"Consumers kai import styles likh sakte hain (<code>require</code>, destructured, <code>import =</code>, <code>import * as</code>, named, default) — saare tabhi kaam karenge jab JS khud saare patterns support kare (fastify apni shape teeno jagah set karta hai isi liye).",
+"Runtime par exist na karne wale types bhi export ho sakte hain — generics ke saath aur behtar: <code>ArrayMetadata&lt;ArrType&gt;</code> array ka element type propagate karta hai.",
+"Module ke andar ESM syntax kaafi na ho to namespaces: <code>export class API</code> + merged <code>declare namespace API</code> me <code>InfoRequest/InfoResponse</code>. <code>export as namespace moduleName</code> UMD contexts me global availability declare karta hai.",
+"<b>Layout library ko mirror karta hai:</b> <code>myLib/foo.js</code> → <code>@types/myLib/foo.d.ts</code>, <code>bar/baz.js</code> → <code>bar/baz.d.ts</code>. File ka naam <code>index.d.ts</code>, folder ka naam module jaisa."],
+c:"export function getArrayLength(arr: any[]): number;\nexport const maxInterval: 12;\n// function + fields wale CJS export ke liye:\ndeclare function getArrayLength2(arr: any[]): number;\ndeclare namespace getArrayLength2 { const maxInterval: 12; }\nexport = getArrayLength2;",
+k:"export = + declare function/namespace merging — CJS ko type karne ka standard juggad yahi hai."},
+{n:52,g:5,t:"Module: Plugin",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-plugin-d-ts.html",
+p:["Ye template un JS libraries ke liye hai jo <b>dusri library ko runtime par extend</b> karti hain — plugin import karte hi base library ke function par naye methods aa jate hain (<code>greeter.hyperGreet()</code>).",
+"Trick <b>declaration merging</b> hai: plugin ki .d.ts base module ko import karke USI module ko dobara declare karke uske interface ko badha deti hai.",
+"ES6 caveat: kuch plugins top-level exports ko modify karte hain — CommonJS me legal, lekin ES6 modules immutable hote hain, isliye ES6 loaders par ye pattern possible nahi hoga. TS loader-agnostic hai (compile time par rok nahi lagata), lekin developers ko pata hona chahiye."],
+c:"import { greeter } from \"super-greeter\";\nexport module \"super-greeter\" {\n  export interface GreeterFunction {\n    /** Greets even better! */\n    hyperGreet(): void;\n  }\n}",
+k:"Plugin .d.ts = base module ko import karke usi ko merge se badhana. ES6 immutability is pattern ki seema hai."},
+{n:53,g:5,t:"Module: Class",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-class-d-ts.html",
+p:["Ye template us JS ke liye hai jo <code>const Greeter = require(\"super-greeter\"); new Greeter()</code> se consume hota hai — class constructor hi module ka export hai.",
+"Structure: <code>export as namespace myClassLib;</code> (UMD global — UMD na ho to hata do), <code>export = Greeter;</code>, phir <code>declare class Greeter</code> aur uske option types ke liye merged <code>declare namespace</code>.",
+"<b>ES6 modules class objects ko directly export nahi kar sakte</b> — import ke liye ya to CommonJS-style <code>import x = require('[module]')</code>, ya <code>allowSyntheticDefaultImports</code>/<code>esModuleInterop</code> ke saath default import.",
+"Warning: namespace shamil karne se module galti se namespace object ki tarah import ho sakta hai (<code>import * as x</code> — GALAT), jab tak <code>esModuleInterop</code> on na ho."],
+c:"export as namespace myClassLib;\nexport = Greeter;\ndeclare class Greeter {\n  constructor(customGreeting?: string);\n  greet: void;\n  myMethod(opts: MyClass.MyClassMethodOptions): number;\n}\ndeclare namespace MyClass {\n  interface MyClassMethodOptions { width?: number; height?: number; }\n}",
+k:"export = Class + merged namespace — callable-class modules ka template yahi hai."},
+{n:54,g:5,t:"Module: Function",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-function-d-ts.html",
+p:["Ye template us JS ke liye hai jo khud ek function ki tarah consume hota hai: <code>import greeter from \"super-greeter\"; greeter(2); greeter(\"Hello\")</code> — UMD + module dono imports handle karta hai.",
+"Structure class wale template jaisi hi: <code>export as namespace</code> (UMD ke liye), <code>export = Greeter</code>, <code>declare function Greeter</code> ke overloads, aur return types/properties ke liye merged <code>declare namespace Greeter</code> (<code>defaultName</code>, <code>defaultLength</code> jaisi module properties yahi rehti hain).",
+"Wahi ES6 caveat: import ke liye <code>import x = require()</code> ya synthetic-default flags; namespace ki wajah se galat <code>import * as x</code> sirf <code>esModuleInterop</code> ke saath sahi banta hai."],
+c:"export as namespace myFuncLib;\nexport = Greeter;\ndeclare function Greeter(name: string): Greeter.NamedReturnType;\ndeclare function Greeter(length: number): Greeter.LengthReturnType;\ndeclare namespace Greeter {\n  interface NamedReturnType { firstName: string; lastName: string; }\n  const defaultName: string;\n}",
+k:"Function-as-module = declare function + merged namespace + export =. Class template ka bhai hai."},
+{n:55,g:5,t:"Global .d.ts",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html",
+p:["Global library ki pehchan dobara: global scope, koi import nahi, docs me <code>&lt;script&gt;</code> tag, top-level <code>var</code>/<code>function</code> declarations, <code>window.x</code> assignments — aur pakka kar lo ki wo asal me UMD to nahi.",
+"Template me library ek saath kai roop leti hai: callable overloads (<code>declare function myLib(a: string): string</code>), ek <code>interface myLib</code> (taaki library ka naam khud ek TYPE ki tarah use ho sake — sirf tab jab sensible ho), aur ek <code>declare namespace myLib</code> jisme mutable <code>let timeout</code>, read-only <code>const version</code>, classes, interfaces aur type aliases rehte hain."],
+c:"declare function myLib(a: string): string;\ndeclare function myLib(a: number): number;\ninterface myLib { name: string; length: number; extras?: string[]; }\ndeclare namespace myLib {\n  let timeout: number;\n  const version: string;\n  class Cat { constructor(n: number); readonly age: number; purr(): void; }\n}",
+k:"Global template = function + interface + namespace ka triple-role — ek naam, teen matlab (Deep Dive dekho)."},
+{n:56,g:5,t:"Global: Modifying Module",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-modifying-module-d-ts.html",
+p:["<b>Global-modifying modules</b> import hote hi global scope ki existing cheezon ko badal dete hain — jaise <code>String.prototype</code> par naye methods. Thode khatarnak (runtime conflicts possible), lekin describable hain.",
+"Pehchan: docs me aisa <code>require</code> jiska return value use hi nahi hota — require sirf effects ACTIVATE karta hai (<code>x.startsWithHello()</code> jaise methods built-ins par aa jate hain).",
+"Template: <code>declare global { interface String { fancyFormat(…): string } }</code> se augmentation, saath me module ke apne exports. Module kuch export na kare to end me <code>export {};</code> zaroori hai, warna file module nahi maani jayegi. Callable/constructable bhi ho to module-class/function templates ke saath combine karo."],
+c:"declare global {\n  interface String { fancyFormat(opts: StringFormatOptions): string; }\n}\nexport interface StringFormatOptions { fancinessLevel: number; }\nexport function doSomething(): void;\nexport {}; // module banane ke liye zaroori (jab exports na hon)",
+k:"declare global + export {} — prototype-patching libraries ko type karne ka template."}
+];
+var S4=[
+{n:57,g:5,t:"Do's and Don'ts",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
+p:["<b>General types:</b> <code>Number/String/Boolean/Symbol/Object</code> (boxed) KABHI mat use karo — lowercase primitives use karo, non-primitive ke liye <code>object</code>. Generic type parameter jo use hi na ho, wo galat hai. <code>any</code> sirf migration ke dauran; type na pata ho ya value blindly pass-through ho to <code>unknown</code>.",
+"<b>Callback types:</b> jiska return value ignore hota hai us callback ka return <code>void</code> rakho, <code>any</code> nahi — <code>void</code> galti se return value use karne se rokta hai. Callback parameters ko optional mat banao jab tak asal me matlab na ho. Arity par alag overloads ki jagah EK overload maximum arity ke saath — chhota callback hamesha legal hota hai.",
+"<b>Overload ordering:</b> general overloads ko specific ke BAAD kabhi mat rakho ulta — TS PEHLA matching overload chunata hai, isliye specific pehle, general baad me; warna specific wala chhup jayega.",
+"Trailing parameters me hi farak ho to overloads ki jagah <b>optional parameters</b> — par sirf jab sab ka return type same ho. Ek hi argument position ke type me farak ho to overloads ki jagah <b>union type</b> — warna pass-through code (<code>x: number | string</code> aage bhejna) galat error dega."],
+c:"// ❌ function utcOffset(b: number): X; function utcOffset(b: string): X;\n// ✅ function utcOffset(b: number | string): X;\n// ❌ callback return: any  ✅ (value: string) => void\n// ❌ overloads: diff(one: string); diff(one: string, two: string);\n// ✅ diff(one: string, two?: string, three?: boolean);",
+k:"Boxed types mana, callbacks me void, specific-pehle overloads, union-over-overload — declaration files ke chaar sunahre usool."},
+{n:58,g:5,t:"Deep Dive",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/deep-dive.html",
+p:["Ek naam ek saath <b>TYPE, VALUE aur NAMESPACE</b> — teeno ho sakta hai; context tay karta hai konsa matlab lagega: <code>let m: A.A = A;</code> me pehla A namespace, dusra type, teesra value hai — teeno alag declarations bhi ho sakte hain.",
+"Types introduce hote hain: type alias, interface, class, enum, type ko refer karte <code>import</code> se. Values bante hain: <code>let/const/var</code>, value-rakhne wale namespace/module, enum, class, value ko refer karte <code>import</code>, function se.",
+"<code>class C {}</code> ek saath type C (instance shape) AUR value C (constructor) banata hai — enums bhi aise hi. User khud bhi jod sakta hai: <code>export var Bar: { a: Bar }; export interface Bar { count: number; }</code> — same naam value bhi, type bhi, aazad roop se.",
+"Merging ke rules: values same-naam values se takrate hain (namespace apwaad); types type alias se takrate hain; <b>namespaces kabhi nahi takrate</b>. <code>interface</code> se existing class/interface me members judo; <code>namespace</code> se bina conflict ke naye types/values aur class par statics (<code>C.x</code>) judo.",
+"Poora example: do <code>namespace X</code> blocks + <code>type X = string</code> milkar value X, namespace X, X ke andar types Y/Z, values, nested namespace Z, usme type C — sab ek saath coexist karte hain."],
+c:"export var Bar: { a: Bar };\nexport interface Bar { count: number; }\nimport { Bar } from \"./foo\";\nlet x: Bar = Bar.a; // pehla Bar = type, dusra = value",
+k:"Ek naam, teen matlab — declaration merging aur .d.ts ke saare advanced patterns isi par khade hain."},
+{n:59,g:5,t:"Publishing",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html",
+p:["Declaration files publish karne ke do raaste: <b>apne npm package ke saath bundle</b> karo, ya <b>DefinitelyTyped ke through @types org</b> par publish karo (PR bhejo, types-publisher khud publish kar deta hai). Types source se generate hote hon to source ke saath hi publish karo.",
+"Package me shamil karna: package.json me <code>\"types\": \"./lib/main.d.ts\"</code> set karo (<code>\"typings\"</code> iska synonym hai), <code>\"main\"</code> ke saath.",
+"Jo declaration packages tum expose karte ho, unhe <code>dependencies</code> me rakho, <code>devDependencies</code> me nahi — consumers ko bhi chahiye honge. Package khud types bundle kare (jaise typescript) to extra dependency nahi.",
+"<b>Red flags:</b> declaration files me <code>/// &lt;reference path=\"...\" /&gt;</code> mat use karo — <code>types=\"...\"</code> wala use karo. Dusre package ki declarations apni file me copy mat karo — uske type package par depend karo.",
+"<b><code>typesVersions</code></b> TS version ke hisaab se alag declaration files serve karta hai — folder redirects (<code>\"&gt;=3.1\": { \"*\": [\"ts3.1/*\"] }</code>) aur file redirects dono. Matching ORDER par nirbhar hai: <code>&gt;=3.2</code> ko <code>&gt;=3.1</code> se PEHLE rakho. Redirects sirf external API par lagte hain, package ke internal imports par nahi."],
+c:"{ \"name\": \"awesome\", \"main\": \"./lib/main.js\", \"types\": \"./lib/main.d.ts\",\n  \"typesVersions\": { \">=3.2\": { \"*\": [\"ts3.2/*\"] }, \">=3.1\": { \"*\": [\"ts3.1/*\"] } } }",
+k:"types field + dependencies ka sahi ghar + typesVersions ka order — publishing ke teen kaam."},
+{n:60,g:5,t:"Consumption",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html",
+p:["Declaration files download karne ke liye npm ke alawa koi tool nahi chahiye: <code>npm install --save-dev @types/lodash</code> — bas, ho gaya.",
+"Package khud apni declaration file bundle karta ho (Publishing dekho) to @types package ki zaroorat hi nahi.",
+"Consume karna modules aur global code dono me chalta hai — <code>import * as _ from \"lodash\"</code> ya bina modules ke seedha global <code>_</code>.",
+"@types packages ka naam lagbhag hamesha npm package ke naam par <code>@types/</code> prefix ke saath hota hai. Jo declaration exist hi na kare, use DefinitelyTyped me contribute karke wapas do."],
+c:"npm install --save-dev @types/lodash\n// phir:\nimport * as _ from \"lodash\";\n_.padStart(\"Hello TypeScript!\", 20, \" \");",
+k:"@types/<naam> install karo aur use karo — consumption isse zyada simple ho hi nahi sakta."},
+{n:61,g:6,t:"JS Projects Utilizing TypeScript",u:"https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html",
+p:["TS ke type system me strictness ki ek <b>seedhi</b> hai — har project ko sabse upar wali seedhi nahi chahiye: (1) sirf inference ke saath JS, (2) JSDoc se incremental typing, (3) JS file me <code>// @ts-check</code>, (4) TypeScript code, (5) <code>strict</code> ke saath TypeScript.",
+"Sirf TS-aware editor (VS Code) use karne se bina ek line TS likhe autocomplete, jump-to-symbol aur rename refactoring mil jate hain.",
+"JSDoc se type hints: <code>/** @type {number} */ var x;</code> — lekin dhyaan do, JS me by default <code>x = false</code> par bhi error NAHI aayega jab tak checking on na karo.",
+"<code>// @ts-check</code> file ki PEHLI line par lagao to us file me errors milne lagte hain. Kai files ke liye <code>jsconfig.json</code>; kisi file ko skip karna ho to <code>// @ts-nocheck</code>; kisi line ko suppress karna ho to <code>// @ts-ignore</code> ya <code>// @ts-expect-error</code> — <b><code>@ts-expect-error</code> prefer karo</b>, kyunki error gayab ho jaye to ye khud error de deta hai."],
+c:"// @ts-check\n/** @type {number} */\nvar x;\nx = 0;     // OK\nx = false; // Error 2322 — @ts-check ne pakda!",
+k:"JS project me TS ka fayda bina migration ke: editor → JSDoc → @ts-check → .ts → strict, seedhi chadhte jao."},
+{n:62,g:6,t:"Type Checking JavaScript Files",u:"https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html",
+p:[".js files me checking .ts se kai jagah alag hoti hai — ye farak jaanna zaroori hai warna ajeeb behaviors bug lagenge.",
+"<b>Class properties assignments se infer hoti hain:</b> constructor me assigned props pakke exist maane jate hain; sirf methods/getters me set hone wale OPTIONAL maane jate hain (<code>string | boolean | undefined</code>). Kabhi set na hone wale props ke liye constructor me JSDoc annotation do.",
+"Pre-ES2015 constructor functions ko bhi TS classes ki tarah samajhta hai — same property-inference rules. CommonJS (<code>exports</code>/<code>require</code>) bhi supported hai, aur JS ki module syntax TS se zyada maaf karne wali hai.",
+"Classes/functions/object literals namespaces ki tarah behave kar sakte hain (<code>C.D = class {}</code>, IIFE patterns) — pre-ES2015 code ke simulation patterns TS pehchanta hai.",
+"<b>Object literals JS me open-ended hain</b> — <code>var obj = { a: 1 }; obj.b = 2;</code> ALLOWED hai (jaise <code>[x: string]: any</code> index signature ho). JSDoc type de do to object band ho jata hai aur <code>obj.b</code> error dega.",
+"<code>null</code>/<code>undefined</code>/<code>[]</code> initializers <code>any</code>/<code>any[]</code> bante hain — strictNullChecks on ho tab bhi. Function parameters <b>by default optional</b> hain (kam args OK), lekin ZYADA args ab bhi error hain. <code>arguments</code> use karne wala function <code>(...arg: any[]) =&gt; any</code> infer hota hai.",
+"Unspecified generic type parameters <code>any</code> ban jate hain (JS me generics ka syntax hi nahi) — <code>@augments</code> aur JSDoc references se specify karo."],
+c:"var obj = { a: 1 };\nobj.b = 2; // JS me OK — object literal open-ended hai\n/** @type {{ a: number }} */\nvar closed = { a: 1 };\nclosed.b = 2; // Error 2339 — JSDoc ne band kar diya",
+k:"Open-ended objects, optional-by-default params, any-default generics — JS checking ke teen bade farak."},
+{n:63,g:6,t:"JSDoc Reference",u:"https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html",
+p:["Sirf listed JSDoc tags hi supported hain (jaise <code>@async</code> nahi hai). Documentation tags (<code>@deprecated</code>, <code>@see</code>, <code>@link</code>) TS files me bhi chalte hain; baaki sab JS-only hain.",
+"<b>Core tags:</b> <code>@type</code>, <code>@import</code>, <code>@param/@returns</code>, <code>@typedef</code>, <code>@callback</code>, <code>@template</code>, <code>@satisfies</code>. Class tags: <code>@public/@private/@protected/@readonly</code>, <code>@override</code>, <code>@extends/@augments</code>, <code>@implements</code>, <code>@class/@constructor</code>, <code>@this</code>.",
+"<code>@type</code> me poora TS syntax chalta hai — unions, arrays (<code>number[]</code>, <code>Array.&lt;number&gt;</code>), object literals, functions, import types (<code>{import(\"./types\").Pet}</code>), hatta ki casts (<code>/** @type {number} */ (x)</code>) aur <code>{const}</code> casts. <code>*</code> = any, <code>?</code> = unknown.",
+"<b><code>@import</code></b> sirf TYPE-CHECKING ke liye symbols lata hai — runtime import NAHI karta; sirf <code>@import</code> ke baad <code>new Dog()</code> karoge to error.",
+"<code>@typedef</code>/<code>@callback</code> complex aur function types define karte hain (nested <code>@property</code> syntax ke saath, ya single-line TS syntax me). <code>@param</code> me optional ke teen tareeqe: <code>{string=}</code>, <code>[p3]</code>, default ke saath <code>[p4=\"test\"]</code>.",
+"<b><code>@template</code></b> generics deta hai — constraints sirf pehle parameter par (<code>@template {string} K</code>), defaults <code>[T=object]</code> syntax se. <b><code>@satisfies</code></b> value ka type badle bina check karta hai — literal type bacha rehta hai, <code>@type</code> se ulta.",
+"Gotchas: object literal me postfix <code>=</code> optional NAHI banata (<code>b?: number</code> use karo); <code>?number</code>/<code>!number</code> ke khaas matlab nahi — unions likho. Unsupported tags: <code>@memberof</code>, <code>@yields</code>, <code>@member</code>. Legacy synonyms (<code>String</code>→<code>string</code> adi) hain, par <code>Object</code>/<code>object</code> → <code>any</code> wale <code>noImplicitAny</code> se band ho jate hain."],
+c:"/**\n * @template T\n * @param {T} x\n * @returns {T}\n */\nfunction id(x) { return x; }\n/** @type {import(\"./types\").Pet} */\nlet pet;",
+k:"@type, @typedef, @template, @satisfies — JSDoc ke chaar kaam ke tags; @import type-only hai, ye mat bhoolna."},
+{n:64,g:6,t:"Creating .d.ts Files from .js files",u:"https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html",
+p:["TS 3.7 se TS <b>JSDoc se .js files ki .d.ts generate</b> kar sakta hai — na port karna padta hai, na .d.ts haath se maintain karni padti hai, aur TS-powered editor experience mil jata hai.",
+"Setup ke 4 steps: (1) TypeScript devDependencies me jodo, (2) <code>tsconfig.json</code> banao, (3) compiler chalao, (4) chaaho to package.json me types reference karo.",
+"Jadooi flags: <code>allowJs: true</code> (JS padho), <code>declaration: true</code> (.d.ts banao), <code>emitDeclarationOnly: true</code> (sirf .d.ts), <code>outDir</code>, aur <code>declarationMap: true</code> (Go to Definition seedha .js par le jata hai).",
+"package.json resolution ka order: pehle <code>types</code> field, phir <code>main</code> se bana .d.ts, phir root ka <code>index.d.ts</code>. Ek gotcha: <code>\"types\": \"./dist/main.js\"</code> likhne par TS <code>./dist/main.d.ts</code> dhoondhega.",
+"Tips: generated files package me shamil hon chahe <code>.gitignore</code> me hon; generated .d.ts ko <b>tsd</b> ya <b>TSTyche</b> se test karo."],
+c:"{ \"include\": [\"src/**/*\"], \"compilerOptions\": {\n  \"allowJs\": true, \"declaration\": true,\n  \"emitDeclarationOnly\": true, \"outDir\": \"dist\",\n  \"declarationMap\": true } }\n// CLI: npx -p typescript tsc src/**/*.js --declaration --allowJs --emitDeclarationOnly --outDir types",
+k:"JSDoc likho, chaar flags lagao, .d.ts khud banegi — JS libraries ke liye sabse sasta type contract."},
+{n:65,g:7,t:"What is a tsconfig.json",u:"https://www.typescriptlang.org/docs/handbook/tsconfig-json.html",
+p:["Kisi directory me <code>tsconfig.json</code> ka hona usey TS project ka root mark karta hai — root files aur compiler options wahi tay karte hain. JS projects ke liye <code>jsconfig.json</code> hai (lagbhag same, JS flags default-on).",
+"<code>tsc</code> bina input files ke chalao to compiler current directory se upar parent chain me tsconfig dhoondhta hai; <code>tsc --project</code>/<code>-p</code> se specific config de sakte ho. <b>Command line par files doge to tsconfig IGNORE ho jayega</b> — ye sabse common confusion hai.",
+"Files chunne ke do tareeqe: <code>files</code> (explicit chhoti list) ya <code>include</code>/<code>exclude</code> globs (<code>include: [\"src/**/*\"]</code>, <code>exclude: [\"**/*.spec.ts\"]</code>).",
+"<b>TSConfig Bases:</b> github.com/tsconfig/bases par per-runtime ready configs hain — <code>\"extends\": \"@tsconfig/node12/tsconfig.json\"</code> se inherit karke runtime mechanics ki fikar khatm karo, apne project ke options upar jodo."],
+c:"{ \"extends\": \"@tsconfig/node12/tsconfig.json\",\n  \"compilerOptions\": { \"preserveConstEnums\": true },\n  \"include\": [\"src/**/*\"], \"exclude\": [\"**/*.spec.ts\"] }",
+k:"tsconfig = project root + options. CLI files = tsconfig ignore. extends/bases se boilerplate khatm."},
+{n:66,g:7,t:"Compiler Options in MSBuild",u:"https://www.typescriptlang.org/docs/handbook/compiler-options-in-msbuild.html",
+p:["MSBuild projects (jaise ASP.NET Core) me TS do tarike se configure hota hai: <b>tsconfig.json (recommended — source of truth)</b> ya <code>.csproj</code> ke project settings.",
+"Har <code>.csproj</code> property seedha ek tsc flag se map hoti hai: <code>TypeScriptNoImplicitAny</code> → <code>--noImplicitAny</code>, <code>TypeScriptModuleKind</code> → <code>--module</code>, <code>TypeScriptTarget</code> → <code>--target</code>, <code>TypeScriptGeneratesDeclarations</code> → <code>--declaration</code>, <code>TypeScriptESModuleInterop</code> → <code>--esModuleInterop</code> — poori mapping table source page par hai.",
+"Jo flag mapping me na ho, use <code>TypeScriptAdditionalFlags</code> se seedha CLI ko pass karo.",
+"Debug vs Release ke alag <code>PropertyGroup Condition</code> rakh sakte ho — Debug me comments+sourcemaps, Release me dono off. <code>Microsoft.TypeScript.targets</code> import karna hota hai.",
+"<code>TypeScriptToolsVersion</code> compiler version pin karta hai; <code>TypeScriptCompileBlocked</code> = true karne se VS editing/debugging support deta hai lekin F5 par build nahi karta (jab gulp/grunt build sambhale); <code>TypeScriptEnableIncrementalMSBuild</code> (4.2+) sirf badli hui sources par tsc chalata hai."],
+c:"<PropertyGroup>\n  <TypeScriptNoEmitOnError>true</TypeScriptNoEmitOnError>\n  <TypeScriptNoImplicitReturns>true</TypeScriptNoImplicitReturns>\n</PropertyGroup>\n<PropertyGroup Condition=\"'$(Configuration)' == 'Release'\">\n  <TypeScriptRemoveComments>true</TypeScriptRemoveComments>\n</PropertyGroup>",
+k:"MSBuild duniya me bhi tsconfig hi raja hai; .csproj properties usi ke flag-names ke XML roop hain."},
+{n:67,g:7,t:"TSConfig Reference",u:"https://www.typescriptlang.org/tsconfig/",
+p:["Ye har tsconfig option ka complete reference hai — saikdon options, groups me: Type Checking, Modules, Emit, JavaScript Support, Editor Support, Interop Constraints, Backwards Compatibility, Language and Environment, Compiler Diagnostics, Projects, Output Formatting, Completeness, Watch Options, Type Acquisition. (Ye section grouped inventory hai; kisi ek option ki exact wording ke liye source page dekho.)",
+"<b>Root fields:</b> <code>files</code> (chhoti allowlist; file na mile to error), <code>include</code> (globs — <code>*</code>, <code>?</code>, <code>**/</code>; bina extension/wildcard wala last segment = directory), <code>exclude</code> (SIRF include ki khoj badalta hai — <code>import</code>/<code>files</code>/reference se aane wali file ko NAHI rok sakta; default: node_modules, outDir adi), <code>extends</code> (base pehle load, inheriting file override; <code>references</code> inherit NAHI hota), <code>references</code> (project references).",
+"<b>Strict family</b> (<code>strict: true</code> se sab on, recommended): <code>noImplicitAny</code>, <code>strictNullChecks</code>, <code>strictFunctionTypes</code> (methods exempt), <code>strictPropertyInitialization</code>, <code>noImplicitThis</code>, <code>strictBindCallApply</code>, <code>useUnknownInCatchVariables</code>, <code>alwaysStrict</code>, <code>strictBuiltinIteratorReturn</code>. Akele kaam ke: <code>exactOptionalPropertyTypes</code> (<code>?</code> sach me undefined exclude kare — recommended), <code>noUncheckedIndexedAccess</code> (index access par <code>| undefined</code>), <code>noImplicitOverride</code>, <code>noUnusedLocals/Parameters</code> (<code>_</code>-prefix exempt), <code>noFallthroughCasesInSwitch</code>.",
+"<b>Modules:</b> <code>module</code>/<code>moduleResolution</code> ki jodi (Modules Reference dekho); <code>paths</code> emit NAHI badalta; <code>baseUrl</code> AMD ke liye tha, ab not recommended; <code>rootDir</code> output structure tay karta hai (emittable files iske andar honi chahiye); <code>customConditions</code>, <code>moduleSuffixes</code> (React Native), <code>resolveJsonModule</code>, <code>allowImportingTsExtensions</code> (sirf noEmit/emitDeclarationOnly ke saath), <code>rewriteRelativeImportExtensions</code> (5.7).",
+"<b>Emit:</b> <code>declaration</code>/<code>declarationDir</code>/<code>declarationMap</code>, <code>outDir</code>/<code>outFile</code> (outFile sirf None/System/AMD ke saath), <code>sourceMap</code>/<code>inlineSourceMap</code>/<code>inlineSources</code>, <code>noEmit</code> (dusra tool emit kare), <code>noEmitOnError</code> (default false!), <code>importHelpers</code> (tslib), <code>downlevelIteration</code>, <code>stripInternal</code>, <code>removeComments</code>.",
+"<b>Interop:</b> <code>esModuleInterop</code> (recommended), <code>verbatimModuleSyntax</code> (5.0, recommended — deprecated <code>importsNotUsedAsValues</code>/<code>preserveValueImports</code> ki jagah), <code>isolatedModules</code>, <code>isolatedDeclarations</code> (5.5), <code>erasableSyntaxOnly</code> (Node type-stripping ke liye), <code>forceConsistentCasingInFileNames</code> (recommended, default true).",
+"<b>Language/Environment:</b> <code>target</code> (default lib bhi tay karta hai), <code>lib</code>, <code>jsx</code>/<code>jsxFactory</code>/<code>jsxImportSource</code>, <code>experimentalDecorators</code>/<code>emitDecoratorMetadata</code>, <code>useDefineForClassFields</code> (target ≥ ES2022 par default true), <code>moduleDetection</code>, <code>noLib</code>.",
+"<b>Projects/Completeness:</b> <code>composite</code> + <code>incremental</code> (.tsbuildinfo), <code>skipLibCheck</code> (tez par kam accurate — duplicate deps theek karna behtar ilaaj), diagnostics ke liye <code>explainFiles</code>/<code>traceResolution</code>/<code>generateTrace</code>. <b>Watch:</b> <code>watchFile</code>/<code>watchDirectory</code>/<code>fallbackPolling</code> strategies + <code>excludeDirectories</code>. Type Acquisition sirf JS projects ke liye hai."],
+c:"{ \"compilerOptions\": {\n  \"strict\": true, \"exactOptionalPropertyTypes\": true,\n  \"noUncheckedIndexedAccess\": true,\n  \"module\": \"nodenext\", \"verbatimModuleSyntax\": true,\n  \"skipLibCheck\": true, \"forceConsistentCasingInFileNames\": true } }",
+k:"Har option yaad nahi karna — groups yaad rakho: strict family, module jodi, emit, interop. Baaki reference page kis liye hai."},
+{n:68,g:7,t:"tsc CLI Options",u:"https://www.typescriptlang.org/docs/handbook/compiler-options.html",
+p:["<code>tsc</code> bina args ke sabse qareebi tsconfig wala project compile karta hai (upar ki taraf dhoondh kar); file globs doge to tsconfig poori tarah IGNORE ho jata hai.",
+"<b>Commands:</b> <code>--init</code> (tsconfig scaffold), <code>--project/-p</code> (specific config/folder), <code>--showConfig</code> (final resolved config print karo — config debug karne ka sabse achha tareeqa), <code>--version</code>, <code>--help</code>/<code>--all</code>, <code>--ignoreConfig</code>, <code>--listFilesOnly</code>, <code>--locale</code> (messages ki bhasha; emit par asar nahi).",
+"<b>Build mode</b> (<code>--build</code> ke saath): <code>--clean</code>, <code>--dry</code>, <code>--force</code>, <code>--verbose</code> — detail Project References section me. <b>Watch:</b> <code>--watch</code> + <code>--watchFile/--watchDirectory/--fallbackPolling</code> strategies (tsconfig ke watchOptions jaise hi).",
+"Saare compiler flags CLI par bhi available hain (<code>--flag value</code>, boolean flags bare). CLI-only extras: <code>--stableTypeOrdering</code>, <code>--stopBuildOnErrors</code>, <code>--generateCpuProfile</code>, <code>--disableSizeLimit</code> (language server ki 20MB cap hatata hai). <code>--out</code> deprecated hai — <code>--outFile</code> use karo; <code>--charset</code> ab supported nahi (UTF-8 assumed)."],
+c:"tsc                       # nearest tsconfig wala project\ntsc --project tsconfig.production.json\ntsc --showConfig          # asal me konsi config lagi, dekho\ntsc index.js --declaration --emitDeclarationOnly",
+k:"Config samajh na aaye to --showConfig. Files doge to tsconfig gayab — ye do baatein CLI ki jaan hain."},
+{n:69,g:7,t:"Project References",u:"https://www.typescriptlang.org/docs/handbook/project-references.html",
+p:["Project references (TS 3.0+) program ko chhote tukdon me baant-te hain — tsconfig ke top-level <code>references</code> array me (<code>{ \"path\": \"../src\" }</code>). Fayde: tez builds, logical separation enforce, editor me kam memory, incremental builds.",
+"Bina references ke dard: impl files test files import kar leti thin; <code>src</code> aur <code>test</code> alag build nahi hote the; ek badlo to dusra re-typecheck. Kai tsconfigs bina references ke: no up-to-date checking, double startup cost, <code>tsc -w</code> kai configs nahi dekh sakta.",
+"Reference ka matlab: import karne par referenced project ki <b>output .d.ts</b> load hoti hai, .ts sources nahi. Referenced project ke liye <b><code>composite</code> zaroori</b> hai — <code>rootDir</code> default tsconfig dir, har impl file <code>include</code>/<code>files</code> me honi chahiye, <code>declaration</code> on (default true).",
+"<code>declarationMap</code> editor me project boundaries ke paar Go to Definition/Rename ko asli .ts source tak le jata hai. Caveat: dependents built .d.ts khate hain — clone ke baad build nahi kiya to editor me nakli errors dikhenge (VS Code ka in-memory fallback isko kam karta hai).",
+"<b><code>tsc --build</code> (<code>tsc -b</code>) compiler nahi, orchestrator hai</b> — plain <code>tsc</code> dependencies auto-build NAHI karta, <code>-b</code> karta hai: out-of-date projects ko dependency order me build karta hai. Flags: <code>--verbose</code>, <code>--dry</code>, <code>--clean</code>, <code>--force</code>, <code>--watch</code>.",
+"Build mode effectively <code>noEmitOnError</code> jaisa behave karta hai (error par emit karne se agli run me project up-to-date dikhega aur error chhup jayega). Guidance: shared options ke liye <code>extends</code>; ek 'solution' tsconfig sirf references + <code>files: []</code> ke saath; MSBuild ke liye <code>&lt;TypeScriptBuildMode&gt;true&lt;/TypeScriptBuildMode&gt;</code>."],
+c:"// solution tsconfig — sirf references\n{ \"files\": [], \"references\": [{ \"path\": \"./src\" }, { \"path\": \"./test\" }] }\n// build: tsc -b src test   (order TS khud theek kar dega)",
+k:"References = chhote projects + d.ts boundaries; tsc -b = unka conductor. Plain tsc dependencies build nahi karta."},
+{n:70,g:7,t:"Integrating with Build Tools",u:"https://www.typescriptlang.org/docs/handbook/integrating-with-build-tools.html",
+p:["Common build tools ke saath TS ke config snippets — kai tools legacy hain, page khud unmaintained ko mark karta hai.",
+"<b>Babel:</b> <code>@babel/preset-typescript</code> — sirf type-stripping, koi checking nahi; saath me <code>tsc --noEmit</code> chalao. <b>Browserify:</b> <code>tsify</code> plugin. <b>Grunt:</b> <code>grunt-ts</code> ab maintained nahi — <code>grunt-browserify</code> + tsify alternative. <b>Gulp:</b> <code>gulp-typescript</code>.",
+"<b>Rollup:</b> <code>@rollup/plugin-typescript</code> (typescript + tslib peer deps). <b>Webpack:</b> <code>ts-loader</code> — full type checking karta hai (tez transpilers se slow, par sahi); rule <code>/\\.tsx?$/</code> + <code>resolve.extensions</code> me <code>.tsx/.ts/.js</code>.",
+"<b>Vite:</b> .ts import out-of-the-box, lekin <b>sirf transpile karta hai, type-check nahi</b> — kuch compilerOptions values required hain (Vite docs dekho). <b>Svelte:</b> <code>svelte-preprocess</code> + CLI checking ke liye <code>svelte-check</code>.",
+"<b>MSBuild/NuGet:</b> project file me <code>Microsoft.TypeScript.Default.props</code> upar aur <code>Microsoft.TypeScript.targets</code> neeche import karo, ya <code>Microsoft.TypeScript.MSBuild</code> NuGet package. Jspm wala section legacy hai.",
+"Sabak ek hi: transpile-only tools (Babel/Vite/swc) ke saath <code>tsc --noEmit</code> hamesha jodo, aur unke liye <code>isolatedModules</code> safety net hai."],
+c:"// webpack — ts-loader full checking ke saath\nmodule.exports = { module: { rules: [\n  { test: /\\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ } ] },\n  resolve: { extensions: ['.tsx', '.ts', '.js'] } };",
+k:"Tool chahe jo ho: transpile-only = tsc --noEmit saath me. ts-loader checking karta hai, baaki strip."},
+{n:71,g:7,t:"Configuring Watch",u:"https://www.typescriptlang.org/docs/handbook/configuring-watch.html",
+p:["Watch mode ki configuration TS 3.8+ se <code>watchOptions</code> me hoti hai — usse pehle sirf environment variables the, ab wahi suggested tareeqa hai.",
+"<b>Do mechanisms ka trade-off:</b> <code>fs.watch</code> event-based hai (kam CPU) lekin OS-dependent aur unreliable — kuch Linux par watchers ki limit khatm ho jati hai, recursive directory watching Linux par kaam hi nahi karta (Windows/macOS par karta hai). <code>fs.watchFile</code> polling hai — reliable lekin CPU khaata hai, files ki tadaad ke hisaab se. TS aam taur par directories ke liye fs.watch aur source/config/missing files ke liye fs.watchFile use karta hai, aur directory watchers se file watchers ki nakamiyon ko cover karta hai.",
+"tsconfig me example: <code>watchFile/watchDirectory: \"useFsEvents\"</code>, <code>fallbackPolling: \"dynamicPriority\"</code>, <code>synchronousWatchDirectory: true</code> (notifications coalesce mat karo), <code>excludeDirectories: [\"**/node_modules\", \"_build\"]</code>, <code>excludeFiles</code> — watch ki laagat kam karne ka sabse bada lever yahi exclusions hain.",
+"Legacy env vars <code>TSC_WATCHFILE</code>/<code>TSC_WATCHDIRECTORY</code> ab bhi chalte hain (PriorityPollingInterval, DynamicPriorityPolling, UseFsEvents, UseFsEventsOnParentDirectory adi strategies ke saath) — naye setups me watchOptions hi use karo."],
+c:"\"watchOptions\": {\n  \"watchFile\": \"useFsEvents\", \"watchDirectory\": \"useFsEvents\",\n  \"fallbackPolling\": \"dynamicPriority\", \"synchronousWatchDirectory\": true,\n  \"excludeDirectories\": [\"**/node_modules\", \"_build\"] }",
+k:"Events saste par najuk, polling mehenga par pakka — Linux par watch ki har shikayat ki jad yahi trade-off hai."},
+{n:72,g:7,t:"Nightly Builds",u:"https://www.typescriptlang.org/docs/handbook/nightly-builds.html",
+p:["Har raat midnight PST par TypeScript ke <code>main</code> branch se nightly build npm par publish hota hai: <code>npm install -D typescript@next</code>.",
+"Editors ko nightly par le jana: <b>VS Code</b> me workspace me nightly install karke workspace TS version chuno, ya <code>.vscode/settings.json</code> me <code>\"typescript.tsdk\": \"&lt;path&gt;/node_modules/typescript/lib\"</code> set karo — ya 'JavaScript and TypeScript Nightly' extension lagao (workspace version badle bina nightly editing experience).",
+"Sublime Text me <code>\"typescript_tsdk\"</code> setting; IntelliJ me Preferences → Languages &amp; Frameworks → TypeScript me version path; purane Visual Studio (2013/2015) ke liye <code>VSDevMode.ps1</code> script.",
+"Use case: unreleased features try karna ya kisi bug fix ko release se pehle verify karna. Risk: nightly unreleased code hai — production builds ke liye nahi."],
+c:"npm install -D typescript@next\n// VS Code .vscode/settings.json:\n// { \"typescript.tsdk\": \"node_modules/typescript/lib\" }",
+k:"typescript@next = kal ki TS aaj. Editor ka tsdk path badlo, production se door rakho."},
+{n:73,g:8,t:"Docs index",u:"https://www.typescriptlang.org/docs/",
+p:["Ye docs ka landing page hai — site ka apna navigation map, aur is SPA ki structure ka source of truth. Groups aur counts yahi se verify hue hain.",
+"<b>Get Started (5)</b> · <b>Handbook (16)</b> · <b>Reference (15)</b> · <b>Modules Reference (5)</b> · <b>Tutorials (6)</b> · <b>Declaration Files (13)</b> · <b>JavaScript (4)</b> · <b>Project Configuration (8)</b> = 72 grouped pages, + ye index page + Installation = <b>74 pages total</b>.",
+"Handbook ke andar Type Manipulation ek sub-family hai: Creating Types from Types, Generics, Keyof, Typeof, Indexed Access, Conditional, Mapped, Template Literal Types.",
+"Page ke sidebar me Learning Resources aur Tools (Playground, TSConfig Reference) ke quick links bhi hain — Playground aur Release Notes docs pages nahi hain (Trust Check ke out-of-scope me inki detail hai)."],
+c:"",
+k:"74 pages, 8 groups — is SPA ka har section isi map se aaya hai. Trust Check me iski cross-check table hai."},
+{n:74,g:9,t:"Installation",u:"https://www.typescriptlang.org/download",
+p:["TypeScript install karne ke teen raaste: <b>npm module</b> (Node.js users), <b>NuGet package</b>, ya <b>Visual Studio extension</b> (MSBuild projects).",
+"<b>Per-project install (recommended):</b> <code>npm install typescript --save-dev</code> — lockfile poori team ko ek hi TS version par rakhta hai, aur alag projects alag versions pin kar sakte hain (reproducible builds). Compiler chalana: <code>npx tsc</code>.",
+"Visual Studio/MSBuild ke liye NuGet se <code>Microsoft.TypeScript.MSBuild</code> (<code>Install-Package Microsoft.TypeScript.MSBuild</code>), ya Marketplace se TS extension.",
+"<b>Global install</b> (<code>npm install -g typescript</code>) one-off experiments ke liye theek hai — <code>tsc</code> kahin bhi mil jata hai; lekin lambi codebase ke liye per-project hi sahi hai.",
+"<b>Compatible transpilers</b> (Babel ka <code>preset-typescript</code>, swc, Sucrase) TS ko tez JS banate hain lekin <b>type-check NAHI karte</b> — <code>typescript</code> dependency <code>tsc --noEmit</code> ke liye rakho aur <code>isolatedModules</code> on karo."],
+c:"npm install typescript --save-dev   # per-project (recommended)\nnpx tsc --version\nnpm install -g typescript           # global — sirf experiments ke liye",
+k:"Per-project install + lockfile = reproducible TS. Transpiler use karo to bhi tsc --noEmit wala typescript rakho."}
+];
+var ALL=S.concat(S2,S3,S4);
+/* ================= FAQs ================= */
+var FAQS=[
+["TypeScript kya hai — JavaScript se alag kaise?","TS JavaScript ka typed superset hai: saara JS valid TS hai, TS sirf static type checking jodta hai. Compile ke baad types erase ho jate hain — runtime par emitted JS bilkul aam JS hai, koi TS runtime ya library nahi hoti."],
+["interface aur type me kya farak hai?","Interface sirf object shapes declare karta hai, hamesha extendable hai aur declaration merging se re-open ho sakta hai. Type alias unions, tuples, primitives ke naam — kuch bhi bana sakta hai, lekin re-open nahi hota. Interface extends zyadaatar type intersections se performant bhi hai. Heuristic: interface pehle, type tab jab uski feature chahiye."],
+["any, unknown aur never me farak?","any saari checking band kar deta hai (contagious bhi hai). unknown koi bhi value accept karta hai lekin use se pehle narrowing maangta hai — safe any. never wo type hai jo kabhi occur nahi hoti: exhaustiveness checks aur never-returning functions me aata hai; never sab ko assignable hai, use kuch assignable nahi (never ke alawa)."],
+["Structural typing kya hoti hai?","TS naam (nominal) nahi, shape dekhta hai. Jis object ke paas required properties hain wo compatible hai — chahe usne kabhi us interface ka naam suna bhi na ho. Isiliye same-shape classes interchangeable hain, aur empty class sab kuch accept kar leti hai. Private/protected members is rule ke apwaad hain — wo sirf usi class se aane par match hote hain."],
+["Type inference kab fail hoti hai aur annotation kab zaroori hai?","Inference initializers, defaults aur returns se type nikaalti hai. Fail/galat tab hoti hai jab best common type na bane (union ban jata hai, jaise Animal[] ki jagah (Rhino|Elephant)[]), ya jab tumhe inference se zyada specific type chahiye (tuple, literal union). Function parameters aur public APIs par annotations lagbhag hamesha achhi aadat hai."],
+["Narrowing kya hai? Kaun se guards hain?","Control flow ke basis par union type ko specific type me refine karna narrowing hai. Guards: typeof, truthiness, equality (===/switch, == null dono null+undefined hatata hai), in operator, instanceof, assignments, user-defined type predicates (pet is Fish), assertion functions, aur discriminated unions par discriminant check."],
+["Discriminated union kaise banate hain aur exhaustiveness check kya hai?","Har union member me ek common property par alag literal type rakho (kind: \"circle\" | \"square\") — discriminant check karte hi TS sahi member narrow kar deta hai. Exhaustiveness ke liye default branch me const x: never = shape; rakho — naya member judne par wahan compile error aayega, koi case miss nahi hoga."],
+["Generics kyun chahiye? Constraint kya hota hai?","Generics types ko parameterize karte hain taaki ek hi code kai types par type-safety ke saath chale — identity function number-only (narrow) ya any (unsafe) ki jagah Type ko capture karke reuse karta hai. Constraint (T extends { length: number }) batata hai ki type ke paas kam se kam kya hona hi chahiye. Rules: parameter khud use karo constraint ki jagah, kam parameters, har parameter kam se kam do jagah."],
+["keyof, typeof aur indexed access (T[K]) ka kya kaam hai?","keyof T keys ka literal union deta hai. typeof (type position me) kisi value ka type uthata hai — ReturnType&lt;typeof fn&gt; iska mashhoor use hai. T[K] kisi property ka type lookup karta hai; typeof arr[number] array literal se element type nikaalne ka standard trick hai. Teeno milkar mapped types ki neev hain."],
+["Conditional types aur infer samjhao.","Form: T extends U ? X : Y. Generics par ye union ke har member par distribute hota hai (rokna ho to [T] extends [U] lapeto). infer true branch me naya type variable declare karta hai — Flatten&lt;T&gt; = T extends Array&lt;infer Item&gt; ? Item : T. ReturnType, Parameters jaise utilities isi par bane hain; overloads par inference last signature leti hai."],
+["Mapped types se Partial/Readonly khud kaise bane hain?","Partial&lt;T&gt; = { [K in keyof T]?: T[K] } — keyof par iterate karke har property optional. Readonly me readonly modifier judta hai. Modifiers ko -readonly / -? se hata bhi sakte ho, aur as ke saath keys remap kar sakte ho (getters banane wala pattern). Utility types ki poori family isi mechanism par khadi hai."],
+["Template literal types kahan kaam aate hain?","String patterns ko type banana: event naam `${keyof T & string}Changed`, route/key formats, case transforms (Uppercase/Capitalize intrinsic types). Interpolation me unions cross-multiply hote hain — bade unions par combinations phatt sakte hain, wahan dhyaan do. Generic inference template ko tod kar key bhi nikaal sakti hai."],
+["Enums use karun ya union of literals / const object?","Enums runtime objects hain — numeric par reverse mapping milti hai, string enums readable hain. Lekin ye TS-only syntax hai; modern codebases aksar \"a\" | \"b\" literal unions ya const obj as const + typeof pattern prefer karte hain taaki code pure JS ke aligned rahe. const enums isolatedModules se takrate hain — kai teams unhe ban karti hain."],
+["strict mode kya-kya on karta hai?","strict ek saath poori family on karta hai: noImplicitAny, strictNullChecks, strictFunctionTypes, strictPropertyInitialization, noImplicitThis, strictBindCallApply, alwaysStrict, useUnknownInCatchVariables, strictBuiltinIteratorReturn. Naye projects me strict: true default hona chahiye; purane codebases me flags ek-ek karke on karke migrate karte hain."],
+["strictNullChecks off ho to kya hota hai?","null aur undefined har type me assignable ho jate hain — missing-property aur find() ke undefined jaise bugs runtime tak chhup jate hain. Ise Tony Hoare ne 'billion dollar mistake' kaha tha. On karne par null/undefined ko unions me explicitly likhna aur use se pehle narrow karna padta hai."],
+["as assertion aur non-null ! kitne safe hain?","Dono compile-time only hain — runtime par koi check nahi hota. Galat assertion chup-chaap galat value aage bhej deti hai. Assertion sirf overlapping types par allowed hai; bilkul alag types ke liye pehle unknown se guzarna padta hai (double assertion — code smell). Pakka yakeen ho tabhi use karo; warna narrowing likho."],
+["Excess property checks kab lagte hain?","Sirf fresh object literals par — assign ya argument pass karte waqt unknown property error banti hai (colour/color wale typos yahi pakadte hain). Variable pehle bana kar pass karne par check nahi lagta (lekin zero-overlap par 'no properties in common' error aata hai). Workarounds: assertion, index signature — par pehle ye samjho ki zyadaatar ye errors asli bugs hote hain."],
+["Declaration merging kya hai?","Same naam ki declarations ko compiler ek me jod deta hai. Interfaces merge hote hain (baad wali ko overload precedence), namespaces jud jate hain, class ke saath interface/namespace jod sakte ho — lekin class-class merge mana hai. Isi se module augmentation aur global augmentation (declare global) kaam karte hain."],
+[".d.ts file kya hoti hai aur @types kahan se aata hai?",".d.ts sirf type declarations rakhti hai — JS library ke liye type contract. Library khud bundle kare to package.json ke types field se milti hai; warna community ke DefinitelyTyped repo se @types/<naam> package install hota hai. JSDoc wali JS se tsc khud .d.ts generate bhi kar sakta hai (allowJs + declaration + emitDeclarationOnly)."],
+["import type kyun zaroori hai?","Type-only imports ko guarantee se elide karna Babel/swc/esbuild jaise single-file transpilers ke liye zaroori hai — warna wo runtime par exist na karne wale naam import karne ki koshish kar sakte hain. verbatimModuleSyntax on ho to bina type modifier wale imports hamesha emit hote hain, isliye type imports ko explicitly mark karna aur bhi zaroori ho jata hai."],
+["Node project ke liye sahi module/moduleResolution kya hai?","Sirf node16, node18 ya nodenext — ye Node ke dual-format system (extension + package.json type se detection) ko sahi model karte hain. esnext/commonjs emitted JS same dikha sakte hain lekin checking galat hogi. Bundler app ke liye module: esnext + moduleResolution: bundler; library ke liye node18 strictest raasta hai."],
+["esModuleInterop kya karta hai?","CJS/ESM interop ko transpiler ecosystem se align karta hai: __importDefault/__importStar helpers se default import __esModule dekh kar sahi cheez se link hota hai, aur namespace imports hamesha objects bante hain. CJS apps me hamesha on rakho; allowSyntheticDefaultImports akele (checking badle, emit na badle) unsafe hai."],
+["tsconfig me include/exclude ka sabse bada gotcha kya hai?","exclude sirf include ki glob-khoj ko badalta hai — import, /// reference ya files se program me aayi file ko wo rok nahi sakta. Dusra gotcha: command line par files dene se tsconfig poori tarah ignore ho jata hai. Aur extends me references inherit nahi hota, baaki sab hota hai."],
+["Project references aur tsc -b kyun?","Bade codebases ko chhote composite projects me baantne ke liye — har project apni .d.ts boundary deta hai, builds incremental aur tez hote hain, editor halka rehta hai. Plain tsc referenced projects ko build nahi karta; tsc -b orchestrator hai jo out-of-date projects ko dependency order me build karta hai aur effectively noEmitOnError jaisa behave karta hai."],
+["Babel/Vite ke saath TS use karun to type checking kahan gayi?","Transpile-only tools (Babel, Vite, swc, esbuild) types strip karte hain, check nahi karte — galtiyaan seedha production ja sakti hain. Hamesha saath me tsc --noEmit chalao (CI/editor me), aur isolatedModules on rakho taaki per-file transpilation unsafe patterns (const enum references, type re-exports) pakde jayein."],
+["readonly aur const me kya farak hai?","const binding ko reassign hone se rokta hai, value ko mutate hone se nahi. readonly property ko (type-checking ke dauran) re-write hone se rokta hai, lekin nested mutation (home.resident.age++) chalti hai aur compatibility check me readonly ignore hota hai. Sachi deep immutability TS me koi nahi deta — Readonly&lt;T&gt; bhi shallow hai."],
+["Tuples kab use karun, arrays kab?","Jab length fixed ho aur har position ka type alag/maloom ho — return pairs, function arguments (rest parameters tuples hi hain), coordinates. Optional elements sirf end me, rest elements beech me bhi chal sakte hain. as const se readonly tuple banta hai jo mutable tuple ko assign nahi hota — ye gotcha kaiyon ko phansata hai."],
+["Decorators — stage 2 aur stage 3 me kya farak hai?","Handbook page stage-2 (experimental, experimentalDecorators flag) document karta hai. TS 5.0 se stage-3 standard decorators supported hain — inka semantics alag hai (koi parameter decorators nahi, naya context object). Interview me ye batana strong point hai ki tumhe pata hai docs page purane experimental design par hai aur emitDecoratorMetadata/reflect-metadata usi duniya ke hain."],
+["Classes me private (#) aur private keyword me farak?","private/protected sirf compile-time hain — runtime par property lookup/bracket notation se access ho jata hai (soft private). # fields hard private hain — compilation ke baad bhi private rehte hain (purane targets par WeakMap se). Asli runtime privacy chahiye to # ya closures/WeakMaps use karo."],
+["satisfies operator kya karta hai? (JSDoc @satisfies bhi)","satisfies value ko ek type ke against check karta hai bina uska inferred type badle — literal/widened type wahi rehta hai jo inference ne diya tha, lekin galti pakdi jati hai. @type annotation type ko badal deti hai; satisfies sirf verify karta hai. JSDoc me bhi @satisfies wahi kaam karta hai."]
+];
+/* ================= RENDER ================= */
+var content=document.getElementById("content");
+var sideNav=document.getElementById("sideNav");
+var VIEW=[]; /* ordered view ids */
+var doneSet={};
+function esc(s){return s;}
+function lessonHTML(s){
+  var h='<article class="lesson" id="view-sec-'+s.n+'" data-kind="section" data-url="'+s.u+'">';
+  h+='<div class="crumb">'+GROUPS[s.g]+' · Hissa '+String(s.n).padStart(2,"0")+' / 74</div>';
+  h+='<h2>'+s.t+'</h2>';
+  h+='<p class="lede">Asli TypeScript docs ke is page ki poori Hinglish samajh — har zaroori baat alag hisse me.</p>';
+  s.p.forEach(function(pt){ h+='<div class="point"><p>'+pt+'</p></div>'; });
+  if(s.c){ h+='<pre><code>'+s.c.replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</code></pre>'; }
+  h+='<div class="takeaway"><span class="tk-label">Yaad Rakho — Asli Baat</span><p>'+s.k+'</p></div>';
+  h+='<button class="done-btn" data-done="'+s.n+'">✓ Padha hua nishan lagao</button>';
+  h+='<div class="source-box"><span class="s-label">Source — Asli Page</span><a href="'+s.u+'" target="_blank" rel="noopener">'+s.u+'</a></div>';
+  h+='<div class="pager"><button data-nav="prev"><span class="dir">← Pichhla Topic</span><span class="pt"></span></button><button data-nav="next"><span class="dir">Agla Topic →</span><span class="nt2"></span></button></div>';
+  h+='</article>';
+  return h;
+}
+var html="";
+ALL.forEach(function(s){ html+=lessonHTML(s); VIEW.push("view-sec-"+s.n); });
+html+=LABS_HTML; VIEW.push("view-labs");
+/* FAQ view */
+var fh='<article class="lesson" id="view-faq" data-kind="faq"><div class="crumb">Interview ki Taiyaari</div><h2>Interview FAQs — Sawal aur Jawab</h2><p class="lede">Aaj ke TypeScript interviews me sabse zyada poochhe jaane wale sawal — har jawab chhota aur seedha point par.</p>';
+FAQS.forEach(function(f,i){ fh+='<details class="faq-item"><summary><span class="qn">Q'+(i+1)+'</span><span>'+f[0]+'</span></summary><div class="fa"><p>'+f[1]+'</p></div></details>'; });
+fh+='<div class="source-box"><span class="s-label">Source — Asli Page</span>Saare jawab upar ke 74 hisson se liye gaye hain — har topic ka Source usi hisse ke aakhir me hai.</div>';
+fh+='<div class="pager"><button data-nav="prev"><span class="dir">← Pichhla Topic</span><span class="pt"></span></button><button data-nav="next"><span class="dir">Agla Topic →</span><span class="nt2"></span></button></div></article>';
+html+=fh; VIEW.push("view-faq");
+/* Sources view */
+var sh='<article class="lesson" id="view-sources" data-kind="sources"><div class="crumb">Saare Links — Sandarbh</div><h2>Asli Pages — Saare 74 Docs Pages</h2><p class="lede">Is SPA ke saare 74 hisse in asli pages se bane hain — poori list, hisse ke hisaab se.</p><ul class="src-list">';
+ALL.forEach(function(s){ sh+='<li><span class="chip">'+String(s.n).padStart(2,"0")+'</span><span><b>'+s.t+'</b> — '+GROUPS[s.g]+'<br><a href="'+s.u+'" target="_blank" rel="noopener">'+s.u+'</a></span></li>'; });
+sh+='</ul><div class="pager"><button data-nav="prev"><span class="dir">← Pichhla Topic</span><span class="pt"></span></button><button data-nav="next"><span class="dir">Agla Topic →</span><span class="nt2"></span></button></div></article>';
+html+=sh; VIEW.push("view-sources");
+/* Trust Check view */
+var th='<article class="lesson" id="view-trust" data-kind="trust"><div class="crumb">Jaanch — Sab Sahi Hai?</div><h2>Trust Check — Bharosa Jaanch</h2>';
+th+='<p class="lede">Ye ginati is chalti hui page ko jaanch karke nikaali gayi hai — koi bhi anka haath se nahi likha gaya.</p><div class="stat-grid" id="statGrid"></div>';
+th+='<button class="done-btn" id="runCheck" style="margin-top:0">▶ Khud jaanch chalao — sab check karo</button><div class="check-result" id="checkResult"></div>';
+th+='<h3 style="margin:26px 0 10px">Milan jaanch — docs ki kul ginati se tulna</h3><div style="overflow-x:auto"><table><thead><tr><th>Hissa</th><th>Docs par kul pages</th><th>Is SPA me kul hisse</th><th>Haal</th></tr></thead><tbody id="crossBody"></tbody></table></div>';
+th+='<h3 style="margin:26px 0 10px">Sachchai wali list — kya is SPA ke scope se bahar hai</h3><ul class="note-list">';
+th+='<li><b>TypeScript Playground</b> — interactive tool hai, docs page nahi; isiliye section nahi hai.</li>';
+th+='<li><b>Release Notes</b> (What\'s new in 7.0 / upcoming 7.1) — devblogs.microsoft.com ke external links hain, typescriptlang.org/docs ke pages nahi.</li>';
+th+='<li><b>4 Cheat Sheets ke andar ka content</b> — downloadable PDF/PNG hain, HTML pages nahi; landing page cover hai aur zip link section 23 me hai.</li>';
+th+='<li><b>React &amp; Webpack page</b> — TS-hosted content hai hi nahi; page webpack guide par redirect hoti hai, isiliye section 47 me bahar link diya hai.</li>';
+th+='<li><b>Generators primer</b> — section 27 ka page sirf iterables/for..of cover karta hai; generator wali chhoti note JS/MDN cross-reference ke roop me wahi saaf mark ki gayi hai.</li>';
+th+='<li><b>Declaration Reference (section 49)</b> — yahan page ke 8 patterns (Global Functions tak) cover hain.</li>';
+th+='<li><b>TSConfig Reference (section 67)</b> — sabse bada page hai; yahan grouped inventory di hai, har ek option ki verbatim wording ke liye source page rakha hai.</li>';
+th+='<li><b>ASP.NET Core tutorial (section 42)</b> — VS 2015/2017 era ka legacy tutorial hai; SPA me legacy mark karke diya hai.</li>';
+th+='</ul><div class="pager"><button data-nav="prev"><span class="dir">← Pichhla Topic</span><span class="pt"></span></button><button data-nav="next" disabled><span class="dir">Agla Topic →</span><span class="nt2">—</span></button></div></article>';
+html+=th; VIEW.push("view-trust");
+content.innerHTML=html;
+/* ================= SIDEBAR ================= */
+function buildSidebar(){
+  var h="", lastG=-1;
+  var counts={}; ALL.forEach(function(s){ counts[s.g]=(counts[s.g]||0)+1; });
+  ALL.forEach(function(s){
+    if(s.g!==lastG){ if(lastG!==-1) h+=""; h+='<div class="nav-group"><h3>'+GROUPS[s.g]+'<span class="gcount">'+counts[s.g]+'</span></h3>'; lastG=s.g; }
+    h+='<button class="nav-item" data-view="view-sec-'+s.n+'"><span class="chip">'+String(s.n).padStart(2,"0")+'</span><span class="nt">'+s.t+'</span></button>';
+    var next=ALL[ALL.indexOf(s)+1];
+    if(!next||next.g!==s.g) h+='</div>';
+  });
+  h+='<div class="nav-group"><h3>Abhyaas aur Jaanch</h3>';
+  h+='<button class="nav-item" data-view="view-labs"><span class="chip ghost">LAB</span><span class="nt">Labs — Khud Try Karo</span></button>';
+  h+='<button class="nav-item" data-view="view-faq"><span class="chip ghost">FAQ</span><span class="nt">Interview FAQs — Sawal ('+FAQS.length+')</span></button>';
+  h+='<button class="nav-item" data-view="view-sources"><span class="chip ghost">SRC</span><span class="nt">Asli Pages — saare 74 links</span></button>';
+  h+='<button class="nav-item" data-view="view-trust"><span class="chip ghost">✓</span><span class="nt">Trust Check — Bharosa Jaanch</span></button></div>';
+  sideNav.innerHTML=h;
+}
+buildSidebar();
+/* ================= NAVIGATION ================= */
+var current=VIEW[0];
+function viewTitle(id){
+  if(id.indexOf("view-sec-")===0){ var n=+id.replace("view-sec-",""); var s=ALL.filter(function(x){return x.n===n;})[0]; return s?s.t:id; }
+  return {"view-labs":"Labs — Khud Try Karo","view-faq":"Interview FAQs — Sawal aur Jawab","view-sources":"Asli Pages — Saare 74 Docs Pages","view-trust":"Trust Check — Bharosa Jaanch"}[id]||id;
+}
+function show(id){
+  current=id;
+  document.querySelectorAll("article.lesson").forEach(function(a){ a.classList.toggle("show", a.id===id); });
+  document.querySelectorAll(".nav-item").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-view")===id); });
+  var idx=VIEW.indexOf(id);
+  document.querySelectorAll("#"+id+" .pager button").forEach(function(btn){
+    var dir=btn.getAttribute("data-nav");
+    if(dir==="prev"){ btn.disabled = idx<=0; var sp=btn.querySelector(".pt"); if(sp) sp.textContent = idx>0?viewTitle(VIEW[idx-1]):"—"; }
+    if(dir==="next"){ btn.disabled = idx>=VIEW.length-1; var sn=btn.querySelector(".nt2"); if(sn) sn.textContent = idx<VIEW.length-1?viewTitle(VIEW[idx+1]):"—"; }
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+  document.getElementById("sidebar").classList.remove("open");
+  if(id==="view-trust") renderTrust();
+  try{ location.hash=id; }catch(e){}
+}
+document.addEventListener("click",function(e){
+  var nav=e.target.closest(".nav-item");
+  if(nav){ show(nav.getAttribute("data-view")); return; }
+  var pg=e.target.closest(".pager button");
+  if(pg && !pg.disabled){ var idx=VIEW.indexOf(current); show(VIEW[idx+(pg.getAttribute("data-nav")==="next"?1:-1)]); return; }
+  var dn=e.target.closest("[data-done]");
+  if(dn){ var k=dn.getAttribute("data-done"); doneSet[k]=!doneSet[k]; dn.classList.toggle("is-done",!!doneSet[k]); dn.textContent=doneSet[k]?"✓ Padha hua — ho gaya":"✓ Padha hua nishan lagao"; updateProgress(); }
+});
+function updateProgress(){
+  var total=ALL.length, done=Object.keys(doneSet).filter(function(k){return doneSet[k];}).length;
+  var pct=Math.round(done/total*100);
+  document.getElementById("progBar").style.width=pct+"%";
+  document.getElementById("progPct").textContent=pct+"% ("+done+"/"+total+")";
+}
+document.getElementById("menuBtn").addEventListener("click",function(){ document.getElementById("sidebar").classList.toggle("open"); });
+document.getElementById("navSearch").addEventListener("input",function(e){
+  var q=e.target.value.toLowerCase();
+  document.querySelectorAll(".nav-item").forEach(function(b){ b.style.display=b.textContent.toLowerCase().indexOf(q)>-1?"":"none"; });
+  document.querySelectorAll(".nav-group").forEach(function(g){ var any=false; g.querySelectorAll(".nav-item").forEach(function(b){ if(b.style.display!=="none") any=true; }); g.style.display=any?"":"none"; });
+});
+/* ================= TRUST CHECK ================= */
+function renderTrust(){
+  var sections=document.querySelectorAll('article[data-kind="section"]').length;
+  var sideItems=document.querySelectorAll(".nav-item").length;
+  var srcBoxes=document.querySelectorAll('article[data-kind="section"] .source-box').length;
+  var urls={}; document.querySelectorAll('article[data-kind="section"] .source-box a').forEach(function(a){ urls[a.href]=1; });
+  var faqs=document.querySelectorAll(".faq-item").length;
+  var labs=document.querySelectorAll(".lab").length;
+  var stats=[["Hisse (kul)",sections],["Sidebar ki entries",sideItems],["Source ke dabbe",srcBoxes],["Alag-alag asli pages",Object.keys(urls).length],["Sawal-jawab (FAQs)",faqs],["Labs (abhyaas)",labs]];
+  document.getElementById("statGrid").innerHTML=stats.map(function(x){return '<div class="stat"><span class="num">'+x[1]+'</span><span class="lbl">'+x[0]+'</span></div>';}).join("");
+  var counts={}; ALL.forEach(function(s){ counts[GROUPS[s.g]]=(counts[GROUPS[s.g]]||0)+1; });
+  var expected={"Get Started":5,"Handbook":16,"Reference":15,"Modules Reference":5,"Tutorials":6,"Declaration Files":13,"JavaScript":4,"Project Configuration":8,"Docs Home":1,"Setup":1};
+  document.getElementById("crossBody").innerHTML=Object.keys(expected).map(function(g){
+    var got=counts[g]||0, ok=got===expected[g];
+    return "<tr><td>"+g+"</td><td>"+expected[g]+"</td><td>"+got+"</td><td>"+(ok?"✓ MIL GAYA":"✗ NAHI MILA")+"</td></tr>";
+  }).join("")+'<tr><td><b>Kul Yog</b></td><td><b>74</b></td><td><b>'+sections+'</b></td><td><b>'+(sections===74?"✓ MIL GAYA":"✗ NAHI MILA")+'</b></td></tr>';
+}
+document.addEventListener("click",function(e){
+  if(e.target.id!=="runCheck") return;
+  var problems=[];
+  var sections=document.querySelectorAll('article[data-kind="section"]');
+  if(sections.length!==74) problems.push("Hisse "+sections.length+" mile, 74 hone chahiye the");
+  var missing=0; sections.forEach(function(a){ var sb=a.querySelector(".source-box a"); if(!sb||sb.href.indexOf("typescriptlang.org")<0) missing++; });
+  if(missing) problems.push(missing+" hisson me Source link nahi hai ya galat hai");
+  var urls={}; document.querySelectorAll('article[data-kind="section"] .source-box a').forEach(function(a){ urls[a.href]=1; });
+  if(Object.keys(urls).length!==74) problems.push("Alag-alag Source URLs "+Object.keys(urls).length+" hain, 74 nahi");
+  if(document.querySelectorAll(".nav-item").length!==78) problems.push("Sidebar ki entries "+document.querySelectorAll(".nav-item").length+" hain, 78 nahi (74 + Labs/FAQ/Asli Pages/Trust)");
+  if(document.querySelectorAll(".faq-item").length<25) problems.push("FAQs bahut kam hain");
+  if(document.querySelectorAll(".lab").length<8) problems.push("Labs bahut kam hain");
+  var r=document.getElementById("checkResult");
+  if(problems.length===0){ r.className="check-result pass"; r.textContent="PASS ✓ — 74 hisse, 74 Source ke dabbe, 74 alag-alag typescriptlang.org URLs, 78 sidebar ki entries, "+document.querySelectorAll(".faq-item").length+" FAQs, "+document.querySelectorAll(".lab").length+" labs — sab live page par maujood hain."; }
+  else{ r.className="check-result fail"; r.textContent="FAIL ✗ — "+problems.join(" · "); }
+});
+/* ================= LABS ================= */
+var LABS_HTML='<article class="lesson" id="view-labs" data-kind="labs"><div class="crumb">Khud Try Karo — Practice</div><h2>Labs — Haath Se Try Karke Seekho</h2><p class="lede">Mushkil concepts ko khud try karke samjho — har lab kisi hisse se juda hai, galti karna hi seekhna hai.</p>'
++'<div class="lab" id="lab1"><span class="lab-tag">Lab 1 · Inference · Hissa 07</span><h3>Type Inference Playground — Type Khud Pehchano</h3><p>Ek value chuno — TS bina annotation ke konsa type infer karega?</p><div class="row"><button class="chipbtn" data-inf="let x = 3|number">let x = 3</button><button class="chipbtn" data-inf="let s = &quot;hello&quot;|string">let s = "hello"</button><button class="chipbtn" data-inf="let a = [0, 1, null]|(number | null)[]">let a = [0, 1, null]</button><button class="chipbtn" data-inf="let z = [rhino, elephant]|(Rhino | Elephant)[] — Animal[] NAHI!">let z = [rhino, elephant]</button><button class="chipbtn" data-inf="const c = &quot;GET&quot;|&quot;GET&quot; (literal — const widen nahi karta)">const c = "GET"</button><button class="chipbtn" data-inf="let m = &quot;GET&quot;|string (let widen kar deta hai)">let m = "GET"</button></div><div class="out" id="lab1out">Upar se ek value chuno…</div></div>'
++'<div class="lab" id="lab2"><span class="lab-tag">Lab 2 · Narrowing · Hissa 09</span><h3>Narrowing Simulator — Type Kaise Chhota Hota Hai</h3><p>Value ki asal kism chuno, phir guard lagao — dekho type kaise narrow hota hai. Declared type: <code>string | string[] | null</code></p><div class="row"><span>Value asal me:</span><select id="lab2val"><option value="string">string</option><option value="array">string[]</option><option value="null">null</option></select></div><div class="row"><button class="ghost-btn" data-guard="typeof-object">typeof x === "object"</button><button class="ghost-btn" data-guard="truthy">if (x) truthiness</button><button class="ghost-btn" data-guard="isarray">Array.isArray(x)</button><button class="ghost-btn" data-guard="typeof-string">typeof x === "string"</button></div><div class="out" id="lab2out">Guard chuno…</div><p style="margin-bottom:0">Dhyaan do: <code>typeof null === "object"</code> hai — isiliye object-guard null ko nahi hata pata!</p></div>'
++'<div class="lab" id="lab3"><span class="lab-tag">Lab 3 · Structural Typing · Hissa 02</span><h3>Shape Checker — Point chalega?</h3><p>Target type: <code>interface Point { x: number; y: number }</code>. Object me kaunsi properties hain, tick karo:</p><div class="row"><button class="chipbtn sel" data-prop="x">x: number</button><button class="chipbtn sel" data-prop="y">y: number</button><button class="chipbtn" data-prop="z">z: number</button><button class="chipbtn" data-prop="name">name: string</button></div><div class="row"><button class="go" id="lab3go">Check karo</button></div><div class="out" id="lab3out">Check dabao…</div><p style="margin-bottom:0">Extra properties (z, name) koi dikkat nahi — shape me x aur y hona hi kaafi hai. Yahi structural typing hai.</p></div>'
++'<div class="lab" id="lab4"><span class="lab-tag">Lab 4 · Unions · Hissa 08</span><h3>Union Operation Checker — Kya Chalega, Kya Nahi</h3><p>Type: <code>id: string | number</code>. Konsi operation seedha chalegi, kis par error?</p><div class="row"><button class="chipbtn" data-op="upper">id.toUpperCase()</button><button class="chipbtn" data-op="fixed">id.toFixed()</button><button class="chipbtn" data-op="tostr">String(id)</button><button class="chipbtn" data-op="typeof">typeof id === "string" ? id.toUpperCase() : id.toFixed()</button></div><div class="out" id="lab4out">Operation chuno…</div></div>'
++'<div class="lab" id="lab5"><span class="lab-tag">Lab 5 · Generics · Hissa 13</span><h3>Identity Function Lab — Type Pakdo, Wapas Wahi Type</h3><p><code>function identity&lt;Type&gt;(arg: Type): Type</code> — argument ka type chuno, return type khud bann jayega:</p><div class="row"><button class="chipbtn" data-gen="string">identity("myString")</button><button class="chipbtn" data-gen="number">identity(42)</button><button class="chipbtn" data-gen="string[]">identity(["a","b"])</button><button class="chipbtn" data-gen="{ x: number }">identity({ x: 1 })</button></div><div class="out" id="lab5out">Call chuno…</div><p style="margin-bottom:0"><code>any</code> hota to return type ki jaankari kho jati — Type variable use capture karke reuse karta hai.</p></div>'
++'<div class="lab" id="lab6"><span class="lab-tag">Lab 6 · Mapped Types · Hissa 18</span><h3>Mapped Type Machine — Ek Type Se Dusra Type</h3><p>Base type: <code>{ name: string; age?: number; readonly id: number }</code> — transformation lagao:</p><div class="row"><button class="chipbtn" data-map="partial">Partial&lt;T&gt;</button><button class="chipbtn" data-map="required">Required&lt;T&gt;</button><button class="chipbtn" data-map="readonly">Readonly&lt;T&gt;</button><button class="chipbtn" data-map="mutable">CreateMutable&lt;T&gt; (-readonly)</button><button class="chipbtn" data-map="concrete">Concrete&lt;T&gt; (-?)</button></div><div class="out" id="lab6out">Transformation chuno…</div></div>'
++'<div class="lab" id="lab7"><span class="lab-tag">Lab 7 · Utility Types · Hissa 22</span><h3>Pick / Omit Workshop — Chuno ya Chhodo</h3><p>Base: <code>Todo { title, description, completed, createdAt }</code> — properties tick karke dekho:</p><div class="row"><button class="chipbtn sel" data-todo="title">title</button><button class="chipbtn" data-todo="description">description</button><button class="chipbtn sel" data-todo="completed">completed</button><button class="chipbtn" data-todo="createdAt">createdAt</button></div><div class="row"><button class="go" id="lab7pick">Pick banao</button><button class="go" id="lab7omit">Omit banao (ticked hatao)</button></div><div class="out" id="lab7out">Buttons dabao…</div></div>'
++'<div class="lab" id="lab8"><span class="lab-tag">Lab 8 · Enums · Hissa 26</span><h3>Enum Reverse Mapping Lab — Number Se Naam</h3><p><code>enum LogLevel { ERROR, WARN, INFO, DEBUG }</code> — member chuno, compiled JS ka object dekho:</p><div class="row"><button class="chipbtn" data-enum="0">LogLevel.ERROR</button><button class="chipbtn" data-enum="2">LogLevel.INFO</button><button class="chipbtn" data-enum="rev">LogLevel[2]</button><button class="chipbtn" data-enum="keys">keyof typeof LogLevel</button></div><div class="out" id="lab8out">Member chuno…</div><p style="margin-bottom:0">String enums me ye reverse mapping NAHI banti — sirf numeric me.</p></div>'
++'<div class="lab" id="lab9"><span class="lab-tag">Lab 9 · Discriminated Unions · Hissa 09</span><h3>Exhaustiveness Checker — Koi Case Bacha To Nahi?</h3><p><code>type Shape = Circle | Square</code> par switch chala rahe ho. Scenario chuno:</p><div class="row"><button class="chipbtn" data-exh="both">Dono cases + never check</button><button class="chipbtn" data-exh="miss">Square case missing + never check</button><button class="chipbtn" data-exh="new">Naya member Triangle jud gaya</button></div><div class="out" id="lab9out">Scenario chuno…</div></div>'
++'<div class="lab" id="lab10"><span class="lab-tag">Lab 10 · tsconfig · Hisse 39/67</span><h3>tsconfig Recipe Generator — Project Ke Hisab Se Settings</h3><p>Project ki kism chuno — research se verify ki hui recipe milegi:</p><div class="row"><button class="chipbtn" data-cfg="bundler">App + Bundler</button><button class="chipbtn" data-cfg="node">App + Node.js</button><button class="chipbtn" data-cfg="library">Library</button></div><div class="out" id="lab10out">Recipe chuno…</div></div>'
++'<div class="source-box"><span class="s-label">Source — Asli Page</span>Ye labs in hisson par based hain: 07, 08, 09, 13, 18, 22, 26, 39 — har hisse ka Source usi hisse ke aakhir me hai.</div>'
++'<div class="pager"><button data-nav="prev"><span class="dir">← Pichhla Topic</span><span class="pt"></span></button><button data-nav="next"><span class="dir">Agla Topic →</span><span class="nt2"></span></button></div></article>';
+/* Repair: LABS_HTML render ke samay undefined tha (var hoisting) — asli labs article ab DOM me sahi jagah lagao */
+(function(){
+  var faqEl=document.getElementById("view-faq");
+  var tmp=document.createElement("div"); tmp.innerHTML=LABS_HTML;
+  var labsEl=tmp.firstElementChild;
+  if(faqEl&&labsEl) content.insertBefore(labsEl,faqEl);
+  Array.prototype.slice.call(content.childNodes).forEach(function(nd){ if(nd.nodeType===3&&nd.textContent.trim()==="undefined") nd.remove(); });
+})();
+/* ================= LAB LOGIC ================= */
+function setOut(id,html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-inf]");
+  if(b){ var parts=b.getAttribute("data-inf").split("|"); setOut("lab1out",'<span class="inf">'+parts[0]+'</span>\nInfer hua type: <span class="ok">'+parts[1]+"</span>"); document.querySelectorAll("#lab1 .chipbtn").forEach(function(x){x.classList.remove("sel");}); b.classList.add("sel"); return; }
+  var g=e.target.closest("[data-guard]");
+  if(g){
+    var val=document.getElementById("lab2val").value, guard=g.getAttribute("data-guard"), msg="";
+    if(guard==="typeof-object"){ msg = val==="null" ? '<span class="err">typeof null === "object" hai!</span>\nBranch ke andar type: string[] | null\n→ null ab bhi andar hai — .map() seedha nahi chalega. Pehle null hatao.' : '<span class="ok">Branch ke andar type: string[]</span>\n→ .map() / .length sab chalega.'; }
+    if(guard==="truthy"){ msg = '<span class="ok">Branch ke andar type: string | string[]</span>\n→ null hat gaya. Lekin dhyaan: value asal me empty string "" hoti to ye branch chalta hi nahi!'; }
+    if(guard==="isarray"){ msg = val==="array" ? '<span class="ok">Branch ke andar type: string[]</span>\n→ pakka array hai, saare array methods safe.' : '<span class="err">Ye branch chalegi hi nahi</span> — value array nahi hai.\nElse me type: '+(val==="null"?"null":"string"); }
+    if(guard==="typeof-string"){ msg = val==="string" ? '<span class="ok">Branch ke andar type: string</span>\n→ .toUpperCase() safe hai.' : '<span class="err">Ye branch chalegi hi nahi</span> — value string nahi hai.'; }
+    setOut("lab2out",msg); return;
+  }
+  var pr=e.target.closest("[data-prop]");
+  if(pr){ pr.classList.toggle("sel"); return; }
+  if(e.target.id==="lab3go"){
+    var props={}; document.querySelectorAll("#lab3 [data-prop]").forEach(function(x){ if(x.classList.contains("sel")) props[x.getAttribute("data-prop")]=1; });
+    if(props.x&&props.y) setOut("lab3out",'<span class="ok">✓ Assignable hai!</span>\nObject ke paas x aur y dono hain'+((props.z||props.name)?" — extra properties koi dikkat nahi (variable se pass karne par).":"")+'\nDhyaan do: yahi object seedha literal ki tarah pass karte to excess property check lag sakta tha.');
+    else setOut("lab3out",'<span class="err">✗ Error!</span>\nPoint ke liye x aur y dono chahiye — '+(props.x?"y missing hai.":"x missing hai.")+"\nShape adhoori hai, naam kuch bhi ho.");
+    return;
+  }
+  var op=e.target.closest("[data-op]");
+  if(op){ var o=op.getAttribute("data-op");
+    if(o==="upper") setOut("lab4out",'<span class="err">✗ Error 2339: Property toUpperCase does not exist on type number.</span>\nUnion par sirf wahi operation chalegi jo HAR member par valid ho.');
+    if(o==="fixed") setOut("lab4out",'<span class="err">✗ Error 2339: Property toFixed does not exist on type string.</span>\nWahi kahani — dusri disha me.');
+    if(o==="tostr") setOut("lab4out",'<span class="ok">✓ Chalega!</span>\nString(id) dono types ko accept karta hai — common operation hai.');
+    if(o==="typeof") setOut("lab4out",'<span class="ok">✓ Chalega — yahi sahi tareeqa hai!</span>\nPehle typeof se narrow karo, phir branch ke andar pakka type milta hai:\ntrue branch: id is string → toUpperCase safe\nfalse branch: id is number → toFixed safe');
+    document.querySelectorAll("#lab4 .chipbtn").forEach(function(x){x.classList.remove("sel");}); op.classList.add("sel"); return;
+  }
+  var gn=e.target.closest("[data-gen]");
+  if(gn){ var t=gn.getAttribute("data-gen"); setOut("lab5out",'Type variable ne type pakda: <span class="inf">Type = '+t+'</span>\nReturn type hoga: <span class="ok">'+t+"</span>\n→ Input aur output ka type hamesha jude rahenge, chahe Type kuch bhi ho."); document.querySelectorAll("#lab5 .chipbtn").forEach(function(x){x.classList.remove("sel");}); gn.classList.add("sel"); return; }
+  var mp=e.target.closest("[data-map]");
+  if(mp){ var m=mp.getAttribute("data-map"), out="";
+    if(m==="partial") out="Partial&lt;T&gt; = {\n  name?: string;\n  age?: number;\n  readonly id?: number;\n}\n→ sab optional ho gaye (update functions ke liye perfect).";
+    if(m==="required") out="Required&lt;T&gt; = {\n  name: string;\n  age: number;      // ? hat gaya\n  readonly id: number;\n}\n→ sab required ho gaye.";
+    if(m==="readonly") out="Readonly&lt;T&gt; = {\n  readonly name: string;\n  readonly age?: number;\n  readonly id: number;\n}\n→ sab readonly (shallow hai — nested objects phir bhi mutable).";
+    if(m==="mutable") out="CreateMutable&lt;T&gt; = { -readonly [K in keyof T]: T[K] } = {\n  name: string;\n  age?: number;\n  id: number;       // readonly hat gaya\n}";
+    if(m==="concrete") out="Concrete&lt;T&gt; = { [K in keyof T]-?: T[K] } = {\n  name: string;\n  age: number;      // ? hat gaya\n  readonly id: number;\n}";
+    setOut("lab6out",out); document.querySelectorAll("#lab6 .chipbtn").forEach(function(x){x.classList.remove("sel");}); mp.classList.add("sel"); return; }
+  var td=e.target.closest("[data-todo]");
+  if(td){ td.classList.toggle("sel"); return; }
+  if(e.target.id==="lab7pick"||e.target.id==="lab7omit"){
+    var all=["title","description","completed","createdAt"], sel=[];
+    document.querySelectorAll("#lab7 [data-todo]").forEach(function(x){ if(x.classList.contains("sel")) sel.push(x.getAttribute("data-todo")); });
+    var types={"title":"string","description":"string","completed":"boolean","createdAt":"Date"};
+    var use = e.target.id==="lab7pick" ? sel : all.filter(function(x){return sel.indexOf(x)<0;});
+    var name = e.target.id==="lab7pick" ? "Pick&lt;Todo, "+sel.map(function(x){return '"'+x+'"';}).join(" | ")+"&gt;" : "Omit&lt;Todo, "+sel.map(function(x){return '"'+x+'"';}).join(" | ")+"&gt;";
+    if(use.length===0){ setOut("lab7out",'<span class="err">Result khaali type {} banega — kuch properties to chuno!</span>'); }
+    else setOut("lab7out",name+" = {\n"+use.map(function(x){return "  "+x+": "+types[x]+";";}).join("\n")+"\n}");
+    return;
+  }
+  var en=e.target.closest("[data-enum]");
+  if(en){ var v=en.getAttribute("data-enum");
+    if(v==="0") setOut("lab8out",'LogLevel.ERROR → <span class="ok">0</span>\nCompile hone ke baad object: { "0": "ERROR", "1": "WARN", "2": "INFO", "3": "DEBUG", ERROR: 0, WARN: 1, INFO: 2, DEBUG: 3 }');
+    if(v==="2") setOut("lab8out",'LogLevel.INFO → <span class="ok">2</span>\nKhud badhta hai (auto-increment): ERROR=0 ke baad WARN=1, INFO=2, DEBUG=3.');
+    if(v==="rev") setOut("lab8out",'LogLevel[2] → <span class="ok">"INFO"</span>\nYehi reverse mapping hai — numeric enums value se naam dete hain.\nString enums me ye NAHI milta.');
+    if(v==="keys") setOut("lab8out",'keyof typeof LogLevel → <span class="ok">"ERROR" | "WARN" | "INFO" | "DEBUG"</span>\nPlain keyof enum par kaam nahi karta — typeof pehle lagana padta hai.');
+    document.querySelectorAll("#lab8 .chipbtn").forEach(function(x){x.classList.remove("sel");}); en.classList.add("sel"); return;
+  }
+  var ex=e.target.closest("[data-exh]");
+  if(ex){ var s=ex.getAttribute("data-exh");
+    if(s==="both") setOut("lab9out",'<span class="ok">✓ Sab theek hai.</span>\ndefault branch me shape ka type: never\nconst _check: never = shape; — compile pass.\nMatlab: har case handle ho raha hai.');
+    if(s==="miss") setOut("lab9out",'<span class="err">✗ Error: Type Square is not assignable to type never.</span>\ndefault tak Square wala case pahunch raha hai — never check ne missing case pakad liya!\nYahi is pattern ki taqat hai.');
+    if(s==="new") setOut("lab9out",'<span class="err">✗ Error: Type Triangle is not assignable to type never.</span>\nUnion me naya member judte hi purana code khud bol pada —\nkoi case chup-chaap miss nahi hoga. Triangle ka case jodo, error gayab.');
+    document.querySelectorAll("#lab9 .chipbtn").forEach(function(x){x.classList.remove("sel");}); ex.classList.add("sel"); return;
+  }
+  var cf=e.target.closest("[data-cfg]");
+  if(cf){ var c=cf.getAttribute("data-cfg"), out="";
+    if(c==="bundler") out='{\n  "compilerOptions": {\n    "module": "esnext",\n    "moduleResolution": "bundler",\n    "esModuleInterop": true,\n    "noEmit": true,\n    "verbatimModuleSyntax": true,\n    "allowImportingTsExtensions": true\n  }\n}\n→ Bundler host hai; TS sirf check karta hai, emit bundler ka kaam.';
+    if(c==="node") out='{\n  "compilerOptions": {\n    "module": "nodenext",\n    "verbatimModuleSyntax": true,\n    "strict": true\n  }\n}\n→ nodenext moduleResolution + esModuleInterop + target khud imply kar deta hai.\nESM chahiye to package.json me "type": "module" rakho.';
+    if(c==="library") out='{\n  "compilerOptions": {\n    "module": "node18",\n    "target": "es2020",\n    "strict": true,\n    "verbatimModuleSyntax": true,\n    "declaration": true,\n    "sourceMap": true,\n    "declarationMap": true,\n    "rootDir": "src",\n    "outDir": "dist"\n  }\n}\n→ Strictest settings — library har consumer ke host par chalegi.';
+    setOut("lab10out",out); document.querySelectorAll("#lab10 .chipbtn").forEach(function(x){x.classList.remove("sel");}); cf.classList.add("sel"); return;
+  }
+});
+/* ================= INIT ================= */
+var startId="view-sec-1";
+if(location.hash){ var cand=location.hash.slice(1); if(VIEW.indexOf(cand)>-1) startId=cand; }
+show(startId);
+updateProgress();
+</script>
+</body>
+</html>
