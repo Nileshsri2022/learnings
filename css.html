@@ -1,0 +1,1311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="light"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="icon" href="data:,"/>
+<title>CSS SPA — MDN se poora CSS, ek hi page me</title>
+<style>
+:root{
+color-scheme:light;
+--bg:#faf9f6;--bg2:#efeeeb;--surface:#ffffff;--surface-low:#f4f3f1;
+--ink:#1a1c1a;--muted:#424936;--secondary:#4a645a;
+--line:#c1cab0;--line-soft:#e2e5da;
+--accent:#416900;--accent-strong:#304f00;--accent-tint:#eaf3d2;
+--lime:#84cc16;--lime-dim:#91db2a;--on-lime:#315200;
+--code-bg:#0c1914;--code-ink:#f2f1ee;--code-line:#1a382e;
+--good:#2e7d32;--bad:#ba1a1a;--chip:#efeeeb;
+--side-bg:#062018;--side-ink:#f2f1ee;--side-mut:#b1cdc1;--side-hover:#334c43;
+--chrome-bg:#112a22;
+--callout:#eaf3d2;
+--bar-bg:rgba(250,249,246,.85);
+--shadow-sm:0 1px 2px rgba(26,28,26,.05),0 4px 14px -6px rgba(26,28,26,.08);
+--shadow-md:0 1px 3px rgba(26,28,26,.06),0 12px 28px -12px rgba(26,28,26,.16);
+--shadow-head:0 1px 8px rgba(0,0,0,.04);
+--font-ui:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+--font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+/* Stitch "Forest & Lime Editorial" is a light-only design (background #FAF9F6).
+   No dark-mode override: the page must look identical to the Stitch screens
+   on every device, even when the phone/browser is set to dark mode. */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#102000}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{font-family:var(--font-ui);color:var(--ink)}
+h1{font-size:2.25rem;line-height:1.22;font-weight:700;letter-spacing:-.025em;margin:.1em 0 .45em}
+h2{font-size:1.5rem;line-height:1.33;font-weight:600;letter-spacing:-.02em;margin:.2em 0 .6em}
+h3{font-size:1.125rem;line-height:1.44;font-weight:600;letter-spacing:-.01em;margin:1.15em 0 .45em}
+h4{font-size:1rem;font-weight:600;margin:1em 0 .4em}
+p{margin:.6em 0}
+ul,ol{margin:.5em 0 .9em;padding-left:1.3em}
+li{margin:.4em 0}
+li::marker{color:var(--accent)}
+code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);color:var(--accent);padding:.14em .42em;border-radius:6px}
+pre{background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:18px 20px;border-radius:12px;overflow-x:auto;font-family:var(--font-mono);font-size:.86rem;line-height:1.6;margin:14px 0;box-shadow:var(--shadow-md)}
+pre code{background:none;color:inherit;padding:0;font-size:1em}
+pre::-webkit-scrollbar{height:8px}
+pre::-webkit-scrollbar-thumb{background:#334c43;border-radius:8px}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent-strong)}
+button{font-family:var(--font-body);cursor:pointer}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:16px 0;font-family:var(--font-body);font-size:.9rem;background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm)}
+th,td{border:none;border-bottom:1px solid var(--line-soft);padding:11px 16px;text-align:left;vertical-align:top;line-height:1.55}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even){background:var(--surface-low)}
+th{background:var(--bg2);font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:264px;flex:0 0 264px;background:var(--side-bg);color:var(--side-ink);position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto;padding:24px 16px 48px}
+.sidebar::-webkit-scrollbar{width:10px}
+.sidebar::-webkit-scrollbar-thumb{background:#334c43;border-radius:8px;border:2px solid var(--side-bg)}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.navsearch{position:relative;margin:0 0 20px}
+.navsearch input{width:100%;padding:10px 14px;border-radius:8px;border:1px solid transparent;background:rgba(51,76,67,.45);color:var(--side-ink);font-family:var(--font-body);font-size:.85rem;min-height:44px}
+.navsearch input::placeholder{color:var(--side-mut)}
+.navsearch input:focus{outline:2px solid var(--lime);outline-offset:1px;background:rgba(51,76,67,.65)}
+.sidebar h2{display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--font-body);font-size:.72rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(177,205,193,.72);border:none;border-top:1px solid rgba(177,205,193,.16);padding:14px 8px 0;margin:22px 0 8px}
+.sidebar h2:first-of-type{margin-top:2px;border-top:none;padding-top:0}
+.navgroup-label{flex:1;min-width:0;line-height:1.45}
+.navcount{flex:0 0 auto;font-family:var(--font-mono);font-size:.68rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--side-ink);background:rgba(51,76,67,.85);border:1px solid rgba(177,205,193,.22);border-radius:999px;padding:2px 8px;line-height:1.5}
+.navbtn{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:8px;font-size:.9rem;font-weight:500;color:var(--side-mut);min-height:44px;line-height:1.4;transition:background .15s ease,color .15s ease}
+.navnum{flex:0 0 auto;min-width:30px;text-align:center;font-family:var(--font-mono);font-size:.72rem;font-weight:600;line-height:1.5;color:#cfe3b8;background:rgba(132,204,22,.14);border:1px solid rgba(132,204,22,.28);border-radius:6px;padding:1px 5px;margin-top:1px}
+.navtitle{flex:1;min-width:0;padding-top:1px}
+.navbtn:hover{background:var(--side-hover);color:var(--side-ink)}
+.navbtn:hover .navnum{background:rgba(132,204,22,.28);color:#eef7d8}
+.navbtn.active{background:var(--lime);color:var(--on-lime);font-weight:600}
+.navbtn.active .navnum{background:rgba(6,32,24,.88);border-color:rgba(6,32,24,.88);color:var(--lime)}
+.main{flex:1;min-width:0;padding:20px 36px 96px;max-width:892px;margin:0 auto;width:100%}
+.crumbbar{position:sticky;top:0;z-index:40;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;background:var(--bar-bg);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--shadow-head);margin:0 -36px 26px;padding:13px 36px}
+.crumb{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:500;color:var(--muted);min-width:0}
+.crumb .crumb-cur{color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb .crumb-sep{color:var(--line)}
+section.page{display:none}
+section.page.active{display:block;animation:pageIn .28s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{position:relative;overflow:hidden;background:var(--callout);border:none;border-radius:12px;padding:22px 24px 22px 28px;margin:16px 0;box-shadow:var(--shadow-sm)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--lime)}
+.card h3:first-child{margin-top:.1em}
+.card table{background:var(--surface)}
+.point{background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;padding:15px 18px;margin:10px 0;box-shadow:var(--shadow-sm)}
+.point b{display:block;margin-bottom:3px;font-family:var(--font-ui);font-weight:600;font-size:.99rem;color:var(--ink)}
+.source{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--accent-tint);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:24px 0 8px;font-family:var(--font-body);font-size:.86rem;word-break:break-all}
+.source b{color:var(--accent);text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;font-weight:700;flex:0 0 auto}
+.source a{color:var(--accent);font-weight:500}
+.nextbar{margin-top:28px;display:flex;gap:10px;flex-wrap:wrap}
+.nextbtn{background:var(--lime);color:var(--on-lime);border:none;padding:11px 20px;border-radius:10px;font-family:var(--font-ui);font-weight:600;font-size:.95rem;min-height:48px;box-shadow:var(--shadow-sm);transition:background .15s ease,transform .15s ease}
+.nextbtn:hover{background:var(--lime-dim);transform:translateY(-1px)}
+.chip{display:inline-block;background:var(--chip);border:1px solid var(--line-soft);border-radius:999px;padding:2px 11px;font-family:var(--font-body);font-size:.78rem;font-weight:600;margin:2px}
+.topbar{display:none}
+.bottomnav{display:none}
+.scrim{display:none}
+.lab{border:1px solid var(--line-soft);border-radius:16px;padding:22px;margin:18px 0;background:var(--surface);box-shadow:var(--shadow-md)}
+.lab h3{margin-top:0;color:var(--ink);font-size:1.1rem;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+.lab label{display:block;margin:10px 0;font-family:var(--font-body);font-size:.92rem;font-weight:600}
+.lab input[type=range]{width:100%;min-height:36px;accent-color:var(--accent)}
+.lab select,.lab input[type=text],.lab input[type=number]{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-family:var(--font-body);font-size:.95rem;min-height:44px;width:100%;max-width:420px;background:var(--surface);color:var(--ink)}
+.lab select:focus,.lab input[type=text]:focus,.lab input[type=number]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.demo{border:1px solid var(--line-soft);border-radius:12px;padding:14px;margin:12px 0;background:var(--surface-low)}
+#flWrapper{background:var(--bg2)!important}
+details{border:1px solid var(--line-soft);border-radius:12px;padding:4px 18px;margin:8px 0;background:var(--surface);box-shadow:var(--shadow-sm)}
+summary{cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:.98rem;min-height:48px;display:flex;align-items:center;gap:10px;list-style:none;color:var(--ink)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";margin-left:auto;width:9px;height:9px;flex:0 0 auto;border-right:2px solid var(--secondary);border-bottom:2px solid var(--secondary);transform:rotate(45deg);transition:transform .2s ease}
+details[open ] summary::after{transform:rotate(225deg)}
+details p{margin-top:2px}
+.pass{color:var(--good);font-weight:bold}
+.fail{color:var(--bad);font-weight:bold}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:14px 0}
+.kpi div{background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;padding:16px 10px;text-align:center;box-shadow:var(--shadow-sm);font-family:var(--font-body);font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.kpi b{font-family:var(--font-ui);font-size:1.9rem;display:block;color:var(--accent);font-weight:800;letter-spacing:-.01em;margin-bottom:2px}
+@media(max-width:860px){
+.layout{display:block}
+.sidebar{display:none;position:fixed;left:0;top:0;height:100dvh;width:86vw;max-width:320px;z-index:60;background:var(--chrome-bg);box-shadow:0 0 60px rgba(0,0,0,.4)}
+.sidebar.open{display:block;animation:drawerIn .3s ease both}
+@keyframes drawerIn{from{transform:translateX(-28px);opacity:.3}to{transform:none;opacity:1}}
+.scrim{display:block;position:fixed;inset:0;background:rgba(6,32,24,.55);z-index:55;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.scrim.show{opacity:1;pointer-events:auto}
+.topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;background:rgba(17,42,34,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));z-index:50;font-family:var(--font-ui);box-shadow:0 1px 12px rgba(17,42,34,.18);color:#f2f1ee}
+.topbar button{min-height:44px;min-width:44px;background:#0d201a;border:1px solid #1a382e;border-radius:10px;color:#84cc16;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.topbar button svg{width:22px;height:22px}
+.topbar strong{font-weight:700;letter-spacing:-.01em;font-size:.98rem;color:#f2f1ee}
+.main{padding:18px 16px 118px}
+.crumbbar{position:static;margin:0 0 20px;padding:0;background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+h1{font-size:1.75rem;line-height:1.28}
+h2{font-size:1.35rem}
+.card{padding:18px 18px 18px 22px}
+.point{padding:12px 14px}
+table{font-size:.84rem}
+th,td{padding:8px 10px}
+.lab{padding:16px}
+.bottomnav{display:block;position:fixed;left:0;right:0;bottom:0;z-index:65;background:rgba(17,42,34,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 -4px 20px rgba(17,42,34,.14);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bottomnav .bn-row{display:flex;justify-content:space-around;align-items:stretch;height:64px;padding:0 4px}
+.bnav-btn{flex:1;background:none;border:none;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;border-radius:10px;color:#b1cdc1;font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.02em}
+.bnav-btn svg{width:22px;height:22px}
+.bnav-btn.active{color:#84cc16;font-weight:600}
+}
+@media(prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+section.page.active{animation:none}
+.sidebar.open{animation:none}
+*{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="topbar"><button id="menuBtn" aria-label="Menu kholo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><strong>CSS — MDN Learning SPA</strong></div>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+<div class="navsearch"><input type="text" id="navSearch" placeholder="Section dhundho…" aria-label="Section dhundho"/></div>
+<button class="navbtn" data-target="home">Home — Shuruaat</button>
+<h2>Learn — CSS styling basics</h2>
+<button class="navbtn" data-target="s-what">What is CSS?</button>
+<button class="navbtn" data-target="s-start">Getting started with CSS</button>
+<button class="navbtn" data-target="s-basic-sel">Basic CSS selectors</button>
+<button class="navbtn" data-target="s-attr-sel">Attribute selectors</button>
+<button class="navbtn" data-target="s-pseudo">Pseudo-classes and pseudo-elements</button>
+<button class="navbtn" data-target="s-comb">Combinators</button>
+<button class="navbtn" data-target="s-box">The box model</button>
+<button class="navbtn" data-target="s-conflict">Handling conflicts</button>
+<button class="navbtn" data-target="s-values">Values and units</button>
+<button class="navbtn" data-target="s-sizing">Sizing items in CSS</button>
+<button class="navbtn" data-target="s-bg">Backgrounds and borders</button>
+<button class="navbtn" data-target="s-overflow">Overflowing content</button>
+<button class="navbtn" data-target="s-media-form">Images, media, and form elements</button>
+<button class="navbtn" data-target="s-tables">Styling tables</button>
+<button class="navbtn" data-target="s-debug">Debugging CSS</button>
+
+<h2>Learn — CSS text styling</h2>
+<button class="navbtn" data-target="s-text">Fundamental text and font styling</button>
+<button class="navbtn" data-target="s-lists">Styling lists</button>
+<button class="navbtn" data-target="s-links">Styling links</button>
+<button class="navbtn" data-target="s-webfonts">Web fonts</button>
+
+<h2>Learn — CSS layout</h2>
+<button class="navbtn" data-target="s-layout-intro">Introduction to CSS layout</button>
+<button class="navbtn" data-target="s-floats">Floats</button>
+<button class="navbtn" data-target="s-position">Positioning</button>
+<button class="navbtn" data-target="s-flex">Flexbox</button>
+<button class="navbtn" data-target="s-grid">CSS grid layout</button>
+<button class="navbtn" data-target="s-rwd">Responsive design</button>
+<button class="navbtn" data-target="s-mediaq">Media query fundamentals</button>
+
+<h2>Guides</h2>
+<button class="navbtn" data-target="s-effects">Advanced styling effects</button>
+<button class="navbtn" data-target="s-layers">Cascade layers</button>
+<button class="navbtn" data-target="s-directions">Handling different text directions</button>
+<button class="navbtn" data-target="s-organizing">Organizing your CSS</button>
+<button class="navbtn" data-target="s-multicol">Multiple-column layout</button>
+<button class="navbtn" data-target="s-practical-pos">Practical positioning examples</button>
+<button class="navbtn" data-target="s-legacy">Legacy layout methods</button>
+<button class="navbtn" data-target="s-oldbrowsers">Supporting older browsers</button>
+
+<h2>Reference</h2>
+<button class="navbtn" data-target="s-ref-sel">CSS selectors reference</button>
+<button class="navbtn" data-target="s-ref-prop">CSS properties reference</button>
+<button class="navbtn" data-target="s-ref-atrules">CSS at-rules, functions and data types</button>
+<button class="navbtn" data-target="s-ref-anim">Animations, transitions, transforms and custom properties</button>
+
+<h2>Practice</h2>
+<button class="navbtn" data-target="s-labs">Labs — Interactive playgrounds</button>
+<button class="navbtn" data-target="s-challenges">Challenges — MDN practice</button>
+
+<h2>Sources &amp; Interview</h2>
+<button class="navbtn" data-target="s-faq">Interview FAQs</button>
+<button class="navbtn" data-target="s-sources">Sources — saare MDN pages</button>
+<button class="navbtn" data-target="s-trust">Trust Check — sab kuch cover hai?</button>
+</aside>
+
+<main class="main" id="main">
+<div class="crumbbar"><nav class="crumb" aria-label="Breadcrumb"><span id="crumbGroup">Learn</span><span class="crumb-sep" aria-hidden="true">/</span><span class="crumb-cur" id="crumbCurrent">Home — Shuruaat</span></nav></div>
+
+<section class="page" id="home">
+<h1>CSS seekho — MDN se, ek hi page me</h1>
+<div class="card"><h3>MDN ke 3 groups, aur teeno kyun zaroori hain</h3>
+<table><tr><th>Group</th><th>Kaam</th><th>Kab use karo</th></tr>
+<tr><td><b>Learn</b></td><td>Step-by-step seekhna: basics → text → layout</td><td>Pehli baar padhne ke liye — sirf yehi kaafi hai shuruaat me</td></tr>
+<tr><td><b>Guides</b></td><td>Ek topic me deep jana (stretch goals)</td><td>Jab kisi ek cheez me mastery chahiye</td></tr>
+<tr><td><b>Reference</b></td><td>Dictionary — har property/selector ki table</td><td>Jab kuch bhool jao, turant dekhne ke liye</td></tr></table>
+<p>Sirf seekhne ke liye Learn kaafi hai. Lekin goal hai “dobara MDN kholna hi na pade” — isliye teeno groups isi SPA me hain.</p></div>
+<div class="card"><h3>Kaise use karein</h3><p>Left sidebar se section chuno. Har section ke end me <b>Source:</b> box hai — us MDN page ka poora URL jisse explanation aaya hai. Hard concepts ke liye <b>Labs</b> section me interactive playgrounds hain. End me <b>Trust Check</b> hai — live gintee aur self-check button ke saath, taaki tum khud verify kar sako ki sab cover hai.</p>
+<p><button class="nextbtn" data-goto="s-what">Shuru karo — What is CSS? →</button></p></div>
+<div class="source"><b>Source:</b> MDN Core path overview — <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core</a></div>
+</section>
+
+<section class="page" id="s-what"><h2>What is CSS?</h2>
+<div class="point"><b>Browser default styles</b>Headings bade dikhte hain, links neele/underline hote hain — ye HTML se nahi, browser ke andar ki default CSS (user-agent stylesheet) se aata hai. Bina author CSS ke har site ek jaisi dikhegi.</div>
+<div class="point"><b>CSS kya control karta hai</b>Text ka color/size, layout (grid, multi-column), aur special effects (animation) — matlab HTML element exactly kaisa dikhega.</div>
+<div class="point"><b>CSS modules me organized hai</b>Related functionality ke modules hote hain, jaise Backgrounds and Borders module. Specs technologies ko define karte hain; MDN reference har module ki properties list karta hai.</div>
+<div class="point"><b>Rule-based language</b>Ek rule = selector + declaration block <code>{ }</code>. Declaration = property: value.</div>
+<pre><code>h1 { color: red; font-size: 2.5em; }</code></pre>
+<div class="point"><b>Browser CSS kaise apply karta hai</b>HTML milta hai → DOM tree banta hai → CSS rules “buckets” me sort hoti hain (kis element par selector match hua) → DOM par apply → render tree → screen par paint.</div>
+<div class="point"><b>User agent</b>User agent matlab browser — ek program jo computer ke andar insaan ko represent karta hai.</div>
+<div class="point"><b>Practice idea</b>Ek paragraph add karo (dusri rule khud apply hogi), h2 ko alag color do (h1 rule copy karke selector + color badlo), nayi properties MDN CSS reference me dekho.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-start">Next: Getting started with CSS →</button></div></section>
+
+<section class="page" id="s-start"><h2>Getting started with CSS</h2>
+<h3>CSS lagane ke 3 tareeke</h3>
+<div class="point"><b>1. External stylesheet (sabse common, sabse useful)</b>Alag <code>.css</code> file, <code>&lt;head&gt;</code> me <code>&lt;link rel="stylesheet" href="styles.css" /&gt;</code>. Ek file kai pages ko style kar sakti hai. Paths images jaise: <code>styles/style.css</code>, <code>../styles/style.css</code>.</div>
+<div class="point"><b>2. Internal stylesheet</b><code>&lt;head&gt;</code> me <code>&lt;style&gt;</code> element. CMS external file block kare to kaam ka, lekin multi-page site me har page par repeat karna padta hai — inefficient.</div>
+<div class="point"><b>3. Inline styles (avoid karo)</b><code>style</code> attribute ek element par. Maintenance sabse mushkil, presentation HTML se mil jata hai. Legit uses: bahut restrictive CMS, HTML email, JavaScript se dynamic styling.</div>
+<h3>Selectors ki pehli jhalak</h3>
+<ul><li><b>Element selector:</b> <code>p { color: green; }</code></li>
+<li><b>Selector list:</b> <code>p, li { color: green; }</code></li>
+<li><b>Class:</b> <code>.special { color: orange; font-weight: bold; }</code> — kai elements par reuse hoti hai</li>
+<li><b>Descendant (space):</b> <code>li em { color: rebeccapurple; }</code> — sirf li ke andar wala em</li>
+<li><b>Next-sibling (+):</b> <code>h1 + p { font-size: 200%; }</code> — h1 ke turant baad wala p</li>
+<li><b>Combine:</b> <code>h1 + p .special { color: yellow; background-color: black; padding: 5px; }</code></li></ul>
+<div class="point"><b>Link states (pseudo-classes)</b><code>a:link</code> pink, <code>a:visited</code> green, <code>a:hover</code> par underline hata sakte ho. <b>Accessibility warning:</b> underline hatana link ko pehchan-na mushkil bana sakta hai — underline ek important clue hai.</div>
+<div class="point"><b>Functions as values</b><code>width: calc(90% - 30px);</code> aur <code>rotate(0.8turn)</code> jaise transform functions. Function = naam + parentheses ke andar values.</div>
+<div class="point"><b>@rules</b>CSS ke behaviour ke instructions. <code>@media (width &gt;= 30em) { body { background-color: blue; } }</code> — viewport 30em ya zyada ho to blue.</div>
+<div class="point"><b>Shorthand properties</b><code>padding: 10px 15px 15px 5px;</code> = top/right/bottom/left (ghadi ki sui ki direction, upar se). 2 values = top/bottom phir left/right. <code>background</code>, <code>font</code>, <code>border</code>, <code>margin</code> bhi shorthand hain.</div>
+<div class="point"><b>Comments aur whitespace</b><code>/* ... */</code> se comment; code ko temporarily disable karne ke liye bhi. Browser extra spaces ignore karta hai, lekin galtiyan tod deti hain: <code>margin: 0auto;</code> galat hai (<code>0 auto</code> chahiye — do values), <code>padding- left</code> galat hai (property naam me space kabhi nahi).</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Getting_started">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Getting_started</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-basic-sel">Next: Basic CSS selectors →</button></div></section>
+
+<section class="page" id="s-basic-sel"><h2>Basic CSS selectors</h2>
+<div class="point"><b>Selector kya hai</b>Rule ka pehla hissa — ek pattern jo batata hai kin elements ko rule ki values milengi. Chune gaye elements = <b>subject of the selector</b>.</div>
+<table><tr><th>Selector</th><th>Example</th><th>Matlab</th></tr>
+<tr><td>Type</td><td><code>span</code>, <code>h1</code></td><td>Us tag ke saare elements</td></tr>
+<tr><td>Class (case-sensitive, <code>.</code> se)</td><td><code>.highlight</code></td><td>Us class wale saare; reuse ho sakta hai</td></tr>
+<tr><td>Type + class</td><td><code>span.highlight</code></td><td>Sirf span jinki class highlight ho (beech me space nahi)</td></tr>
+<tr><td>Chained classes</td><td><code>.notebox.warning</code></td><td>DONO classes ek saath chahiye; sirf <code>danger</code> wale div ko <code>.notebox.danger</code> nahi milega</td></tr>
+<tr><td>ID (case-sensitive, <code>#</code> se)</td><td><code>#one</code>, <code>h1#heading</code></td><td>Ek page par ID sirf EK baar; ek element ka ek hi id. Galat reuse “kaam karta” lag sakta hai par invalid hai</td></tr>
+<tr><td>Selector list</td><td><code>h1, .special</code></td><td>Comma se group; har selector apni line par readable</td></tr>
+<tr><td>Universal</td><td><code>*</code></td><td>Document ke saare elements; <code>p *</code> = p ke andar ke saare. Reset stylesheet me <code>* { margin: 0; }</code> common hai — sparingly use karo</td></tr></table>
+<div class="point"><b>Bada gotcha</b>Selector list me EK bhi selector syntactically invalid ho (<code>h1, ..special</code>) to POORI rule ignore ho jati hai — h1 ko bhi style nahi milega. Alag rules hote to h1 bach jata.</div>
+<div class="point"><b>Readability trick</b><code>article *:first-child</code> zyada saaf hai <code>article :first-child</code> se, jo <code>article:first-child</code> (article jo khud first child ho) se confuse ho sakta hai.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Basic_selectors">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Basic_selectors</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-attr-sel">Next: Attribute selectors →</button></div></section>
+
+<section class="page" id="s-attr-sel"><h2>Attribute selectors</h2>
+<p>Attribute ki presence ya value se elements chuno.</p>
+<table><tr><th>Syntax</th><th>Example</th><th>Match</th></tr>
+<tr><td><code>[attr]</code></td><td><code>a[title]</code></td><td>Attribute hai (koi bhi value)</td></tr>
+<tr><td><code>[attr=value]</code></td><td><code>a[href="https://example.com"]</code></td><td>Value exactly barabar</td></tr>
+<tr><td><code>[attr~=value]</code></td><td><code>p[class~="special"]</code></td><td>Space-separated list me value maujood</td></tr>
+<tr><td><code>[attr|=value]</code></td><td><code>div[lang|="zh"]</code></td><td>Exactly value, ya value + hyphen se shuru (zh-CN) — language tags ke liye</td></tr>
+<tr><td><code>[attr^=value]</code></td><td><code>li[class^="box-"]</code></td><td>Value se SHURU (box-warning, box-error)</td></tr>
+<tr><td><code>[attr$=value]</code></td><td><code>li[class$="-box"]</code></td><td>Value par KHATAM</td></tr>
+<tr><td><code>[attr*=value]</code></td><td><code>li[class*="box"]</code></td><td>Value kahin bhi CONTAIN ho</td></tr></table>
+<div class="point"><b>Key example</b>Classes: <code>a</code> / <code>a b</code> / <code>ab</code>. <code>li[class="a"]</code> sirf dusre ko (exact match — “a b” nahi). <code>li[class~="a"]</code> dusre aur teesre dono ko. <code>li[class]</code> un sab ko jinki class hai hi.</div>
+<div class="point"><b>Substring example</b>Classes <code>a / ab / bca / bcabc</code>: <code>^="a"</code> → 1,2 · <code>$="a"</code> → 1,3 · <code>*="a"</code> → chaaro.</div>
+<p>👉 Labs me <b>Selector Tester</b> se ye khud try karo.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Attribute_selectors">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Attribute_selectors</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-pseudo">Next: Pseudo-classes and pseudo-elements →</button></div></section>
+
+<section class="page" id="s-pseudo"><h2>Pseudo-classes and pseudo-elements</h2>
+<div class="point"><b>Pseudo-class (<code>:</code> single colon)</b>Element ki ek khaas <b>state</b> — jaise tumne ek class laga di ho. <code>:hover</code>, <code>:first-child</code>. Fayda: markup me extra classes nahi; <code>article p:first-child</code> hamesha pehle paragraph ko pakdega, chahe upar naya paragraph jud jaye (CMS-generated HTML me bahut kaam ka). Akele <code>:first-child</code> = <code>*:first-child</code>.</div>
+<div class="point"><b>User-action pseudo-classes</b><code>:hover</code> (pointer upar), <code>:focus</code> (click ya keyboard se focus). Example: <code>a:link, a:visited { color: rebeccapurple; font-weight: bold; }</code> aur <code>a:hover { color: hotpink; }</code>.</div>
+<div class="point"><b>Pseudo-element (<code>::</code> double colon)</b>Aisa jaise tumne markup me ek NAYA element jod diya ho. Kuch purane pseudo-elements single-colon se bhi chalte hain (backwards compatibility).</div>
+<ul><li><code>::first-line</code> — paragraph ki pehli formatted line; screen width badle to bhi sahi (span se robustly impossible). <code>article p::first-line { font-size: 120%; font-weight: bold; }</code></li>
+<li><code>::selection</code> — mouse se select kiya hua text</li>
+<li><code>::first-letter</code> — pehla letter, drop caps ke liye</li>
+<li><b>Chaining:</b> <code>article p:first-child::first-line</code> — pehle p ki pehli line</li></ul>
+<div class="point"><b>Generated content — <code>::before</code> / <code>::after</code> + <code>content</code></b><code>.box::before { content: "This should show before… "; }</code>. <b>Warning:</b> CSS se text daalna rarely karo — kuch screen readers use padh nahi pate, aur dhundhna/edit karna mushkil. Sahi uses: icon jaisi cheez (<code>content: " ➥"</code>) jo read-out nahi chahiye, ya <code>content: ""</code> + display:block + width/height se styled shape banana. <code>content</code> ke bina ::before/::after kuch dikhata hi nahi.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-comb">Next: Combinators →</button></div></section>
+
+<section class="page" id="s-comb"><h2>Combinators</h2>
+<table><tr><th>Combinator</th><th>Syntax</th><th>Matlab</th></tr>
+<tr><td>Descendant</td><td>space — <code>.box p</code></td><td>p ka koi ANCESTOR (parent, grandparent, koi bhi level) .box ho</td></tr>
+<tr><td>Child</td><td><code>&gt;</code> — <code>article &gt; p</code></td><td>Sirf DIRECT children; gehre descendants nahi</td></tr>
+<tr><td>Next-sibling</td><td><code>+</code> — <code>p + img</code></td><td>Turant BAAD wala sibling, same parent. Beech me h2 aa jaye to <code>h1 + p</code> match nahi hoga</td></tr>
+<tr><td>Subsequent-sibling</td><td><code>~</code> — <code>p ~ img</code></td><td>Baad ke KOI BHI siblings, adjacent hona zaroori nahi</td></tr></table>
+<div class="point"><b>Classic example</b><code>ul &gt; li { border-top: 5px solid red; }</code> — sirf ul ke seedhe li ko border; nested <code>&lt;ol&gt;</code> ke li ko nahi. <code>&gt;</code> hata do to saare li ko milega.</div>
+<div class="point"><b>Warning — over-specific selectors</b><code>ul &gt; li[class="a"]</code> jaisi bahut specific chain reuse mushkil bana deti hai — rule markup ki exact jagah se bandh jata hai. Aksar ek simple class behtar hai. Lekin HTML haath me na ho (CMS) to combinators hi sahara hain.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Combinators">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Combinators</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-box">Next: The box model →</button></div></section>
+
+<section class="page" id="s-box"><h2>The box model</h2>
+<div class="point"><b>Do box types</b><b>Block</b> aur <b>inline</b> — box page flow me dusro ke saath kaisa behave karta hai. Har box ka <b>outer display type</b> (dusro ke saath layout) aur <b>inner display type</b> (andar ke elements ka layout) hota hai, <code>display</code> se set hota hai. <code>display: flex</code> = outer block, inner flex. Default layout = <b>normal flow</b>.</div>
+<table><tr><th></th><th>Block</th><th>Inline</th></tr>
+<tr><td>Line break</td><td>Nayi line par aata hai</td><td>Koi break nahi</td></tr>
+<tr><td>width/height</td><td>Respect hote hain</td><td>Koi asar nahi</td></tr>
+<tr><td>Margin/padding/border</td><td>Dusro ko dhakelte hain</td><td>Top/bottom dusro ko NAHI dhakelte (overlap karte hain); left/right asar karte hain</td></tr>
+<tr><td>Width default</td><td>Container ki 100% width</td><td>Content jitna</td></tr>
+<tr><td>Examples</td><td><code>h1</code>, <code>p</code></td><td><code>a</code>, <code>span</code>, <code>em</code></td></tr></table>
+<div class="point"><b>Box model ki layers (andar se bahar)</b>Content box (width/height) → Padding box → Border box → Margin box (sabse bahar, boxes ke beech ki khaali jagah).</div>
+<div class="point"><b>Standard box model (browser default)</b>width/height = sirf CONTENT. Padding + border JUD jate hain: width 350 + padding 25×2 + border 5×2 = asal <b>410px</b>; height 150 + 50 + 10 = <b>210px</b>. Margin box ke size me ginna nahi jata.</div>
+<div class="point"><b>Alternative box model — <code>box-sizing: border-box</code></b>width = dikhai dene wali poori width (350×150 hi rahega; content chhota ho jata hai). Sab par lagane ka pattern:</div>
+<pre><code>html { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }</code></pre>
+<div class="point"><b>Margin</b>Box ke chaaro or adrishya jagah; positive ya <b>negative</b> ho sakta hai (negative margin overlap kara sakta hai). Padding negative NAHI ho sakti.</div>
+<div class="point"><b>Margin collapsing</b>Do chhoote hue margins milein to: dono positive → sabse BADA rehta hai; dono negative → sabse chhota (zero se sabse door); positive + negative → subtract. Example: 50px bottom + 30px top = 50px gap (80 nahi); top −10px kar do to 40px gap.</div>
+<div class="point"><b>Border</b><code>border</code>, side-wise <code>border-top</code>…, <code>border-width/style/color</code>, aur 12 granular longhands (<code>border-top-width</code>…). Styles: solid, dotted, double…</div>
+<div class="point"><b><code>display: inline-block</code> — beech ka rasta</b>Line break nahi, LEKIN width/height respect hote hain aur padding/margin/border dusro ko dhakelte hain (overlap nahi). Classic use: nav links — <code>&lt;a&gt;</code> inline hai, uski padding ul ke border se overlap karti hai; <code>inline-block</code> lagate hi bada click area + sahi hover background.</div>
+<p>👉 Labs me <b>Box-Model Playground</b> sliders se khud dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-conflict">Next: Handling conflicts →</button></div></section>
+
+<section class="page" id="s-conflict"><h2>Handling conflicts</h2>
+<p>CSS = <b>Cascading</b> Style Sheets. Ek hi element par do rules alag value dein to 3 cheezein faisla karti hain: <b>cascade, specificity, inheritance</b>.</p>
+<div class="point"><b>Cascade (source order)</b>Specificity barabar ho to stylesheet me AAKHRI rule jeet-ta hai.</div>
+<div class="point"><b>Specificity</b>Browser ka algorithm — kaunsi value lagegi. Type selector sabse kam, phir class (attribute aur pseudo-class bhi class ke barabar), phir ID sabse zyada. Pseudo-element = element ke barabar.</div>
+<div class="point"><b>Inheritance</b>Kuch properties parent se bachcho ko milti hain (<code>color</code>, <code>font-family</code> body se sab tak). Kuch nahi milti (<code>width</code>, <code>margin</code>, <code>padding</code>, <code>border</code> — border inherit hota to har nested li par border aa jata!). MDN property page ke “Formal definition” me likha hota hai inherited hai ya nahi.</div>
+<h3>5 universal values (har property inhe leti hai)</h3>
+<table><tr><th>Value</th><th>Matlab</th></tr>
+<tr><td><code>inherit</code></td><td>Parent ki value (“inheritance on”)</td></tr>
+<tr><td><code>initial</code></td><td>Property ki initial value (color ke liye black — browser ki blue link default NAHI)</td></tr>
+<tr><td><code>revert</code></td><td>Browser ki default styling</td></tr>
+<tr><td><code>revert-layer</code></td><td>Pichhli cascade layer ki value</td></tr>
+<tr><td><code>unset</code></td><td>Natural value: property naturally inherited hai to inherit jaisa, warna initial jaisa</td></tr></table>
+<div class="point"><b>Link example (body color green)</b><code>.my-class-1 a { color: inherit; }</code> → green · <code>.my-class-2 a { color: initial; }</code> → black · <code>.my-class-3 a { color: unset; }</code> → green (color inheritable hai). Trick: neeche <code>a { color: hotpink; }</code> jodne se sirf PEHLA link badlega — baakio ke class selectors ki specificity zyada hai.</div>
+<div class="point"><b><code>all</code> shorthand</b><code>all: unset</code> (etc.) ek saath (lagbhag) saari properties par ek inheritance value lagata hai — styles ko known starting point par wapas lane ka tareeka.</div>
+<h3>Specificity scoring — ID / CLASS / ELEMENT</h3>
+<table><tr><th>Selector</th><th>Score</th></tr>
+<tr><td><code>h1</code></td><td>0-0-1</td></tr>
+<tr><td><code>h1 + p::first-letter</code></td><td>0-0-3</td></tr>
+<tr><td><code>li &gt; a[href*="en-US"] &gt; .inline-warning</code></td><td>0-2-2</td></tr>
+<tr><td><code>#identifier</code></td><td>1-0-0</td></tr>
+<tr><td>Inline style</td><td>1-0-0-0</td></tr></table>
+<div class="point"><b>Golden rule</b>Column-by-column, sabse upar wale se compare karo. <b>Ek million class selectors bhi ek ID ko hara nahi sakte</b> — har level neeche wale se overwrite nahi hota. <code>*</code>, combinators aur <code>:where()</code> ka specificity par ZERO asar.</div>
+<div class="point"><b>IDs vs classes</b>Classes prefer karo. ID hi ekmatra rasta ho (markup edit nahi kar sakte) to use attribute selector me daalo: <code>p[id="header"]</code> — class-level weight milega.</div>
+<div class="point"><b><code>!important</code></b>Sab kuch overrule karta hai, inline styles ko bhi. <b>MDN: kabhi use mat karo jab tak bilkul zaroori na ho</b> — cascade tod deta hai, bade stylesheet me debugging bahut mushkil. Use sirf ek aur important declaration (same specificity, baad me) ya higher specificity se hara sakte ho. Legit use: CMS jahan core CSS edit nahi ho sakta.</div>
+<div class="point"><b>Origin precedence (baad wala pehle ko override)</b>1. user-agent normal → 2. user normal → 3. author normal → 4. author !important → 5. user !important → 6. user-agent !important. Note: !important ke liye order ulta ho jata hai — user important author important ko harata hai (taaki jaise drishti-kamzor user font double kar sake).</div>
+<div class="point"><b>Sirf takraane wali properties overwrite hoti hain</b>Poori rule nahi. Isliye pattern: element par generic styles, phir classes se sirf kuch properties badlo (<code>h2</code> generic + <code>.small</code> sirf font-size + <code>.bright</code> sirf color).</div>
+<p>👉 Labs me <b>Specificity Calculator</b> try karo.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_conflicts">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_conflicts</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-values">Next: Values and units →</button></div></section>
+
+<section class="page" id="s-values"><h2>Values and units</h2>
+<div class="point"><b>Value type</b>Har property kuch khaas types leti hai — specs/MDN me angle brackets me: <code>&lt;color&gt;</code>, <code>&lt;length&gt;</code>. Property aur type ka naam ek ho sakta hai (<code>color</code> property vs <code>&lt;color&gt;</code> type) — brackets se pehchano.</div>
+<div class="point"><b>Numeric types</b><code>&lt;integer&gt;</code> (poora number), <code>&lt;number&gt;</code> (decimal), <code>&lt;dimension&gt;</code> (number + unit: 45deg, 5s, 10px), <code>&lt;percentage&gt;</code> (hamesha kisi aur value ke relative).</div>
+<table><tr><th>Absolute lengths</th><th>Note</th></tr><tr><td>px</td><td>1/96 in; screen par yahi common. HD display par 1px ≠ 1 physical pixel</td></tr><tr><td>in, cm, mm, Q, pc, pt</td><td>1in = 2.54cm = 96px; 1pt = 1/72in — zyada tar print ke liye</td></tr></table>
+<table><tr><th>Relative lengths</th><th>Relative to</th></tr><tr><td><code>em</code></td><td>Is element ka font-size (font-size ke liye: parent ka)</td></tr><tr><td><code>rem</code></td><td>Root element ka font-size</td></tr><tr><td><code>vw / vh</code></td><td>Viewport width/height ka 1%</td></tr></table>
+<div class="point"><b>em vs rem (nested lists)</b>Nested <code>1.3em</code> li har level par bade hote jate hain (1.3 × parent). <code>1.3rem</code> har level par same rehte hain. html ka font-size badlo to dono badalte hain.</div>
+<div class="point"><b>Percentages hamesha relative</b>font-size % = parent ke font-size ka %; width % = parent ki width ka %. <code>font-size: 80%</code> wale nested li chhote hote jate hain. Kuch properties sirf <code>&lt;length&gt;</code> leti hain (jaise border-width); <code>&lt;length-percentage&gt;</code> ho to dono chalenge.</div>
+<div class="point"><b>Unitless numbers</b><code>opacity</code> 0 (poora transparent) se 1 (poora opaque) — numbers par quotes nahi lagte.</div>
+<h3>Colors (24-bit = 16.7M colors)</h3>
+<ul><li><b>Keywords:</b> antiquewhite, blueviolet… (finite list; ek project me ek hi method consistently use karo)</li>
+<li><b>Hex:</b> <code>#ff00ff</code>; pair ke dono chars same hon to shorthand <code>#f0f</code>; 8 chars = alpha ke saath <code>#ff00ff66</code></li>
+<li><b>rgb():</b> 0–255 ya 0–100% (mix nahi); alpha <code>/</code> ke baad: <code>rgb(2 121 139 / 0.3)</code></li>
+<li><b>Alpha vs opacity:</b> rgb alpha sirf us color ko transparent karta hai; <code>opacity</code> poore element AUR uske andar sab ko</li>
+<li><b>Hue (0–360 color wheel):</b> <code>hsl()</code> = Hue + Saturation (0% gray, 100% full) + Lightness (0% black, 100% white); <code>hwb()</code> = Hue + Whiteness + Blackness; <code>lch()</code>/<code>lab()</code> human perception par based</li></ul>
+<div class="point"><b><code>&lt;image&gt;</code> aur <code>&lt;position&gt;</code></b>Image = <code>url()</code> file ya gradient: <code>linear-gradient(90deg, …)</code>. Position = keywords (top/left/center…) + lengths; ek value do to dusra center.</div>
+<div class="point"><b>Keywords vs strings</b><code>red</code>, <code>rebeccapurple</code> identifiers hain (unquoted). Strings quoted hoti hain — generated content me: <code>content: "…"</code>.</div>
+<div class="point"><b>Functions</b>Transform: <code>translate()</code>, <code>rotate()</code>, <code>scale()</code>. Math: <code>calc()</code> (+ − × ÷, <code>calc(20% + 100px)</code>), <code>min()</code>, <code>max()</code>, <code>clamp()</code> (beech wali value).</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-sizing">Next: Sizing items in CSS →</button></div></section>
+
+<section class="page" id="s-sizing"><h2>Sizing items in CSS</h2>
+<div class="point"><b>Intrinsic size</b>Element ka natural size, CSS se pehle — image file apni size rakhti hai; khaali <code>&lt;div&gt;</code> ka koi size nahi (poori width, zero height — border collapse ho jata hai). Text dalo to height content se banti hai.</div>
+<div class="point"><b>Extrinsic size</b>Jo size TUM do (width/height). Fixed height par content overflow ho sakta hai — bahut dhyaan se use karo.</div>
+<div class="point"><b>Percentages containing block se resolve hote hain</b>Child width % = parent ki width ka %. <b>Gotcha:</b> % margin/padding container ki <b>WIDTH</b> (inline size) se calculate hota hai — isliye <code>margin: 10%</code> chaaro taraf barabar hota hai, top/bottom bhi.</div>
+<div class="point"><b>min-height / max-width</b><code>min-height: 100px</code> — kam se kam 100px, content zyada ho to badh jayega (overflow se bachav). Images par <code>max-width: 100%</code> — container chhota ho to shrink, par intrinsic se bada kabhi nahi (pixelation nahi). <code>width: 100%</code> chhoti image ko stretch karke pixelate kar dega. Note: bahut badi image load karke browser me shrink karna slow hai aur user ka data kharch hota hai — sahi size ki image serve karo.</div>
+<div class="point"><b>Viewport units</b><code>width: 20vw; height: 20vh; font-size: 10vh;</code> — window resize karo, sab badalta hai. Full-page banner: <code>height: 100vh</code>.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Sizing">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Sizing</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-bg">Next: Backgrounds and borders →</button></div></section>
+
+<section class="page" id="s-bg"><h2>Backgrounds and borders</h2>
+<div class="point"><b>background-color</b>Content AUR padding box ke neeche tak phailta hai. Image bhi ho to image color ke UPAR dikhti hai.</div>
+<div class="point"><b>background-image</b><code>url("...")</code>. Default: badi image scale NAHI hoti (sirf ek kona dikhta hai), chhoti image TILE hokar box bharti hai.</div>
+<div class="point"><b>background-repeat</b><code>repeat</code> (default) · <code>no-repeat</code> · <code>repeat-x</code> · <code>repeat-y</code> · <code>space</code> (jitni baar fit ho, beech me space) · <code>round</code> (space jaisa, par image stretch hokar jagah bharti hai)</div>
+<div class="point"><b>background-size</b>Do values (horizontal, vertical) ya keywords: <code>cover</code> = poora box cover, aspect ratio same, kuch hissa bahar ja sakta hai · <code>contain</code> = poori image andar, gap reh sakta hai. Length values image ko distort kar sakte hain.</div>
+<div class="point"><b>background-position</b>Top-left = (0,0), default (0,0). Do values: horizontal phir vertical — keywords/lengths/% mix (<code>20px top</code>). 4-value syntax kinaro se doori: <code>top 20px right 10px</code>. <code>background-position-x/-y</code> alag axes.</div>
+<div class="point"><b>Gradients = images</b><code>background-image: linear-gradient(105deg, rgb(0 249 255 / 100%) 39%, rgb(51 56 57 / 100%) 96%);</code> aur <code>radial-gradient(circle, …)</code>.</div>
+<div class="point"><b>Multiple backgrounds</b>Comma-separated; <b>AAKHRI wala sabse neeche</b>, usse pehle wale upar stack hote hain. Dusri background-* properties bhi comma lists leti hain — counts alag hon to chhoti list CYCLE hoti hai (4 images + 2 positions → image3 ko position1).</div>
+<div class="point"><b>background-attachment</b><code>scroll</code> = page ke saath scroll · <code>fixed</code> = viewport par fixed, kabhi scroll nahi · <code>local</code> = element ke content ke saath scroll</div>
+<div class="point"><b><code>background</code> shorthand ke rules</b>background-color sirf AAKHRI comma ke baad; background-size sirf background-position ke turant baad, <code>/</code> se alag: <code>center center / 400px 200px no-repeat</code>.</div>
+<div class="point"><b>Accessibility</b>Background par text ho to contrast kaafi rakho; image fail ho jaye to bhi text padh sake — hamesha background-color do. Screen readers background images NAHI padh sakte — backgrounds sirf decorative; zaroori content HTML me rakho.</div>
+<div class="point"><b>Borders aur radius</b><code>border: 1px solid black</code> (width style color); side-wise aur granular longhands. <code>border-radius</code>: do values = horizontal radius, vertical radius; per-corner: <code>border-top-right-radius: 1em 10%</code>.</div>
+<p>👉 Labs me <b>Background &amp; Gradient Lab</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Backgrounds_and_borders">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Backgrounds_and_borders</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-overflow">Next: Overflowing content →</button></div></section>
+
+<section class="page" id="s-overflow"><h2>Overflowing content</h2>
+<div class="point"><b>Overflow kya hai</b>Content box me fit na ho. Default: content dikhai dete hue bahar girta hai.</div>
+<div class="point"><b>CSS overflow chhupati kyun nahi?</b>Chhupana = data loss jo dikhega hi nahi (submit button gayab → form kabhi submit nahi hoga). Dikhai dene wala overflow notice hota hai. Box restrict kiya hai to overflow sambhalna tumhari zimmedari — khaas karke block dimension (text) me: zyada text ya user ka bada font size.</div>
+<table><tr><th><code>overflow</code> value</th><th>Behaviour</th></tr>
+<tr><td><code>visible</code> (default)</td><td>Content bahar dikhta hai</td></tr>
+<tr><td><code>clip</code></td><td>Border edge par kaat deta hai; kabhi dikhega nahi, pahunch bhi nahi sakte. <code>overflow-clip-margin</code> clip edge bahar le jata hai</td></tr>
+<tr><td><code>auto</code></td><td>Scrollbar sirf jab zaroorat ho</td></tr>
+<tr><td><code>scroll</code></td><td>Scrollbar hamesha (layout consistency) — par <code>auto</code> + <code>scrollbar-gutter: stable</code> aksar behtar</td></tr>
+<tr><td><code>hidden</code></td><td>clip jaisa kaat-ta hai, PAR box scroll container ban jata hai (JS se ya focusable item par tab karke scroll ho sakta hai). Zyada tar <code>clip</code> hi sahi; hidden sirf jab ye scroll behaviour chahiye</td></tr></table>
+<div class="point"><b>Axes alag-alag</b><code>overflow-x</code> / <code>overflow-y</code>, ya do values: <code>overflow: clip auto</code>. <b>Rule:</b> <code>clip</code> hi ekmatra value hai jo dusri axis par <code>visible</code> ke saath jud sakti hai. Ek axis scrolling (auto/scroll/hidden) aur dusri visible ho to visible <code>auto</code> ban jata hai — <code>overflow: hidden visible</code> asal me <code>hidden auto</code> behave karega.</div>
+<div class="point"><b> lambe words</b>Unke liye overflow-x: auto mat use karo — <code>word-break</code> ya <code>overflow-wrap</code> se word todo, ya behtar sizing use karo. Test tip: bade AUR chhote content amounts, font size ±2 increments ke saath design test karo.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Overflow">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Overflow</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-media-form">Next: Images, media, and form elements →</button></div></section>
+
+<section class="page" id="s-media-form"><h2>Images, media, and form elements</h2>
+<div class="point"><b>Replaced elements</b>Images aur video — CSS inke ANDAR ka layout nahi badal sakti, sirf page par position. Inka <b>aspect ratio</b> hota hai; default intrinsic size par dikhte hain.</div>
+<div class="point"><b><code>object-fit</code></b>Pehle <code>&lt;img&gt;</code> ko resize karo (warna object-fit ka koi asar nahi), phir: <code>cover</code> = img element poora bhare, ratio same, kuch hissa nahi dikhega · <code>contain</code> = poori image andar, kuch jagah khaali (letterboxing). Bina object-fit ke width/height 100% image ko distort kar dega.</div>
+<div class="point"><b>Grid quirk</b>Grid me elements default stretch hote hain — images NAHI stretch hoti, apne grid area ke start par align hoti hain.</div>
+<div class="point"><b>Form elements style karna mushkil hai</b>Text inputs aur textarea aasan hain (dusre boxes jaise behave karte hain), par default styling OS/browser par nirbhar karti hai. Complex types OS render karta hai — CSS pahunch hi nahi sakti. <b>Warning:</b> input ko pehchan-ne layak rakho — borderless/background-less input aas-paas ke text se alag hi nahi dikhega.</div>
+<div class="point"><b>Form reset (cross-browser fix)</b>Form elements kuch browsers me font inherit NAHI karte. Ye baseline lagao:</div>
+<pre><code>button, input, select, textarea {
+  font-family: inherit; font-size: 100%;
+  box-sizing: border-box; padding: 0; margin: 0;
+}
+textarea { overflow: auto; }</code></pre>
+<div class="point"><b>Normalize.css</b>Normalizing stylesheet browser differences ko ek consistent baseline par la deti hai, tumhare kaam se pehle. Aaj browsers zyada consistent hain, isliye pehle jitni zaroori nahi rahi.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Images_media_forms">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Images_media_forms</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-tables">Next: Styling tables →</button></div></section>
+
+<section class="page" id="s-tables"><h2>Styling tables</h2>
+<pre><code>table { table-layout: fixed; width: 90%; margin: 10px auto; border-collapse: collapse; }
+th, td { padding: 0.6em; vertical-align: top; }</code></pre>
+<div class="point"><b>table-layout: fixed</b>Columns heading widths se size hote hain — predictable. Default (auto) content se size karta hai, ajeeb results deta hai.</div>
+<div class="point"><b>border-collapse: collapse</b>Standard best practice — default me cell borders ke beech spacing hoti hai; collapse unhe ek me mila deta hai.</div>
+<div class="point"><b>Alignment convention</b>Text left, numbers right. <code>:nth-child</code> se columns target karo; text columns chaudi (35%), number columns sankri (15%). Vertical: data cell ke TOP par align karo, middle me nahi.</div>
+<div class="point"><b>Zebra stripes</b><code>tbody tr:nth-child(odd) { background-color: #dddddd; }</code> — formulas: <code>2n+1</code> = odd, <code>2n</code> = even; <code>odd</code>/<code>even</code> inhi ke shorthand hain.</div>
+<div class="point"><b>Caption</b><code>caption-side: bottom</code> caption ko neeche le jata hai; padding + italic + letter-spacing se padhne layak banao. thead/tbody/tfoot ko logical chunks + styling hooks ki tarah use karo.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Tables">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Tables</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-debug">Next: Debugging CSS →</button></div></section>
+
+<section class="page" id="s-debug"><h2>Debugging CSS</h2>
+<div class="point"><b>View Source vs DevTools</b>View Source = server par rakha HTML. DevTools ka DOM browser ka NORMALIZED version dikhata hai (galat HTML sudhaar kar, jaise <code>&lt;/h3&gt;</code> se band h2 → <code>&lt;/h2&gt;</code>) aur JavaScript ke changes bhi — matlab jo asal me render ho raha hai.</div>
+<div class="point"><b>Rules view</b>Selected element par lagi CSS + ancestors se inherited CSS. Shorthand expand karo (arrow), values checkbox se on/off karke A/B compare karo, values live edit karo (color picker), nayi property/rule add karo. <b>Crossed-out</b> = invalid, unsupported, ya overridden.</div>
+<div class="point"><b>Layout view</b>Box-model diagram + layout properties (jo tumne set nahi ki, unki initial values bhi). box1 (content-box, 400px + padding/border = zyada chauda) vs box2 (border-box, exactly 400px) yahi se saaf hota hai.</div>
+<div class="point"><b>CSS apply nahi ho raha?</b>Aksar koi zyada specific selector override kar raha hota hai — DevTools me applied value dikhegi aur haari hui crossed-out.</div>
+<h3>Debugging ka 5-step method</h3>
+<ol><li>Ghabrao mat — break lo; solution aksar sochna band karne par aata hai.</li>
+<li>Pehle HTML aur CSS validate karo (validators) — browsers galtiyon par guess karte hain, aur har browser alag guess karta hai.</li>
+<li>Browsers jo CSS nahi samajhte use IGNORE kar dete hain — DevTools me crossed-out dikhega. MDN property page ke neeche compatibility table check karo.</li>
+<li>Specificity — DevTools bata dega kya apply ho raha hai; apna selector utna specific banao.</li>
+<li><b>Reduced test case</b> banao: sabse simple example jo problem dikhaye — CMS markup ka static version (CodePen), bina-asar JS/HTML/CSS hatao. Banate-banate aksar wajah khud mil jati hai; help maangne (forum, browser bug) ke liye bhi yahi chahiye.</li></ol>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Debugging_CSS">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Debugging_CSS</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-text">Next: Fundamental text and font styling →</button></div></section>
+
+<section class="page" id="s-text"><h2>Fundamental text and font styling</h2>
+<div class="point"><b>Text content box me flow hota hai</b>Upar-left se (RTL me upar-right) shuru, line ke end tak, phir agli line. Text inline elements ki series jaisa behave karta hai. Do categories: <b>font styles</b> (kaunsa font, size, bold, italic) aur <b>text layout styles</b> (line/letter spacing, alignment). Text ek single entity ki tarah style hota hai — hisse alag karne ke liye <code>&lt;span&gt;</code> wrap karo ya <code>::first-letter</code>/<code>::first-line</code>/<code>::selection</code> use karo.</div>
+<div class="point"><b>Web safe fonts</b>Lagbhag har system par maujood: Arial (+Helvetica), Courier New (+Courier), Georgia, Times New Roman (+Times), Trebuchet MS (mobile par kam), Verdana.</div>
+<div class="point"><b>5 generic fonts</b><code>serif</code> (stroke ends par flourishes), <code>sans-serif</code> (bina serifs), <code>monospace</code> (har char same width — code), <code>cursive</code> (handwriting jaisa), <code>fantasy</code> (decorative). Pehle teen predictable; cursive/fantasy dhyaan se.</div>
+<div class="point"><b>Font stacks</b><code>p { font-family: "Trebuchet MS", "Verdana", sans-serif; }</code> — browser pehla available try karta hai. <b>Hamesha generic naam par khatam karo</b>, warna default serif (Times) aa jayega. Whitespace/digits wale naam quote karo. Jo naam generic/keyword jaisa lage (<code>sans-serif</code>, <code>initial</code>) use family naam ki tarah use karna ho to quote KARNA padega; asal generic naam kabhi quote mat karo.</div>
+<div class="point"><b>Font size</b>Root <code>&lt;html&gt;</code> standard = <b>16px</b>; h1 default 2em = 32px. Nested math: article 1.5em = 24px, andar p ko 20px chahiye → 20/24 = <b>0.83333333em</b>. Salah: <code>rem</code> prefer karo, containers par font-size set karna avoid karo jahan ho sake.</div>
+<table><tr><th>Property</th><th>Values</th></tr>
+<tr><td><code>font-style</code></td><td>normal · italic (asli italic, na ho to simulate) · oblique (normal ko slant karke simulate)</td></tr>
+<tr><td><code>font-weight</code></td><td>normal · bold · lighter/bolder (parent se ek step) · 100–900 numeric</td></tr>
+<tr><td><code>text-transform</code></td><td>none · uppercase · lowercase · capitalize · full-width (fixed-width square — Latin ko CJK ke saath align)</td></tr>
+<tr><td><code>text-decoration</code></td><td>none · underline · overline · line-through — ek saath kai: <code>underline overline</code>. Shorthand hai line/style/color ka: <code>text-decoration: line-through red wavy;</code></td></tr></table>
+<div class="point"><b>text-shadow — 4 values</b><code>text-shadow: 4px 4px 5px red;</code> = horizontal offset (required), vertical offset (required), blur radius (optional, default 0), color (optional, default currentColor). Kai shadows comma se: <code>1px 1px 1px red, 2px 2px 1px red</code>.</div>
+<div class="point"><b>Text layout</b><code>text-align</code>: left/right/center/justify (justify word gaps badha kar lines barabar karta hai — lambe words ke saath bura lag sakta hai, <code>hyphens</code> ke saath use karo). <code>line-height</code>: unitless multiplier sabse best; body ke liye ~1.5–2 salah (<code>line-height: 1.6</code>). <code>letter-spacing</code>/<code>word-spacing</code> kabhi-kabhi specific look ke liye.</div>
+<div class="point"><b><code>font</code> shorthand</b>Order: style, variant, weight, stretch, <b>size</b>, line-height, <b>family</b>. Sirf size aur family REQUIRED hain. Size aur line-height ke beech slash: <code>font: italic normal bold normal 3em/1.5 "Helvetica", "Arial", sans-serif;</code></div>
+<div class="point"><b>Aur properties (explore list)</b>font-variant, font-kerning, font-feature-settings, font-size-adjust, font-stretch, text-underline-position, text-indent, text-overflow, white-space, word-break, hyphens, text-align-last, writing-mode… (Reference section me inki table hai.)</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-lists">Next: Styling lists →</button></div></section>
+
+<section class="page" id="s-lists"><h2>Styling lists</h2>
+<div class="point"><b>Browser defaults</b>ul/ol: margin top/bottom 16px (1em), padding-left 40px (2.5em) — RTL me padding-right 40px. li: koi spacing default nahi. dl: margin 16px, padding nahi. dd: margin-left 40px. p ka margin bhi 16px hai.</div>
+<div class="point"><b>Vertical rhythm</b>Lists ko aas-paas ke elements (paragraphs, images) jaisi hi vertical spacing aur ek-dusre jaisi horizontal spacing do: sab par same font-size + line-height (jaise 1.5rem / 1.5), dt bold taaki terms alag dikhein.</div>
+<table><tr><th>Property</th><th>Matlab</th></tr>
+<tr><td><code>list-style-type</code></td><td>Bullet type: square/circle (ul); numbers, letters, roman (ol — <code>upper-roman</code>)</td></tr>
+<tr><td><code>list-style-position</code></td><td><code>outside</code> (default — bullet item ke bahar) ya <code>inside</code></td></tr>
+<tr><td><code>list-style-image</code></td><td>Custom image bullet — PAR position/size control kam; behtar tareeka background hai (neeche)</td></tr></table>
+<div class="point"><b>Custom bullets ka behtar tareeka</b><code>list-style-type: none</code> + li par <code>background-image</code> bullet, <code>background-size: 1.6rem</code>, <code>no-repeat</code>, aur ul/li dono par <code>padding-left: 2rem</code> taaki items baaki lists se line up hon aur bullet ke liye jagah bane (16px bullet + 4px gap).</div>
+<div class="point"><b><code>list-style</code> shorthand</b><code>ul { list-style: square url("example.png") inside; }</code> — koi bhi order, ek/do/teeno values. Chhode gaye defaults: type <code>disc</code>, image <code>none</code>, position <code>outside</code>. Type aur image dono hon to image fail hone par type fallback hai.</div>
+<div class="point"><b>Counting (HTML attributes)</b><code>start="4"</code> — 4 se gin-na shuru · <code>reversed</code> — ulta gin-na (items zyada hon to zero ke neeche negative tak jata hai) · li par <code>value="2"</code> — specific numbers set karo.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_lists">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_lists</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-links">Next: Styling links →</button></div></section>
+
+<section class="page" id="s-links"><h2>Styling links</h2>
+<div class="point"><b>5 link states</b>Link (<code>:link</code> — destination wala), Visited (<code>:visited</code> — history me hai), Hover (<code>:hover</code>), Focus (<code>:focus</code> — Tab ya focus() se), Active (<code>:active</code> — click ho raha hai).</div>
+<div class="point"><b>Default styles (mid-1990s se lagbhag same)</b>Underline; unvisited neela; visited purple; hover par hand pointer; focus par outline; active laal. Users inhe pehchante hain — zyada door mat jao. Kam se kam: links underline rakho (ya kisi aur tareeke se highlight karo), hover/focus par reaction do, active par alag reaction.</div>
+<div class="point"><b>Order matter karta hai — LVFHA (“LoVe Fears HAte”)</b><code>a { } a:link { } a:visited { } a:focus { } a:hover { } a:active { }</code> — styles ek-dusre par build hote hain (active link aksar hovered bhi hota hai); galat order + same properties = toota behaviour.</div>
+<pre><code>a { outline-color: transparent; }
+a:link { color: #6900ff; } a:visited { color: #a5c300; }
+a:focus { text-decoration: none; background: #bae498; }
+a:hover { text-decoration: none; background: #cdfeaa; }
+a:active { background: #6900ff; color: #cdfeaa; }</code></pre>
+<div class="point"><b>outline vs border</b>Outline border jaisa hai PAR box me jagah NAHI leta — background ke upar baithta hai. Accessibility aid hai; bina replacement focus indicator ke mat hatao. <code>cursor</code> bhi bina bahut achhi wajah ke off mat karo.</div>
+<div class="point"><b>External link icon (sirf CSS)</b>Apni site ke links relative hote hain, bahar ke absolute — isliye <code>a[href^="http"]::after</code> sirf external pakadta hai: <code>content:""; display:inline-block; width:.8em; height:.8em; margin-left:.25em; background-image:url("external-link-52.png"); background-size:100%;</code> — em ki wajah se icon text size ke saath scale hota hai.</div>
+<div class="point"><b>Links as buttons / nav</b>Nav = links ko buttons jaisa style karna. Flex pattern: <code>.container{display:flex; gap:.625%}</code>, <code>a{flex:1; line-height:3; text-align:center}</code> — flex:1 sab ko barabar jagah, line-height:3 height bhi deta hai aur text vertically center bhi.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_links">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_links</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-webfonts">Next: Web fonts →</button></div></section>
+
+<section class="page" id="s-webfonts"><h2>Web fonts</h2>
+<div class="point"><b>Problem</b>font-family sirf user ke system par maujood font use kar sakti hai — web-safe fonts tak seemit. <b>Web fonts:</b> font files website ke saath download hoti hain, har supporting browser me exactly wahi font dikhta hai.</div>
+<pre><code>@font-face { font-family: "myFont"; src: url("myFont.woff2"); }
+html { font-family: "myFont", "Bitstream Vera Serif", serif; }</code></pre>
+<div class="point"><b>5 baatein yaad rakho</b>(1) Fonts aam taur par FREE nahi — license shartein mano, chori mat karo. (2) Saare modern browsers <b>WOFF2</b> support karte hain (poora TrueType/OpenType, variable fonts bhi). (3) Jitni KAM files, utna chhota download. (4) Purane browsers ke liye WOFF bhi lag sakta hai — compatibility table dekho. (5) Firefox Font Editor se page ke fonts investigate kar sakte ho.</div>
+<div class="point"><b>Workflow</b>Free distributor (DaFont) ya paid (myfonts, foundries) se font lo → Transfonter par sirf WOFF2 convert karo → <code>@font-face</code> rules CSS ke SABSE UPAR (use se pehle import zaroori) → paths sahi karo → font stack me generic fallback ke saath use karo.</div>
+<div class="point"><b>Online services</b>Google Fonts (free), Adobe Fonts, Cloud.typography — koi @font-face likhna nahi; Google Fonts se <code>&lt;link&gt;</code> head me apni stylesheet links ke UPAR lagao aur di gayi font-family rules use karo.</div>
+<div class="point"><b>@font-face ke hisse</b><code>font-family</code> = tumhara rakha naam · <code>src</code> = url + <code>format("woff2")</code> (browser ko jaldi faisla karne me madad) · <code>font-weight</code>/<code>font-style</code> = YE file kis weight/style ki hai — ek hi family ke kai weights alag naam diye bina aise jodo · <code>font-display</code> = load hote waqt text kaisa dikhe (<code>swap</code> common) · <code>unicode-range</code> = font sirf tab download ho jab page me wo characters hon (download bachta hai).</div>
+<p>👉 Labs me <b>@font-face / Font Playground</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Web_fonts">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Web_fonts</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-layout-intro">Next: Introduction to CSS layout →</button></div></section>
+
+<section class="page" id="s-layout-intro"><h2>Introduction to CSS layout</h2>
+<div class="point"><b>Normal flow</b>Koi CSS change na ho to elements normal flow me layout hote hain. Shuruaat hamesha ek solid, well-structured document se karo jo normal flow me padhne layak ho — limited browser ya screen reader me bhi content samajh aayega, aur tum document ke SAATH kaam karoge, uske khilaf nahi.</div>
+<div class="point"><b>Block vs inline (normal flow me)</b>Block: parent ki poori inline space bharta hai, nayi line par, margin se alag. Inline: content jitna bada, same line par baithta hai, jagah na ho to agli line par wrap.</div>
+<div class="point"><b>Margin collapsing</b>Vertically adjacent margins chhooein to bada wala rehta hai, chhota gayab. Sirf VERTICAL direction me relevant.</div>
+<table><tr><th>Normal flow ko badalne wale tareeke</th><th>Matlab</th></tr>
+<tr><td><code>display</code></td><td>block / inline / inline-block behaviour badalte hain</td></tr>
+<tr><td>Floats</td><td>Block ek side chipak jata hai, text uske gird ghumta hai (magazine jaisa)</td></tr>
+<tr><td>Positioning</td><td>Boxes ke andar boxes ki precise jagah; <code>fixed</code> viewport par pin kar deta hai</td></tr>
+<tr><td>Flexbox / Grid (display se)</td><td>Poore layout systems — children parent ke andar kaise lagenge</td></tr>
+<tr><td>Responsive design</td><td>Apne layout tools NAHI hain — sabse bada hissa <code>@media</code> hai</td></tr></table>
+<div class="point"><b>Is module me nahi</b>Table layout (<code>display: table</code>) aur multi-column layout (stretch goal — Guides me hai).</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Introduction">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Introduction</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-floats">Next: Floats →</button></div></section>
+
+<section class="page" id="s-floats"><h2>Floats</h2>
+<div class="point"><b>Asli maksad</b>Text column ke andar image float karna, text uske left/right gird ghume (newspaper layout). Developers ne sab kuch float karna shuru kar diya aur poore layouts floats se banne lage — wo ab <b>legacy technique</b> hai; naye, behtar tareeke maujood hain.</div>
+<div class="point"><b>float kya karta hai</b><code>float: left; margin-right: 15px;</code> — box normal flow se BAHAR nikal kar parent ke left side chipak jata hai; neeche ka content uske gird wrap hota hai. <code>float: right</code> ulta (margin-left use karo).</div>
+<div class="point"><b>Key gotcha</b>Margin FLOAT par lagao to text door hota hai; TEXT par margin lagakar float se door NAHI ja sakte — following items ke boxes asal me float ke PEECHE tak jate hain. Sirf unke <b>line boxes</b> chhote hote hain (text gird ghumta hai), paragraph ka box poori width ka rehta hai — background color do to peeche tak dikhega.</div>
+<div class="point"><b>clear</b>Following element ko float ke paas aane se roko: <code>clear: left</code> (left floats), <code>right</code>, <code>both</code> (koi bhi float).</div>
+<div class="point"><b>Wrapper problem aur <code>display: flow-root</code></b>Lamba float + chhota paragraph wrapper ke andar ho to wrapper ka background float ke peeche bhagta hai (float flow se bahar hai). Solution: wrapper par <code>display: flow-root</code> — ye sirf isi problem ke liye bana hai, bina hacks ke, bina side-effects.</div>
+<p>👉 Labs me <b>Float &amp; Clear Demo</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Floats">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Floats</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-position">Next: Positioning →</button></div></section>
+
+<section class="page" id="s-position"><h2>Positioning</h2>
+<table><tr><th><code>position</code></th><th>Behaviour</th></tr>
+<tr><td><code>static</code> (default)</td><td>Normal flow me default jagah — kuch khaas nahi</td></tr>
+<tr><td><code>relative</code></td><td>Pehle flow me jagah leta hai, PHIR offsets se final position badal sakte ho (overlap bhi ho sakta hai)</td></tr>
+<tr><td><code>absolute</code></td><td>Flow me EXIST hi nahi karta — gap band ho jata hai; apni alag layer par. Popup boxes, menus, drag-drop UI ke liye perfect</td></tr>
+<tr><td><code>fixed</code></td><td>absolute jaisa, par VIEWPORT ke visible hisse ke relative — scroll kitna bhi ho, wahi rehta hai (persistent nav)</td></tr>
+<tr><td><code>sticky</code></td><td>relative + fixed ka hybrid: threshold tak relative, phir fixed (nav upar chipak jata hai; index headers ek-dusre ko replace karte hain)</td></tr></table>
+<div class="point"><b>top/bottom/left/right — ulta socho</b>Ek adrishya force us side ko DHHAKELTA hai, box opposite direction me jata hai: <code>top: 30px</code> → box 30px NEECHE. relative ke saath ye flow position se offset hai; absolute ke saath containing element ke kinaro se DOORI hai. Charo offsets dekar element ko RESIZE bhi kar sakte ho (<code>top:0;bottom:0;left:0;right:0</code>).</div>
+<div class="point"><b>Containing block</b>Ancestor ki position par nirbhar. Kisi ancestor par position set na ho to <b>initial containing block</b> (viewport ke dimensions) — element body ke andar hote hue bhi viewport ke relative lagega. Context badalne ke liye ancestor par position lagao: <code>body { position: relative; }</code>.</div>
+<div class="point"><b>z-index</b>Overlap me kaun upar? Positioned &gt; non-positioned; positioned me source order me BAAD wala upar. <code>z-index</code> z-axis par stack badalta hai — sirf unitless numbers (23px nahi), default <code>auto</code> ≈ 0, bada number upar.</div>
+<div class="point"><b>Gotchas</b>Fixed heading flow se bahar hai — content upar chadh kar uske neeche kat jayega; pehle paragraph ko top margin do. Margins positioned elements par asar karte hain, margin COLLAPSING nahi hota. Sticky apne nearest scrolling ancestor (overflow se tay) ke relative chipakta hai. Positioning poore layouts ke liye ideal nahi — specific objectives ke liye hai.</div>
+<p>👉 Labs me <b>Positioning Playground</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Positioning">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Positioning</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-flex">Next: Flexbox →</button></div></section>
+
+<section class="page" id="s-flex"><h2>Flexbox</h2>
+<div class="point"><b>Flexbox = one-dimensional layout</b>Parent par <code>display: flex</code> → wo <b>flex container</b>, children <b>flex items</b>. Ek declaration se: barabar columns, sab ki same height. Container page me block jaisa; <code>display: inline-flex</code> se container khud inline. Kaam: block ko parent me vertically center karna, children ko barabar width/height, alag content ke bawjood columns ki same height.</div>
+<div class="point"><b>Axes</b><b>Main axis</b> = items jis direction me lagte hain (row = aade, column = khade); kinare main start/main end; item ki lambai = main size. <b>Cross axis</b> = uske perpendicular; cross start/end, cross size.</div>
+<div class="point"><b>flex-direction</b>Default <code>row</code> (bhasha ki direction me). <code>column</code>, <code>row-reverse</code>, <code>column-reverse</code> bhi.</div>
+<div class="point"><b>flex-wrap + flex-flow</b>Default sab ek row me — jagah na ho to bahar nikal jayenge (horizontal scroll). <code>flex-wrap: wrap</code> se agli line par chale jate hain. Shorthand: <code>flex-flow: row wrap;</code></div>
+<div class="point"><b><code>flex</code> — proportions</b><code>article { flex: 1; }</code> — unitless proportion: khaali jagah (padding/margin ke baad) ka hissa. Teesre par <code>flex: 2</code> → kul 1+1+2=4 units, pehle do ko 1/4-1/4, teesre ko 2/4. Minimum size ke saath: <code>flex: 1 100px</code> — pehle har item ko 100px, baaki jagah proportion me.</div>
+<div class="point"><b>flex shorthand = 3 values</b>(1) flex-grow (proportion) (2) flex-shrink (overflow par kitna shrink ho) (3) flex-basis (minimum size). Salah: longhands tab tak avoid karo jab tak zaroori na ho.</div>
+<table><tr><th>Property</th><th>Axis</th><th>Values / default</th></tr>
+<tr><td><code>align-items</code></td><td>Cross</td><td>Default <code>stretch</code> (isiliye columns barabar height ke hote hain) · center · flex-start/flex-end · baseline (pehli line ke baseline align). Per-item override: <code>align-self</code></td></tr>
+<tr><td><code>justify-content</code></td><td>Main</td><td>Default start · center · <code>space-around</code> (kinaro par thodi jagah) · <code>space-between</code> (kinaro par koi jagah nahi). Note: <code>justify-items</code> flexbox me IGNORE hota hai</td></tr></table>
+<div class="point"><b>order</b>Source order badle bina layout order badlo: default sab <code>0</code>; bada value baad me; negative pehle (<code>order: -1</code>). <b>Warning:</b> Tab order CODE order hi rehta hai — focusable elements ka order badalna keyboard users ko nuksaan pahuncha sakta hai.</div>
+<div class="point"><b>Nested flex</b>Ek flex item khud bhi flex container ho sakta hai — complex toolbars isi se bante hain (<code>flex: 1 auto</code> wale wrapping buttons).</div>
+<p>👉 Labs me <b>Flexbox Playground</b> — direction, wrap, justify, align sab live badlo.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-grid">Next: CSS grid layout →</button></div></section>
+
+<section class="page" id="s-grid"><h2>CSS grid layout</h2>
+<div class="point"><b>Grid = 2D</b>Horizontal + vertical lines ka pattern: columns, rows, aur beech ke gaps (gutters). <code>display: grid</code> akele se ONE-column grid banta hai — items flexbox ki tarah turant nahi badalte, normal flow jaise lage rehte hain.</div>
+<pre><code>.container { display: grid; grid-template-columns: 200px 200px 200px; }</code></pre>
+<div class="point"><b><code>fr</code> unit</b>Container ki AVAILABLE jagah ka ek fraction. <code>2fr 1fr 1fr</code> — pehle track ko dugna. Fixed tracks pehle apni jagah lete hain, bachi hui fr me bant-ti hai. Gaps ke liye fr NAHI chalega — <code>gap</code>/<code>column-gap</code>/<code>row-gap</code> length ya % lete hain.</div>
+<div class="point"><b>repeat()</b><code>grid-template-columns: repeat(3, 1fr);</code> — pehli value kitni baar, dusri kya repeat ho.</div>
+<div class="point"><b>Explicit vs implicit grid</b>Explicit = template se banaya hua. Content bahar jaye to grid khud extend hota hai = implicit tracks, default <code>auto</code> size; <code>grid-auto-rows: 100px</code> se size do. <code>minmax(100px, auto)</code> — kam se kam 100px, content ke saath badhe. Yaad rakho: tum kabhi nahi jaante content kitna lamba hoga — pixel-perfect designs extra content/bade fonts se toot-te hain.</div>
+<div class="point"><b>Responsive recipe</b><code>grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));</code> — jitne 230px columns fit hon utne bante hain, bachi jagah sab me barabar. Classic responsive grid.</div>
+<div class="point"><b>Line-based placement</b>Lines 1 se number hoti hain, writing mode ke hisaab se (LTR me column line 1 = left; RTL Arabic me = right). <code>grid-column: 1 / 3</code>, <code>grid-row</code> shorthands. <code>-1</code> = aakhri line (explicit grid ke kinaro se ginti hoti hai).</div>
+<pre><code>.container { display: grid; grid-template-columns: 1fr 3fr;
+  grid-template-areas: "header header" "sidebar content" "footer footer"; }
+header { grid-area: header; } aside { grid-area: sidebar; }
+main { grid-area: content; } footer { grid-area: footer; }</code></pre>
+<div class="point"><b>grid-template-areas ke rules</b>Har cell bhara ho; naam repeat karke span karo; <code>.</code> = khaali cell; areas RECTANGULAR hi hon (L-shape nahi); ek area do jagah repeat nahi ho sakta. Bahut readable — CSS dekh kar hi layout samajh aata hai.</div>
+<div class="point"><b>Nesting + subgrid</b>Grid item khud grid ho sakta hai. <code>subgrid</code> value se nested grid parent ke tracks use karta hai. 12-column pattern: <code>repeat(12, 1fr)</code> + <code>grid-column: 1 / 13</code> jaise spans; Firefox grid inspector overlay se verify karo.</div>
+<p>👉 Labs me <b>Grid Playground</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-rwd">Next: Responsive design →</button></div></section>
+
+<section class="page" id="s-rwd"><h2>Responsive design</h2>
+<div class="point"><b>RWD ek approach hai, technology nahi</b>Best practices ka set taaki layout har device (phone, tablet, TV, watch) par respond kare. Term Ethan Marcotte (2010): fluid grids + fluid images + media queries. HTML khud fundamentally fluid hai — text khud reflow hota hai; problem tab hai jab wide screen par lines bahut lambi hon ya narrow par columns kuchle jayein. Fixed-width dono taraf fail hai.</div>
+<div class="point"><b>Media queries + breakpoints</b>Test chalakar CSS selectively lagao: <code>@media screen and (width &gt;= 80rem) { … }</code>. Jahan layout badalta hai wo point = <b>breakpoint</b>. Common approach: narrow par simple single column, chauda hone par multi-column = <b>mobile-first</b>. Breakpoints RELATIVE units me rakho, kisi device ke absolute size par nahi. Media queries zaroori NAHI — flexible grids, relative units, min/max bina unke bhi kaam karte hain.</div>
+<div class="point"><b>Flexbox/Grid khud responsive hain</b>Flex items container ki jagah ke hisaab se shrink/grow hote hain; grid ka <code>fr</code> available jagah baant-ta hai. 600px pattern: neeche single column, <code>@media (width &gt;= 600px)</code> par flex/grid two-column.</div>
+<div class="point"><b>Responsive media</b><code>img, picture, video { max-width: 100%; }</code> — kabhi container se bahar nahi. Par badi image ko shrink karna bandwidth barbaad karta hai aur mobile par portrait zyada suit karta hai — iske liye <code>&lt;picture&gt;</code> + <code>srcset</code>/<code>sizes</code>. Sahi format + optimized file size; visual effects ke liye images ki jagah gradients/shadows.</div>
+<div class="point"><b>Responsive typography</b>Media query me font-size badlo, ya viewport units — PAR text ko <b>kabhi sirf vw me mat rakho</b> (user zoom nahi kar payega). Solution: <code>h1 { font-size: calc(1.5rem + 4vw); }</code> — zoomable rem ke upar vw judta hai, size ek baar likho, font viewport ke saath dheere-dheere badhta hai.</div>
+<div class="point"><b>Viewport meta tag — HAMESHA lagao</b><code>&lt;meta name="viewport" content="width=device-width" /&gt;</code> — mobile browser ko device ki asal width use karne ko kehta hai. Bina iske mobile browsers jhooth bolte hain (purane smartphones viewport 980px rakhte the — zoomed-out desktop layout dikhta tha) aur tumhare breakpoints kabhi fire hi nahi honge.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-mediaq">Next: Media query fundamentals →</button></div></section>
+
+<section class="page" id="s-mediaq"><h2>Media query fundamentals</h2>
+<pre><code>@media media-type and (media-feature-rule) { /* CSS rules */ }</code></pre>
+<div class="point"><b>Media types</b><code>all</code>, <code>print</code>, <code>screen</code>. Type optional hai — na do to <code>all</code>. <code>@media print { body { font-size: 12pt; } }</code> sirf print par lagega. Level 3 ke baaki types deprecated — avoid karo.</div>
+<div class="point"><b>Width/height</b>Sabse zyada use hone wale features; ranges ke liye <code>min-</code>/<code>max-</code> prefixes. Bare <code>width: 600px</code> (sirf exactly 600px par) practically kabhi nahi dikhta — min/max hi kaam ke hain.</div>
+<div class="point"><b>orientation</b><code>@media (orientation: landscape) { … }</code> — portrait/landscape test. Desktop landscape hota hai; phone portrait ke liye alag se test/optimize karo.</div>
+<div class="point"><b>Pointing devices (Level 4)</b><code>hover: hover</code> — user hover KAR sakta hai ya nahi (touchscreen/keyboard nahi kar sakte; hover na ho to features default dikhao, ho to hover par reveal karo). <code>pointer</code>: <code>none</code> (keyboard/voice), <code>fine</code> (mouse — chhote targets chalenge), <code>coarse</code> (finger — bade hit areas do).</div>
+<div class="point"><b>Combine karna</b><code>and</code> = sab match hon. Comma = <b>OR</b> (koi ek match). <code>not</code> = poori query negate. Range syntax zyada readable: <code>@media (30em &lt;= width &lt;= 50em) { … }</code></div>
+<div class="point"><b>Breakpoint = jahan CONTENT tootta hai</b>Device sizes ki list ke peeche mat bhago — aaj devices bahut zyada hain. Jahan line lengths bahut lambe hon ya sidebar kuchla jaye, wahi breakpoint hai. Firefox DevTools ka Responsive Design Mode iske liye best hai.</div>
+<div class="point"><b>Mobile-first worked pattern</b>Base = mobile single column (source order screen-reader friendly). <code>@media (width &gt;= 40em)</code> par article 2-column grid + nav flex row. <code>@media (width &gt;= 70em)</code> par main 2-column. em breakpoints isliye: breakpoint user ke text size ke saath chalta hai. Aur yaad rakho — auto-fill/minmax card grid jaise components ko media query ki zaroorat hi nahi padti; grid component ki width dekhta hai, viewport ki nahi.</div>
+<p>👉 Labs me <b>Media-Query Switcher</b> — slider ghumao, breakpoints fire hote dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Media_queries">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Media_queries</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-effects">Next: Advanced styling effects →</button></div></section>
+
+<section class="page" id="s-effects"><h2>Advanced styling effects</h2>
+<div class="point"><b>box-shadow</b><code>box-shadow: 5px 5px 5px rgb(0 0 0 / 70%);</code> = horizontal offset, vertical offset, blur radius, color. Usse pehle optional <b>spread radius</b> (shadow box se bada). Kai shadows comma se — layered raised effect ya kai light sources.</div>
+<div class="point"><b>inset shadows</b>Declaration ki shuruaat me <code>inset</code> → andar ki shadow. Button par opposite corners me dark + light inset = shading; <code>:active</code> par outer ki jagah dark inset = daba hua (pressed) effect. Design aisa rakho ki bina shadow ke bhi content padhne layak rahe.</div>
+<div class="point"><b>filter</b>Photoshop jaise filters kisi bhi element par: <code>blur(10px)</code>, <code>grayscale(60%)</code>, <code>contrast(200%)</code>, <code>invert(100%)</code>, <code>hue-rotate(20deg)</code>. <code>drop-shadow()</code> box-shadow jaisa hai PAR content ki EXACT shape follow karta hai (text, dashed borders) — box-shadow sirf chaukor box ko.</div>
+<div class="point"><b>Blend modes</b>Final pixel = pixel + neeche wali layer ka combination. <code>background-blend-mode</code> = EK element ki kai backgrounds aapas me blend. <code>mix-blend-mode</code> = element un sab ke saath blend jinke saath overlap karta hai (background AUR content). Nayi feature — support check karke use karo.</div>
+<div class="point"><b>CSS Shapes</b>Text gair-chaukor shape ke gird: shapes sirf FLOATED elements par lagte hain — <code>img { float: left; shape-outside: circle(50%); }</code>. Shape function se banta hai, image ke content se nahi.</div>
+<div class="point"><b>background-clip: text</b>Background image ko text ki shape me clip karta hai, <code>-webkit-text-fill-color: transparent</code> ke saath. Official standard NAHI, par sab browsers me implemented — aur <code>-webkit-</code> prefix non-WebKit browsers me bhi chahiye! Seekh: itne developers ne prefixed feature use kiya ki standards-following browsers “toote hue” dikhne lage. Non-standard features subject to change hain — production me cross-browser test karo aur jahan na chale wahan site usable rakho.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Advanced_styling_effects">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Advanced_styling_effects</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-layers">Next: Cascade layers →</button></div></section>
+
+<section class="page" id="s-layers"><h2>Cascade layers</h2>
+<div class="point"><b>Cascade ke 7 steps</b>Har property in steps se guzarti hai: 1. Relevance (selector match) → 2. Importance (normal vs !important) → 3. Origin (author/user/user-agent) → 4. Cascade layers → 5. Specificity → 6. Scoping proximity (@scope) → 7. Order of appearance (aakhri jeet-ta hai).</div>
+<div class="point"><b>Origin specificity ko hamesha harata hai</b>Specificity origins ke BEECH kabhi compare nahi hoti. Author ka <code>:where(a.author)</code> (0-0-0) user-agent ke <code>a:any-link</code> (0-1-1) ko hara dega — author origin upar hai.</div>
+<div class="point"><b>8 precedence levels (neeche → upar)</b>user-agent normal → user normal → author normal → animating → author important → user important → user-agent important → transitioning.</div>
+<div class="point"><b>Layers kyun bane?</b>Bade codebases me kai teams/libraries/frameworks ek hi author origin me ghus jate hain → specificity wars aur !important ke quick fixes (jo ladai ko bas important par le jate hain). Layer = sub-origin: har team/component ke liye ek layer, precedence layer order se. <b>Layer precedence specificity ko hamesha harati hai</b>; specificity sirf EK layer ke andar matter karti hai.</div>
+<div class="point"><b>Layer order = creation order</b>Ek baar ban jaye to RE-ORDER nahi ho sakta. Normal declarations: layers creation order me, phir <b>unlayered normal sabse upar</b> (kam specificity aur pehle likha hone par bhi saare layered normal ko harata hai). Important me ULTA: unlayered important sabse neeche, pehle bane layer ka important baad wale se upar.</div>
+<h3>Layers banane ke 3 tareeke</h3>
+<pre><code>@layer theme, layout, utilities;              /* sirf naam/order — CSS ki pehli line par rakho (best practice) */
+@layer layout { main { display: grid; } }      /* block — styles us layer me */
+@import "components-lib.css" layer(components); /* import ke saath */</code></pre>
+<div class="point"><b>Details</b>Naam na do to ANONYMOUS layer banta hai — usme baad me styles jod NAHI sakte (agli baar naya anonymous layer banega). <code>@import</code> stylesheet me sabse pehle aana chahiye (@layer statement/@charset ke baad chalega); <code>&lt;link&gt;</code> ka koi equivalent nahi. Media query na match ho to layer banta hi nahi — isse creation order viewport ke hisaab se badal sakta hai.</div>
+<div class="point"><b>Nested layers</b>Dot notation: <code>@layer components.narrow { }</code>. Nesting se dusri teams ke layer naamo se takraav ki chinta khatam. Nested precedence apne parent layer ke andar rehti hai; nested layers ke beech specificity matter nahi karti.</div>
+<div class="point"><b>Full precedence list (kam → zyada)</b>firstLayer normal → secondLayer normal → unlayered normal → inline normal → animating → unlayered important → secondLayer important → firstLayer important → inline important → transitioning. Normal inline saare normal ko harata hai; important inline sab ko (transitioning ke siwa) — author styles important inline ko kabhi override nahi kar sakte.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-directions">Next: Handling different text directions →</button></div></section>
+
+<section class="page" id="s-directions"><h2>Handling different text directions</h2>
+<div class="point"><b>Writing mode</b>Text horizontal chale ya vertical — <code>writing-mode</code>: <code>horizontal-tb</code> (blocks upar se neeche, sentences horizontal — English), <code>vertical-rl</code> (block flow right-to-left, sentences vertical), <code>vertical-lr</code>. Sirf vertical-text bhashao ke liye nahi — creative design ke liye bhi.</div>
+<div class="point"><b>Block/inline dimension writing mode se bandhe hain, screen se nahi</b><b>Block dimension</b> = blocks jis direction me lagte hain; <b>inline dimension</b> = sentences jis direction me behte hain. vertical-rl me block dimension right→left (horizontal!) ho jata hai. Isiliye naye layout methods (flex/grid) left/right ki jagah <b>start/end</b> bolte hain. Text direction alag cheez hai: Arabic horizontal hai par right-to-left.</div>
+<div class="point"><b>Physical properties writing mode badalne par toot-te hain</b>vertical-rl box ko <code>width: 100px</code> do to text overflow karega. Jawaab: <b>logical (flow-relative) properties</b> — <code>width</code> → <code>inline-size</code>, <code>height</code> → <code>block-size</code>. Box dono modes me sahi behave karega.</div>
+<table><tr><th>Physical</th><th>Logical</th></tr>
+<tr><td>margin-top</td><td><code>margin-block-start</code></td></tr>
+<tr><td>padding-left</td><td><code>padding-inline-start</code></td></tr>
+<tr><td>border-bottom</td><td><code>border-block-end</code></td></tr>
+<tr><td>float: left</td><td><code>float: inline-start</code> (logical value)</td></tr></table>
+<div class="point"><b>Note</b>Logical properties/values naye hain — har property page par support check karo. Kai writing modes use nahi karte to physical bhi chalega, par flex/grid samajhne ke liye logical soch hi sahi raasta hai.</div>
+<p>👉 Labs me <b>Logical Properties Flipper</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_different_text_directions">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_different_text_directions</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-organizing">Next: Organizing your CSS →</button></div></section>
+
+<section class="page" id="s-organizing"><h2>Organizing your CSS</h2>
+<div class="point"><b>Pehla rule: team ka style guide jeet-ta hai</b>Apni pasand se upar. Akele kaam karte ho to sabse zaroori hai <b>CONSISTENCY</b> — same naming, color likhne ka ek tareeka, consistent formatting. Fixed rules = kam mental overhead.</div>
+<div class="point"><b>Comments ka sahi use</b>Logical sections ke beech searchable marker ke saath comment block: <code>/* || General styles */</code>, <code>/* || Typography */</code> — <code>||</code> search karke section-to-section jump karo. Sab kuch comment mat karo — sirf <b>DECISIONS</b> comment karo: property is tareeke se kyun use hui (jaise gradient se pehle fallback color purane browsers ke liye), ya tutorial ka URL jahan se CSS aaya.</div>
+<div class="point"><b>Stylesheet ka order (general → specific)</b>1. General styles (body, p, h1–h5, lists, tables, links ke defaults) → 2. Utilities (kai elements par lagne wali reusable classes, jaise <code>.no-bullets</code>) → 3. Sitewide (layout, header, nav, logo) → 4. Specific (khaas pages/components). Is order se hamesha pata rahega change kahan dhundhna hai.</div>
+<div class="point"><b>Over-specific selectors avoid karo</b><code>article.main p.box</code> dusri jagah wahi style chahiye to duplication karwayega — reusable <code>.box</code> class behtar hai. Zyada specific sirf jab sach me sense bane.</div>
+<div class="point"><b>Methodologies</b><b>OOCSS</b> (Nicole Sullivan): reusable objects — classic Media Object (ek side fixed image, dusri side flexible content; ek base <code>.media</code> + chhote differences, HTML me <code>class="media comment"</code>). <b>BEM</b>: Block (standalone: button, menu) · Element (block se bandha: <code>form__label</code>) · Modifier (flag: <code>form--theme-xmas</code>, <code>form__submit--disabled</code>) — bade projects me aam. Aur: SMACSS, ITCSS, ACSS/Atomizer.</div>
+<div class="point"><b>Pre-processor vs post-processor</b>Pre-processor raw files ko stylesheet me badalta hai; post-processor bani hui stylesheet ko optimize karta hai (jaise cssnano comments/whitespace hatata hai). <b>Sass</b> sabse popular pre-processor: variables (<code>$base-color: #c6538c;</code> — halanki CSS ke native custom properties ne iski zaroorat kam kar di) aur partials (chhoti files <code>@use</code> se jodkar ek stylesheet).</div>
+<div class="point"><b>Multiple stylesheets</b>Bahut alag sections ko alag sheets me rakho jo sirf zaroori pages par link hon — organization aasan, source-control conflicts kam. Cascade normal rules se chalta hai: baad me link hui sheet baad me aati hai.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-multicol">Next: Multiple-column layout →</button></div></section>
+
+<section class="page" id="s-multicol"><h2>Multiple-column layout</h2>
+<div class="point"><b>Multicol</b>Newspaper jaise columns. Container par ek property: <code>column-count: 3</code> (utne hi columns, width browser tay karta hai) ya <code>column-width</code> (utni width ke jitne columns fit hon; bachi jagah columns me bant-ti hai, exact width sirf tab jab container exactly divisible ho).</div>
+<div class="point"><b>Columns individually style NAHI ho sakte</b>Ek column ko bada karna ya uska background badalna impossible hai. Sirf do styling mauke: <code>column-gap</code> (columns ke beech ki jagah) aur <code>column-rule</code> (beech ki line — border jaisa shorthand: <code>column-rule: 4px dotted rgb(79 185 227);</code>). Rule apni koi width NAHI leta — gap ke upar pada rehta hai; uske aas-paas jagah chahiye to gap badhao.</div>
+<div class="point"><b>column-span: all</b>Element SAARRE columns ke paar phail jata hai; content wahan break hokar neeche naye columns me jaari rehta hai. Sirf <code>none</code> (default) ya <code>all</code> — kuch columns span karna possible nahi.</div>
+<div class="point"><b>Fragmentation</b>Multicol content paged media (printing) ki tarah fragment hota hai — breaks buri jagah aa sakte hain (card ka heading uske text se alag). Control: jis element ko tootna nahi hai us par <code>break-inside: avoid</code>.</div>
+<p>👉 Labs me <b>Multicol Lab</b> dekho.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Multiple-column_Layout">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Multiple-column_Layout</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-practical-pos">Next: Practical positioning examples →</button></div></section>
+
+<section class="page" id="s-practical-pos"><h2>Practical positioning examples</h2>
+<div class="point"><b>Pattern 1 — Tabbed info box</b>Chhoti jagah me bahut info (games, mobile, compact boxes). Panels ko <code>position: absolute; top: 0; left: 0</code> se ek ke upar ek stack karo, container <code>position: relative</code> (positioning context). JS selected tab ka panel dikhata hai, baaki par <code>.is-hidden { display: none; }</code>; tab par <code>aria-selected="true"</code> selected style deta hai. Keyboard: Left/Right arrows, Home, End. Saare selectors <code>.info-box</code> se scope karo taaki component dusre content se na takraye. (Yahan fixed height OK hai kyunki tab content fixed hai — aam taur par content containers par fixed height avoid karo.)</div>
+<div class="point"><b>Pattern 2 — Fixed info box</b>Wahi box <code>position: fixed; top: 0</code> se viewport par chipka do — main content scroll hota rahe. Note: fixed hone par <code>margin: 0 auto</code> center NAHI karta; content ko bada margin-left dekar box ke liye jagah banao.</div>
+<div class="point"><b>Pattern 3 — Hidden sliding panel</b>Mobile par menu/info ke liye jagah barbaad mat karo. Toggle button: <code>position:absolute; top:.5rem; right:.5rem; z-index:1</code> (z-index taaki panel button ko kabhi na dhake — dobara dabakar band kar sako). Panel: <code>position: fixed; right: -370px</code> (width + padding jitna offscreen) aur <code>transition: 0.6s right ease-out</code>; <code>.open { right: 0 }</code> lagte hi smoothly andar slide hota hai. JS class toggle ke saath <code>aria-expanded</code> bhi update karta hai.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Practical_positioning_examples">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Practical_positioning_examples</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-legacy">Next: Legacy layout methods →</button></div></section>
+
+<section class="page" id="s-legacy"><h2>Legacy layout methods</h2>
+<div class="point"><b>Legacy “grids” asal grid nahi hain</b>CSS me asli grid system bahut der se aaya; purane tareeke items ko size karke dhakel-dhakel kar line up karte hain taaki grid JAISA dikhe. Naye projects ke liye CSS grid hi basis hai — legacy samajhna purane projects aur fallback code ke liye zaroori hai.</div>
+<div class="point"><b>Floats se 2-column</b>Dono columns 48% + 48% = 96%, 4% gutter; pehla <code>float:left</code>, dusra <code>float:right</code>. Percentages = <b>liquid layout</b> (har width par same proportions).</div>
+<div class="point"><b>12-column float grid ka math</b>Wrapper 980px, 20px right padding (border-box) → 960px usable. Har column par margin-left 20px gutter → 12×20 = 240px gutters; 960−240 = 720 → <b>ek column 60px</b>. Span formula: width = (60 × n) + (20 × (n−1)) — span6 = 460px, span12 = 940px. <code>.row { clear: both; }</code> rows ko alag rakhta hai.</div>
+<div class="point"><b>Fluid grid: target / context = result</b>Column 60/960 = <b>6.25%</b>; gutter 20/960 = <b>2.08333333%</b>. <code>calc()</code> math CSS ke andar kar deta hai: <code>width: calc((6.25% * 4) + (2.08333333% * 3));</code>. Offset classes khaali column jagah chhodti hain (margin-left badhao, span GHATAO taaki jagah bane).</div>
+<div class="point"><b>Cautions</b>Row ke columns kul width se zyada hon to floats agli line par GIR jate hain aur grid toot jata hai. Sabse badi seema: <b>one-dimensional</b> — columns control hote hain, rows/heights nahi. “Unsemantic” classes (span2, span3) markup ko dikhawat se baandhti hain; alternative: sizing maujooda semantic classes par rakho.</div>
+<div class="point"><b>Flexbox grids aur frameworks</b><code>.row { display:flex }</code> + <code>flex: 1 1 auto</code> columns — par flexbox bhi 1D hai, strict grid nahi banta, % math phir bhi chahiye. Third-party frameworks (Bootstrap, Foundation, Skeleton + Normalize) bas pehle se calculate ki hui classes dete hain — aaj native grid ki wajah se kai developers unse door ho rahe hain.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Legacy_Layout_Methods">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Legacy_Layout_Methods</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-oldbrowsers">Next: Supporting older browsers →</button></div></section>
+
+<section class="page" id="s-oldbrowsers"><h2>Supporting older browsers</h2>
+<div class="point"><b>Pehle audience jaano</b>Analytics (existing site) ya Statcounter (nayi site, location filter ke saath). Aur hamesha accessibility users ko priority do — developers 1% purane-browser users ki chinta me usse kahin zyada accessibility users ko bhool jate hain. Support check: har MDN property page ki “Browser compatibility” table + Can I Use (caniuse.com).</div>
+<div class="point"><b>Site har browser me ek jaisi NAHI dikh sakti</b>Supporting everyone = <b>defensive design</b>: modern browsers par great, sab ke liye kam se kam usable. Test: stylesheet hata kar content padho — samajh aata hai? CSS-less view sirf purane browsers ke liye nahi; connection fail hone par modern users bhi wahi dekhte hain.</div>
+<div class="point"><b>Browser error handling = free fallback</b>Browser jo feature nahi pehchanta use bina error ke DISCARD kar deta hai. Isliye purani value PEHLE, nayi baad me likho: <code>display: inline-flex; display: inline flex;</code> — support ho to nayi override karegi, na ho to purani chalegi. Vendor prefixes me bhi yahi order (prefixed pehle).</div>
+<div class="point"><b>Selectors alag hain — ek invalid selector poori list maar deta hai</b>Naye/prefixed pseudo ke liye <b>forgiving selector list</b> use karo: <code>:is(:-prefix-mistake, :unsupported-pseudo), .valid { … }</code> kaam karega, jabki plain comma list poori ignore ho jayegi.</div>
+<div class="point"><b>@supports (feature queries)</b>Pehle sab ke liye kaam karne wali, accessible CSS likho; fancy features <code>@supports (grid-template-rows: subgrid) { … }</code> ke andar enhancement ki tarah jodo.</div>
+<p>👉 Labs me <b>@supports / Fallback Lab</b> dekho. Extra patterns ke liye MDN ka CSS layout cookbook (media objects, center an element, sticky footers, card, pagination…) — <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/How_to/Layout_cookbook">Layout cookbook</a>.</p>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Supporting_Older_Browsers">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Supporting_Older_Browsers</a> · Cookbook: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/How_to/Layout_cookbook">https://developer.mozilla.org/en-US/docs/Web/CSS/How_to/Layout_cookbook</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-ref-sel">Next: CSS selectors reference →</button></div></section>
+
+<section class="page" id="s-ref-sel"><h2>CSS selectors reference</h2>
+<p>Learn ke bahar ke selectors bhi yahi hain — MDN ke hisaab se selectors module me <b>60 se zyada selectors aur 5 combinators</b> hain.</p>
+<h3>Functional pseudo-classes</h3>
+<table><tr><th>Selector</th><th>Matlab / specificity</th></tr>
+<tr><td><code>:is()</code></td><td>Forgiving list — koi ek match ho to chalega; specificity = andar ke sabse specific selector ki</td></tr>
+<tr><td><code>:where()</code></td><td>:is() jaisa match, par specificity hamesha <b>0</b></td></tr>
+<tr><td><code>:not()</code></td><td>Jo match NA kare; specificity = andar wale argument ki (khud :not ki nahi)</td></tr>
+<tr><td><code>:has()</code></td><td>“Parent selector” — jiske andar diya hua selector match ho (jaise <code>article:has(img)</code>)</td></tr>
+<tr><td><code>:nth-child()</code> / <code>:nth-of-type()</code></td><td>Formulas: <code>2n+1</code> odd, <code>2n</code> even, <code>odd</code>/<code>even</code>, <code>-n+3</code> pehle teen</td></tr>
+<tr><td><code>:lang()</code></td><td>Bhasha ke hisaab se match</td></tr></table>
+<h3>State / structural pseudo-classes</h3>
+<p><span class="chip">:root (html element)</span><span class="chip">:empty</span><span class="chip">:target</span><span class="chip">:checked</span><span class="chip">:disabled / :enabled</span><span class="chip">:required / :optional</span><span class="chip">:valid / :invalid</span><span class="chip">:focus-visible (keyboard focus par hi ring)</span><span class="chip">:focus-within (andar koi focused ho)</span><span class="chip">:first-child / :last-child / :only-child</span><span class="chip">:first-of-type / :last-of-type</span><span class="chip">:link / :visited / :hover / :active / :focus</span><span class="chip">:autofill</span><span class="chip">:read-only / :read-write</span><span class="chip">:placeholder-shown</span><span class="chip">:user-valid / :user-invalid</span></p>
+<h3>Pseudo-elements</h3>
+<p><span class="chip">::before / ::after</span><span class="chip">::first-line / ::first-letter</span><span class="chip">::selection</span><span class="chip">::marker (list bullet/number khud)</span><span class="chip">::placeholder</span><span class="chip">::backdrop (dialog/fullscreen ke peeche)</span><span class="chip">::file-selector-button</span><span class="chip">::view-transition</span></p>
+<div class="point"><b>Column combinator <code>||</code></b>Paanchva combinator — table column ke cells select karta hai; support seemit hai, isliye zyada tar reference ke liye hi jaanna kaafi hai.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference">https://developer.mozilla.org/en-US/docs/Web/CSS/Reference</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides">https://developer.mozilla.org/en-US/docs/Web/CSS/Guides</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-ref-prop">Next: CSS properties reference →</button></div></section>
+
+<section class="page" id="s-ref-prop"><h2>CSS properties reference</h2>
+<p>MDN me <b>400+ properties</b> hain — har ek ki deep page ek SPA me sambhav nahi (Trust Check me ye seema saaf likhi hai). Yahan har important property kam se kam ek baar, group-wise, ek-line matlab ke saath hai; gehrai Learn sections aur Labs me hai.</p>
+<table><tr><th>Group</th><th>Properties (ek-line matlab)</th></tr>
+<tr><td>Box / sizing</td><td><code>width/height</code>, <code>min-/max-width/height</code>, <code>box-sizing</code>, <code>aspect-ratio</code> (w/h ratio), <code>visibility</code> (hidden = jagah rehti hai, content chhupta hai — display:none se farak), <code>opacity</code> (0–1, poora element + andar sab)</td></tr>
+<tr><td>Text</td><td><code>white-space</code> (wrap/nowrap/pre), <code>overflow-wrap</code> + <code>word-break</code> (lambe words todo), <code>text-overflow: ellipsis</code> (… — nowrap + overflow hidden ke saath), <code>hyphens</code>, <code>direction</code>, <code>text-indent</code>, <code>vertical-align</code></td></tr>
+<tr><td>Display / position</td><td><code>display</code> (none/block/inline/inline-block/flex/grid/flow-root/table…), <code>position</code>, <code>top/right/bottom/left</code>, <code>inset</code> (charo ka shorthand), <code>z-index</code>, <code>float</code>, <code>clear</code>, <code>overflow</code> family</td></tr>
+<tr><td>Flex / Grid</td><td><code>flex</code>, <code>flex-grow/shrink/basis</code>, <code>gap</code> (flex me bhi), <code>justify-content/align-items/align-content/place-items</code> (box alignment), <code>grid-template-*</code>, <code>grid-auto-*</code>, <code>order</code></td></tr>
+<tr><td>Visual</td><td><code>cursor</code> (pointer, wait, not-allowed…), <code>clip-path</code> (shape me kaato), <code>mask</code> (masking), <code>filter</code>, <code>mix-blend-mode</code>, <code>box-shadow</code>, <code>outline</code> (border jaisa, jagah nahi leta), <code>resize</code></td></tr>
+<tr><td>Lists / counters</td><td><code>list-style*</code>, <code>counter-reset</code>, <code>counter-increment</code>, content me <code>counter()</code> — custom numbering bina ol ke</td></tr>
+<tr><td>Fragmentation</td><td><code>break-inside/before/after</code>, <code>orphans</code>/<code>widows</code> (print/multicol me akeli lines roko)</td></tr>
+<tr><td>Scroll</td><td><code>scroll-snap-type</code>, <code>overscroll-behavior</code>, <code>scrollbar-gutter</code> — reference-level topics, Guides se link</td></tr></table>
+<div class="point"><b>Har property ka poora detail</b>MDN ki har property page par formal definition (inherited hai ya nahi, initial value), syntax, examples aur browser compatibility table hoti hai — kisi specific property ki gehrai chahiye to Sources section me diye CSS Reference se seedha us page par jao.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference">https://developer.mozilla.org/en-US/docs/Web/CSS/Reference</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides">https://developer.mozilla.org/en-US/docs/Web/CSS/Guides</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-ref-atrules">Next: CSS at-rules, functions and data types →</button></div></section>
+
+<section class="page" id="s-ref-atrules"><h2>CSS at-rules, functions and data types</h2>
+<h3>At-rules</h3>
+<table><tr><th>At-rule</th><th>Kaam</th></tr>
+<tr><td><code>@media</code></td><td>Device/viewport conditions par CSS (Learn me deep)</td></tr>
+<tr><td><code>@font-face</code></td><td>Web fonts define karna (Learn me deep)</td></tr>
+<tr><td><code>@layer</code></td><td>Cascade layers (Guides me deep)</td></tr>
+<tr><td><code>@keyframes</code></td><td>Animation ke steps define karna (agla section)</td></tr>
+<tr><td><code>@import</code></td><td>Dusri stylesheet import — file me sabse pehle; layer ke saath bhi</td></tr>
+<tr><td><code>@supports</code></td><td>Feature query — support ho tab hi styles</td></tr>
+<tr><td><code>@container</code></td><td>Container queries — component apne CONTAINER ki size par respond kare, viewport par nahi; units <code>cqw</code> (container width ka 1%)</td></tr>
+<tr><td><code>@scope</code></td><td>Styles ko ek subtree tak seemit karna; cascade step 6 (scoping proximity) yahi se aata hai</td></tr>
+<tr><td><code>@property</code></td><td>Custom property ko register karna (type, initial value) — taaki wo animate/transition ho sake</td></tr>
+<tr><td><code>@charset</code> · <code>@namespace</code> · <code>@page</code></td><td>Encoding ghoshna · XML namespaces · print page rules</td></tr>
+<tr><td><code>@counter-style</code> · <code>@starting-style</code></td><td>Apne list counter styles · element ke pehli baar dikhne (entry) ke styles — transitions ke liye</td></tr></table>
+<h3>Functions</h3>
+<p><span class="chip">calc() min() max() clamp()</span><span class="chip">var() — custom property, fallback ke saath</span><span class="chip">env() — device ke safe-area jaise values</span><span class="chip">attr() — attribute ki value</span><span class="chip">rgb() hsl() hwb() lab() lch() oklch()</span><span class="chip">color-mix() — do colors milao</span><span class="chip">linear/radial/conic-gradient()</span><span class="chip">url()</span><span class="chip">round() mod() rem()</span><span class="chip">sin() cos() tan() pow() sqrt() (math/trig)</span><span class="chip">translate() rotate() scale()</span><span class="chip">counter()</span></p>
+<h3>Data types aur CSS-wide values</h3>
+<p><span class="chip">&lt;length&gt;</span><span class="chip">&lt;color&gt;</span><span class="chip">&lt;image&gt;</span><span class="chip">&lt;position&gt;</span><span class="chip">&lt;gradient&gt;</span><span class="chip">&lt;angle&gt; &lt;time&gt; &lt;resolution&gt;</span></p>
+<p>CSS-wide values (har property par): <code>initial · inherit · unset · revert · revert-layer</code> — detail Handling conflicts section me hai.</p>
+<div class="point"><b>CSS nesting</b>Ek rule ke andar dusra rule, <code>&amp;</code> parent ko refer karta hai — preprocessor ke bina native nesting. Learn me nahi padhaya gaya; reference-level topic hai.</div>
+<div class="point"><b>Accessibility media features</b><code>prefers-reduced-motion</code> (user animation kam chahta hai — animations bandh/kam karo), <code>prefers-color-scheme</code> (light/dark pasand), <code>prefers-contrast</code>, <code>forced-colors</code> (Windows High Contrast — apne colors zabardasti mat thopo). Inhi features se koi bhi website user ki pasand ke hisaab se khud ko dhaal sakti hai — note karo, ye SPA khud jaan-boojh kar light-only hai, isliye isme dark mode nahi hai.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference">https://developer.mozilla.org/en-US/docs/Web/CSS/Reference</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides">https://developer.mozilla.org/en-US/docs/Web/CSS/Guides</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-ref-anim">Next: Animations, transitions, transforms and custom properties →</button></div></section>
+
+<section class="page" id="s-ref-anim"><h2>Animations, transitions, transforms and custom properties</h2>
+<p><i>Note: ye topics MDN Learn ke CSS path me NAHI padhaye jate (sirf zikr hota hai) — isliye ye Reference section me hain, taaki SPA complete rahe.</i></p>
+<div class="point"><b>Transitions</b>State change (hover, class change) par value smoothly badle: <code>transition: right 0.6s ease-out;</code> — property, duration, timing function. <code>transition-timing-function</code>: ease, linear, ease-in/out, cubic-bezier(). Sliding panel (Practical positioning) iski asal misaal hai.</div>
+<pre><code>@keyframes slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100px); }
+}
+.box { animation: slide 2s ease-in-out infinite alternate; }</code></pre>
+<div class="point"><b>Animations + @keyframes</b><code>@keyframes</code> me <code>from/to</code> ya % steps; element par <code>animation</code> shorthand (naam, duration, timing, delay, iteration-count, direction, fill-mode). <code>animation-fill-mode: forwards</code> aakhri state banaye rakhta hai. Hamesha <code>prefers-reduced-motion</code> ka khayaal rakho.</div>
+<div class="point"><b>Transforms</b>Element ko move/rotate/scale/skew karo bina layout badle: functions <code>translate()</code>, <code>rotate()</code>, <code>scale()</code>; alag properties bhi hain (<code>rotate: 45deg</code> etc.), <code>transform-origin</code> ghumaav ka kendra tay karta hai, aur 3D transforms (<code>rotateX</code>, <code>perspective</code>) bhi maujood hain.</div>
+<div class="point"><b>Custom properties (CSS variables)</b><code>--*</code> naam se apni properties banao, aam taur par <code>:root</code> par, aur <code>var()</code> se use karo — fallback ke saath: <code>color: var(--brand, rebeccapurple);</code>. Custom properties <b>inherit</b> hoti hain, isliye ek component ke andar override karke theme badal sakte ho. <code>@property</code> se register karne par ye animate bhi ho sakti hain. JavaScript se inhe badalna CSS+JS ka topic hai — JS SPA ke scope me aayega.</div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides">https://developer.mozilla.org/en-US/docs/Web/CSS/Guides</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference">https://developer.mozilla.org/en-US/docs/Web/CSS/Reference</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-labs">Next: Labs — Interactive playgrounds →</button></div></section>
+
+<section class="page" id="s-labs"><h2>Labs — Interactive playgrounds</h2>
+<p>Har lab isi page ke andar chalta hai — kuch bhi install nahi karna.</p>
+
+<div class="lab" data-lab><h3>Lab 1 — Specificity Calculator</h3>
+<label>Selector 1 <input type="text" id="specA" value="#outer #inner a"></label>
+<label>Selector 2 <input type="text" id="specB" value="div ul .nav a:hover"></label>
+<p><button class="nextbtn" id="specBtn" type="button">Score nikalo</button></p>
+<p id="specOut">—</p>
+<p style="font-size:.9rem">Yaad rakho: ek ID hamesha jeet-ta hai chahe classes kitne bhi hon; <code>*</code>, combinators aur <code>:where()</code> = 0; <code>:is()</code>/<code>:not()</code> apne sabse specific argument ka score lete hain (ye calculator unhe simple gin-ta hai — asal scoring ke liye Handling conflicts section dekho).</p></div>
+
+<div class="lab" data-lab><h3>Lab 2 — Box-Model Playground</h3>
+<label>Padding: <span id="padVal">25</span>px <input type="range" id="padR" min="0" max="60" value="25"></label>
+<label>Border: <span id="borVal">5</span>px <input type="range" id="borR" min="0" max="20" value="5"></label>
+<label>Box-sizing <select id="bsSel"><option value="content-box">content-box (standard)</option><option value="border-box">border-box (alternative)</option></select></label>
+<div class="demo"><div id="bmBox" style="width:200px;background:#f4a259;color:#222;padding:25px;border:5px solid #b3541e;margin:10px 0">Content width 200px set hai</div>
+<p id="bmOut"></p></div></div>
+
+<div class="lab" data-lab><h3>Lab 3 — Selector Tester</h3>
+<label>Selector likho <input type="text" id="selIn" value="li.special"></label>
+<p><button class="nextbtn" id="selBtn" type="button">Highlight karo</button> <span id="selOut"></span></p>
+<div class="demo" id="selDemo"><p class="intro">Paragraph <em>em andar</em> aur <span class="special">span.special</span></p>
+<ul><li>Item 1</li><li class="special">Item 2 (.special)</li><li data-kind="x">Item 3 [data-kind]</li></ul>
+<p id="selP2">Dusra paragraph <a href="https://example.com">external link</a></p></div>
+<p style="font-size:.9rem">Try karo: <code>p em</code> · <code>ul &gt; li</code> · <code>li[class]</code> · <code>a[href^="http"]</code> · <code>p:last-of-type</code></p></div>
+
+<div class="lab" data-lab><h3>Lab 4 — Flexbox Playground</h3>
+<label>flex-direction <select id="fxDir"><option>row</option><option>column</option><option>row-reverse</option></select></label>
+<label>justify-content <select id="fxJust"><option>flex-start</option><option>center</option><option>space-between</option><option>space-around</option></select></label>
+<label>align-items <select id="fxAlign"><option>stretch</option><option>center</option><option>flex-start</option><option>flex-end</option></select></label>
+<label>Teesre item ka flex-grow <select id="fxGrow"><option value="1">1 (barabar)</option><option value="2">2 (dugna)</option></select></label>
+<div class="demo"><div id="fxBox" style="display:flex;gap:8px;min-height:110px;border:1px dashed var(--accent);padding:8px">
+<div style="background:#f4a259;padding:10px;flex:1">1</div><div style="background:#bc4b51;padding:10px;flex:1;color:#fff">2</div><div id="fxThird" style="background:#5b8e7d;padding:10px;flex:1;color:#fff">3</div></div></div></div>
+
+<div class="lab" data-lab><h3>Lab 5 — Grid Playground</h3>
+<label>Columns <select id="grCols"><option value="1fr 1fr 1fr">1fr 1fr 1fr</option><option value="2fr 1fr 1fr">2fr 1fr 1fr</option><option value="repeat(auto-fit, minmax(120px, 1fr))">auto-fit minmax(120px,1fr) — responsive</option><option value="100px 1fr">100px 1fr</option></select></label>
+<label>Gap: <span id="grGapVal">12</span>px <input type="range" id="grGap" min="0" max="40" value="12"></label>
+<div class="demo"><div id="grBox" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div style="background:#f4a259;padding:14px">A</div><div style="background:#bc4b51;padding:14px;color:#fff">B</div><div style="background:#5b8e7d;padding:14px;color:#fff">C</div><div style="background:#8a817c;padding:14px;color:#fff">D</div><div style="background:#606c38;padding:14px;color:#fff">E</div><div style="background:#283618;padding:14px;color:#fff">F</div></div></div></div>
+
+<div class="lab" data-lab><h3>Lab 6 — Media-Query Switcher</h3>
+<label>Viewport width (simulation): <span id="mqVal">900</span>px <input type="range" id="mqR" min="320" max="1400" value="900"></label>
+<p id="mqOut"></p>
+<div class="demo"><div id="mqBox" style="display:grid;gap:8px;grid-template-columns:1fr 1fr 1fr">
+<div style="background:#f4a259;padding:12px">Content</div><div style="background:#bc4b51;padding:12px;color:#fff">Related</div><div style="background:#5b8e7d;padding:12px;color:#fff">Sidebar</div></div></div>
+<p style="font-size:.9rem">Mobile-first pattern: &lt;40em (640px) = 1 column · ≥40em = article 2 column · ≥70em (1120px) = 3 hisse. Asal media query viewport par fire hoti hai — ye lab usi logic ko slider se simulate karta hai.</p></div>
+
+<div class="lab" data-lab><h3>Lab 7 — Positioning Playground</h3>
+<label>position <select id="posSel"><option>static</option><option>relative</option><option>absolute</option><option>sticky</option></select></label>
+<label>top: <span id="posTopVal">20</span>px <input type="range" id="posTop" min="0" max="60" value="20"></label>
+<label>left: <span id="posLeftVal">20</span>px <input type="range" id="posLeft" min="0" max="80" value="20"></label>
+<div class="demo" style="position:relative;min-height:150px"><p>Paragraph 1 (flow)</p><div id="posBox" style="background:#f4a259;padding:10px;width:150px">Target box</div><p>Paragraph 2 (flow) — absolute par ye upar chadh jayega, gap band ho jayega.</p></div>
+<p style="font-size:.9rem">fixed yahan demo nahi kiya (poori page par chipak jata hai) — Positioning section me uska behaviour padho.</p></div>
+
+<div class="lab" data-lab><h3>Lab 8 — Float &amp; Clear Demo</h3>
+<label><select id="flSel"><option value="none">float: none</option><option value="left">float: left</option><option value="right">float: right</option></select></label>
+<label><select id="flWrap"><option value="normal">Wrapper: normal (background peeche bhagega)</option><option value="flowroot">Wrapper: display: flow-root (fix)</option></select></label>
+<div class="demo"><div id="flWrapper" style="background:#e9dcc3;padding:8px;overflow:hidden">
+<div id="flBox" style="width:110px;height:80px;background:#5b8e7d;color:#fff;padding:8px;margin:0 12px 8px 0">Float box</div>
+<p style="margin:0">Chhota paragraph — float lamba hai, isliye wrapper ki asli pariksha yahi hai. Text float ke gird wrap hoga.</p></div></div></div>
+
+<div class="lab" data-lab><h3>Lab 9 — Font Playground (em vs rem)</h3>
+<label>Wrapper font-size: <span id="ftVal">16</span>px <input type="range" id="ftR" min="10" max="28" value="16"></label>
+<div class="demo" id="ftWrap" style="font-size:16px">
+<p style="font-size:1.5em;background:var(--chip);padding:8px">Ye 1.5em hai — wrapper badlo to ye bhi badlega</p>
+<p style="font-size:1.5rem;background:var(--chip);padding:8px">Ye 1.5rem hai — wrapper se asar nahi, sirf root (16px) se = hamesha 24px</p>
+<ul style="font-size:1.2em"><li>Nested 1.2em — level 1<ul style="font-size:1.2em"><li>level 2 — aur bada!<ul style="font-size:1.2em"><li>level 3 — sabse bada (em compounding)</li></ul></li></ul></li></ul></div></div>
+
+<div class="lab" data-lab><h3>Lab 10 — Background, Gradient &amp; Shadow Lab</h3>
+<label>Gradient angle: <span id="bgVal">105</span>deg <input type="range" id="bgR" min="0" max="360" value="105"></label>
+<label>Shadow blur: <span id="shVal">5</span>px <input type="range" id="shR" min="0" max="30" value="5"></label>
+<label><select id="shInset"><option value="">box-shadow: outer</option><option value="inset">box-shadow: inset</option></select></label>
+<div class="demo"><div id="bgBox" style="height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold">Gradient + shadow box</div>
+<p style="margin-top:14px"><span id="clipTxt" style="font-size:1.6rem;font-weight:bold;background:linear-gradient(90deg,#b3541e,#5b8e7d);-webkit-background-clip:text;background-clip:text;color:transparent">background-clip: text</span> — text ki shape me gradient.</p></div></div>
+
+<div class="lab" data-lab><h3>Lab 11 — Overflow Lab</h3>
+<label>overflow <select id="ovSel"><option>visible</option><option>clip</option><option>hidden</option><option>auto</option><option>scroll</option></select></label>
+<div class="demo"><div id="ovBox" style="height:70px;border:2px solid var(--accent);padding:8px;overflow:visible">Bahut saara text jo is chhote box me fit nahi hoga. Overflow ka matlab hai content ka box se bahar jana. visible me ye neeche wale text par gir jayega, clip me kat jayega, auto/scroll me scrollbar aayega, hidden me scroll container ban jayega par scrollbar nahi dikhega. Ek aur line taaki overflow pakka ho jaye.</div>
+<p>Is paragraph par overflow girta hai ya nahi — yahi test hai.</p></div></div>
+
+<div class="lab" data-lab><h3>Lab 12 — Multicol + Logical Properties</h3>
+<label>Columns <select id="mcSel"><option value="1">column-count: 1</option><option value="2">column-count: 2</option><option value="3">column-count: 3</option></select></label>
+<div class="demo"><div id="mcBox" style="column-count:1;column-gap:24px;column-rule:2px dotted #b3541e"><p style="margin-top:0">Multicol newspaper jaisa layout deta hai. Columns individually style nahi ho sakte — sirf gap aur beech wali rule (column-rule) badal sakte ho. Ek heading ko column-span: all dekar saare columns ke paar phaila sakte ho. Content toot-ta hai isliye cards par break-inside: avoid lagta hai.</p></div></div>
+<label>Writing mode <select id="wmSel"><option value="horizontal-tb">horizontal-tb</option><option value="vertical-rl">vertical-rl</option></select></label>
+<div class="demo"><div id="wmBox" style="writing-mode:horizontal-tb;border:1px solid var(--line);padding:10px;height:150px">
+<div style="inline-size:180px;background:#f4a259;padding:8px;margin-block-start:10px;border-block-end:5px solid #b3541e">Logical box — inline-size + margin-block-start + border-block-end. Mode badlo, ye text ke saath ghumega.</div></div></div></div>
+
+<div class="lab" data-lab><h3>Lab 13 — Table Builder + Form States</h3>
+<label><select id="tbSel"><option value="collapse">border-collapse: collapse</option><option value="separate">border-collapse: separate (default spacing)</option></select> <select id="tbZebra"><option value="on">Zebra: on</option><option value="off">Zebra: off</option></select></label>
+<div class="demo"><table id="tbDemo" style="border-collapse:collapse"><caption style="caption-side:top;padding:6px">Band table</caption><thead><tr><th>Band</th><th style="text-align:right">Albums</th></tr></thead><tbody><tr><td>Band A</td><td style="text-align:right">3</td></tr><tr><td>Band B</td><td style="text-align:right">5</td></tr><tr><td>Band C</td><td style="text-align:right">2</td></tr></tbody></table></div>
+<label>Form — naam (required) <input type="text" required placeholder="Focus karke dekho, khaali chhodo to :invalid"></label>
+<p style="font-size:.9rem">Inputs par focus karo: is SPA ke inputs focus par outline dikhate hain. Seekha hua form reset (font inherit, border-box) har achhi stylesheet ki buniyaad hai.</p></div>
+
+<div class="lab" data-lab><h3>Lab 14 — Responsive Typography (clamp)</h3>
+<label>Preferred size: <span id="clVal">4</span>vw <input type="range" id="clR" min="1" max="10" value="4"></label>
+<p id="clCode"></p>
+<div class="demo"><p id="clTxt" style="margin:0">clamp(1.5rem, 4vw, 3rem) — window chhota-bada karke dekho</p></div>
+<p style="font-size:.9rem">Sirf vw kabhi mat use karo — zoom toot jata hai. clamp ka beech wala vw hissa rem-based min/max ke beech rehta hai, isliye zoom bhi kaam karta hai.</p></div>
+
+<div class="lab" data-lab><h3>Lab 15 — @supports / Fallback Demo</h3>
+<p>Neeche ka box pehle purani value (<code>display: block</code>-jaisi soch) phir nayi grid value use karta hai. Browser grid na samjhe to purani par ruk jayega — bina error ke. DevTools me is box ki computed display dekho:</p>
+<div class="demo"><div id="supBox" style="display:block;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#f4a259;padding:10px">Cell 1</div><div style="background:#5b8e7d;color:#fff;padding:10px">Cell 2</div></div>
+<p id="supOut"></p></div></div>
+
+<div class="source"><b>Source:</b> Labs MDN Learn ke examples par based hain — <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Test_your_skills">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Test_your_skills</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Test_your_skills">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Test_your_skills</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-challenges">Next: Challenges — MDN practice →</button></div></section>
+
+<section class="page" id="s-challenges"><h2>Challenges — MDN practice</h2>
+<div class="card"><h3>1. Styling a biography page</h3><p>Jane Doe ki bio page style karo: body padding 20px, width 500px, background <code>#efefef</code>, <code>margin: 0 auto</code> se center · contact ul: white background, <code>5px solid purple</code> border, 30px padding, radius 20px · h1 darkslategray, <code>10px dotted purple</code> bottom border, 2rem · h2 italic 1.5rem · <code>.job-title</code> darkslategray bold · links green, hover/focus par darkgreen + no underline. <b>Seekh:</b> class selector, hex colors, shorthand border.</p></div>
+<div class="card"><h3>2. Fixing blog page styles (specificity lab)</h3><ol>
+<li>Har element alternative box model: <code>* { box-sizing: border-box; }</code></li>
+<li>Nav rules dusri ul par leak ho rahe hain — selectors ko nav tak scope karo: <code>nav ul</code>, <code>nav a</code></li>
+<li>Nav <code>&lt;a&gt;</code> poori li width nahi leta — <code>display: block</code> lagao (inline width nahi bharta)</li>
+<li>Hover keyboard users ko nahi dikhta — <code>:focus</code> bhi jodo: <code>a:hover, a:focus</code></li>
+<li>Intro/summary/footer teeno ko 20px padding EK declaration me — teeno <code>.highlight</code> share karte hain</li>
+<li>h2 ke turant baad wale p ki pehli line bold: <code>h2 + p::first-line { font-weight: bold; }</code></li>
+<li>Wahi, par highlight sections me NAHI: <code>section:not(.highlight) h2 + p::first-line</code></li>
+<li><code>.highlight a { color: purple; }</code> ka contrast kharab hai aur use badal nahi sakte — usse UPAR higher-specificity rule: <code>#introduction a, #summary a { color: yellow; }</code> (ID class ko harata hai, pehle likha ho tab bhi)</li>
+<li>Footer rule .highlight se margin/background haar raha hai — specificity badhao: <code>footer.highlight { … }</code></li></ol></div>
+<div class="card"><h3>3. Sizing and decorating a content panel</h3><p>h1 se pehle book emoji generated content se: <code>h1::before { content: "📖"; margin-right: 20px; }</code> · responsive par zoomable headings: <code>font-size: calc(2vw + 1em)</code> · pane width ek declaration me: <code>width: clamp(480px, 60%, 1000px)</code> + center · content height <code>calc(100% - 200px)</code> (fixed header/footer, flexible beech) · gradient background, border-radius, aur aakhri fix: page scroll ki jagah content div scroll kare — <code>.content { overflow: auto; }</code></p></div>
+<div class="card"><h3>4. Typesetting a community school homepage (Module 2 capstone)</h3><p>Serif body + heavy heading font (Google Fonts ya @font-face) · headings/body relative units me, line-height, h1 center, headings par letter-spacing, section ke pehle paragraph par <code>text-indent: 2rem</code> (<code>section h2 + p</code>) · links #aa6666 theme ke saath, hover/focus par underline off, default focus outline off (par visible focus style rakho), external links par icon · lists ko paragraphs jaisa line-height/margin, sahi bullets · nav links poori column-width buttons, heading font, UPPERCASE CSS se (<code>text-transform</code> — HTML se nahi).</p></div>
+<div class="card"><h3>5. Fundamental layout comprehension (Module 3 capstone)</h3><p>Ek hi page me chaar tareeke: (1) Nav items ek row me, beech me barabar jagah, kinaro par kam — flex + <code>justify-content: space-around</code> (2) Nav scroll karke upar chipke — <code>position: sticky; top: 0</code> (3) Feature image ke gird text wrap — <code>float: left</code> + margins (4) Article + aside 3:1 two-column, 20px gap — grid <code>grid-template-columns: 3fr 1fr</code> (5) Photos 2-column grid, 5px gap.</p></div>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Styling_a_bio_page">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Styling_a_bio_page</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Fixing_blog_styles">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Fixing_blog_styles</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Size_decorate_content_panel">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Size_decorate_content_panel</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Typesetting_a_homepage">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Typesetting_a_homepage</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Fundamental_Layout_Comprehension">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Fundamental_Layout_Comprehension</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-faq">Next: Interview FAQs →</button></div></section>
+
+<section class="page" id="s-faq"><h2>Interview FAQs</h2>
+<p>Current-era interviews me baar-baar puche jaane wale sawaal — jawab isi SPA ke sections se.</p>
+<div data-faq><details><summary>Specificity kya hai aur calculate kaise hoti hai?</summary><p>Browser ka algorithm jo tay karta hai do takraati rules me kaunsi value lagegi. Teen columns: ID (hundreds) / CLASS — class, attribute, pseudo-class (tens) / ELEMENT — type, pseudo-element (ones). <code>h1</code> = 0-0-1, <code>#id</code> = 1-0-0, inline style = 1-0-0-0. Column-by-column compare hota hai, sabse upar wale column se.</p></details></div>
+<div data-faq><details><summary>Kya ek million classes ek ID ko hara sakti hain?</summary><p>Nahi. Har level neeche wale level se overwrite nahi hota — pehle ID column compare hoga; 0 IDs wala selector 1 ID wale se wahi haar jayega, classes kitni bhi hon.</p></details></div>
+<div data-faq><details><summary><code>*</code> kya select karta hai, aur kab avoid karein?</summary><p>Document ke saare elements. Reset stylesheets me common (<code>* { margin: 0 }</code>), par global changes karta hai isliye sparingly use karo. Specificity par iska asar zero hai.</p></details></div>
+<div data-faq><details><summary><code>:hover</code> aur <code>::before</code> me farak? (<code>:</code> vs <code>::</code>)</summary><p>Single colon = pseudo-class (element ki state, jaise ek class lagi ho). Double colon = pseudo-element (jaise markup me ek naya element jud gaya ho). ::before/::after ko dikhne ke liye <code>content</code> zaroori hai.</p></details></div>
+<div data-faq><details><summary><code>:is()</code> / <code>:where()</code> / <code>:not()</code> ka specificity par kya asar hai?</summary><p>:where() hamesha 0. :is() aur :not() khud ka score nahi rakhte — apne sabse specific argument ka score lete hain. :is() forgiving bhi hai: andar ek invalid selector poori list ko nahi maarta.</p></details></div>
+<div data-faq><details><summary>Comma list me ek selector invalid ho to kya hota hai?</summary><p>Poori rule ignore ho jati hai — baaki valid selectors ko bhi style nahi milta. Isiliye naye/prefixed pseudo ke liye :is()/:where() forgiving lists use hoti hain.</p></details></div>
+<div data-faq><details><summary><code>+</code> aur <code>~</code> combinators me farak?</summary><p><code>+</code> = turant baad wala sibling (same parent). <code>~</code> = baad ke koi bhi siblings, beech me dusre elements aa sakte hain.</p></details></div>
+<div data-faq><details><summary>Attribute selectors <code>^= $= *= ~= |=</code> kya karte hain?</summary><p>^= value se shuru, $= value par khatam, *= value kahin contain, ~= space-separated list me value, |= exactly value ya value-hyphen se shuru (language tags). Dhyaan do: <code>[class="a"]</code> class="a b" ko match NAHI karta, <code>[class~="a"]</code> karta hai.</p></details></div>
+<div data-faq><details><summary>Cascade kya hai? 7 steps ka order batao.</summary><p>Jab kai rules ek property ke liye takraayein to faisla: 1 Relevance → 2 Importance → 3 Origin → 4 Cascade layers → 5 Specificity → 6 Scoping proximity → 7 Order of appearance. Origin specificity se upar hai — specificity origins ke beech compare hi nahi hoti.</p></details></div>
+<div data-faq><details><summary><code>inherit</code>, <code>initial</code>, <code>unset</code>, <code>revert</code> me farak?</summary><p>inherit = parent ki value. initial = property ki initial value (color ke liye black). revert = browser default. unset = natural: property inherited hai to inherit jaisa, warna initial jaisa. revert-layer = pichhli layer ki value. <code>all</code> inhe ek saath saari properties par lagata hai.</p></details></div>
+<div data-faq><details><summary><code>!important</code> kab haarta hai, aur use karna kyun bura mana jata hai?</summary><p>Sirf ek aur important declaration se haarta hai — same specificity par baad me likhi ho, ya zyada specificity wali. Ye normal cascade tod deta hai; bade stylesheet me debugging bahut mushkil ho jati hai, isliye MDN kehta hai bilkul zaroori ho tabhi use karo (jaise CMS ka core CSS override karna).</p></details></div>
+<div data-faq><details><summary>Cascade layers kya hain, kyun bane?</summary><p>Ek origin ke andar sub-origin priority. Bade codebases me teams/libraries ke beech specificity wars aur !important ladai rokne ke liye. Layer order = creation order, kabhi badal nahi sakta. Normal me: baad wala layer upar, unlayered sabse upar. Important me ulta: pehle wala layer upar, unlayered sabse neeche — kyunki important ka poora precedence hi ulta chalta hai.</p></details></div>
+<div data-faq><details><summary>Standard vs alternative box model?</summary><p>Standard (content-box): width = sirf content; padding+border judte hain (350 + 50 + 10 = 410px asal). Alternative (border-box): width = dikhai dene wali poori width (350 hi). Global pattern: <code>html{box-sizing:border-box} *,*::before,*::after{box-sizing:inherit}</code>.</p></details></div>
+<div data-faq><details><summary>Margin collapsing kya hai?</summary><p>Chhoote hue vertical margins milein to ek reh jata hai: dono positive → sabse bada; dono negative → sabse chhota; mixed → subtract. Isiliye 50px + 30px = 50px gap, 80 nahi. Sirf vertical direction me hota hai; positioned elements par nahi hota.</p></details></div>
+<div data-faq><details><summary>Block, inline, inline-block me farak?</summary><p>Block: nayi line, width/height respect, margins dusro ko dhakelte hain. Inline: same line, width/height aur top/bottom margin ka asar nahi, top/bottom padding overlap karta hai. Inline-block: line break nahi, par width/height respect aur sab kuch dusro ko dhakelta hai — nav links ke liye ideal.</p></details></div>
+<div data-faq><details><summary>Inline element par width/height kyun nahi lag sakte?</summary><p>Inline boxes ka size unke content se tay hota hai — specification ke hisaab se width/height unpar apply hi nahi hote. Control chahiye to display: block ya inline-block lagao.</p></details></div>
+<div data-faq><details><summary><code>display: flow-root</code> kis liye hai?</summary><p>Float ko wrapper ke andar rakhne ke liye. Float flow se bahar hota hai, isliye wrapper ka background uske peeche bhagta hai; flow-root wrapper ko float contain karne par majboor karta hai — bina clearfix hacks ke.</p></details></div>
+<div data-faq><details><summary>em vs rem — kab kaunsa?</summary><p>em = parent ka font-size (font-size ke liye) — nested me compound hota hai (1.3em har level bada). rem = root (html) ka font-size — hamesha predictable. Font-size ke liye rem prefer karo; component ke andar local scaling chahiye to em.</p></details></div>
+<div data-faq><details><summary><code>calc()</code> / <code>min()</code> / <code>max()</code> / <code>clamp()</code> kya karte hain?</summary><p>calc = units milakar hisaab (20% + 100px). min/max = sabse chhoti/badi value chunte hain. clamp(min, preferred, max) = beech wali value — responsive sizes ke liye: neeche min se kam nahi, upar max se zyada nahi.</p></details></div>
+<div data-faq><details><summary>Percentages kis ke relative hote hain?</summary><p>Hamesha kisi aur value ke: width % containing block ki width ka, font-size % parent ke font-size ka. Aur mashhoor gotcha: margin/padding % chaaro sides ke liye container ki WIDTH se calculate hota hai.</p></details></div>
+<div data-faq><details><summary>Text ko sirf <code>vw</code> me kyun nahi rakhna chahiye?</summary><p>vw se set text ko user zoom nahi kar sakta — accessibility toot-ti hai. Hal: <code>calc(1.5rem + 4vw)</code> ya clamp() — rem hissa zoomable rehta hai, vw viewport ke saath smooth growth deta hai.</p></details></div>
+<div data-faq><details><summary>Multiple backgrounds kaise layer hote hain? Shorthand ke rules?</summary><p>Comma-separated list me AAKHRI wala sabse neeche, pehle wale upar stack. Shorthand me background-color sirf aakhri comma ke baad aa sakta hai; background-size sirf position ke turant baad <code>/</code> ke saath.</p></details></div>
+<div data-faq><details><summary><code>border</code> aur <code>outline</code> me farak?</summary><p>Outline box model ka hissa nahi — koi jagah nahi leta, background ke upar baithta hai, aur chaukor hona zaroori nahi (focus ring element ki shape follow kar sakti hai). Isiliye focus indicator ke liye outline sahi hai.</p></details></div>
+<div data-faq><details><summary><code>background-clip: text</code> kya hai, <code>-webkit-</code> kyun?</summary><p>Background ko text ki shape me clip karta hai. Ye official standard nahi par sab browsers me hai — aur itna zyada use hua ki non-WebKit browsers ko bhi -webkit- prefix implement karna pada. Seekh: non-standard features kabhi bhi badal sakte hain; production me test + fallback rakho.</p></details></div>
+<div data-faq><details><summary>Normal flow kya hai?</summary><p>Bina kisi override ke default layout: block elements parent ki inline space bharkar ek ke neeche ek, inline elements same line par wrap hote hue. Achha document pehle normal flow me hi padhne layak hona chahiye.</p></details></div>
+<div data-faq><details><summary>Floats kaise kaam karte hain, aur layouts ke liye legacy kyun?</summary><p>Float element ko normal flow se bahar karke parent ke ek side chipka deta hai; baad ka content uske gird wrap hota hai (line boxes chhote hote hain, boxes poori width ke rehte hain). Poore layouts ke liye floats ek workaround the — ab flexbox/grid usi kaam ke liye bane hain. Floats ka sahi use aaj bhi text ke andar image hai.</p></details></div>
+<div data-faq><details><summary>Float clear kaise karte hain?</summary><p>Following element par <code>clear: left/right/both</code>. Ya wrapper ko contain karna ho to <code>display: flow-root</code>.</p></details></div>
+<div data-faq><details><summary><code>position</code> ki paanch values me farak?</summary><p>static = default flow. relative = flow me jagah lekar offsets se khisakna. absolute = flow se bahar, nearest positioned ancestor ke relative. fixed = viewport ke relative, scroll par bhi wahi. sticky = threshold tak relative, phir fixed.</p></details></div>
+<div data-faq><details><summary>Containing block kya hai?</summary><p>Absolutely positioned element jis ke relative lagta hai: sabse paas wala positioned ancestor; koi na ho to initial containing block (viewport). Isiliye parent par <code>position: relative</code> lagana sabse common pattern hai.</p></details></div>
+<div data-faq><details><summary><code>z-index</code> kab kaam NAHI karta?</summary><p>Non-positioned (static) elements par z-index ka asar nahi hota (flex/grid items iske apvaad hain). Positioned elements non-positioned se upar rehte hain; barabar par source order me baad wala jeet-ta hai.</p></details></div>
+<div data-faq><details><summary>Flexbox vs Grid — kab kaunsa?</summary><p>Flexbox one-dimensional hai (ek row YA ek column) — nav, toolbars, content ke hisaab se bantne wali jagah. Grid two-dimensional (rows + columns ek saath) — page layouts, card grids. Aksar dono saath use hote hain: page grid se, component ke andar flex se.</p></details></div>
+<div data-faq><details><summary>Main axis aur cross axis kya hain?</summary><p>Main axis = items jis direction me lagte hain (flex-direction se tay); cross axis uske perpendicular. align-items cross par, justify-content main par kaam karta hai. Direction badlo to axes bhi badal jate hain.</p></details></div>
+<div data-faq><details><summary><code>flex: 1</code> ka matlab? grow/shrink/basis?</summary><p>flex shorthand = flex-grow, flex-shrink, flex-basis. <code>flex: 1</code> matlab grow=1: khaali jagah ka barabar hissa. grow = kitna badhe, shrink = jagah kam ho to kitna ghate, basis = bantware se pehle ka base size. <code>flex: 1 100px</code> = pehle 100px, phir bachi jagah proportion me.</p></details></div>
+<div data-faq><details><summary><code>space-around</code> vs <code>space-between</code>?</summary><p>Dono items ke beech barabar jagah baant-te hain; space-around kinaro par aadhi jagah bhi deta hai, space-between kinaro par kuch nahi deta (pehla item bilkul start, aakhri bilkul end).</p></details></div>
+<div data-faq><details><summary><code>order</code> kya badalta hai — aur kya NAHI badalta?</summary><p>Sirf visual/layout order. Source order aur isliye keyboard Tab order waisa ka waisa rehta hai — focusable elements par order badalna keyboard users ke liye confusing ho sakta hai.</p></details></div>
+<div data-faq><details><summary><code>fr</code> unit kya hai? Explicit vs implicit grid?</summary><p>fr = available jagah ka fraction (fixed tracks pehle jagah lete hain). Explicit grid = template se banaya hua; implicit = content ke bahar jaane par khud bane tracks, jinhe grid-auto-rows/columns size karte hain.</p></details></div>
+<div data-faq><details><summary><code>repeat(auto-fit, minmax(230px, 1fr))</code> kya karta hai? auto-fit vs auto-fill?</summary><p>Jitne 230px columns fit hon utne bante hain, bachi jagah 1fr se barabar bant-ti hai — bina media query ke responsive grid. auto-fit khaali tracks ko collapse karke items ko stretch karta hai; auto-fill khaali tracks banaye rakhta hai.</p></details></div>
+<div data-faq><details><summary>Grid line placement me <code>-1</code> kya hai? Areas ke rules?</summary><p>Lines 1 se gin-ni hoti hain (writing mode ke hisaab se); -1 = explicit grid ki aakhri line. grid-template-areas: har cell bhara ho, <code>.</code> khaali cell, areas rectangular hi hon, ek area do jagah nahi ho sakta. Subgrid = nested grid jo parent ke tracks inherit kare.</p></details></div>
+<div data-faq><details><summary>Responsive web design kya hai? Mobile-first kya hai?</summary><p>RWD ek approach hai (Marcotte, 2010): fluid grids + fluid images + media queries, taaki layout har device par respond kare. Mobile-first = pehle sabse chhoti screen ke liye simple single-column, phir width badhne par breakpoints par layout jodo. Breakpoint device size par nahi, jahan content tootne lage wahan rakho.</p></details></div>
+<div data-faq><details><summary>Viewport meta tag kyun mandatory hai?</summary><p><code>&lt;meta name="viewport" content="width=device-width"&gt;</code> mobile browser ko device ki asal width batata hai. Bina iske purane mobile browsers viewport 980px maan lete the — page zoomed-out desktop jaisa dikhta tha aur tumhare breakpoints fire hi nahi hote.</p></details></div>
+<div data-faq><details><summary>Media query kaise likhte hain? <code>and</code>, comma, <code>not</code>?</summary><p><code>@media type and (feature) { rules }</code> — type optional (default all). and = sab conditions, comma = OR (koi ek), not = negation. Nayi range syntax: <code>@media (30em &lt;= width &lt;= 50em)</code>. Features: width/height, orientation, hover, pointer (none/fine/coarse).</p></details></div>
+<div data-faq><details><summary>Web-safe fonts vs web fonts? Font stack kyun?</summary><p>Web-safe = lagbhag har system par maujood (Arial, Georgia…). Web fonts = @font-face se download hone wali files (WOFF2) — har browser me wahi font. Stack isliye: pehla font na mile to agla, aur aakhir me hamesha generic family (sans-serif/serif) taaki browser ka default Times na aa jaye.</p></details></div>
+<div data-faq><details><summary><code>@font-face</code> aur <code>font-display: swap</code>?</summary><p>@font-face font ka naam + src file (format ke saath) define karta hai; CSS me sabse upar rakho. font-display tay karta hai load hote waqt text kaisa dikhe — swap = pehle fallback font dikhao, web font aate hi badal do (text kabhi invisible nahi rehta).</p></details></div>
+<div data-faq><details><summary><code>font</code> shorthand ka order aur required hisse?</summary><p>Order: style, variant, weight, stretch, size, line-height, family. Required sirf size aur family hain; size aur line-height ke beech slash aata hai (<code>3em/1.5</code>).</p></details></div>
+<div data-faq><details><summary><code>line-height: 1.6</code> (unitless) vs <code>24px</code> me farak?</summary><p>Unitless ek multiplier hai jo element ke apne font-size par lagta hai aur bachcho ko multiplier ke roop me inherit hota hai. px ek fixed value hai jo waise hi inherit ho jati hai — chhote text par tang, bade par khula pad sakta hai. Isiliye unitless recommended hai.</p></details></div>
+<div data-faq><details><summary>Link states aur LVFHA order?</summary><p>Link, Visited, Focus, Hover, Active — CSS isi order me likho (LoVe Fears HAte). Styles ek-dusre par build hote hain; galat order me baad wala rule pehle wale ko galat jagah override kar dega. Focus outline ko bina visible replacement ke kabhi mat hatao — keyboard users gum ho jayenge.</p></details></div>
+<div data-faq><details><summary>Custom bullets background se kyun, <code>list-style-image</code> se kyun nahi?</summary><p>list-style-image par position/size ka control lagbhag nahi hai. list-style-type: none + li par background-image (size, position, no-repeat ke saath) poora control deta hai — bullet ka size text ke saath rem me scale bhi hota hai.</p></details></div>
+<div data-faq><details><summary><code>border-collapse</code> vs <code>border-spacing</code>? <code>table-layout: fixed</code>?</summary><p>collapse cell borders ko ek me mila deta hai (spacing khatam); separate (default) me borders alag rehte hain aur unke beech border-spacing jitni jagah hoti hai. table-layout: fixed columns ko heading/content ki pehli row se size karta hai — auto (content-based) se zyada predictable aur tez.</p></details></div>
+<div data-faq><details><summary>DevTools me CSS debug kaise karte hain? Reduced test case kya hai?</summary><p>Rules view: applied/inherited CSS, crossed-out = invalid/unsupported/overridden, values live edit + toggle. Layout view: box-model diagram. Reduced test case = problem dikhane wala sabse chhota example (faltu HTML/CSS/JS hata kar) — banate-banate wajah aksar khud mil jati hai, aur help/bug report ke liye bhi yahi chahiye.</p></details></div>
+<div data-faq><details><summary>Browsers unsupported CSS ko kaise handle karte hain? <code>@supports</code>?</summary><p>Chup-chaap discard — koi error nahi. Isiliye fallback pattern: purani value pehle, nayi baad me. @supports feature query hai: support ho tab hi andar ke styles. Baseline pehle likho jo sab par chale, enhancement @supports ke andar.</p></details></div>
+<div data-faq><details><summary>OOCSS, BEM, SMACSS/ITCSS kya hain? Sass kya hai?</summary><p>CSS ko bade projects me organize karne ke methodologies: OOCSS = reusable objects (media object); BEM = Block__Element--Modifier naming; SMACSS/ITCSS = layering systems. Sass ek pre-processor hai — variables aur partials (@use se jodna) deta hai jo plain CSS me compile hote hain; native custom properties ne variables wali zaroorat kam kar di hai.</p></details></div>
+<div data-faq><details><summary><code>visibility: hidden</code> vs <code>display: none</code>?</summary><p>display: none element ko layout se hi hata deta hai — jagah bhi nahi rehti. visibility: hidden content chhupa deta hai par uski jagah layout me bani rehti hai. (Ye jodi MDN Reference ki hai — Learn me deep nahi padhayi gayi.)</p></details></div>
+<div class="source"><b>Source:</b> FAQs ke jawab inhi MDN pages se hain — poori list neeche Sources section me hai: <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics</a></div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-sources">Next: Sources — saare MDN pages →</button></div></section>
+
+<section class="page" id="s-sources"><h2>Sources — saare MDN pages</h2>
+<h3>Learn — Styling basics</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Getting_started">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Getting_started</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Styling_a_bio_page">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Styling_a_bio_page</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Basic_selectors">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Basic_selectors</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Attribute_selectors">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Attribute_selectors</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Combinators">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Combinators</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_conflicts">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_conflicts</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Fixing_blog_styles">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Fixing_blog_styles</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Sizing">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Sizing</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Backgrounds_and_borders">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Backgrounds_and_borders</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Size_decorate_content_panel">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Size_decorate_content_panel</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Overflow">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Overflow</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Images_media_forms">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Images_media_forms</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Tables">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Tables</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Debugging_CSS">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Debugging_CSS</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Test_your_skills">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Test_your_skills</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Advanced_styling_effects">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Advanced_styling_effects</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_different_text_directions">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_different_text_directions</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing</a></li>
+</ul>
+<h3>Learn — Text styling</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_lists">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_lists</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_links">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Styling_links</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Web_fonts">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Web_fonts</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Typesetting_a_homepage">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Typesetting_a_homepage</a></li>
+</ul>
+<h3>Learn — CSS layout</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Introduction">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Introduction</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Floats">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Floats</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Positioning">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Positioning</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Fundamental_Layout_Comprehension">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Fundamental_Layout_Comprehension</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Media_queries">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Media_queries</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Test_your_skills">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Test_your_skills</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Multiple-column_Layout">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Multiple-column_Layout</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Practical_positioning_examples">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Practical_positioning_examples</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Legacy_Layout_Methods">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Legacy_Layout_Methods</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Supporting_Older_Browsers">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Supporting_Older_Browsers</a></li>
+</ul>
+<h3>Reference</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference">https://developer.mozilla.org/en-US/docs/Web/CSS/Reference</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides">https://developer.mozilla.org/en-US/docs/Web/CSS/Guides</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/How_to/Layout_cookbook">https://developer.mozilla.org/en-US/docs/Web/CSS/How_to/Layout_cookbook</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core</a></li>
+</ul>
+<div class="source"><b>Source:</b> Ye section khud hi master source list hai — har URL upar diya gaya hai.</div>
+<div class="nextbar"><button class="nextbtn" data-goto="s-trust">Next: Trust Check — sab kuch cover hai? →</button></div></section>
+
+<section class="page" id="s-trust"><h2>Trust Check — sab kuch cover hai?</h2>
+<p>Ye gintee daawa nahi, saboot hai — neeche ke numbers browser <b>isi page ko live gin kar</b> dikhata hai, hardcoded nahi.</p>
+<div class="kpi">
+<div><b id="kSections">–</b>Sections</div>
+<div><b id="kSidebar">–</b>Sidebar entries</div>
+<div><b id="kSources">–</b>Source boxes</div>
+<div><b id="kPages">–</b>Alag MDN pages</div>
+<div><b id="kFaqs">–</b>FAQs</div>
+<div><b id="kLabs">–</b>Labs</div>
+</div>
+<p><button class="nextbtn" id="trustBtn" type="button">Self-check chalao</button></p>
+<div id="trustOut"></div>
+<h3>MDN ki index lists se khud cross-check karo</h3>
+<table><tr><th>MDN index</th><th>Khud milao</th></tr>
+<tr><td>Styling basics module index</td><td>Sidebar ke Learn — Styling basics ke 15 titles module ke pages se ek-ek karke milao</td></tr>
+<tr><td>Text styling module index</td><td>4 teaching pages + 1 challenge — sab yahan hain</td></tr>
+<tr><td>CSS layout module index</td><td>7 core pages + 5 stretch goals — sab yahan hain</td></tr>
+<tr><td>CSS Reference / Guides index</td><td>Reference sections ke tables se milao — 400+ properties me se har group yahan hai; kisi ek property ki poori deep page chahiye to uska MDN link Sources me hai</td></tr></table>
+<p><b>Open challenge:</b> MDN ke kisi bhi CSS Learn page ka koi topic nikaal kar dikhao jo is SPA me na ho — mil jaye to wahi ekmatra tareeka hai is gintee ko galat saabit karne ka.</p>
+<h3>Jo sach me is SPA me nahi hai (saaf-saaf)</h3>
+<ul>
+<li>Har ek CSS property (~400+) ki apni alag deep page — ek SPA me sambhav nahi; properties group tables me hain, deep pages ke links Sources me.</li>
+<li>MDN ki “Test your skills” practice pages khud — unke saare topics ke labs/challenges yahan bana diye gaye hain.</li>
+<li>CSS + JavaScript (CSSOM, getComputedStyle, JS se custom properties badalna) — ye JS hai, JS SPA ka scope hai.</li>
+<li>CSS Houdini ki JS registration APIs ki gehrai — sirf zikr hai, kyunki wo CSS authoring nahi, JS API hai.</li>
+<li>Production/server topics — CSS se sambandhit hi nahi.</li>
+</ul>
+<div class="source"><b>Source:</b> <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout">https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference">https://developer.mozilla.org/en-US/docs/Web/CSS/Reference</a></div>
+<p style="margin-top:24px"><b>Poora hua!</b> Is SPA ke sections me MDN ke CSS ki har cheez hai — Learn ke teeno modules, saare stretch goals, aur Reference ka poora naksha, ek hi page me. Agla kadam: JS SPA, bilkul isi tareeke se.</p>
+</section>
+
+</main></div>
+<nav class="bottomnav" aria-label="Main sections"><div class="bn-row"><button type="button" class="bnav-btn active" data-bgroup="learn" data-goto="s-what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 9 12 14l9.5-5L12 4z"/><path d="M6.5 11.5V16c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3v-4.5"/><path d="M21.5 9v5"/></svg><span>Learn</span></button><button type="button" class="bnav-btn" data-bgroup="guides" data-goto="s-effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20"/></svg><span>Guides</span></button><button type="button" class="bnav-btn" data-bgroup="reference" data-goto="s-ref-sel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg><span>Reference</span></button><button type="button" class="bnav-btn" data-bgroup="practice" data-goto="s-labs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v5.2L4.8 18a2.4 2.4 0 0 0 2.1 3.5h10.2a2.4 2.4 0 0 0 2.1-3.5L14 8.2V3"/><path d="M7.5 14h9"/></svg><span>Practice</span></button></div></nav>
+<script>
+function show(id){
+  document.querySelectorAll('section.page').forEach(function(s){s.classList.toggle('active',s.id===id);});
+  document.querySelectorAll('.navbtn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-target')===id);});
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('scrim').classList.remove('show');
+  if(window.__spaChrome)window.__spaChrome(id);
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.navbtn').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-target'));});});
+document.querySelectorAll('[data-goto]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-goto'));});});
+document.getElementById('menuBtn').addEventListener('click',function(){document.getElementById('sidebar').classList.add('open');document.getElementById('scrim').classList.add('show');});
+document.getElementById('scrim').addEventListener('click',function(){document.getElementById('sidebar').classList.remove('open');document.getElementById('scrim').classList.remove('show');});
+show('home');
+
+/* Specificity */
+function specScore(sel){
+  var s=sel.replace(/"[^"]*"/g,' ').replace(/'[^']*'/g,' ');
+  var ids=(s.match(/#[a-zA-Z]/g)||[]).length;
+  var cls=(s.match(/\.[a-zA-Z]/g)||[]).length+(s.match(/\[[^\]]*\]/g)||[]).length;
+  var pcs=(s.match(/:(?!:)[a-z-]+/g)||[]).filter(function(x){return x.indexOf(':where')!==0;}).length;
+  var rest=s.replace(/#[a-zA-Z][\w-]*/g,' ').replace(/\.[a-zA-Z][\w-]*/g,' ').replace(/\[[^\]]*\]/g,' ').replace(/::?[a-z-]+(\([^)]*\))?/g,' ').replace(/[>+~*,]/g,' ');
+  var els=rest.trim().split(/\s+/).filter(function(x){return /^[a-zA-Z]/.test(x);}).length;
+  var pes=(s.match(/::[a-z-]+/g)||[]).length;
+  return [ids, cls+pcs, els+pes];
+}
+function cmpSpec(a,b){for(var i=0;i<3;i++){if(a[i]!==b[i])return a[i]>b[i]?1:-1;}return 0;}
+document.getElementById('specBtn').addEventListener('click',function(){
+  var a=specScore(document.getElementById('specA').value), b=specScore(document.getElementById('specB').value);
+  var c=cmpSpec(a,b);
+  document.getElementById('specOut').innerHTML='Selector 1: <b>'+a.join('-')+'</b> · Selector 2: <b>'+b.join('-')+'</b> → '+(c===0?'Dono barabar — source order me baad wala jeetega.':(c>0?'<b>Selector 1 jeetega.</b>':'<b>Selector 2 jeetega.</b>'));
+});
+
+/* Box model */
+function bmUpdate(){
+  var p=+document.getElementById('padR').value, b=+document.getElementById('borR').value, mode=document.getElementById('bsSel').value;
+  document.getElementById('padVal').textContent=p; document.getElementById('borVal').textContent=b;
+  var box=document.getElementById('bmBox'); box.style.padding=p+'px'; box.style.borderWidth=b+'px'; box.style.boxSizing=mode;
+  var total= mode==='content-box' ? 200+2*p+2*b : 200;
+  document.getElementById('bmOut').innerHTML='Asal dikhai dene wali width: <b>'+total+'px</b> ('+mode+') — content-box me padding+border judte hain, border-box me width hi kul width hai.';
+}
+['padR','borR','bsSel'].forEach(function(id){document.getElementById(id).addEventListener('input',bmUpdate);}); bmUpdate();
+
+/* Selector tester */
+document.getElementById('selBtn').addEventListener('click',function(){
+  var demo=document.getElementById('selDemo');
+  demo.querySelectorAll('*').forEach(function(el){el.style.outline='';el.style.background='';});
+  var q=document.getElementById('selIn').value, n=0;
+  try{ demo.querySelectorAll(q).forEach(function(el){el.style.outline='3px solid #e07b2a';el.style.background='rgba(224,123,42,.30)';n++;});
+    document.getElementById('selOut').textContent=n+' element(s) match hue.'; }
+  catch(e){ document.getElementById('selOut').textContent='Selector invalid hai — asal CSS me aisi rule poori ignore ho jati.'; }
+});
+
+/* Flexbox */
+function fxUpdate(){var box=document.getElementById('fxBox');box.style.flexDirection=document.getElementById('fxDir').value;box.style.justifyContent=document.getElementById('fxJust').value;box.style.alignItems=document.getElementById('fxAlign').value;document.getElementById('fxThird').style.flexGrow=document.getElementById('fxGrow').value;}
+['fxDir','fxJust','fxAlign','fxGrow'].forEach(function(id){document.getElementById(id).addEventListener('change',fxUpdate);}); fxUpdate();
+
+/* Grid */
+function grUpdate(){var box=document.getElementById('grBox');box.style.gridTemplateColumns=document.getElementById('grCols').value;var g=document.getElementById('grGap').value;box.style.gap=g+'px';document.getElementById('grGapVal').textContent=g;}
+['grCols','grGap'].forEach(function(id){document.getElementById(id).addEventListener('input',grUpdate);}); grUpdate();
+
+/* Media query switcher */
+function mqUpdate(){var w=+document.getElementById('mqR').value;document.getElementById('mqVal').textContent=w;
+  var cols='1fr', label='Base (mobile): 1 column — koi media query fire nahi.';
+  if(w>=1120){cols='1fr 1fr 1fr';label='≥70em (1120px): teeno hisse alag columns me.';}
+  else if(w>=640){cols='2fr 1fr';label='≥40em (640px): do columns (teesra neeche wrap hoga).';}
+  document.getElementById('mqBox').style.gridTemplateColumns=cols;
+  document.getElementById('mqOut').innerHTML='<b>'+w+'px</b> — '+label;}
+document.getElementById('mqR').addEventListener('input',mqUpdate); mqUpdate();
+
+/* Positioning */
+function posUpdate(){var b=document.getElementById('posBox');b.style.position=document.getElementById('posSel').value;b.style.top=document.getElementById('posTop').value+'px';b.style.left=document.getElementById('posLeft').value+'px';document.getElementById('posTopVal').textContent=document.getElementById('posTop').value;document.getElementById('posLeftVal').textContent=document.getElementById('posLeft').value;}
+['posSel','posTop','posLeft'].forEach(function(id){document.getElementById(id).addEventListener('input',posUpdate);}); posUpdate();
+
+/* Float */
+function flUpdate(){var f=document.getElementById('flSel').value;var box=document.getElementById('flBox');box.style.float=f;box.style.marginLeft= f==='right' ? '12px':'0';box.style.marginRight= f==='right' ? '0':'12px';
+  document.getElementById('flWrapper').style.display=document.getElementById('flWrap').value==='flowroot'?'flow-root':'block';}
+['flSel','flWrap'].forEach(function(id){document.getElementById(id).addEventListener('change',flUpdate);}); flUpdate();
+
+/* Font playground */
+document.getElementById('ftR').addEventListener('input',function(){document.getElementById('ftWrap').style.fontSize=this.value+'px';document.getElementById('ftVal').textContent=this.value;});
+
+/* Background/shadow */
+function bgUpdate(){var a=document.getElementById('bgR').value, s=document.getElementById('shR').value, ins=document.getElementById('shInset').value;
+  document.getElementById('bgVal').textContent=a; document.getElementById('shVal').textContent=s;
+  var box=document.getElementById('bgBox'); box.style.background='linear-gradient('+a+'deg, #f4a259, #5b8e7d)';
+  box.style.boxShadow=(ins? 'inset ':'')+'5px 5px '+s+'px rgba(0,0,0,.55)';}
+['bgR','shR','shInset'].forEach(function(id){document.getElementById(id).addEventListener('input',bgUpdate);}); bgUpdate();
+
+/* Overflow */
+document.getElementById('ovSel').addEventListener('change',function(){document.getElementById('ovBox').style.overflow=this.value;});
+
+/* Multicol + writing mode */
+document.getElementById('mcSel').addEventListener('change',function(){document.getElementById('mcBox').style.columnCount=this.value;});
+document.getElementById('wmSel').addEventListener('change',function(){document.getElementById('wmBox').style.writingMode=this.value;});
+
+/* Table */
+function tbUpdate(){var t=document.getElementById('tbDemo');t.style.borderCollapse=document.getElementById('tbSel').value;
+  var z=document.getElementById('tbZebra').value==='on';
+  t.querySelectorAll('tbody tr').forEach(function(r,i){r.style.background=(z&&i%2===0)?'var(--chip)':'';});}
+['tbSel','tbZebra'].forEach(function(id){document.getElementById(id).addEventListener('change',tbUpdate);}); tbUpdate();
+
+/* Clamp */
+function clUpdate(){var v=document.getElementById('clR').value;document.getElementById('clVal').textContent=v;
+  var css='clamp(1.5rem, '+v+'vw, 3rem)'; document.getElementById('clTxt').style.fontSize=css;
+  document.getElementById('clCode').innerHTML='<code>font-size: '+css+';</code>';}
+document.getElementById('clR').addEventListener('input',clUpdate); clUpdate();
+
+/* @supports readout */
+document.getElementById('supOut').textContent='Is browser me grid ki computed display: '+getComputedStyle(document.getElementById('supBox')).display+' — matlab nayi value support hoti hai, purani par rukna nahi pada.';
+
+/* Trust Check */
+function liveCounts(){
+  var sections=document.querySelectorAll('section.page').length;
+  var sidebar=document.querySelectorAll('.navbtn').length;
+  var sources=document.querySelectorAll('.source').length;
+  var urls={}; document.querySelectorAll('a[href^="https://developer.mozilla.org"]').forEach(function(a){urls[a.getAttribute('href')]=1;});
+  var faqs=document.querySelectorAll('[data-faq]').length;
+  var labs=document.querySelectorAll('[data-lab]').length;
+  document.getElementById('kSections').textContent=sections;
+  document.getElementById('kSidebar').textContent=sidebar;
+  document.getElementById('kSources').textContent=sources;
+  document.getElementById('kPages').textContent=Object.keys(urls).length;
+  document.getElementById('kFaqs').textContent=faqs;
+  document.getElementById('kLabs').textContent=labs;
+  return {sections:sections,sidebar:sidebar,sources:sources,pages:Object.keys(urls).length,faqs:faqs,labs:labs};
+}
+liveCounts();
+document.getElementById('trustBtn').addEventListener('click',function(){
+  var c=liveCounts(); var rows=[]; var pass=0,total=0;
+  function chk(name,ok){total++; if(ok)pass++; rows.push('<p>'+(ok?'<span class="pass">PASS</span>':'<span class="fail">FAIL</span>')+' — '+name+'</p>');}
+  var noSource=[]; document.querySelectorAll('section.page').forEach(function(s){if(!s.querySelector('.source'))noSource.push(s.id);});
+  chk('Har section ke paas Source box hai ('+(c.sections-noSource.length)+'/'+c.sections+')', noSource.length===0);
+  var dead=[]; document.querySelectorAll('.navbtn').forEach(function(b){if(!document.getElementById(b.getAttribute('data-target')))dead.push(b.getAttribute('data-target'));});
+  chk('Koi dead sidebar button nahi ('+c.sidebar+' entries)', dead.length===0);
+  var deadNext=[]; document.querySelectorAll('[data-goto]').forEach(function(b){if(!document.getElementById(b.getAttribute('data-goto')))deadNext.push(1);});
+  chk('Next-button chain poori hai — koi dead target nahi', deadNext.length===0);
+  var badUrl=[]; document.querySelectorAll('a[href]').forEach(function(a){var h=a.getAttribute('href'); if(h.indexOf('developer.mozilla.org')===-1 && h!=='https://example.com')badUrl.push(h);});
+  chk('Saare source links asli MDN URLs hain ('+c.pages+' alag pages; selector lab ka example.com demo link is gintee se bahar hai)', badUrl.length===0);
+  chk('FAQs maujood hain ('+c.faqs+')', c.faqs>=30);
+  chk('Labs maujood hain ('+c.labs+')', c.labs>=10);
+  chk('Source boxes sections jitne hain ('+c.sources+' boxes)', c.sources>=c.sections);
+  document.getElementById('trustOut').innerHTML='<div class="card"><h3>Self-check: '+pass+'/'+total+' PASS</h3>'+rows.join('')+'</div>';
+});
+</script>
+<script>
+/* Sidebar search filter */
+(function(){
+  var ns=document.getElementById('navSearch');
+  if(!ns)return;
+  var sb=document.getElementById('sidebar');
+  ns.addEventListener('input',function(){
+    var q=ns.value.trim().toLowerCase();
+    var kids=Array.prototype.slice.call(sb.children);
+    kids.forEach(function(el){
+      if(el.classList&&el.classList.contains('navbtn')){
+        el.style.display=(!q||el.textContent.toLowerCase().indexOf(q)>-1)?'':'none';
+      }
+    });
+    kids.forEach(function(el,i){
+      if(el.tagName!=='H2')return;
+      var vis=false;
+      for(var j=i+1;j<kids.length;j++){
+        if(kids[j].tagName==='H2')break;
+        if(kids[j].classList&&kids[j].classList.contains('navbtn')&&kids[j].style.display!=='none'){vis=true;break;}
+      }
+      el.style.display=vis?'':'none';
+    });
+  });
+})();
+</script>
+<script>
+/* Sidebar numbering: har title ke aage 01, 02, … aur har group ke aage uski count */
+(function(){
+  var sb=document.getElementById('sidebar');
+  if(!sb)return;
+  var btns=sb.querySelectorAll('.navbtn');
+  btns.forEach(function(b,i){
+    if(b.querySelector('.navnum'))return;
+    var title=b.textContent.trim();
+    b.textContent='';
+    var num=document.createElement('span');
+    num.className='navnum';
+    num.setAttribute('aria-hidden','true');
+    num.textContent=(i+1<10?'0':'')+(i+1);
+    var label=document.createElement('span');
+    label.className='navtitle';
+    label.textContent=title;
+    b.appendChild(num);
+    b.appendChild(label);
+    b.setAttribute('aria-label',(i+1)+'. '+title);
+  });
+  var kids=Array.prototype.slice.call(sb.children);
+  kids.forEach(function(el,i){
+    if(el.tagName!=='H2')return;
+    var count=0;
+    for(var j=i+1;j<kids.length;j++){
+      if(kids[j].tagName==='H2')break;
+      if(kids[j].classList&&kids[j].classList.contains('navbtn'))count++;
+    }
+    if(el.querySelector('.navcount'))return;
+    var label=document.createElement('span');
+    label.className='navgroup-label';
+    label.textContent=el.textContent.trim();
+    el.textContent='';
+    el.appendChild(label);
+    var pill=document.createElement('span');
+    pill.className='navcount';
+    pill.textContent=count;
+    el.appendChild(pill);
+  });
+})();
+</script>
+<script>
+/* Stitch chrome: breadcrumb + bottom-nav state (visual only) */
+(function(){
+  function groupOf(btn){
+    var el=btn, g='Learn';
+    var sb=document.getElementById('sidebar');
+    var kids=Array.prototype.slice.call(sb.children);
+    var idx=kids.indexOf(btn);
+    for(var i=idx-1;i>=0;i--){ if(kids[i].tagName==='H2'){ var gl=kids[i].querySelector('.navgroup-label'); g=gl?gl.textContent:kids[i].textContent; break; } }
+    return g;
+  }
+  function bkey(g){
+    g=(g||'').toLowerCase();
+    if(g.indexOf('guide')>-1)return 'guides';
+    if(g.indexOf('reference')>-1)return 'reference';
+    if(g.indexOf('practice')>-1||g.indexOf('sources')>-1)return 'practice';
+    return 'learn';
+  }
+  window.__spaChrome=function(id){
+    var btn=document.querySelector('.navbtn[data-target="'+id+'"]');
+    var cur=document.getElementById('crumbCurrent');
+    var grp=document.getElementById('crumbGroup');
+    if(btn&&cur){ var tt=btn.querySelector('.navtitle'); var nn=btn.querySelector('.navnum'); cur.textContent=(nn&&tt)?(nn.textContent+' · '+tt.textContent):btn.textContent; }
+    var g=btn?groupOf(btn):'Learn';
+    if(grp){ grp.textContent=g.split('—')[0].trim(); }
+    var key=bkey(g);
+    document.querySelectorAll('.bnav-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-bgroup')===key); });
+  };
+  window.__spaChrome('home');
+})();
+</script>
+</body></html>
