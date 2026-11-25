@@ -1,6 +1,6 @@
 # Learnings
 
-A collection of lightweight, single-page learning guides for modern web development. Each guide is written in a practical **Hinglish** style, with organized navigation, code examples, and an interface designed for focused study.
+A collection of browser-based learning resources, including lightweight, single-page guides for modern web development and supplementary reading on AI, machine learning, and software engineering. The web-development guides use a practical **Hinglish** style, with organized navigation and code examples.
 
 ## Learning Guides
 
@@ -14,6 +14,10 @@ A collection of lightweight, single-page learning guides for modern web developm
 | Next.js | [`nextjs.html`](./nextjs.html) | App Router, routing, rendering, server and client components, data fetching, and deployment |
 | Tailwind CSS | [`tailwindCSS.html`](./tailwindCSS.html) | Utility-first styling, layout, responsive variants, components, and configuration |
 
+## Additional Reading
+
+The [`oreilly/`](./oreilly/) directory contains supplementary HTML reading materials covering topics such as AI agents, generative AI, machine learning, MLOps, and API architecture. Open the directory to browse the available titles.
+
 ## Features
 
 - Standalone HTML pages with no build step
@@ -25,24 +29,21 @@ A collection of lightweight, single-page learning guides for modern web developm
 
 ## Getting Started
 
-Open any guide directly in a browser:
+Clone the repository and open a page directly in your browser:
 
 ```bash
-# Clone the repository
 git clone https://github.com/Nileshsri2022/learnings.git
 cd learnings
-
-# Open a guide (example)
 xdg-open js.html
 ```
 
-You can also serve the directory locally for cleaner browser navigation:
+To serve the files locally instead, run:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000` and choose a guide.
+Then open a page at `http://localhost:8000/`, for example `http://localhost:8000/js.html` or `http://localhost:8000/oreilly/AI-Engineering.html`.
 
 ## Project Structure
 
@@ -55,10 +56,11 @@ learnings/
 ├── reactjs.html
 ├── nextjs.html
 ├── tailwindCSS.html
+├── oreilly/          # Supplementary AI, ML, and engineering reading
 └── README.md
 ```
 
-The repository intentionally keeps each topic in its own HTML file. The pages are self-contained and can be hosted by GitHub Pages or any static file server.
+The repository keeps the web-development topics in separate HTML files and can be hosted with GitHub Pages or any static file server.
 
 ## Contributing
 
@@ -73,4 +75,4 @@ Please keep the educational Hinglish tone consistent, preserve the simple static
 
 ## License
 
-No license is currently specified for this repository. All rights are reserved unless the repository owner explicitly adds a license.
+No license file is currently provided. Do not assume repository materials are licensed for reuse; third-party materials remain subject to their respective rights holders.
