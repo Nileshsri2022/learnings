@@ -1,0 +1,1409 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Hands-On Small Language Models — Poori Book, Hinglish me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+/* ---------- layout ---------- */
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 70px}
+/* ---------- sections ---------- */
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+/* ---------- labs ---------- */
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-controls label.lab-check{flex-direction:row;align-items:center;gap:8px;font-family:var(--font-body);font-size:13.5px;min-height:36px}
+.lab-check input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-color{width:56px;height:38px;border:1px solid var(--surface-highest);border-radius:8px;background:var(--surface);padding:3px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-css{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#d9e7c8;white-space:pre-wrap;word-break:break-word}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.demo-box{background:var(--lime-strong);color:var(--on-lime);font-family:var(--font-mono);font-weight:700;border-radius:8px;display:flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:10px}
+.demo-box.tall{min-height:84px}
+.fx-stage{display:flex;min-height:150px;background:var(--surface);border-radius:8px;padding:10px}
+.gr-stage{display:grid;background:var(--surface);border-radius:8px;padding:10px}
+.sp-stage{display:flex;justify-content:center}
+#sp-box{background:rgba(132,204,22,.22);border:1px solid var(--lime-dim);border-radius:6px;transition:padding .15s}
+.sp-inner{background:var(--surface-high);border-radius:6px;padding:16px 20px;text-align:center}
+.rp-box{border-radius:10px;padding:26px;text-align:center;font-family:var(--font-mono);font-weight:700;color:#12100a;transition:background .2s}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.st-cell{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.st-cell code{align-self:flex-start}
+.st-btn-hover{background:#0369a1;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-hover:hover{background:#075985}
+.st-input{width:100%;background:var(--bg);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.st-input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.55)}
+.st-btn-active{background:#65a30d;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-active:active{background:#3f6212}
+.st-btn-disabled{background:#525252;color:#d4d4d4;border:none;border-radius:8px;padding:10px 16px;opacity:.5;cursor:not-allowed;font-size:14px}
+.st-group{cursor:pointer}
+.st-group-inner{border:1px solid var(--surface-highest);border-radius:8px;padding:12px;width:100%}
+.st-group:hover .st-group-inner{color:var(--lime);border-color:var(--lime-dim)}
+.st-peer-label{display:flex;gap:8px;align-items:center;min-height:36px;cursor:pointer}
+.st-peer-label input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.st-peer-msg{visibility:hidden;background:#450a0a;color:#fca5a5;border-radius:6px;padding:8px 10px;font-size:13px}
+.st-peer-msg.show{visibility:visible}
+.dk-card{background:#fff;color:#374151;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.35);transition:background .25s,color .25s}
+.dk-card .dk-title{font-family:var(--font-head);font-weight:700;font-size:18px;color:#111827;margin-bottom:6px}
+.dk-card.dark{background:#1f2937;color:#9ca3af}
+.dk-card.dark .dk-title{color:#f9fafb}
+.mo-stage{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.mo-box{width:92px;height:92px;background:var(--blue);color:#00354a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;cursor:pointer}
+.mo-box:hover{transform:scale(1.18) rotate(8deg)}
+.mo-anim{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mo-dot{width:34px;height:34px;border-radius:99px;background:var(--lime-strong);display:block}
+.mo-anim-label{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.mo-spin{animation:mspin 1.4s linear infinite;border-radius:8px}
+@keyframes mspin{to{transform:rotate(360deg)}}
+.mo-pulse{animation:mpulse 1.6s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mo-bounce{animation:mbounce 1.2s ease-in-out infinite}
+@keyframes mbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.mo-ping{animation:mping 1.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes mping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.9);opacity:0}}
+.gd-box{height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:rgba(0,0,0,.55)}
+.th-swatches{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.th-swatch{border-radius:10px;padding:18px 14px;font-family:var(--font-mono);font-size:12.5px;flex:1;min-width:140px;text-align:center;background:var(--surface);border:1px solid var(--surface-high)}
+/* ---------- faq / sources / trust ---------- */
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-n{font-family:var(--font-mono)}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+/* ---------- home ---------- */
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 60px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .mo-spin,.mo-pulse,.mo-bounce,.mo-ping,.sb-dot{animation:none}
+}
+
+/* ---------- book-spa additions ---------- */
+figure.fig{margin:16px 0;text-align:center}
+figure.fig img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--surface-highest)}
+figure.fig figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+figure{max-width:100%}
+figure img{max-width:100%;height:auto}
+pre{max-width:100%;overflow-x:auto}
+.lab-controls label{min-width:0;flex:1 1 200px}
+.lab-controls select{width:100%;min-width:0}
+.lab-controls input{max-width:100%;min-width:0}
+#bottomnav{display:none}
+@media (max-width:900px){
+  #bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:65;background:rgba(27,27,31,.97);border-top:1px solid var(--surface-highest);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around}
+  #bottomnav a{flex:1;text-align:center;text-decoration:none;color:var(--text-var);font-family:var(--font-mono);font-size:11px;padding:8px 2px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  #bottomnav a b{font-size:16px;color:var(--lime)}
+  .wrap{padding-bottom:130px}
+}
+
+</style>
+</head>
+<body>
+<header id="topbar">
+  <button id="menu-btn" type="button" aria-label="Sidebar kholo">☰</button>
+  <div><div class="tb-title">Hands-On Small Language Models</div><div class="tb-sub" id="tb-current">Home</div></div>
+</header>
+<div id="scrim"></div>
+<aside id="sidebar" aria-label="Saare sections">
+  <div class="sb-top">
+    <div class="sb-brand"><div class="sb-logo">SL</div><div><h2>Small Language Models</h2><small>Poori book · Hinglish · Early Release</small></div></div>
+    <div class="sb-search"><span>⌕</span><input id="sb-search-input" type="text" placeholder="Search karo… (Ctrl+K)" aria-label="Sections search karo"></div>
+  </div>
+  <nav class="sb-nav">
+<div class="sb-group"><a class="sb-link" href="#/home" data-nav="home" data-search="home shuruaat start"><span class="sb-num">⌂</span><span class="sb-title">Home</span></a></div>
+<div class="sb-group"><div class="sb-group-head"><span>Shuruaat</span><span class="sb-count">17</span></div>
+<a class="sb-link" href="#/scope" data-nav="scope" data-search="early release aur is book ka scope shuruaat"><span class="sb-num">01</span><span class="sb-title">Early Release aur is book ka scope</span></a>
+<a class="sb-link" href="#/theoros" data-nav="theoros" data-search="project theoros — movie wala agentic system shuruaat"><span class="sb-num">02</span><span class="sb-title">Project Theoros — movie wala agentic system</span></a>
+<a class="sb-link" href="#/os-miniconda" data-nav="os-miniconda" data-search="os aur miniconda install shuruaat"><span class="sb-num">03</span><span class="sb-title">OS aur Miniconda install</span></a>
+<a class="sb-link" href="#/pydata-stack" data-nav="pydata-stack" data-search="python data science stack shuruaat"><span class="sb-num">04</span><span class="sb-title">Python Data Science Stack</span></a>
+<a class="sb-link" href="#/mcp" data-nav="mcp" data-search="mcp — model context protocol shuruaat"><span class="sb-num">05</span><span class="sb-title">MCP — Model Context Protocol</span></a>
+<a class="sb-link" href="#/litellm" data-nav="litellm" data-search="litellm shuruaat"><span class="sb-num">06</span><span class="sb-title">LiteLLM</span></a>
+<a class="sb-link" href="#/openrouter" data-nav="openrouter" data-search="openrouter shuruaat"><span class="sb-num">07</span><span class="sb-title">OpenRouter</span></a>
+<a class="sb-link" href="#/docker" data-nav="docker" data-search="docker shuruaat"><span class="sb-num">08</span><span class="sb-title">Docker</span></a>
+<a class="sb-link" href="#/librechat" data-nav="librechat" data-search="librechat shuruaat"><span class="sb-num">09</span><span class="sb-title">LibreChat</span></a>
+<a class="sb-link" href="#/ollama" data-nav="ollama" data-search="ollama — local models shuruaat"><span class="sb-num">10</span><span class="sb-title">Ollama — local models</span></a>
+<a class="sb-link" href="#/data-wikipedia" data-nav="data-wikipedia" data-search="data — wikipedia shuruaat"><span class="sb-num">11</span><span class="sb-title">Data — Wikipedia</span></a>
+<a class="sb-link" href="#/data-wikidata" data-nav="data-wikidata" data-search="data — wikidata aur rdf triples shuruaat"><span class="sb-num">12</span><span class="sb-title">Data — Wikidata aur RDF triples</span></a>
+<a class="sb-link" href="#/data-hf-kaggle" data-nav="data-hf-kaggle" data-search="data — hugging face aur kaggle shuruaat"><span class="sb-num">13</span><span class="sb-title">Data — Hugging Face aur Kaggle</span></a>
+<a class="sb-link" href="#/env-check" data-nav="env-check" data-search="environment check — jupyter, docker, ollama shuruaat"><span class="sb-num">14</span><span class="sb-title">Environment check — Jupyter, Docker, Ollama</span></a>
+<a class="sb-link" href="#/first-litellm-call" data-nav="first-litellm-call" data-search="pehla litellm call — e.t. wala example shuruaat"><span class="sb-num">15</span><span class="sb-title">Pehla LiteLLM call — E.T. wala example</span></a>
+<a class="sb-link" href="#/get-director" data-nav="get-director" data-search="wikidata query — get_director aur galat sparql se seekh shuruaat"><span class="sb-num">16</span><span class="sb-title">Wikidata query — get_director aur galat SPARQL se seekh</span></a>
+<a class="sb-link" href="#/gs-conclusion" data-nav="gs-conclusion" data-search="getting started — nishkarsh shuruaat"><span class="sb-num">17</span><span class="sb-title">Getting Started — nishkarsh</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Sahi SLM chunna</span><span class="sb-count">19</span></div>
+<a class="sb-link" href="#/why-measure" data-nav="why-measure" data-search="measurement kyun zaroori hai sahi slm chunna"><span class="sb-num">18</span><span class="sb-title">Measurement kyun zaroori hai</span></a>
+<a class="sb-link" href="#/classic-regression" data-nav="classic-regression" data-search="classic ml metrics — regression sahi slm chunna"><span class="sb-num">19</span><span class="sb-title">Classic ML metrics — Regression</span></a>
+<a class="sb-link" href="#/classic-classification" data-nav="classic-classification" data-search="classic ml metrics — classification sahi slm chunna"><span class="sb-num">20</span><span class="sb-title">Classic ML metrics — Classification</span></a>
+<a class="sb-link" href="#/pretraining" data-nav="pretraining" data-search="pre-training measurement — cross-entropy sahi slm chunna"><span class="sb-num">21</span><span class="sb-title">Pre-training measurement — cross-entropy</span></a>
+<a class="sb-link" href="#/sft" data-nav="sft" data-search="sft measurement sahi slm chunna"><span class="sb-num">22</span><span class="sb-title">SFT measurement</span></a>
+<a class="sb-link" href="#/alignment" data-nav="alignment" data-search="alignment measurement — rlhf aur dpo sahi slm chunna"><span class="sb-num">23</span><span class="sb-title">Alignment measurement — RLHF aur DPO</span></a>
+<a class="sb-link" href="#/task-measurement" data-nav="task-measurement" data-search="task measurement — slm vs llm sahi slm chunna"><span class="sb-num">24</span><span class="sb-title">Task measurement — SLM vs LLM</span></a>
+<a class="sb-link" href="#/benchmarks" data-nav="benchmarks" data-search="benchmarks — mmlu-pro, gpqa, helm sahi slm chunna"><span class="sb-num">25</span><span class="sb-title">Benchmarks — MMLU-Pro, GPQA, HELM</span></a>
+<a class="sb-link" href="#/custom-dataset-def" data-nav="custom-dataset-def" data-search="custom dataset — task definition sahi slm chunna"><span class="sb-num">26</span><span class="sb-title">Custom dataset — task definition</span></a>
+<a class="sb-link" href="#/repurpose-datasets" data-nav="repurpose-datasets" data-search="dataset repurpose karna sahi slm chunna"><span class="sb-num">27</span><span class="sb-title">Dataset repurpose karna</span></a>
+<a class="sb-link" href="#/synthetic-data" data-nav="synthetic-data" data-search="synthetic data sahi slm chunna"><span class="sb-num">28</span><span class="sb-title">Synthetic data</span></a>
+<a class="sb-link" href="#/human-labeling" data-nav="human-labeling" data-search="human labeling — cost aur stratify sahi slm chunna"><span class="sb-num">29</span><span class="sb-title">Human labeling — cost aur stratify</span></a>
+<a class="sb-link" href="#/llm-as-judge" data-nav="llm-as-judge" data-search="llm-as-a-judge sahi slm chunna"><span class="sb-num">30</span><span class="sb-title">LLM-as-a-Judge</span></a>
+<a class="sb-link" href="#/model-gpt-oss" data-nav="model-gpt-oss" data-search="model — gpt-oss-20b sahi slm chunna"><span class="sb-num">31</span><span class="sb-title">Model — gpt-oss-20b</span></a>
+<a class="sb-link" href="#/model-qwen3" data-nav="model-qwen3" data-search="model — qwen3-4b-instruct-2507 sahi slm chunna"><span class="sb-num">32</span><span class="sb-title">Model — Qwen3-4B-Instruct-2507</span></a>
+<a class="sb-link" href="#/model-llama32" data-nav="model-llama32" data-search="model — llama-3.2-3b sahi slm chunna"><span class="sb-num">33</span><span class="sb-title">Model — Llama-3.2-3B</span></a>
+<a class="sb-link" href="#/model-phi4" data-nav="model-phi4" data-search="model — phi-4-mini-instruct sahi slm chunna"><span class="sb-num">34</span><span class="sb-title">Model — Phi-4-mini-instruct</span></a>
+<a class="sb-link" href="#/model-gpt5mini" data-nav="model-gpt5mini" data-search="model — gpt-5-mini (closed comparison) sahi slm chunna"><span class="sb-num">35</span><span class="sb-title">Model — GPT-5-mini (closed comparison)</span></a>
+<a class="sb-link" href="#/model-table" data-nav="model-table" data-search="saare models — ek comparison table sahi slm chunna"><span class="sb-num">36</span><span class="sb-title">Saare models — ek comparison table</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>End Matter</span><span class="sb-count">4</span></div>
+<a class="sb-link" href="#/labs" data-nav="labs" data-search="labs interactive haath se karo"><span class="sb-num">37</span><span class="sb-title">Labs — haath se karo</span></a>
+<a class="sb-link" href="#/faqs" data-nav="faqs" data-search="faqs interview sawal jawab"><span class="sb-num">38</span><span class="sb-title">Interview FAQs</span></a>
+<a class="sb-link" href="#/sources" data-nav="sources" data-search="sources citations links"><span class="sb-num">39</span><span class="sb-title">Sources</span></a>
+<a class="sb-link" href="#/trust" data-nav="trust" data-search="trust check self check bharosa"><span class="sb-num">40</span><span class="sb-title">Trust Check</span></a>
+</div>
+  </nav>
+  <div class="sb-foot"><span><span class="sb-dot"></span>O&rsquo;Reilly Media, Inc.</span><span>36 sections</span></div>
+</aside>
+<main id="main">
+<div id="progress"><div id="progress-bar"></div></div>
+<div class="wrap">
+
+<section class="section" id="sec-home" data-title="Home">
+<div class="home-hero">
+<div class="sec-meta"><span class="num-chip">SLM</span><span class="sec-group">O&rsquo;Reilly Media, Inc. &middot; Early Release, January 2027</span></div>
+<h1>Hands-On Small Language Models</h1>
+<p class="lead">Practical Patterns for Building Efficient Applications with SLMs — <strong>Hinglish me, poori book</strong> (jo is Early Release PDF me available hai). Chhote language models se efficient applications banane ke patterns: environment setup, measurement, benchmarks, custom datasets aur model selection.</p>
+<div class="home-stats">
+<div class="home-stat"><b>36</b><span>Sections</span></div>
+<div class="home-stat"><b>8</b><span>Interactive Labs</span></div>
+<div class="home-stat"><b>36</b><span>Interview FAQs</span></div>
+<div class="home-stat"><b>2 / 8</b><span>Chapters (ER me)</span></div>
+<div class="home-stat"><b>0</b><span>Figures (PDF me)</span></div>
+</div>
+<div class="note"><strong>Scope, imaandari se:</strong> ye Early Release hai — is PDF me sirf <strong>Chapter 2 (Getting Started)</strong> aur <strong>Chapter 3 (Selecting the Right Small Language Model)</strong> available hain. Chapter 1, 4, 5, 6, 7, 8 is PDF me hain hi nahi, isliye is SPA me unke sections nahi banaye gaye. Jo hai, wo poora hai — Trust Check me cross-check table dekho.</div>
+<div class="home-groups">
+<a class="home-group" href="#/scope"><span class="cnt">17 sections</span><h3>Shuruaat</h3><p>Early Release aur is book ka scope se shuru — Getting Started — nishkarsh tak.</p></a>
+<a class="home-group" href="#/why-measure"><span class="cnt">19 sections</span><h3>Sahi SLM chunna</h3><p>Measurement kyun zaroori hai se shuru — Saare models — ek comparison table tak.</p></a>
+<a class="home-group" href="#/labs"><span class="cnt">8 labs</span><h3>Labs</h3><p>Haath se karo — metrics, confusion matrix, SPARQL bug hunt, model selector.</p></a>
+<a class="home-group" href="#/faqs"><span class="cnt">36 FAQs</span><h3>Interview FAQs</h3><p>SLM, MCP, Ollama, metrics aur model selection par interview wale sawaal.</p></a>
+<a class="home-group" href="#/trust"><span class="cnt">Self-check</span><h3>Trust Check</h3><p>Live counts aur self-check button — sab kuch included hai ya nahi, khud verify karo.</p></a>
+</div>
+</div>
+</section>
+
+<section class="section" id="sec-scope" data-doc="1" data-url="https://www.oreilly.com" data-title="Early Release aur is book ka scope"><div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Shuruaat</span></div><h1>Early Release aur is book ka scope</h1>
+<p class="lead">Ye book ek <strong>Early Release</strong> hai — matlab lekhak ka raw, unedited content, jo official release se pehle padhne ko mila hai. Is PDF me poori book <strong>nahi</strong> hai: sirf <strong>2 chapters</strong> available hain. Is SPA me wahi sab kuch hai jo PDF me hai — poora, kuch chhupa nahi — aur jo chapters PDF me nahi hain, unhe Trust Check me imaandari se list kiya gaya hai.</p>
+<h3>Book kya hai</h3>
+<p><strong>Hands-On Small Language Models: Practical Patterns for Building Efficient Applications with SLMs</strong> — chhote language models (SLMs) se practical, efficient applications banane ke patterns par hai. Publisher: <strong>O'Reilly Media, Inc.</strong> (First Edition, January 2027; Early Release ki pehli release 2026-01-21).</p>
+<h3>Is PDF me kya available hai</h3>
+<ul>
+<li><strong>Chapter 2: Getting Started</strong> (available) — environment setup, Theoros project, data sources. Is SPA me sections 02–17.</li>
+<li><strong>Chapter 3: Selecting the Right Small Language Model</strong> (available) — measurement, benchmarks, custom datasets, model comparison. Is SPA me sections 18–36.</li>
+</ul>
+<h3>Is PDF me kya nahi hai</h3>
+<ul>
+<li>Chapter 1: Language Models (unavailable)</li>
+<li>Chapter 4: Agentic Applications with MCP (unavailable)</li>
+<li>Chapter 5: Agentic Application with Multiple SLMs (unavailable)</li>
+<li>Chapter 6: Testing and Compliance (unavailable)</li>
+<li>Chapter 7: Deployment (unavailable)</li>
+<li>Chapter 8: Monitoring (unavailable)</li>
+</ul>
+<p>Ye 6 chapters is Early Release PDF me hain hi nahi, isliye inke sections is SPA me nahi banaye gaye — inhe invent karke bharna galat hota. Jaise hi naya Early Release aayega, ye sections jode ja sakte hain.</p>
+<div class="note"><strong>SLM kya hota hai?</strong> Small Language Model — LLM ka chhota, zyada focused version. Ye general chatbot banne ke bajaye ek khaas kaam (jaise query likhna, classify karna, kisi tool ko chalana) ke liye banta hai. Fayda: commodity machine par chalta hai, sasta hai, aur uske chhote, toote hue tasks ko seedha measure kiya ja sakta hai.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><span class="pn-spacer"></span><a class="pn-btn" href="#/theoros"><span class="pn-label">Agla</span><span class="pn-title">02 · Project Theoros — movie wala agentic system</span></a></div></section>
+<section class="section" id="sec-theoros" data-doc="1" data-url="https://www.oreilly.com" data-title="Project Theoros — movie wala agentic system"><div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Shuruaat</span></div><h1>Project Theoros — movie wala agentic system</h1>
+<p class="lead">Poori book me ek hi project throughline ki tarah chalega: <strong>Theoros</strong> — movies dhoondhne, movies ke baare me seekhne aur movie-related tools chalane wala ek agentic system.</p>
+<h3>Theoros naam ka matlab</h3>
+<p>Greek shabd <em>theōros</em> (θεωρός) ka matlab hai — spectator (darshak), ya kisi festival par bheja gaya envoy; oracle se salah lene bheja gaya doot. Naam isliye chuna gaya kyunki system movies ko "dekhta" hai aur unke baare me salah deta hai.</p>
+<h3>Movies hi kyun?</h3>
+<ul>
+<li><strong>Public data:</strong> movie data me koi personally identifying information nahi hoti, to security ki chinta ke bina seekhne par dhyaan de sakte ho.</li>
+<li><strong>Domain knowledge nahi chahiye:</strong> lagbhag sabhi ko movies ki kuch samajh hoti hai, to example turant samajh aate hain.</li>
+<li><strong>Data ka mix:</strong> structured relational data, alag-alag lambai ka free text, aur aage chal kar non-text data (audio, images, video) bhi — is book me focus text data par hai, par project ko badha kar audio/image/video bhi joda ja sakta hai.</li>
+</ul>
+<h3>Theoros kaise use hoga</h3>
+<ul>
+<li><strong>Pehle:</strong> ek simple MCP client — functionality test karne ke liye.</li>
+<li><strong>Phir:</strong> LibreChat — chat experience ko asli user scenario me test karne ke liye.</li>
+<li><strong>Baad me (aane wale chapters me):</strong> models ko deploy karne ke alag-alag tareeke.</li>
+</ul>
+<p>Models ke liye: abhi externally hosted models aur Ollama se launch kiye gaye local models, dono use honge.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/scope"><span class="pn-label">Pichhla</span><span class="pn-title">01 · Early Release aur is book ka scope</span></a><a class="pn-btn" href="#/os-miniconda"><span class="pn-label">Agla</span><span class="pn-title">03 · OS aur Miniconda install</span></a></div></section>
+<section class="section" id="sec-os-miniconda" data-doc="1" data-url="https://www.anaconda.com/docs/getting-started/miniconda/install#linux-2" data-title="OS aur Miniconda install"><div class="sec-meta"><span class="num-chip">03</span><span class="sec-group">Shuruaat</span></div><h1>OS aur Miniconda install</h1>
+<p class="lead">Book ka code <strong>Linux</strong> par develop hua hai — seedha Linux machine par, ya Windows Subsystem for Linux (WSL) par. Linux flavor <strong>Ubuntu</strong> hai (Google Colab bhi Ubuntu hi chalata hai).</p>
+<h3>Miniconda kya hai aur kyun</h3>
+<p>Miniconda ek package manager hai jisse Python environment manage karte hain. Agar tum sirf Google Colab environment use karoge, to ye instructions skip kar sakte ho — baaki sabko apni machine par Miniconda install karna hoga.</p>
+<h3>Install ke commands</h3>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm ~/miniconda3/miniconda.sh</code></pre></div>
+<p>Install ke baad terminal band karke dobara kholo, phir conda initialize karo:</p>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>conda init --all</code></pre></div>
+<h3>Environment banao</h3>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>conda create --name slmbook python=3.12
+conda activate slmbook</code></pre></div>
+<p>Ab tum libraries install karne ke liye ready ho. Book ke code repository me ek YAML file bhi hai jisse conda environment seedha setup ho jata hai.</p>
+<div class="note">Lab 1 me in commands ko sahi order me lagane ki practice karo — install ka order galat hua to environment setup fail ho jata hai.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.anaconda.com/docs/getting-started/miniconda/install#linux-2">https://www.anaconda.com/docs/getting-started/miniconda/install#linux-2</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/theoros"><span class="pn-label">Pichhla</span><span class="pn-title">02 · Project Theoros — movie wala agentic system</span></a><a class="pn-btn" href="#/pydata-stack"><span class="pn-label">Agla</span><span class="pn-title">04 · Python Data Science Stack</span></a></div></section>
+<section class="section" id="sec-pydata-stack" data-doc="1" data-url="https://www.oreilly.com" data-title="Python Data Science Stack"><div class="sec-meta"><span class="num-chip">04</span><span class="sec-group">Shuruaat</span></div><h1>Python Data Science Stack</h1>
+<p class="lead">Python Data Science Stack (PyData Stack) popular open-source Python libraries ka collection hai. Book me ye saari libraries use hongi.</p>
+<h3>Stack ki libraries</h3>
+<ul>
+<li><strong>NumPy:</strong> numerical analysis — Python me arrays aur matrices ki main implementation; bahut si libraries isi par chalti hain.</li>
+<li><strong>SciPy:</strong> scientific computing — optimization, numerical differentiation, statistics aur probability jaise algorithms.</li>
+<li><strong>pandas:</strong> data structures — data frame (table jaisi) aur series (array jaisi), NumPy arrays par implemented.</li>
+<li><strong>Matplotlib:</strong> plotting library — bahut si plotting libraries ki neev.</li>
+<li><strong>scikit-learn:</strong> machine learning algorithms, plus feature extraction aur metric calculation jaise useful functions.</li>
+<li><strong>Jupyter:</strong> classic notebook environment (Google Colab bhi Jupyter par based hai).</li>
+</ul>
+<h3>Stack ke bahar ki do aur libraries</h3>
+<ul>
+<li><strong>NLTK (Natural Language Toolkit):</strong> NLP algorithms ka bada set; performant nahi hai par broad hai aur dependencies kam hain.</li>
+<li><strong>NetworkX:</strong> graphs aur networks process/dikhane ke liye — datasets analyze karne aur graph-like data dikhane me kaam aayegi.</li>
+</ul>
+<h3>Install command</h3>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>conda install numpy scipy pandas matplotlib scikit-learn jupyter nltk networkx</code></pre></div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/os-miniconda"><span class="pn-label">Pichhla</span><span class="pn-title">03 · OS aur Miniconda install</span></a><a class="pn-btn" href="#/mcp"><span class="pn-label">Agla</span><span class="pn-title">05 · MCP — Model Context Protocol</span></a></div></section>
+<section class="section" id="sec-mcp" data-doc="1" data-url="https://modelcontextprotocol.io/docs/getting-started/intro" data-title="MCP — Model Context Protocol"><div class="sec-meta"><span class="num-chip">05</span><span class="sec-group">Shuruaat</span></div><h1>MCP — Model Context Protocol</h1>
+<p class="lead">MCP ek open-source standard hai jo AI applications ko external systems se jodta hai. "MCP" shabd do cheezon ke liye use hota hai: khud protocol ke liye, aur MCP servers/clients banane wali library ke liye.</p>
+<h3>MCP itna popular kyun ho raha hai</h3>
+<ul>
+<li><strong>Standard tareeka:</strong> prompts, tools aur data ko agentic applications ke liye organize karne ka ek standard structure milta hai.</li>
+<li><strong>Boilerplate kam:</strong> application ko doosri applications/services ke liye available karane ka zyada kaam MCP kar deta hai.</li>
+<li><strong>Integration:</strong> ye Anthropic ke logon ki taraf se hai, to Anthropic ke models/apps ke saath integration aasan hai — par is book me hum Anthropic integration par depend nahi karenge, kyunki hum alag-alag model families use karenge.</li>
+</ul>
+<h3>Hum MCP kaise use karenge</h3>
+<p>MCP se apne agentic workflows ka structure organize karenge, taaki dhyaan prompts aur models ko optimize karne par rahe. MCP popular hai, isliye application ko MCP-compatible servers par deploy karna bhi aasan hoga.</p>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>conda install mcp</code></pre></div>
+<p>MCP ko hum chapter 4 me aur detail me dekhenge — jo is Early Release me abhi available nahi hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://modelcontextprotocol.io/docs/getting-started/intro">https://modelcontextprotocol.io/docs/getting-started/intro</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/pydata-stack"><span class="pn-label">Pichhla</span><span class="pn-title">04 · Python Data Science Stack</span></a><a class="pn-btn" href="#/litellm"><span class="pn-label">Agla</span><span class="pn-title">06 · LiteLLM</span></a></div></section>
+<section class="section" id="sec-litellm" data-doc="1" data-url="https://www.oreilly.com" data-title="LiteLLM"><div class="sec-meta"><span class="num-chip">06</span><span class="sec-group">Shuruaat</span></div><h1>LiteLLM</h1>
+<p class="lead">LiteLLM ek framework hai jo alag-alag models tak access ko simple bana deta hai — un models ke liye bhi jin ke paas OpenAI-compatible API nahi hai.</p>
+<h3>Kya karta hai</h3>
+<ul>
+<li>Ek hi interface se alag-alag providers ke models call karo — model badlo, code wahi.</li>
+<li><strong>LiteLLM Proxy Server:</strong> deployment ke kai pehlu sambhalta hai — custom behavior configure karna aur secrets management.</li>
+</ul>
+<h3>Install</h3>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>pip install litellm</code></pre></div>
+<p>pip se isliye kyunki LiteLLM mainline conda repository me available nahi hai. Aage section 15 me LiteLLM ka pehla asal call dekhenge — <code>completion()</code> function se Ollama par chal rahe model ko call karna.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/mcp"><span class="pn-label">Pichhla</span><span class="pn-title">05 · MCP — Model Context Protocol</span></a><a class="pn-btn" href="#/openrouter"><span class="pn-label">Agla</span><span class="pn-title">07 · OpenRouter</span></a></div></section>
+<section class="section" id="sec-openrouter" data-doc="1" data-url="https://www.oreilly.com" data-title="OpenRouter"><div class="sec-meta"><span class="num-chip">07</span><span class="sec-group">Shuruaat</span></div><h1>OpenRouter</h1>
+<p class="lead">OpenRouter ek platform hai jahan ek hi API key se bahut saare hosted models access kiye ja sakte hain.</p>
+<h3>Is book me kyun</h3>
+<ul>
+<li>Hum zyada tar local (ya Google Colab par) models se kaam karenge, par unhe kuch hosted models se <strong>compare</strong> bhi karenge — un hosted models tak OpenRouter se pahunchenge.</li>
+<li>Agar security ya privacy ki chinta nahi hai, aur tum local models chala nahi sakte, to OpenRouter switch karna ek viable option hai.</li>
+<li>LiteLLM use karne se local model se hosted model par jaana sirf ek chhota configuration change hai.</li>
+</ul>
+<div class="note">Yaad rakhna: OpenRouter hosted models ke liye hai. Local-first approach hi is book ki pehchan hai — OpenRouter sirf comparison aur backup ke liye hai.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/litellm"><span class="pn-label">Pichhla</span><span class="pn-title">06 · LiteLLM</span></a><a class="pn-btn" href="#/docker"><span class="pn-label">Agla</span><span class="pn-title">08 · Docker</span></a></div></section>
+<section class="section" id="sec-docker" data-doc="1" data-url="https://docs.docker.com/desktop/setup/install/linux/ubuntu/" data-title="Docker"><div class="sec-meta"><span class="num-chip">08</span><span class="sec-group">Shuruaat</span></div><h1>Docker</h1>
+<p class="lead">Docker containers banane aur manage karne ka tool hai. Container ek tarah ki halki virtual machine hai — is book me Docker se Ollama ya vector database jaise servers ko bina system par install kiye chala sakenge.</p>
+<h3>Install</h3>
+<p>Jo log sirf Google Colab environment use karenge, ye instructions skip kar sakte hain. Linux ya WSL par prerequisites check karne honge — ye thode complicated ho sakte hain, isliye book me Docker prerequisites discuss nahi kiye gaye hain. Install guides:</p>
+<ul>
+<li>Linux (Ubuntu) — Docker docs ka Ubuntu install page</li>
+<li>WSL — Docker docs ka Windows install page</li>
+</ul>
+<p>Docker aage LibreChat aur Ollama chalane ke liye zaroori hai — dono ko hum Docker containers me chalayenge.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://docs.docker.com/desktop/setup/install/linux/ubuntu/">https://docs.docker.com/desktop/setup/install/linux/ubuntu/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/openrouter"><span class="pn-label">Pichhla</span><span class="pn-title">07 · OpenRouter</span></a><a class="pn-btn" href="#/librechat"><span class="pn-label">Agla</span><span class="pn-title">09 · LibreChat</span></a></div></section>
+<section class="section" id="sec-librechat" data-doc="1" data-url="https://www.librechat.ai/docs/local/docker" data-title="LibreChat"><div class="sec-meta"><span class="num-chip">09</span><span class="sec-group">Shuruaat</span></div><h1>LibreChat</h1>
+<p class="lead">LibreChat ek open-source chat application hai. Apni application ko asli user scenario me test karne ke liye ek chat interface chahiye — wahi kaam LibreChat karega.</p>
+<h3>Claude Desktop kyun nahi?</h3>
+<p>MCP, Claude Desktop application me integrate hota hai — dono originally Anthropic se hain. Lekin Claude Desktop Anthropic models ko dhyaan me rakh kar bana hai. LibreChat kisi ek model family se bandha nahi hai, aur isme bhi MCP integration hai — isliye yahi chuna gaya.</p>
+<h3>Docker se install</h3>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>git clone https://github.com/danny-avila/LibreChat.git
+cd LibreChat
+cp .env.example .env
+docker compose up -d</code></pre></div>
+<p>Ab LibreChat <code>localhost:3080</code> par available hai. Login ke liye naya account banao. Kuch default models available hain — explore karna ho to <code>.env</code> file edit karke API keys jod do aur default models use karo. Google Colab use karne walon ko bhi LibreChat setup karna hoga.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.librechat.ai/docs/local/docker">https://www.librechat.ai/docs/local/docker</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/docker"><span class="pn-label">Pichhla</span><span class="pn-title">08 · Docker</span></a><a class="pn-btn" href="#/ollama"><span class="pn-label">Agla</span><span class="pn-title">10 · Ollama — local models</span></a></div></section>
+<section class="section" id="sec-ollama" data-doc="1" data-url="https://docs.ollama.com/" data-title="Ollama — local models"><div class="sec-meta"><span class="num-chip">10</span><span class="sec-group">Shuruaat</span></div><h1>Ollama — local models</h1>
+<p class="lead">Ollama language models ko locally chalane ka framework hai — aur unhe OpenAI-compatible API ke through available karata hai. Is book me Ollama se local models, ya Google Colab par models, chalayenge.</p>
+<h3>Docker se Ollama chalana</h3>
+<p>Container start karne se pehle prerequisites check kar lo. Phir ye command chalao:</p>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama</code></pre></div>
+<h3>Is command me kya hai</h3>
+<ul>
+<li><code>-d</code> — background (detached) me chalao</li>
+<li><code>--gpus=all</code> — saare GPUs use karo</li>
+<li><code>-v ollama:/root/.ollama</code> — models ka data ek volume me save karo, taaki container band hone par bhi models rahein</li>
+<li><code>-p 11434:11434</code> — Ollama API port 11434 par bahar se available</li>
+<li><code>--name ollama</code> — container ka naam</li>
+</ul>
+<p>Ek baar Ollama chal pade, to LiteLLM ke <code>completion()</code> se <code>api_base="http://localhost:11434"</code> par call kar sakte ho — agle sections me wahi karenge.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://docs.ollama.com/">https://docs.ollama.com/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/librechat"><span class="pn-label">Pichhla</span><span class="pn-title">09 · LibreChat</span></a><a class="pn-btn" href="#/data-wikipedia"><span class="pn-label">Agla</span><span class="pn-title">11 · Data — Wikipedia</span></a></div></section>
+<section class="section" id="sec-data-wikipedia" data-doc="1" data-url="https://dumps.wikimedia.org/" data-title="Data — Wikipedia"><div class="sec-meta"><span class="num-chip">11</span><span class="sec-group">Shuruaat</span></div><h1>Data — Wikipedia</h1>
+<p class="lead">Ab tools install ho gaye — ab data chahiye. Kuch data traditional datasets hain, kuch APIs ya pre-built queries se aayenge. Pehla source: Wikipedia.</p>
+<h3>Wikipedia kya de sakta hai</h3>
+<p>Wikipedia community-edited encyclopedia hai — aam taur par kaafi accurate. Controversial ya highly-technical topics par ye utna reliable nahi ho sakta, isliye use-case ke hisaab se sochna hoga.</p>
+<h3>Theoros me Wikipedia ka use</h3>
+<ul>
+<li><strong>RAG system</strong> ko support karne ke liye articles — movie ke baare me sawaal ka jawab dene ke liye context.</li>
+<li>Movies ya related entities ke <strong>attributes aur relationships</strong> nikaalne ke liye.</li>
+<li>Hum zyada tar individual articles pull karenge. Iske liye Wikipedia search karne wala ek MCP agent use hoga.</li>
+</ul>
+<p>Agar sab kuch download karna ho to poora dump yahan milta hai: <code>dumps.wikimedia.org</code>.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://dumps.wikimedia.org/">https://dumps.wikimedia.org/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ollama"><span class="pn-label">Pichhla</span><span class="pn-title">10 · Ollama — local models</span></a><a class="pn-btn" href="#/data-wikidata"><span class="pn-label">Agla</span><span class="pn-title">12 · Data — Wikidata aur RDF triples</span></a></div></section>
+<section class="section" id="sec-data-wikidata" data-doc="1" data-url="https://www.wikidata.org/wiki/Wikidata:Main_Page" data-title="Data — Wikidata aur RDF triples"><div class="sec-meta"><span class="num-chip">12</span><span class="sec-group">Shuruaat</span></div><h1>Data — Wikidata aur RDF triples</h1>
+<p class="lead">Wikidata ek Resource Description Framework (RDF) knowledge graph hai, jo Wikimedia Foundation support karta hai — Wikipedia ki tarah.</p>
+<h3>RDF format kaise kaam karta hai</h3>
+<p>Data <strong>semantic triples</strong> me hota hai — teen hisse: <strong>subject, predicate, object</strong>. Har entity ko ek Uniform Resource Identifier (URI) se represent karte hain. Predicates bhi URI hote hain jo relationships batate hain. Values ke liye <strong>literals</strong> use hote hain.</p>
+<h3>Do tarah ke triples</h3>
+<ul>
+<li><strong>Truthy triples</strong> (entity–predicate–entity): jaise — koi film, uska director, koi vyakti.</li>
+<li><strong>Properties</strong> (entity–predicate–value): jaise — koi film, uski release date, koi tareekh.</li>
+</ul>
+<h3>Wikidata kyun useful hai</h3>
+<p>Information extraction kiye bina hi bahut tarah ki entities ke relationships aur properties mil jati hain — movies se lekar genetic sequence variants tak. Aage hum SPARQL (RDF query language) se Wikidata query karna dekhenge. Wikidata Query Service par try kar sakte ho.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">https://www.wikidata.org/wiki/Wikidata:Main_Page</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/data-wikipedia"><span class="pn-label">Pichhla</span><span class="pn-title">11 · Data — Wikipedia</span></a><a class="pn-btn" href="#/data-hf-kaggle"><span class="pn-label">Agla</span><span class="pn-title">13 · Data — Hugging Face aur Kaggle</span></a></div></section>
+<section class="section" id="sec-data-hf-kaggle" data-doc="1" data-url="https://huggingface.co/" data-title="Data — Hugging Face aur Kaggle"><div class="sec-meta"><span class="num-chip">13</span><span class="sec-group">Shuruaat</span></div><h1>Data — Hugging Face aur Kaggle</h1>
+<p class="lead">Task-specific datasets dhoondhne aur measure karne ke liye do bade platforms: Hugging Face aur Kaggle.</p>
+<h3>Hugging Face</h3>
+<p>Data scientists aur ML practitioners ke liye platform — models aur datasets ka version control, dataset leaderboards, aur models host karna. Is application me jab bhi kisi specific feature ko measure karna hoga, to Hugging Face se task-specific dataset dhoondhenge aur download karenge. Client library se download hota hai, aur account setup chahiye:</p>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>conda install -c huggingface -c conda-forge datasets
+huggingface_hub[cli]</code></pre></div>
+<h3>Kaggle</h3>
+<p>ML competitions se shuru hua platform — ab datasets aur models publish karne aur online notebook-based development ki jagah bhi hai. Kaggle bhi open datasets ka excellent source hai. Lekin har dataset ki licensing aur access requirements alag ho sakti hain, isliye hum API ke bajaye manually download karenge. Account setup chahiye.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://huggingface.co/">https://huggingface.co/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/data-wikidata"><span class="pn-label">Pichhla</span><span class="pn-title">12 · Data — Wikidata aur RDF triples</span></a><a class="pn-btn" href="#/env-check"><span class="pn-label">Agla</span><span class="pn-title">14 · Environment check — Jupyter, Docker, Ollama</span></a></div></section>
+<section class="section" id="sec-env-check" data-doc="1" data-url="https://www.oreilly.com" data-title="Environment check — Jupyter, Docker, Ollama"><div class="sec-meta"><span class="num-chip">14</span><span class="sec-group">Shuruaat</span></div><h1>Environment check — Jupyter, Docker, Ollama</h1>
+<p class="lead">Aakhri step: sab kuch ready hai ya nahi, ye check kar lo. Ek function likhenge jo movie ka title lega aur uska director batayega — par pehle environment verify karo.</p>
+<h3>Jupyter environment</h3>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>jupyter lab --no-browser</code></pre></div>
+<p>Phir <code>localhost:8888</code> par jao, File Browser se apne folder me jao, aur test ke liye naya notebook banao.</p>
+<h3>Docker containers</h3>
+<p>Docker chal raha hai ye check karo. Windows par Docker Desktop chal raha ho to Containers me dekho. Linux par:</p>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>docker ps</code></pre></div>
+<p>Output me <code>ollama/ollama</code> image wala container dikhna chahiye.</p>
+<h3>Ollama</h3>
+<p>Agar Ollama server previous step me nahi dikh raha, to container dobara start karo:</p>
+<div class="codeblock"><div class="codeblock-head"><span>bash</span></div><pre><code>docker run -d --gpus=all -v ollama:/root/.ollama \
+    -p 11434:11434 --name ollama ollama/ollama</code></pre></div>
+<p>Ab notebook se model ko call karke dekhte hain — agla section.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/data-hf-kaggle"><span class="pn-label">Pichhla</span><span class="pn-title">13 · Data — Hugging Face aur Kaggle</span></a><a class="pn-btn" href="#/first-litellm-call"><span class="pn-label">Agla</span><span class="pn-title">15 · Pehla LiteLLM call — E.T. wala example</span></a></div></section>
+<section class="section" id="sec-first-litellm-call" data-doc="1" data-url="https://www.oreilly.com" data-title="Pehla LiteLLM call — E.T. wala example"><div class="sec-meta"><span class="num-chip">15</span><span class="sec-group">Shuruaat</span></div><h1>Pehla LiteLLM call — E.T. wala example</h1>
+<p class="lead">Environment ready hai — ab notebook se Ollama par chal rahe model ko pehli call karte hain. Yehi <code>completion()</code> pattern poori book me har jagah use hoga.</p>
+<h3>Code</h3>
+<div class="codeblock"><div class="codeblock-head"><span>python</span></div><pre><code>from litellm import completion
+
+response = completion(
+    model="ollama_chat/llama3",
+    messages=[{
+        "content": "Briefly answer the following question, please. What would be the best movie to show an alien?",
+        "role": "user"
+    }],
+    api_base="http://localhost:11434"
+)
+
+print(response.choices[0]["message"].content)</code></pre></div>
+<h3>Model ka output</h3>
+<div class="note">Model ne jawab diya: alien ko dikhane ke liye sabse achhi movie <strong>"E.T. the Extra-Terrestrial" (1982)</strong> hai — ek chhote ladke aur phanse hue alien ki dosti ki kahani. Model ke hisaab se dosti, empathy aur samajh universal languages hain jo intergalactic boundaries ko paar kar sakti hain, aur kindness-compassion-human connection ka message kisi bhi extraterrestrial audience ko resonate karega.</div>
+<p>Output se zyada important hai pattern: <code>model</code>, <code>messages</code>, <code>api_base</code> — ye teen cheezein har call me badalti hain, baaki structure wahi rehta hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/env-check"><span class="pn-label">Pichhla</span><span class="pn-title">14 · Environment check — Jupyter, Docker, Ollama</span></a><a class="pn-btn" href="#/get-director"><span class="pn-label">Agla</span><span class="pn-title">16 · Wikidata query — get_director aur galat SPARQL se seekh</span></a></div></section>
+<section class="section" id="sec-get-director" data-doc="1" data-url="https://www.wikidata.org/wiki/Wikidata:Main_Page" data-title="Wikidata query — get_director aur galat SPARQL se seekh"><div class="sec-meta"><span class="num-chip">16</span><span class="sec-group">Shuruaat</span></div><h1>Wikidata query — get_director aur galat SPARQL se seekh</h1>
+<p class="lead">Ab director dhoondhne wala function banate hain. Ye section book ka sabse important early lesson hai: <strong>SLM ko aisi language me query likhne ko bologe jo usne zyada dekhi hi nahi, to galat jawab milega — aur wahi measurement ki zaroorat ko samjhata hai.</strong></p>
+<h3>Function</h3>
+<div class="codeblock"><div class="codeblock-head"><span>python</span></div><pre><code>def get_director(movie):
+    # first we create the prompt
+    prompt = """
+Please write a Wikidata query to find who is the director of "{movie}".
+Return only the query, not explanation.
+    """.format(movie=movie).strip()
+
+    print("Prompt:")
+    print(prompt)
+    print()
+
+    # we will use the same call from above. The temperature is set to 0.1,
+    # If you want to experiment with trying to get better results,
+    # add a function argument for temperature.
+    response = completion(
+        model="ollama_chat/llama3",
+        messages=[{
+            "content": prompt,
+            "role": "user"
+        }],
+        temperature=0.1,
+        api_base="http://localhost:11434"
+    )
+
+    # This query often return markdown ticks, so we remove that.
+    print("Query:")
+    return response.choices[0]["message"].content.strip("`").strip()</code></pre></div>
+<h3>"John Carter" par kya hua</h3>
+<p><code>print(get_director("John Carter"))</code> chalane par model ne ye query di:</p>
+<div class="codeblock"><div class="codeblock-head"><span>sparql (galat output)</span></div><pre><code>PREFIX wdt: &lt;http://www.wikidata.org/prop/direct/&gt;
+SELECT ?director WHERE {
+  wd:Q113745 (film) .
+  film wdt:director ?director .
+}</code></pre></div>
+<p><strong>Ye valid SPARQL hai hi nahi!</strong> Lab 6 me is query ke bugs dhoondne ki practice hai.</p>
+<h3>Aisa kyun hua</h3>
+<ul>
+<li>Zyada tar models general internet par train hote hain, aur SPARQL utna popular topic nahi hai — model ne ye language zyada dekhi hi nahi hogi.</li>
+<li>Wikidata ke apne idiosyncratic patterns hain (jaise director ke liye <code>wdt:P57</code> property) — model unhe guess nahi kar sakta.</li>
+<li>Isliye: model ko sahi tool, sahi prompt aur sahi measurement do — bina measurement ke "kaam kar gaya" kehna galat hai.</li>
+</ul>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">https://www.wikidata.org/wiki/Wikidata:Main_Page</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/first-litellm-call"><span class="pn-label">Pichhla</span><span class="pn-title">15 · Pehla LiteLLM call — E.T. wala example</span></a><a class="pn-btn" href="#/gs-conclusion"><span class="pn-label">Agla</span><span class="pn-title">17 · Getting Started — nishkarsh</span></a></div></section>
+<section class="section" id="sec-gs-conclusion" data-doc="1" data-url="https://www.oreilly.com" data-title="Getting Started — nishkarsh"><div class="sec-meta"><span class="num-chip">17</span><span class="sec-group">Shuruaat</span></div><h1>Getting Started — nishkarsh</h1>
+<p class="lead">Ab environment set up hai, data sources se parichay ho gaya hai, aur pehla experiment bhi kar liya hai.</p>
+<h3>Is chapter me kya kiya</h3>
+<ul>
+<li>Project Theoros tay kiya — movies par agentic system.</li>
+<li>Linux/WSL + Miniconda + Python Data Science Stack install kiya.</li>
+<li>MCP, LiteLLM, OpenRouter, Docker, LibreChat, Ollama — saare tools ready kiye.</li>
+<li>Data sources jaane: Wikipedia, Wikidata, Hugging Face, Kaggle.</li>
+<li>LiteLLM se pehla model call kiya aur Wikidata query ka pehla (galat) experiment dekha.</li>
+</ul>
+<h3>Aage kya</h3>
+<p>Agla chapter: <strong>models ko measure aur compare kaise karein</strong> — kyunki Theoros ke liye sahi SLM chunne se pehle ye jaanna hoga ki "sahi" ka matlab measure kaise hota hai. Book ke citations (12 references) Sources view me diye gaye hain.</p>
+<div class="note">Chapter ke citations: Greek dictionaries, Anaconda docs, MCP docs, Docker docs, LibreChat docs, Ollama docs, Wikidata pages, Hugging Face, Kaggle — inme se jinke URL book me diye gaye hain, wo Sources view me hain. Citation me diye gaye vyaktiyon ke naam is SPA me nahi likhe gaye hain.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/get-director"><span class="pn-label">Pichhla</span><span class="pn-title">16 · Wikidata query — get_director aur galat SPARQL se seekh</span></a><a class="pn-btn" href="#/why-measure"><span class="pn-label">Agla</span><span class="pn-title">18 · Measurement kyun zaroori hai</span></a></div></section>
+<section class="section" id="sec-why-measure" data-doc="1" data-url="https://www.oreilly.com" data-title="Measurement kyun zaroori hai"><div class="sec-meta"><span class="num-chip">18</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Measurement kyun zaroori hai</h1>
+<p class="lead">Jaise har machine learning kaam me, yahan bhi shuruaat <strong>measurement</strong> se hoti hai. Model chunne se pehle ye tay karna hoga ki "achha" ka matlab kya hai — aur use kaise naapa jayega.</p>
+<h3>General quality kaafi kyun nahi</h3>
+<p>Language model ki general quality — matlab sahi sequences banane ki ability — sirf ek had tak kaam aati hai. SLMs khaas isliye hote hain kyunki wo <strong>specialized</strong> hote hain — sirf domain/topic me nahi, <strong>functionality</strong> me bhi. General "bhasha" banana unke liye utna important nahi, jitna apna khaas kaam sahi karna hai.</p>
+<h3>Iska matlab kya hai</h3>
+<ul>
+<li>SLMs ke liye <strong>task-specific metrics</strong> chahiye — ye classic machine learning measurement jaisa hoga.</li>
+<li>Achhi baat: aise measurements zyada seedhe aur samajhne me aasan hote hain.</li>
+<li>Buri baat: task jitna novel hoga, utna hi kam chance hai ki uske liye ready dataset mile.</li>
+</ul>
+<p>Is chapter me pehle classic ML metrics refresh karenge, phir language model measurement, aur phir task measurement — Theoros ke liye.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/gs-conclusion"><span class="pn-label">Pichhla</span><span class="pn-title">17 · Getting Started — nishkarsh</span></a><a class="pn-btn" href="#/classic-regression"><span class="pn-label">Agla</span><span class="pn-title">19 · Classic ML metrics — Regression</span></a></div></section>
+<section class="section" id="sec-classic-regression" data-doc="1" data-url="https://www.oreilly.com" data-title="Classic ML metrics — Regression"><div class="sec-meta"><span class="num-chip">19</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Classic ML metrics — Regression</h1>
+<p class="lead">Classic machine learning me metric is baat par depend karti thi ki model kis category me hai. Pehli category: <strong>regression</strong> — jab model ek floating point number predict karta hai.</p>
+<h3>Error term</h3>
+<p>Sab regression metrics <strong>error term</strong> par based hain:</p>
+<div class="codeblock"><div class="codeblock-head"><span>formula</span></div><pre><code>err_i = y_i - ŷ_i
+(asli value - predicted value)</code></pre></div>
+<h3>Chaar metrics</h3>
+<ul>
+<li><strong>MAE (Mean Absolute Error):</strong> error term ke absolute value ka mean. Bade aur chhote errors ko barabar weight deta hai.</li>
+<li><strong>MSE (Mean Squared Error):</strong> error term ke square ka mean. Bade errors ko zyada saza deta hai (square hone se).</li>
+<li><strong>RMSE (Root Mean Squared Error):</strong> MSE ka square root — isse metric wapas original unit me aa jati hai, samajhna aasan hota hai.</li>
+<li><strong>R² (R-squared):</strong> <code>R² = 1 - MSE / VAR[Y]</code> — model target variable ki variance ka kitna hissa samjha paya. 1 ke kareeb = behtar.</li>
+</ul>
+<div class="note">Lab 2 me khud ke numbers daal kar MAE, MSE, RMSE aur R² calculate karo — formula yaad karne se zyada, haath se karke samajh aata hai.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/why-measure"><span class="pn-label">Pichhla</span><span class="pn-title">18 · Measurement kyun zaroori hai</span></a><a class="pn-btn" href="#/classic-classification"><span class="pn-label">Agla</span><span class="pn-title">20 · Classic ML metrics — Classification</span></a></div></section>
+<section class="section" id="sec-classic-classification" data-doc="1" data-url="https://www.oreilly.com" data-title="Classic ML metrics — Classification"><div class="sec-meta"><span class="num-chip">20</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Classic ML metrics — Classification</h1>
+<p class="lead">Doosri category: <strong>classification</strong> — jab model ek categorical value predict karta hai. Iske metrics <strong>confusion matrix</strong> par based hote hain.</p>
+<h3>Confusion matrix (binary classification)</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th></th><th>Actual: Positive</th><th>Actual: Negative</th></tr></thead>
+<tbody>
+<tr><td><strong>Predicted: Positive</strong></td><td>True Positive (TP)</td><td>False Positive (FP)</td></tr>
+<tr><td><strong>Predicted: Negative</strong></td><td>False Negative (FN)</td><td>True Negative (TN)</td></tr>
+</tbody>
+</table></div>
+<p class="lab-note">Book me is jagah ek confusion matrix image ka placeholder hai — asal image PDF me nahi thi, isliye upar wali table hi uska kaam karti hai.</p>
+<h3>Precision aur Recall</h3>
+<ul>
+<li><strong>Precision</strong> = TP / (TP + FP) — model ne jitni positive predictions ki, unme se kitni asal me positive thi. Ye batata hai ki positive prediction kitni <strong>reliable</strong> hai. Range 0–1.</li>
+<li><strong>Recall</strong> = TP / (TP + FN) — asal positives me se kitne pakde gaye. Ye batata hai ki positive dhoondhne ki kitni <strong>likelihood</strong> hai. Range 0–1.</li>
+<li><strong>F-score</strong> = precision aur recall ka harmonic mean — jab ek hi metric chahiye ho to ye use karo.</li>
+</ul>
+<h3>AUC / ROC curve</h3>
+<p>Binary classification ke liye ek aur common metric: <strong>Area Under the ROC Curve (AUC)</strong>. Pseudo-probability wale models ki predictions ko sort karo, har threshold par recall aur false positive rate nikalo, curve banao, uske neeche ka area nikalo. Range 0–1. Coin flip se decide karoge to AUC <strong>0.5</strong> milega — isliye 0.5 se upar hona hi predictive power ki pehli nishani hai.</p>
+<h3>Ranking</h3>
+<p>Ranking category ke metrics bhi aam taur par precision aur recall par based hote hain, halanki aur popular metrics bhi hain. Jaise-jaise naye tasks aayenge, waise-waise best metric tay karenge.</p>
+<div class="note">SLMs ka sabse bada developer fayda yahi hai: unke toote hue tasks seedhe measurable hote hain. LLM ka purpose general aur broad hota hai, isliye unki measurement bahut alag tareeke se hoti hai.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/classic-regression"><span class="pn-label">Pichhla</span><span class="pn-title">19 · Classic ML metrics — Regression</span></a><a class="pn-btn" href="#/pretraining"><span class="pn-label">Agla</span><span class="pn-title">21 · Pre-training measurement — cross-entropy</span></a></div></section>
+<section class="section" id="sec-pretraining" data-doc="1" data-url="https://www.oreilly.com" data-title="Pre-training measurement — cross-entropy"><div class="sec-meta"><span class="num-chip">21</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Pre-training measurement — cross-entropy</h1>
+<p class="lead">Large aur small language models teen parts me train hote hain: <strong>pre-training, supervised fine-tuning (SFT), aur alignment</strong>. Pehla part dekhte hain.</p>
+<h3>Pre-training kya hai</h3>
+<p>Is phase me model seekhta hai ki diye gaye input sequence ke baad sahi sequence kaise banaye. Ye phase aam taur par <strong>cross-entropy</strong> use karta hai.</p>
+<h3>Cross-entropy ka matlab</h3>
+<p>Cross-entropy ek distribution ka doosri distribution se <strong>"surprise"</strong> hai. Model ne kisi context ke liye tokens ki ek distribution seekh li hai, par asli distribution alag hai. Loss function ke roop me ye metric minimize karti hai ki model asal token se kitna surprised hota hai:</p>
+<div class="codeblock"><div class="codeblock-head"><span>formula</span></div><pre><code>H(p, q) = Σ p_i log q_i
+(p = asli distribution, q = model ki distribution)</code></pre></div>
+<p>Kyunki hum scratch se koi model nahi banayenge, humein pre-training karne ki zaroorat nahi hai. Humari dilchaspi doosre part — alignment — me zyada hai. Lekin cross-entropy samajhna isliye zaroori hai kyunki SFT me bhi wahi loss use hota hai.</p>
+<div class="note">Lab 4 me cross-entropy ko haath se chalao: model jab sahi token ko 90% probability de to surprise kam hota hai, aur 1% de to surprise bahut zyada.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/classic-classification"><span class="pn-label">Pichhla</span><span class="pn-title">20 · Classic ML metrics — Classification</span></a><a class="pn-btn" href="#/sft"><span class="pn-label">Agla</span><span class="pn-title">22 · SFT measurement</span></a></div></section>
+<section class="section" id="sec-sft" data-doc="1" data-url="https://www.oreilly.com" data-title="SFT measurement"><div class="sec-meta"><span class="num-chip">22</span><span class="sec-group">Sahi SLM chunna</span></div><h1>SFT measurement</h1>
+<p class="lead">Training ka doosra part hai <strong>Supervised Fine-Tuning (SFT)</strong> — yahan model sirf believable sequences banana nahi seekhta, balki <strong>labeled sequences</strong> se behtar aur useful sequences banana seekhta hai.</p>
+<h3>Loss function wahi kyun</h3>
+<p>Ye phase bhi wahi neural network update karta hai jo pre-training me bana tha, isliye isme bhi <strong>cross-entropy</strong> hi loss function ke roop me use hoti hai.</p>
+<h3>SFT kyun matter karta hai</h3>
+<p>SFT me insufficient training se outputs ki quality gir jati hai — aur low quality outputs lagbhag har task par performance kharab kar dete hain. Isliye basic language model metrics par model ki quality jaanna ek zaroori baseline hai, chahe aakhir me task-specific metrics hi faisla karein.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/pretraining"><span class="pn-label">Pichhla</span><span class="pn-title">21 · Pre-training measurement — cross-entropy</span></a><a class="pn-btn" href="#/alignment"><span class="pn-label">Agla</span><span class="pn-title">23 · Alignment measurement — RLHF aur DPO</span></a></div></section>
+<section class="section" id="sec-alignment" data-doc="1" data-url="https://www.oreilly.com" data-title="Alignment measurement — RLHF aur DPO"><div class="sec-meta"><span class="num-chip">23</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Alignment measurement — RLHF aur DPO</h1>
+<p class="lead">Training ka teesra part hai <strong>alignment</strong> — model ko tasks ke baare me aur kuch safety rules sikhana, matlab human preferences ke hisaab se dhalna.</p>
+<h3>RLHF</h3>
+<p>Historically ye <strong>Reinforcement Learning from Human Feedback (RLHF)</strong> se kiya jata tha — human feedback se ek reward model seekhna, phir usse model ko optimize karna.</p>
+<h3>DPO</h3>
+<p>Ab zyada common hai <strong>Direct Preference Optimization (DPO)</strong> — ye reinforcement learning ke bajaye supervised learning use karta hai. Isse alignment zyada efficient aur simple ho jata hai, kyunki koi alag reward model seekhne ki zaroorat nahi padti.</p>
+<div class="note">Training-phase metrics (cross-entropy, alignment loss) training ya fine-tuning ke time useful hain, par specific use-case ke liye informative nahi hain. Use-case ke liye task-specific measurement chahiye — agla section.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/sft"><span class="pn-label">Pichhla</span><span class="pn-title">22 · SFT measurement</span></a><a class="pn-btn" href="#/task-measurement"><span class="pn-label">Agla</span><span class="pn-title">24 · Task measurement — SLM vs LLM</span></a></div></section>
+<section class="section" id="sec-task-measurement" data-doc="1" data-url="https://www.oreilly.com" data-title="Task measurement — SLM vs LLM"><div class="sec-meta"><span class="num-chip">24</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Task measurement — SLM vs LLM</h1>
+<p class="lead">Ab asal farak samjho: LLM generalized hote hain — open-ended chatbot ki tarah. SLM highly constrained chatbot ya usse bhi focused applications ke liye hote hain — jaise natural language ko query language me badalna, ya classifier ki tarah kaam karna.</p>
+<h3>SLM measurement ke fayde</h3>
+<ul>
+<li>Kaam chhote aur seedhe hote hain, to measurement classic ML jaisi ho jati hai — precision, recall, F-score, accuracy.</li>
+<li>Agar SLM ki jagah ek simpler neural network ya classical ML model chal jaye, to system aur bhi simple ho jayega — ye check karna bhi measurement ka hissa hai.</li>
+</ul>
+<h3>Baseline mat bhoolo</h3>
+<p>Language model measurements phir bhi baseline ke roop me important hain. SFT me kami se outputs ki quality girti hai, aur quality kharab ho to lagbhag har task kharab hoga. Is baseline quality ko open benchmarks dekh kar jaana ja sakta hai — agla section.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/alignment"><span class="pn-label">Pichhla</span><span class="pn-title">23 · Alignment measurement — RLHF aur DPO</span></a><a class="pn-btn" href="#/benchmarks"><span class="pn-label">Agla</span><span class="pn-title">25 · Benchmarks — MMLU-Pro, GPQA, HELM</span></a></div></section>
+<section class="section" id="sec-benchmarks" data-doc="1" data-url="https://www.oreilly.com" data-title="Benchmarks — MMLU-Pro, GPQA, HELM"><div class="sec-meta"><span class="num-chip">25</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Benchmarks — MMLU-Pro, GPQA, HELM</h1>
+<p class="lead">Benchmark tab sabse achha hota hai jab tumhara use-case benchmark ke use-case jaisa ho. Lekin benchmark se model ki baseline performance ka achha andaza bhi milta hai.</p>
+<h3>MMLU-Pro</h3>
+<p>Massive Multitask Language Understanding (MMLU) ka augmented version. MMLU alag-alag domains ke multiple-choice questions ka set hai, alag difficulty levels par. MMLU-Pro is dataset ko <strong>12,000 questions aur 10 answer choices</strong> tak badhata hai. Ye model ki general reasoning aur Q&amp;A capability test karta hai.</p>
+<h3>GPQA</h3>
+<p>Physics, chemistry aur biology me <strong>448 multiple-choice questions</strong>. Questions is tarah design kiye gaye hain ki experts (PhD students) ke liye bhi mushkil hon. Ye model ki scientific reasoning dikhata hai — science se related use-cases ke liye valuable ho sakta hai, par humara use-case (movies) aisa nahi hai.</p>
+<h3>HELM</h3>
+<p>Stanford CRFM ka project — foundational models ko evaluate karne ke liye. Inki website par leaderboards hain jinme MMLU-Pro aur GPQA bhi shamil hain. HELM me multi-modal models aur domain-specific models ke benchmarks bhi hain.</p>
+<h3>Task-specific benchmarks</h3>
+<p>Agar tumhare exact use-case ke liye benchmark hai, to apne results wahi compare karo. Aur agar SLM ki jagah simpler model chal jaye, to system ko aur simple karna behtar hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/task-measurement"><span class="pn-label">Pichhla</span><span class="pn-title">24 · Task measurement — SLM vs LLM</span></a><a class="pn-btn" href="#/custom-dataset-def"><span class="pn-label">Agla</span><span class="pn-title">26 · Custom dataset — task definition</span></a></div></section>
+<section class="section" id="sec-custom-dataset-def" data-doc="1" data-url="https://www.oreilly.com" data-title="Custom dataset — task definition"><div class="sec-meta"><span class="num-chip">26</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Custom dataset — task definition</h1>
+<p class="lead">Apne exact use-case ke liye benchmark nahi hai to dataset khud banana hoga. Theoros ke example se samjho: movie synopses ko subgenre assign karna.</p>
+<h3>Task kya hai</h3>
+<p>Movie synopses ko <strong>subgenres</strong> assign karna — ek classification task. Ye kaam aayega jab movies ko databases me ingest karenge: users finer-grained criteria se filter kar payenge.</p>
+<h3>Pehla step: task clearly define karo</h3>
+<ul>
+<li><strong>Label set:</strong> genres aur subgenres ki list — ek film academy article se li jayegi.</li>
+<li><strong>Genre assignment:</strong> Wikidata se.</li>
+<li><strong>Synopses:</strong> Wikipedia se.</li>
+<li><strong>Multi-label:</strong> ek movie ke ek se zyada subgenres ho sakte hain — ek hi genre ke andar bhi multiple subgenres possible hain (ye decision abhi liya gaya hai).</li>
+</ul>
+<h3>Metric kya hogi</h3>
+<p>Har label ke liye <strong>F-score</strong>, aur overall score ke liye subgenres par <strong>macro-average F-score</strong>.</p>
+<h3>Columns aur size</h3>
+<p>Chahiye: synopses, genres, aur display ke liye movie title. Size ka napkin estimate: few dozen classes × ~100 examples per class = <strong>ideal 3,000–6,000</strong>; minimum <strong>1,000</strong> se kaam chal sakta hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/benchmarks"><span class="pn-label">Pichhla</span><span class="pn-title">25 · Benchmarks — MMLU-Pro, GPQA, HELM</span></a><a class="pn-btn" href="#/repurpose-datasets"><span class="pn-label">Agla</span><span class="pn-title">27 · Dataset repurpose karna</span></a></div></section>
+<section class="section" id="sec-repurpose-datasets" data-doc="1" data-url="https://www.oreilly.com" data-title="Dataset repurpose karna"><div class="sec-meta"><span class="num-chip">27</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Dataset repurpose karna</h1>
+<p class="lead">Naya data collect karne ke bajaye aam taur par existing datasets ko join karke apna data banate ho. SLMs ka ek bada fayda: classic models ke mukable <strong>feature engineering bahut kam</strong> hoti hai — isliye text information seedha mil jati hai.</p>
+<h3>Subgenre tagging ke liye example</h3>
+<p>Kaggle dataset <code>jrobischon/wikipedia-movie-plots</code> use karo — isme saare columns hain jo chahiye, sirf subgenres ke alawa. Isme <strong>35,000 movies</strong> hain, 1918 se 2017 tak ke sau saal ke period se.</p>
+<p>Is dataset ko Wikidata se genre assignment aur apne label set se join karke measurement-ready dataset ban jata hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/custom-dataset-def"><span class="pn-label">Pichhla</span><span class="pn-title">26 · Custom dataset — task definition</span></a><a class="pn-btn" href="#/synthetic-data"><span class="pn-label">Agla</span><span class="pn-title">28 · Synthetic data</span></a></div></section>
+<section class="section" id="sec-synthetic-data" data-doc="1" data-url="https://www.oreilly.com" data-title="Synthetic data"><div class="sec-meta"><span class="num-chip">28</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Synthetic data</h1>
+<p class="lead">Agar data hi nahi hai to ek alternative hai: <strong>LLM se synthetic data generate karna</strong>. Example: kisi class ke liye LLM se synthetic synopses banwana.</p>
+<h3>Problem kya hai</h3>
+<p>Ye data <strong>less realistic</strong> hota hai — aur isliye system ko measure karne me <strong>less informative</strong> bhi. Synthetic data se jo score milega, wo asal duniya ke data par waisa nahi hoga.</p>
+<p>Isliye synthetic data ek option hai, par use measurement ke liye nahi, balki tab jab aur koi raasta nahi — aur uske limits ko samajh kar.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/repurpose-datasets"><span class="pn-label">Pichhla</span><span class="pn-title">27 · Dataset repurpose karna</span></a><a class="pn-btn" href="#/human-labeling"><span class="pn-label">Agla</span><span class="pn-title">29 · Human labeling — cost aur stratify</span></a></div></section>
+<section class="section" id="sec-human-labeling" data-doc="1" data-url="https://www.oreilly.com" data-title="Human labeling — cost aur stratify"><div class="sec-meta"><span class="num-chip">29</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Human labeling — cost aur stratify</h1>
+<p class="lead">Labels ke liye sabse seedha tareeka hai <strong>humans se label karwana</strong> — par problem hai: humans slow aur mehange hote hain.</p>
+<h3>Kaam ko aasan banao</h3>
+<ul>
+<li><strong>Confirmation task:</strong> system predictions de, human sirf confirm kare (sahi/galat) — poora label likhne se tez.</li>
+<li><strong>Preference dataset:</strong> system ki prediction + ek random subgenre do — isse measurement ke saath-saath fine-tuning ke liye data bhi ban jata hai.</li>
+</ul>
+<h3>Cost ka hisaab</h3>
+<p>Optimistically har task me <strong>10–15 seconds</strong> lagte hain. Poora dataset label karne me <strong>100–140 hours</strong> lagenge. Solution: sirf few thousand examples label karo (ideal dataset ka size) — <strong>10–14 hours</strong> me ho jayega.</p>
+<h3>Bias se bacho</h3>
+<p>Sample lete waqt <strong>genre ke hisaab se stratify</strong> karo — warna imbalanced dataset ban jayega. Aur yaad rakho: har nayi functionality ke saath labeling ke ye rounds development time ya labeling cost me judte jayenge.</p>
+<div class="note">Lab 8 me apne dataset ka size aur labeling cost khud calculate karo — classes, examples per class aur seconds per label daalo.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/synthetic-data"><span class="pn-label">Pichhla</span><span class="pn-title">28 · Synthetic data</span></a><a class="pn-btn" href="#/llm-as-judge"><span class="pn-label">Agla</span><span class="pn-title">30 · LLM-as-a-Judge</span></a></div></section>
+<section class="section" id="sec-llm-as-judge" data-doc="1" data-url="https://www.oreilly.com" data-title="LLM-as-a-Judge"><div class="sec-meta"><span class="num-chip">30</span><span class="sec-group">Sahi SLM chunna</span></div><h1>LLM-as-a-Judge</h1>
+<p class="lead">LLMs se nikli sabse surprising cheezon me se ek: <strong>LLMs ek doosre ko judge kar sakte hain</strong> — aur carefully kiya jaye to khud ko bhi. Matlab bahut si situations me human labels bahut kam ya bilkul nahi chahiye.</p>
+<h3>Validate karna zaroori hai</h3>
+<p>Ye concept abhi naya hai, isliye apni measuring methodology ko <strong>validate</strong> karna chahiye. Check karo ki tumhara LLM-as-a-Judge asal me kitna reliable hai. Iske liye aisa data chahiye jisme inputs, outputs aur outputs ke labels hon — hamare case me synopses + genres (inputs), subgenres (outputs), aur subgenres sahi hain ya nahi (labels).</p>
+<h3>Golden labels kaise laayein</h3>
+<ul>
+<li><strong>Human labeling:</strong> baseline ke hisaab se labels aur kam kar sakte ho. Meta-measurement ke liye har subgenre ke sau examples nahi chahiye — kuch examples per subgenre kaafi hain, labeling ek order of magnitude kam ho jati hai. Caveat: baseline 90%+ cases me sahi ho to few hundred examples me negative examples kaafi nahi milenge.</li>
+<li><strong>Sample check:</strong> judge ke judgments ka ek sample (positives aur negatives me balanced) human se check karwao — isse pata chalega ki judgment system kaisa kaam kar raha hai.</li>
+</ul>
+<h3>Judge SLM bhi ho sakta hai</h3>
+<p>"LLM-as-a-Judge" kehte hain, par judge koi SLM bhi ho sakta hai — judgment task ke liye specialized. Wahi model judge bhi ho to dhyaan rakhna: <strong>judging task ko actual task se clearly alag rakho</strong>, warna model apna hi kaam repeat karke khud ko affirm kar dega.</p>
+<h3>Do prompts ka farak</h3>
+<p><strong>Subgenre assignment prompt:</strong> "Please identify if the given movie belongs to one of the given subgenre. Genre, possible subgenres, title, synopsis — Subgenre(s):"</p>
+<p><strong>Subgenre judgment prompt:</strong> "Please rate, 1–5, how well the given movie fits within the subgenre description. Title, synopsis, genre, subgenre, subgenre description — Rating (1–5):"</p>
+<p>Doosre prompt me subgenre description judne se input data kaafi badal jata hai — model wahi kaam repeat nahi karta. LLM-as-a-Judge karne ke use-case aur resources ke hisaab se bahut tareeke hain.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/human-labeling"><span class="pn-label">Pichhla</span><span class="pn-title">29 · Human labeling — cost aur stratify</span></a><a class="pn-btn" href="#/model-gpt-oss"><span class="pn-label">Agla</span><span class="pn-title">31 · Model — gpt-oss-20b</span></a></div></section>
+<section class="section" id="sec-model-gpt-oss" data-doc="1" data-url="https://www.oreilly.com" data-title="Model — gpt-oss-20b"><div class="sec-meta"><span class="num-chip">31</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Model — gpt-oss-20b</h1>
+<p class="lead"><strong>openai/gpt-oss-20b</strong> — hum aam taur par jitne bade models consider kar rahe hain, usse bada hai (21B), par har token ke liye sirf <strong>3.6 billion active</strong> parameters use hote hain. Zyada learned parameters ka fayda, bina zyada intense hardware ke.</p>
+<h3>Model Card</h3>
+<ul>
+<li><strong>Architecture:</strong> residual stream dimension 2880; har attention aur MoE block se pehle root mean square normalization; GPT-2 jaisi Pre-LN placement.</li>
+<li><strong>Mixture-of-Experts:</strong> har MoE block me 32 experts (gpt-oss-20b) + standard linear router; har token ke liye router top-4 experts select karta hai, output ko selected experts par router softmax se weight kiya jata hai; gated SwiGLU activation.</li>
+<li><strong>Attention:</strong> banded window aur fully dense patterns alternate hote hain (bandwidth 128 tokens); har layer me 64 query heads (dim 64), Grouped Query Attention (GQA) 8 key-value heads ke saath; rotary position embeddings; YaRN se dense layers ki context length 131,072 tokens tak.</li>
+<li><strong>Attention sinks:</strong> har attention head ke softmax denominator me learned bias hai — mechanism kisi bhi token par dhyaan na dene me madad karta hai.</li>
+<li><strong>Inputs:</strong> text-only dataset, trillions of tokens; focus STEM, coding aur general knowledge par; safety ke liye pre-training me harmful content (khaas taur par hazardous biosecurity knowledge) ko CBRN filters se filter kiya gaya; knowledge cutoff June 2024.</li>
+<li><strong>Context length:</strong> 131K tokens.</li>
+<li><strong>Supported languages:</strong> Arabic, Bengali, Chinese, English, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Portuguese, Spanish, Swahili, Yoruba.</li>
+<li><strong>Release date (Hugging Face):</strong> August 2025.</li>
+</ul>
+<h3>Model Quality</h3>
+<ul>
+<li><strong>GPQA (no tools):</strong> 49.1</li>
+<li><strong>MMLU-Pro:</strong> book me is model ka MMLU-Pro number diya hi nahi gaya hai — isliye yahan blank chhoda gaya hai, invent nahi kiya.</li>
+</ul>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/llm-as-judge"><span class="pn-label">Pichhla</span><span class="pn-title">30 · LLM-as-a-Judge</span></a><a class="pn-btn" href="#/model-qwen3"><span class="pn-label">Agla</span><span class="pn-title">32 · Model — Qwen3-4B-Instruct-2507</span></a></div></section>
+<section class="section" id="sec-model-qwen3" data-doc="1" data-url="https://www.oreilly.com" data-title="Model — Qwen3-4B-Instruct-2507"><div class="sec-meta"><span class="num-chip">32</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Model — Qwen3-4B-Instruct-2507</h1>
+<p class="lead"><strong>Qwen/Qwen3-4B-Instruct-2507</strong> — likhne ke samay ke recent innovations wala model: pichhle SLMs se behtar general capabilities, zyada context length, aur tool use aur agentic systems ke liye design.</p>
+<h3>Model Card</h3>
+<ul>
+<li><strong>Parameters:</strong> 4.0B (non-embedding: 3.6B)</li>
+<li><strong>Layers:</strong> 36</li>
+<li><strong>Attention Heads (GQA):</strong> 32 for Q aur 8 for KV</li>
+<li><strong>Context length:</strong> 262K tokens — is comparison ke open models me sabse zyada</li>
+<li><strong>Release date (Hugging Face):</strong> August 2025</li>
+</ul>
+<h3>Model Quality</h3>
+<ul>
+<li><strong>MMLU-Pro:</strong> 69.6</li>
+<li><strong>GPQA (no tools):</strong> 62.0</li>
+</ul>
+<p>Ye scores is list ke open models me sabse strong hain — Theoros jaise tool-use wale agentic kaam ke liye ye ek strong candidate hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/model-gpt-oss"><span class="pn-label">Pichhla</span><span class="pn-title">31 · Model — gpt-oss-20b</span></a><a class="pn-btn" href="#/model-llama32"><span class="pn-label">Agla</span><span class="pn-title">33 · Model — Llama-3.2-3B</span></a></div></section>
+<section class="section" id="sec-model-llama32" data-doc="1" data-url="https://www.oreilly.com" data-title="Model — Llama-3.2-3B"><div class="sec-meta"><span class="num-chip">33</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Model — Llama-3.2-3B</h1>
+<p class="lead"><strong>meta-llama/Llama-3.2-3B</strong> — chat aur summarization use-cases me excel karne ke liye design kiya gaya, saath me "agentic retrieval" bhi.</p>
+<h3>Model Card</h3>
+<ul>
+<li><strong>Architecture:</strong> auto-regressive language model, optimized transformer architecture. Tuned versions supervised fine-tuning (SFT) aur reinforcement learning with human feedback (RLHF) use karte hain — helpfulness aur safety ke liye human preferences se align karne ke liye.</li>
+<li><strong>Context length:</strong> 128K tokens</li>
+<li><strong>Supported Languages:</strong> English, German, French, Italian, Portuguese, Hindi, Spanish, Thai</li>
+<li><strong>Release date (Hugging Face):</strong> September 2024</li>
+</ul>
+<h3>Model Quality</h3>
+<ul>
+<li><strong>MMLU:</strong> 63.4 (dhyaan do — ye MMLU hai, MMLU-Pro nahi)</li>
+<li><strong>GPQA:</strong> 32.8</li>
+</ul>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/model-qwen3"><span class="pn-label">Pichhla</span><span class="pn-title">32 · Model — Qwen3-4B-Instruct-2507</span></a><a class="pn-btn" href="#/model-phi4"><span class="pn-label">Agla</span><span class="pn-title">34 · Model — Phi-4-mini-instruct</span></a></div></section>
+<section class="section" id="sec-model-phi4" data-doc="1" data-url="https://www.oreilly.com" data-title="Model — Phi-4-mini-instruct"><div class="sec-meta"><span class="num-chip">34</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Model — Phi-4-mini-instruct</h1>
+<p class="lead"><strong>microsoft/Phi-4-mini-instruct</strong> — Microsoft ke Phi family ka model, jo ye explore karne ke liye bana tha ki SLMs kya kar sakte hain. Synthetic data par banaya gaya — "generative AI powered features ke liye building block" ke roop me design hua.</p>
+<h3>Model Card</h3>
+<ul>
+<li><strong>Parameters:</strong> 3.8B, dense decoder-only Transformer model</li>
+<li><strong>Phi-3.5-mini se bade changes:</strong> 200K vocabulary, grouped-query attention, shared input aur output embedding</li>
+<li><strong>Context length:</strong> 128K tokens</li>
+<li><strong>Supported languages:</strong> Arabic, Chinese, Czech, Danish, Dutch, English, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, Ukrainian</li>
+<li><strong>Release date (Hugging Face):</strong> February 2025</li>
+</ul>
+<h3>Model Quality</h3>
+<ul>
+<li><strong>MMLU-Pro:</strong> 52.8</li>
+<li><strong>GPQA (0-shot, CoT):</strong> 25.2</li>
+</ul>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/model-llama32"><span class="pn-label">Pichhla</span><span class="pn-title">33 · Model — Llama-3.2-3B</span></a><a class="pn-btn" href="#/model-gpt5mini"><span class="pn-label">Agla</span><span class="pn-title">35 · Model — GPT-5-mini (closed comparison)</span></a></div></section>
+<section class="section" id="sec-model-gpt5mini" data-doc="1" data-url="https://www.oreilly.com" data-title="Model — GPT-5-mini (closed comparison)"><div class="sec-meta"><span class="num-chip">35</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Model — GPT-5-mini (closed comparison)</h1>
+<p class="lead"><strong>GPT-5-mini</strong> — is list me open aur closed models ke beech comparison ke liye shamil kiya gaya hai. Ye "well defined tasks aur precise prompts" ke liye design hua hai.</p>
+<h3>Model Card</h3>
+<ul>
+<li><strong>Context length:</strong> 400K tokens — is comparison me sabse zyada</li>
+<li><strong>Release date:</strong> August 2025</li>
+</ul>
+<h3>Model Quality</h3>
+<ul>
+<li><strong>MMLU-Pro:</strong> 78</li>
+<li><strong>GPQA:</strong> 69</li>
+</ul>
+<p>Scores sabse zyada hain — par ye <strong>closed model</strong> hai: tum ise apni machine par nahi chala sakte, aur iska istemal hosted API se hota hai. Comparison isliye useful hai taaki pata chale ki open SLMs closed models se kitne peeche ya kareeb hain.</p>
+<div class="note">Yaad rakhna: alag models ke numbers alag benchmarks aur alag methods se aaye hain (jaise Llama ka MMLU vs doosron ka MMLU-Pro) — seedha compare karte waqt ye farak dhyaan me rakho.</div>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/model-phi4"><span class="pn-label">Pichhla</span><span class="pn-title">34 · Model — Phi-4-mini-instruct</span></a><a class="pn-btn" href="#/model-table"><span class="pn-label">Agla</span><span class="pn-title">36 · Saare models — ek comparison table</span></a></div></section>
+<section class="section" id="sec-model-table" data-doc="1" data-url="https://www.oreilly.com" data-title="Saare models — ek comparison table"><div class="sec-meta"><span class="num-chip">36</span><span class="sec-group">Sahi SLM chunna</span></div><h1>Saare models — ek comparison table</h1>
+<p class="lead">Chapter 3 ke saare models ek jagah — taaki Theoros ke liye chunna aasan ho. Saare numbers book se liye gaye hain, kuch invent nahi kiya gaya.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Model</th><th>Params</th><th>Context</th><th>MMLU-Pro</th><th>GPQA</th><th>Release</th></tr></thead>
+<tbody>
+<tr><td>gpt-oss-20b</td><td>21B (3.6B active)</td><td>131K</td><td>— (book me nahi diya)</td><td>49.1</td><td>Aug 2025</td></tr>
+<tr><td>Qwen3-4B-Instruct-2507</td><td>4.0B</td><td>262K</td><td>69.6</td><td>62.0</td><td>Aug 2025</td></tr>
+<tr><td>Llama-3.2-3B</td><td>3B</td><td>128K</td><td>63.4 (MMLU*)</td><td>32.8</td><td>Sep 2024</td></tr>
+<tr><td>Phi-4-mini-instruct</td><td>3.8B</td><td>128K</td><td>52.8</td><td>25.2</td><td>Feb 2025</td></tr>
+<tr><td>GPT-5-mini (closed)</td><td>—</td><td>400K</td><td>78</td><td>69</td><td>Aug 2025</td></tr>
+</tbody>
+</table></div>
+<p>* Llama-3.2-3B ka 63.4 <strong>MMLU</strong> hai, MMLU-Pro nahi — baaki models se seedha compare mat karo.</p>
+<h3>Kaunsa kab</h3>
+<ul>
+<li><strong>Tool use + agentic (Theoros):</strong> Qwen3-4B — sabse zyada context (262K) aur strong scores.</li>
+<li><strong>Chat/summarization:</strong> Llama-3.2-3B — isi ke liye design hua.</li>
+<li><strong>Zyada parameters, kam active cost:</strong> gpt-oss-20b — MoE se 3.6B active.</li>
+<li><strong>Synthetic-data experiment:</strong> Phi-4-mini-instruct.</li>
+<li><strong>Ceiling dekhna ho to:</strong> GPT-5-mini (closed) — reference point, local deployment nahi.</li>
+</ul>
+<p>Aakhir me yaad rakho: benchmark sirf baseline hai. Apne task ka apna dataset aur apna metric hi final faisla karta hai — wahi is chapter ki sabse badi seekh hai.</p>
+<div class="source-box"><span class="source-tag">Source</span><span>Source: O&rsquo;Reilly Media, Inc. &mdash; &ldquo;Hands-On Small Language Models&rdquo; (Early Release, January 2027) &middot; <a href="https://www.oreilly.com">https://www.oreilly.com</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/model-gpt5mini"><span class="pn-label">Pichhla</span><span class="pn-title">35 · Model — GPT-5-mini (closed comparison)</span></a></div></section>
+
+<section class="section" id="sec-labs" data-title="Labs">
+<div class="sec-meta"><span class="num-chip lab-chip">LABS</span><span class="sec-group">End Matter</span></div>
+<h1>Labs — haath se karo</h1>
+<p class="lead">8 interactive labs — setup, metrics, confusion matrix, cross-entropy, LiteLLM code, SPARQL bug hunt, model selector aur dataset estimator. Sab kuch isi page par chalta hai, kuch install nahi karna.</p>
+
+<div class="lab" data-lab="1">
+<div class="lab-head"><span class="lab-badge">LAB 1</span><span>Conda setup — sahi order me lagao</span></div>
+<p>Book ke install steps ko sahi order me click karo — pehle jo karna hai use pehle click karo. Galat order par setup fail hota hai.</p>
+<div class="lab-presets" id="lab1-steps"></div>
+<p class="lab-note">Tumhara order: <span class="mono" id="lab1-order">(abhi kuch nahi)</span></p>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="run-check" type="button" id="lab1-check">Check karo</button>
+<button class="chip-btn" type="button" id="lab1-reset">Reset</button>
+</div>
+<div class="lab-out" id="lab1-out" hidden><div class="lab-out-title">Nateeja</div><div class="lab-css" id="lab1-res"></div></div>
+</div>
+
+<div class="lab" data-lab="2">
+<div class="lab-head"><span class="lab-badge">LAB 2</span><span>Regression metrics calculator — MAE / MSE / RMSE / R²</span></div>
+<p>Actual aur predicted values comma se alag karke likho (jaise: 3, 5, 2.5). Dono lists ki lambai barabar honi chahiye.</p>
+<label class="lab-label" for="lab2-actual">Actual values (y)</label>
+<input class="lab-input" id="lab2-actual" value="3, 5, 2.5, 7" inputmode="decimal">
+<label class="lab-label" for="lab2-pred" style="margin-top:10px">Predicted values (ŷ)</label>
+<input class="lab-input" id="lab2-pred" value="2.5, 5, 2, 8" inputmode="decimal">
+<div style="margin-top:12px"><button class="run-check" type="button" id="lab2-run">Calculate karo</button></div>
+<div class="lab-out" id="lab2-out" hidden><div class="lab-out-title">Nateeja</div><div class="lab-css" id="lab2-res"></div></div>
+</div>
+
+<div class="lab" data-lab="3">
+<div class="lab-head"><span class="lab-badge">LAB 3</span><span>Confusion matrix explorer — Precision / Recall / F1</span></div>
+<p>TP, FP, FN, TN badlo aur dekho precision, recall, F1 aur accuracy kaise badalte hain. Matrix live update hoti hai.</p>
+<div class="lab-controls">
+<label>TP (True Positive)<input class="lab-input mono" id="lab3-tp" type="number" value="80" min="0"></label>
+<label>FP (False Positive)<input class="lab-input mono" id="lab3-fp" type="number" value="20" min="0"></label>
+<label>FN (False Negative)<input class="lab-input mono" id="lab3-fn" type="number" value="10" min="0"></label>
+<label>TN (True Negative)<input class="lab-input mono" id="lab3-tn" type="number" value="90" min="0"></label>
+</div>
+<div class="tbl-wrap"><table>
+<thead><tr><th></th><th>Actual: Positive</th><th>Actual: Negative</th></tr></thead>
+<tbody>
+<tr><td><strong>Predicted: Positive</strong></td><td id="lab3-c-tp">80</td><td id="lab3-c-fp">20</td></tr>
+<tr><td><strong>Predicted: Negative</strong></td><td id="lab3-c-fn">10</td><td id="lab3-c-tn">90</td></tr>
+</tbody>
+</table></div>
+<div class="lab-out"><div class="lab-out-title">Metrics</div><div class="lab-css" id="lab3-res"></div></div>
+</div>
+
+<div class="lab" data-lab="4">
+<div class="lab-head"><span class="lab-badge">LAB 4</span><span>Cross-entropy — "surprise" ko mehsus karo</span></div>
+<p>Model sahi token ko kitni probability deta hai? Slider ghumao — surprise bits me dekho. Cross-entropy = −log₂(q).</p>
+<label class="lab-label" for="lab4-q">Model ki probability q (sahi token ke liye): <span class="mono" id="lab4-qval">0.90</span></label>
+<input class="lab-range" id="lab4-q" type="range" min="0.01" max="0.99" step="0.01" value="0.90">
+<div class="lab-presets">
+<button class="chip-btn" type="button" data-q="0.9">Confident: 0.9</button>
+<button class="chip-btn" type="button" data-q="0.5">Coin flip: 0.5</button>
+<button class="chip-btn" type="button" data-q="0.1">Kamzor: 0.1</button>
+<button class="chip-btn" type="button" data-q="0.01">Bilkul galat: 0.01</button>
+</div>
+<div class="lab-out"><div class="lab-out-title">Surprise</div><div class="lab-css" id="lab4-res"></div></div>
+</div>
+
+<div class="lab" data-lab="5">
+<div class="lab-head"><span class="lab-badge">LAB 5</span><span>LiteLLM call builder</span></div>
+<p>Model, temperature aur prompt chuno — neeche book ke pattern par poora Python code ban jayega. Ye wahi <code>completion()</code> pattern hai jo section 15 me hai.</p>
+<div class="lab-controls">
+<label>Model
+<select class="lab-select" id="lab5-model">
+<option value="ollama_chat/llama3">ollama_chat/llama3 (local, Ollama)</option>
+<option value="openrouter/qwen/qwen3-4b">openrouter/qwen/qwen3-4b (hosted)</option>
+<option value="openrouter/meta-llama/llama-3.2-3b">openrouter/meta-llama/llama-3.2-3b (hosted)</option>
+</select></label>
+<label>Temperature: <span class="mono" id="lab5-tval">0.1</span>
+<input class="lab-range" id="lab5-temp" type="range" min="0" max="1" step="0.1" value="0.1"></label>
+</div>
+<label class="lab-label" for="lab5-prompt">Prompt</label>
+<input class="lab-input" id="lab5-prompt" value="What would be the best movie to show an alien?">
+<div style="margin-top:12px"><button class="run-check" type="button" id="lab5-run">Code banao</button></div>
+<div class="lab-out" id="lab5-out" hidden><div class="lab-out-title">Python code</div><pre class="lab-css" id="lab5-res"></pre><p class="lab-note" id="lab5-note"></p></div>
+</div>
+
+<div class="lab" data-lab="6">
+<div class="lab-head"><span class="lab-badge">LAB 6</span><span>SPARQL bug hunt — book ki galat query</span></div>
+<p>Section 16 me model ne ye galat SPARQL query di thi. Neeche 5 statements hain — jo <strong>asli bugs</strong> hain unhe tick karo, phir check karo.</p>
+<div class="codeblock"><div class="codeblock-head"><span>sparql (galat output)</span></div><pre><code>PREFIX wdt: &lt;http://www.wikidata.org/prop/direct/&gt;
+SELECT ?director WHERE {
+  wd:Q113745 (film) .
+  film wdt:director ?director .
+}</code></pre></div>
+<div id="lab6-opts">
+<label class="lab-check"><input type="checkbox" value="a"> <span><code>wd:</code> prefix kahin define hi nahi hua</span></label>
+<label class="lab-check"><input type="checkbox" value="b"> <span><code>wd:Q113745 (film)</code> — invalid syntax, aise triple nahi likhte</span></label>
+<label class="lab-check"><input type="checkbox" value="c"> <span><code>wdt:director</code> naam ki property exist nahi karti (director = P57)</span></label>
+<label class="lab-check"><input type="checkbox" value="d"> <span><code>film</code> variable kahin bind hi nahi hua</span></label>
+<label class="lab-check"><input type="checkbox" value="e"> <span><code>PREFIX wdt:</code> wali line galat hai</span></label>
+</div>
+<div style="margin-top:12px"><button class="run-check" type="button" id="lab6-check">Check karo</button></div>
+<div class="lab-out" id="lab6-out" hidden><div class="lab-out-title">Nateeja</div><div class="lab-css" id="lab6-res"></div></div>
+</div>
+
+<div class="lab" data-lab="7">
+<div class="lab-head"><span class="lab-badge">LAB 7</span><span>Model selector — Theoros ke liye kaunsa model?</span></div>
+<p>Apni zarooratein chuno — lab book ke comparison table se ek recommendation dega.</p>
+<div class="lab-controls">
+<label>Context length chahiye
+<select class="lab-select" id="lab7-ctx">
+<option value="128">128K tak kaafi hai</option>
+<option value="256">256K+ chahiye</option>
+</select></label>
+<label>Offline / local chalana hai?
+<select class="lab-select" id="lab7-off">
+<option value="yes">Haan, local hi chahiye</option>
+<option value="no">Hosted bhi chalega</option>
+</select></label>
+<label>Tool use / agentic kaam?
+<select class="lab-select" id="lab7-tool">
+<option value="yes">Haan, tool use zaroori hai</option>
+<option value="no">Nahi, chat/summary kaafi hai</option>
+</select></label>
+</div>
+<div style="margin-top:4px"><button class="run-check" type="button" id="lab7-run">Recommend karo</button></div>
+<div class="lab-out" id="lab7-out" hidden><div class="lab-out-title">Recommendation</div><div class="lab-css" id="lab7-res"></div></div>
+</div>
+
+<div class="lab" data-lab="8">
+<div class="lab-head"><span class="lab-badge">LAB 8</span><span>Dataset size aur labeling cost estimator</span></div>
+<p>Book ke napkin estimate ko apne task par lagao: classes, examples per class aur seconds per label daalo.</p>
+<div class="lab-controls">
+<label>Classes (kitne subgenres)<input class="lab-input mono" id="lab8-classes" type="number" value="40" min="1"></label>
+<label>Examples per class (ideal)<input class="lab-input mono" id="lab8-per" type="number" value="100" min="1"></label>
+<label>Seconds per label<input class="lab-input mono" id="lab8-sec" type="number" value="12" min="1"></label>
+</div>
+<div style="margin-top:4px"><button class="run-check" type="button" id="lab8-run">Calculate karo</button></div>
+<div class="lab-out" id="lab8-out" hidden><div class="lab-out-title">Estimate</div><div class="lab-css" id="lab8-res"></div><p class="lab-note">Book ka usool: ideal size = classes × ~100 examples; minimum ~1,000. Labeling cost = examples × seconds per label. Stratified sampling se bias se bacho.</p></div>
+</div>
+
+</section>
+
+
+<section class="section" id="sec-faqs" data-title="Interview FAQs">
+<div class="sec-meta"><span class="num-chip">36</span><span class="sec-group">End Matter</span></div>
+<h1>Interview FAQs</h1>
+<p class="lead">SLMs, MCP, Ollama, metrics, benchmarks aur model selection par current-era interview me poochhe jaane wale sawaal — har jawab isi book se.</p>
+<div class="faq-list">
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q01</span> SLM aur LLM me asal farak kya hai?</span></summary><div class="faq-a">SLM (Small Language Model) chhota aur focused hota hai — ek khaas kaam, jaise query likhna ya classify karna, ke liye banta hai. LLM general hota hai — open-ended chatbot jaise kaam ke liye. SLM commodity machine par chalta hai, sasta hai, aur uske chhote tasks ko seedha measure kiya ja sakta hai. LLM zyada capable hai par mehenga aur bhaari hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q02</span> SLM kab use karna chahiye, LLM kab?</span></summary><div class="faq-a">Jab kaam well-defined aur constrained ho — jaise ek tool call karna, text ko query me badalna, ya classification — to SLM behtar hai: sasta, tez, local chal sakta hai. Jab kaam open-ended ho, jaise lambi creative writing ya broad reasoning, to LLM chahiye. Book ka usool: pehle task define karo, phir decide karo ki SLM kaafi hai ya LLM chahiye.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q03</span> Theoros project kya hai?</span></summary><div class="faq-a">Theoros poori book ka throughline project hai — movies dhoondhne, movies ke baare me seekhne aur movie-related tools chalane wala ek agentic system. Naam Greek shabd theoros se aaya hai (spectator/envoy). Movies isliye chune gaye kyunki data public hai, domain knowledge nahi chahiye, aur data ka mix milta hai — structured, free-text, aur aage non-text bhi.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q04</span> Miniconda kyun chahiye? pip se kaam nahi chalega?</span></summary><div class="faq-a">Miniconda sirf Python packages nahi, poora environment manage karta hai — Python version samet. Is book me Python 3.12 ka alag environment (slmbook) banta hai taaki project ki dependencies system Python se takraayein nahi. pip packages install karta hai, par environment isolation aur non-Python dependencies ke liye conda behtar hai. Sirf Google Colab use karne walon ko Miniconda nahi chahiye.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q05</span> conda environment alag kyun banate hain?</span></summary><div class="faq-a">Alag environment se har project ki dependencies alag rehti hain — ek project ka numpy version doosre ko todta nahi. Book me `conda create --name slmbook python=3.12` se environment banta hai aur `conda activate slmbook` se use karte hain. Book ke repo me YAML file bhi hai jisse environment ek command me setup ho jata hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q06</span> Python Data Science Stack me kaunsi libraries hain aur kyun?</span></summary><div class="faq-a">NumPy (arrays/matrices), SciPy (scientific algorithms), pandas (data frame/series), Matplotlib (plotting), scikit-learn (ML algorithms aur metrics), Jupyter (notebooks). Inke alawa NLTK (NLP algorithms) aur NetworkX (graphs) bhi use hongi. Ye stack isliye kyunki data ko load, analyze aur measure karne ke liye yahi neev hai — SLM ke aas-paas ka saara kaam inhi se hota hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q07</span> MCP kya hai? Ye framework hai ya protocol?</span></summary><div class="faq-a">Dono. MCP (Model Context Protocol) ek open-source standard hai jo AI applications ko external systems se jodta hai — ye protocol hai. Saath me MCP servers aur clients banane wali library ko bhi MCP kehte hain. Isse prompts, tools aur data organize karne ka standard tareeka milta hai aur boilerplate kam ho jata hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q08</span> MCP aur normal API call me kya farak hai?</span></summary><div class="faq-a">Normal API call me tum har tool ke liye alag code likhte ho. MCP me tools, prompts aur data ek standard structure me organize hote hain — ek baar MCP server ban gaya to koi bhi MCP-compatible application use istemal kar sakti hai. Matlab integration ka kaam ek baar, fayda har jagah. Isi liye Theoros pehle simple MCP client se test hoga.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q09</span> LiteLLM kyun use karte hain?</span></summary><div class="faq-a">LiteLLM alag-alag providers ke models ko ek hi interface se call karne deta hai — model badlo, code wahi rahe. Kuch models ke paas OpenAI-compatible API nahi hoti, LiteLLM un tak bhi pahuncha deta hai. Iska Proxy Server deployment me custom behavior aur secrets management bhi sambhalta hai. Install `pip install litellm` se hoti hai kyunki ye mainline conda repo me nahi hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q10</span> OpenRouter kya hai aur kab use karein?</span></summary><div class="faq-a">OpenRouter ek platform hai jahan ek hi API key se bahut saare hosted models milte hain. Is book me iska use local models ko hosted models se compare karne ke liye hai. Agar security ya privacy ki chinta nahi hai aur local run nahi kar sakte, to OpenRouter ek viable option hai — aur LiteLLM se local se hosted par switch karna sirf ek chhota config change hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q11</span> Docker kyun chahiye? Bina Docker ke nahi chalega?</span></summary><div class="faq-a">Docker containers me Ollama ya vector database jaise servers bina system par install kiye chalaye ja sakte hain — environment clean rehta hai aur setup repeatable hota hai. Bina Docker bhi chal sakta hai (Ollama seedha install karke), par book ka setup Docker par hai. Sirf Google Colab use karne walon ko Docker install nahi karna hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q12</span> LibreChat kya hai? Claude Desktop se behtar kyun?</span></summary><div class="faq-a">LibreChat ek open-source chat application hai jisse apni application ko asli chat scenario me test kar sakte ho. Claude Desktop me MCP integration hai, par wo Anthropic models ke liye bana hai. LibreChat kisi ek model family se bandha nahi hai aur isme bhi MCP integration hai — isliye is book me yahi chuna gaya. Ye localhost:3080 par chalta hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q13</span> Ollama kya karta hai?</span></summary><div class="faq-a">Ollama language models ko locally chalane ka framework hai aur unhe OpenAI-compatible API ke through available karata hai. Is book me Ollama Docker container me chalta hai (port 11434). LiteLLM se `api_base="http://localhost:11434"` aur `model="ollama_chat/llama3"` likh kar local model ko call karte hain — bina kisi hosted API ke.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q14</span> Ollama aur OpenRouter me kya farak hai?</span></summary><div class="faq-a">Ollama models ko tumhari apni machine par chalata hai — data bahar nahi jata, cost nahi hai, par GPU/hardware chahiye. OpenRouter hosted models deta hai — hardware nahi chahiye, par data bahar jata hai aur API cost lagti hai. Book me dono hain: local kaam Ollama se, comparison ke liye hosted OpenRouter se.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q15</span> Wikipedia data RAG ke liye kaise use hota hai?</span></summary><div class="faq-a">Wikipedia articles ko RAG (Retrieval Augmented Generation) system ke context ke roop me use karte hain — model sawaal ka jawab dene se pehle relevant articles padhta hai. Theoros me Wikipedia se movie attributes aur relationships bhi nikaale jayenge. Individual articles ke liye Wikipedia search wala MCP agent use hoga; poora dump dumps.wikimedia.org se milta hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q16</span> Wikidata kya hai? RDF triple kya hota hai?</span></summary><div class="faq-a">Wikidata ek RDF knowledge graph hai. Data semantic triples me hota hai: subject–predicate–object. Har entity ek URI hoti hai, predicate bhi URI hota hai (relationship batata hai), aur values ke liye literals hote hain. Do tarah: truthy triples (entity–predicate–entity) aur properties (entity–predicate–value). Isse bina information extraction ke relationships aur properties mil jati hain.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q17</span> SPARQL kya hai aur Wikidata par query kaise likhte hain?</span></summary><div class="faq-a">SPARQL RDF data ko query karne ki language hai — jaise SQL relational data ke liye hota hai, waise SPARQL knowledge graphs ke liye. Theoros me director dhoondhne ke liye SPARQL query chahiye thi, aur book ke example me model ne galat SPARQL likha — kyunki SPARQL internet par kam hai aur model ne use zyada dekha nahi. Isi liye measurement zaroori hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q18</span> Hugging Face se dataset kaise download karte hain?</span></summary><div class="faq-a">Hugging Face client library se: `conda install -c huggingface -c conda-forge datasets` aur `huggingface_hub[cli]` install karo, account setup karo, phir datasets search karke download karo. Hugging Face par models ka version control, dataset leaderboards aur model hosting bhi milta hai — task-specific datasets measure karne ke liye ye sabse achha source hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q19</span> Kaggle datasets ko API se kyun nahi download karte?</span></summary><div class="faq-a">Kaggle par har dataset ki licensing aur access requirements alag ho sakti hain — kuch datasets ke liye alag terms accept karne hote hain. Isliye book me API ke bajaye manually download karne ki salah di gayi hai. Kaggle account setup chahiye, aur platform par datasets, models aur notebook-based development sab milta hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q20</span> MAE, MSE, RMSE me kya farak hai? Kab kaunsa?</span></summary><div class="faq-a">Teeno regression metrics error term par based hain. MAE error ke absolute value ka mean hai — bade aur chhote errors ko barabar tolta hai. MSE error ke square ka mean hai — bade errors ko zyada saza deta hai. RMSE MSE ka square root hai — metric wapas original unit me aa jati hai, isliye samajhna aasan hota hai. Outliers se bachna ho to MAE, bade errors par sakhti chahiye to MSE/RMSE.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q21</span> R² kya batata hai?</span></summary><div class="faq-a">R² = 1 − MSE / VAR[Y]. Ye batata hai ki model target variable ki variance ka kitna hissa samjha paya. R² = 1 matlab perfect fit, 0 matlab model sirf mean predict karne jitna achha hai. Negative R² ka matlab model mean se bhi bura hai. Ye ek relative metric hai — do models ko compare karne me kaam aata hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q22</span> Precision aur recall me kya farak hai? Dono kab matter karte hain?</span></summary><div class="faq-a">Precision = TP / (TP + FP): positive predictions me se kitni sahi thi — prediction ki reliability. Recall = TP / (TP + FN): asal positives me se kitne pakde gaye — pakadne ki likelihood. Spam filter me precision matter karta hai (galat spam tag mehenga hai), aur cancer detection me recall (miss karna mehenga hai). Dono ke beech trade-off hota hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q23</span> F-score kya hai? Harmonic mean hi kyun?</span></summary><div class="faq-a">F-score precision aur recall ka harmonic mean hai. Harmonic mean isliye kyunki ye chhoti value ko zyada saza deta hai — agar precision 0.9 aur recall 0.1 hai, to simple average 0.5 hota, par harmonic mean ~0.18 hota hai, jo sahi tasveer deta hai. Jab ek hi number se model judge karna ho to F-score use karte hain.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q24</span> AUC 0.5 ka matlab kya hai?</span></summary><div class="faq-a">AUC ROC curve ke neeche ka area hai. Coin flip karke decide karoge to AUC 0.5 milega — matlab model me koi predictive power nahi hai. 0.5 se upar hona predictive power ki pehli nishani hai, aur 1.0 perfect hai. AUC threshold-independent metric hai, isliye alag-alag thresholds par compare karne me useful hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q25</span> Cross-entropy kya hai? &#x27;Surprise&#x27; se kya matlab?</span></summary><div class="faq-a">Cross-entropy ek distribution ka doosri distribution se surprise hai: H(p, q) = Σ p_i log q_i. Model ne kisi context ke liye tokens ki distribution seekhi hai; asli token aane par model kitna surprised hota hai, wahi loss hai. Sahi token ko 90% probability de to surprise kam, 1% de to surprise bahut zyada. Training me isi loss ko minimize karte hain.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q26</span> SFT kya hai? Pre-training se kaise alag hai?</span></summary><div class="faq-a">Pre-training me model sirf sahi sequence banana seekhta hai. SFT (Supervised Fine-Tuning) me model labeled sequences se behtar aur useful sequences banana seekhta hai — jaise instruction follow karna. Dono me cross-entropy loss hi use hota hai kyunki dono wahi network update karte hain. SFT kamzor ho to outputs ki quality girti hai aur har task kharab hota hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q27</span> RLHF aur DPO me kya farak hai?</span></summary><div class="faq-a">RLHF me pehle human feedback se reward model seekhte hain, phir reinforcement learning se model optimize karte hain. DPO (Direct Preference Optimization) reinforcement learning ke bajaye supervised learning use karta hai — reward model seekhne ki zaroorat hi nahi padti, isliye zyada efficient aur simple hai. Dono ka goal ek hi hai: model ko human preferences aur safety rules se align karna.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q28</span> Task-specific metric kyun zaroori hai? General benchmark kaafi kyun nahi?</span></summary><div class="faq-a">General benchmarks jaise MMLU-Pro model ki baseline quality batate hain, par tumhara use-case usse alag ho sakta hai. Theoros me movie subgenre assign karna hai — iske liye per-label F-score chahiye, MMLU-Pro nahi. SLMs ke tasks chhote aur focused hote hain, isliye unhe classic ML metrics se seedha measure karna behtar hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q29</span> MMLU-Pro kya hai? MMLU se kaise alag hai?</span></summary><div class="faq-a">MMLU-Pro Massive Multitask Language Understanding ka augmented version hai. MMLU alag domains ke multiple-choice questions ka set hai. MMLU-Pro is dataset ko 12,000 questions aur 10 answer choices tak badhata hai, aur zyada reasoning-mangne wale questions rakhta hai. Ye model ki general reasoning aur Q&A capability test karta hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q30</span> GPQA kya test karta hai?</span></summary><div class="faq-a">GPQA physics, chemistry aur biology me 448 multiple-choice questions ka benchmark hai. Questions is tarah design kiye gaye hain ki experts (PhD students) ke liye bhi mushkil hon. Ye model ki scientific reasoning dikhata hai. Theoros jaise movie use-case ke liye ye seedha relevant nahi hai, par baseline ke roop me useful hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q31</span> HELM kya hai aur ye doosre benchmarks se kaise alag hai?</span></summary><div class="faq-a">HELM Stanford CRFM ka project hai jo foundational models ko evaluate karta hai. Inki website par leaderboards hain jinme MMLU-Pro aur GPQA bhi shamil hain. HELM me multi-modal models aur domain-specific models ke benchmarks bhi hain — isliye ek hi jagah kai benchmarks ka comparison mil jata hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q32</span> Custom dataset banate waqt pehla step kya hota hai?</span></summary><div class="faq-a">Pehla step hai task ko clearly define karna — kya predict karna hai, label set kya hai, metric kya hogi, columns kya chahiye, aur kitna data chahiye. Theoros ke example me: subgenre classification, label set film academy article se, genres Wikidata se, synopses Wikipedia se, metric per-label F-score aur macro-average F-score, ideal size 3,000–6,000.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q33</span> Human labeling itni mehengi kyun hai? Cost kaise kam karein?</span></summary><div class="faq-a">Har task me 10–15 seconds lagte hain — poora dataset label karne me 100–140 hours. Cost kam karne ke tareeke: task ko confirmation task banao (prediction confirm karna), preference dataset banao, sirf few thousand examples label karo (10–14 hours), aur sample ko genre ke hisaab se stratify karo taaki bias na aaye. Har nayi functionality par ye cost phir se lagti hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q34</span> LLM-as-a-Judge kya hai? Is par bharosa kaise karein?</span></summary><div class="faq-a">LLM-as-a-Judge me ek language model doosre model ke outputs ko judge karta hai — isse human labels kam ya zero ho jate hain. Bharosa karne ke liye methodology validate karni hoti hai: golden labels wala data chahiye, ya judge ke judgments ka balanced sample human se check karwana hota hai. Judge SLM bhi ho sakta hai, bas judging task ko actual task se clearly alag rakho.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q35</span> Qwen3-4B, Llama-3.2-3B aur Phi-4-mini me se kaunsa chunoon?</span></summary><div class="faq-a">Tool use aur agentic kaam (Theoros) ke liye Qwen3-4B — 262K context aur sabse strong scores (MMLU-Pro 69.6, GPQA 62.0). Chat aur summarization ke liye Llama-3.2-3B — isi ke liye design hua hai. Phi-4-mini synthetic-data experiment aur building-block ke liye achha hai. Aakhir me apne task ka apna dataset aur metric hi faisla karega — benchmark sirf baseline hai.</div></details>
+<details class="faq" data-faq="1"><summary><span class="faq-q"><span class="faq-num">Q36</span> gpt-oss-20b ke 21B parameters hone ke bawjood 3.6B active ka matlab kya hai?</span></summary><div class="faq-a">gpt-oss-20b Mixture-of-Experts (MoE) model hai: total 21B parameters hain, par har token ke liye router 32 experts me se sirf top-4 select karta hai — isliye har token par sirf 3.6B parameters active hote hain. Fayda: zyada learned parameters ka gyaan, bina zyada compute cost ke. Isi liye MoE models bade hokar bhi efficiently chalte hain.</div></details>
+</div>
+</section>
+
+
+<section class="section" id="sec-sources" data-title="Sources">
+<div class="sec-meta"><span class="num-chip">12</span><span class="sec-group">End Matter</span></div>
+<h1>Sources</h1>
+<p class="lead">Book ke citations (Chapter 2 ke ant me diye gaye 12 references) aur har section ki Source line me use hui URLs. Publisher: O&rsquo;Reilly Media, Inc.</p>
+<h3>Book ke citations</h3>
+<ul class="src-list">
+<li><span class="src-num">01</span><a href="https://archive.org/details/etymological-dictionary-of-greek_202306/page/537/mode/2up">https://archive.org/details/etymological-dictionary-of-greek_202306/page/537/mode/2up</a></li>
+<li><span class="src-num">02</span><a href="https://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0057:entry=qewro/s">https://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0057:entry=qewro/s</a></li>
+<li><span class="src-num">03</span><a href="https://www.anaconda.com/docs/getting-started/miniconda/install#linux-2">https://www.anaconda.com/docs/getting-started/miniconda/install#linux-2</a></li>
+<li><span class="src-num">04</span><a href="https://modelcontextprotocol.io/docs/getting-started/intro">https://modelcontextprotocol.io/docs/getting-started/intro</a></li>
+<li><span class="src-num">05</span><a href="https://docs.docker.com/desktop/setup/install/linux/ubuntu/">https://docs.docker.com/desktop/setup/install/linux/ubuntu/</a></li>
+<li><span class="src-num">06</span><a href="https://docs.docker.com/desktop/setup/install/windows-install/">https://docs.docker.com/desktop/setup/install/windows-install/</a></li>
+<li><span class="src-num">07</span><a href="https://www.librechat.ai/docs/local/docker">https://www.librechat.ai/docs/local/docker</a></li>
+<li><span class="src-num">08</span><a href="https://docs.ollama.com/">https://docs.ollama.com/</a></li>
+<li><span class="src-num">09</span><a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">https://www.wikidata.org/wiki/Wikidata:Main_Page</a></li>
+<li><span class="src-num">10</span><a href="https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/queries">https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/queries</a></li>
+<li><span class="src-num">11</span><a href="https://huggingface.co/">https://huggingface.co/</a></li>
+<li><span class="src-num">12</span><a href="https://www.kaggle.com/">https://www.kaggle.com/</a></li>
+</ul>
+<h3>Sections ki Source URLs (alag-alag)</h3>
+<p>Har section ki Source line me inme se ek URL hai: O&rsquo;Reilly Media (book), Anaconda docs, MCP docs, Docker docs, LibreChat docs, Ollama docs, Wikimedia dumps, Wikidata, Hugging Face — kul <strong>9 alag source URLs</strong>.</p>
+<div class="note">Citation me diye gaye vyaktiyon ke naam is SPA me nahi likhe gaye hain — sirf kaam (title/publisher) aur URL diye gaye hain.</div>
+</section>
+
+
+<section class="section" id="sec-trust" data-title="Trust Check">
+<div class="sec-meta"><span class="num-chip">CHECK</span><span class="sec-group">End Matter</span></div>
+<h1>Trust Check</h1>
+<p class="lead">Ye page khud gin kar batata hai ki is SPA me kya-kya hai. Neeche wala button dabao — ye live page ko scan karke PASS ya FAIL deta hai.</p>
+<div class="tc-cards">
+<div class="tc-card"><div class="tc-num" id="tc-sections">&ndash;</div><div class="tc-lbl">Sections</div></div>
+<div class="tc-card"><div class="tc-num" id="tc-sidebar">&ndash;</div><div class="tc-lbl">Sidebar entries</div></div>
+<div class="tc-card"><div class="tc-num" id="tc-sources">&ndash;</div><div class="tc-lbl">Source boxes</div></div>
+<div class="tc-card"><div class="tc-num" id="tc-urls">&ndash;</div><div class="tc-lbl">Alag source URLs</div></div>
+<div class="tc-card"><div class="tc-num" id="tc-faqs">&ndash;</div><div class="tc-lbl">Interview FAQs</div></div>
+<div class="tc-card"><div class="tc-num" id="tc-labs">&ndash;</div><div class="tc-lbl">Interactive labs</div></div>
+<div class="tc-card"><div class="tc-num" id="tc-figs">&ndash;</div><div class="tc-lbl">Figures</div></div>
+</div>
+<button class="run-check" type="button" id="run-check">Self-check chalao</button>
+<div class="check-result" id="check-result" hidden></div>
+<h3>Cross-check — book ke chapters vs SPA sections</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Book chapter</th><th>PDF me</th><th>SPA sections</th><th>Status</th></tr></thead><tbody>
+<tr><td>Ch 1: Language Models</td><td class="tc-n">Nahi</td><td class="tc-n">0</td><td>NOT IN SOURCE</td></tr>
+<tr><td>Ch 2: Getting Started</td><td class="tc-n">Haan</td><td class="tc-n">17</td><td class="tc-ok">COVERED</td></tr>
+<tr><td>Ch 3: Selecting the Right Small Language Model</td><td class="tc-n">Haan</td><td class="tc-n">19</td><td class="tc-ok">COVERED</td></tr>
+<tr><td>Ch 4: Agentic Applications with MCP</td><td class="tc-n">Nahi</td><td class="tc-n">0</td><td>NOT IN SOURCE</td></tr>
+<tr><td>Ch 5: Agentic Application with Multiple SLMs</td><td class="tc-n">Nahi</td><td class="tc-n">0</td><td>NOT IN SOURCE</td></tr>
+<tr><td>Ch 6: Testing and Compliance</td><td class="tc-n">Nahi</td><td class="tc-n">0</td><td>NOT IN SOURCE</td></tr>
+<tr><td>Ch 7: Deployment</td><td class="tc-n">Nahi</td><td class="tc-n">0</td><td>NOT IN SOURCE</td></tr>
+<tr><td>Ch 8: Monitoring</td><td class="tc-n">Nahi</td><td class="tc-n">0</td><td>NOT IN SOURCE</td></tr>
+<tr><td><strong>Total</strong></td><td class="tc-n"><strong>2 / 8</strong></td><td class="tc-n"><strong>36</strong></td><td class="tc-ok">COVERED (jo available tha)</td></tr>
+</tbody></table></div>
+<h3>Imaandari se — jo is SPA me nahi hai</h3>
+<ul class="oos">
+<li><strong>6 chapters (1, 4, 5, 6, 7, 8)</strong> is Early Release PDF me hain hi nahi — inhe invent karke bharna galat hota, isliye inke sections nahi banaye gaye.</li>
+<li><strong>Figures: 0.</strong> PDF me koi content figure nahi hai — sirf cover image (author ka naam pixels me hai, isliye embed nahi ki) aur publisher logo hain. Confusion matrix aur JupyterLab screenshot PDF me sirf text placeholders hain ([confusion matrix image], [screenshot of jupyterlab]) — confusion matrix ko section 20 me live table ke roop me banaya gaya hai.</li>
+<li><strong>gpt-oss-20b ka MMLU-Pro number</strong> book me diya hi nahi gaya hai — isliye comparison table me blank chhoda gaya hai, invent nahi kiya.</li>
+<li><strong>Index / appendices</strong> is Early Release PDF me nahi hain.</li>
+<li>Repo ka clone URL (LibreChat) code block me asal URL ke saath diya gaya hai taaki command kaam kare — ye ek functional URL hai, kisi vyakti ka naam nahi.</li>
+</ul>
+</section>
+
+</div>
+</main>
+<nav id="bottomnav">
+<a href="#/home"><b>⌂</b>Home</a>
+<a href="#/labs"><b>⚗</b>Labs</a>
+<a href="#/faqs"><b>?</b>FAQs</a>
+<a href="#/trust"><b>✓</b>Trust</a>
+</nav>
+<script>
+
+"use strict";
+var sections = Array.prototype.slice.call(document.querySelectorAll(".section"));
+var links = Array.prototype.slice.call(document.querySelectorAll(".sb-link"));
+var byId = {};
+sections.forEach(function(s){ byId[s.id.replace("sec-","")] = s; });
+var order = sections.map(function(s){ return s.id.replace("sec-",""); });
+var sidebar = document.getElementById("sidebar");
+var scrim = document.getElementById("scrim");
+function closeDrawer(){ sidebar.classList.remove("open"); scrim.classList.remove("on"); }
+document.getElementById("menu-btn").addEventListener("click", function(){
+  var open = sidebar.classList.toggle("open"); scrim.classList.toggle("on", open);
+});
+scrim.addEventListener("click", closeDrawer);
+function show(slug){
+  if(!byId[slug]) slug = "home";
+  sections.forEach(function(s){ s.hidden = s.id !== "sec-" + slug; });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  var act = document.querySelector('.sb-link[data-nav="' + slug + '"]');
+  if(act && window.innerWidth > 900){ act.scrollIntoView({block:"nearest"}); }
+  var idx = order.indexOf(slug);
+  document.getElementById("progress-bar").style.width = (order.length > 1 ? (idx/(order.length-1))*100 : 0) + "%";
+  var tb = document.getElementById("tb-current");
+  if(tb){ var sec = byId[slug]; tb.textContent = sec ? (sec.getAttribute("data-title") || "Hands-On Small Language Models") : "Hands-On Small Language Models"; }
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+function route(){
+  var h = location.hash.replace(/^#\/?/, "");
+  show(h || "home");
+}
+window.addEventListener("hashchange", route);
+var search = document.getElementById("sb-search-input");
+search.addEventListener("input", function(){
+  var q = search.value.trim().toLowerCase();
+  links.forEach(function(a){
+    var hay = a.getAttribute("data-search") || "";
+    a.classList.toggle("hidden", q !== "" && hay.indexOf(q) === -1);
+  });
+  document.querySelectorAll(".sb-group").forEach(function(g){
+    var any = g.querySelector(".sb-link:not(.hidden)");
+    g.style.display = any ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); search.focus(); if(window.innerWidth<=900){ sidebar.classList.add("open"); scrim.classList.add("on"); } }
+});
+route();
+
+/* ---------- Lab 1: conda order ---------- */
+var LAB1_CORRECT = ["s1","s2","s3","s4","s5"];
+var lab1Chosen = [];
+function lab1Render(){
+  var box = document.getElementById("lab1-steps");
+  var defs = [
+    ["s3","conda init --all"],
+    ["s1","mkdir + wget — Miniconda installer download karo"],
+    ["s5","conda activate slmbook"],
+    ["s2","bash miniconda.sh — install karo"],
+    ["s4","conda create --name slmbook python=3.12"]
+  ];
+  box.innerHTML = "";
+  defs.forEach(function(d){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip-btn"; b.textContent = d[1];
+    b.setAttribute("data-step", d[0]);
+    b.addEventListener("click", function(){
+      if(lab1Chosen.indexOf(d[0]) !== -1) return;
+      lab1Chosen.push(d[0]);
+      b.classList.add("on");
+      document.getElementById("lab1-order").textContent = lab1Chosen.join(" → ");
+    });
+    box.appendChild(b);
+  });
+}
+lab1Render();
+document.getElementById("lab1-check").addEventListener("click", function(){
+  var out = document.getElementById("lab1-out"), res = document.getElementById("lab1-res");
+  out.hidden = false;
+  var ok = lab1Chosen.length === 5 && lab1Chosen.every(function(v,i){ return v === LAB1_CORRECT[i]; });
+  res.textContent = ok
+    ? "Sahi order! 1) download, 2) install, 3) conda init, 4) environment banao, 5) activate. Ab libraries install karo."
+    : "Abhi galat hai. Sahi order: download → install → conda init → conda create → conda activate. Reset karke dobara try karo.";
+});
+document.getElementById("lab1-reset").addEventListener("click", function(){
+  lab1Chosen = [];
+  document.getElementById("lab1-order").textContent = "(abhi kuch nahi)";
+  document.getElementById("lab1-out").hidden = true;
+  document.querySelectorAll("#lab1-steps .chip-btn").forEach(function(b){ b.classList.remove("on"); });
+});
+
+/* ---------- Lab 2: regression metrics ---------- */
+function lab2Parse(v){
+  return v.split(",").map(function(x){ return parseFloat(x.trim()); }).filter(function(x){ return !isNaN(x); });
+}
+document.getElementById("lab2-run").addEventListener("click", function(){
+  var a = lab2Parse(document.getElementById("lab2-actual").value);
+  var p = lab2Parse(document.getElementById("lab2-pred").value);
+  var out = document.getElementById("lab2-out"), res = document.getElementById("lab2-res");
+  out.hidden = false;
+  if(a.length === 0 || p.length === 0 || a.length !== p.length){
+    res.textContent = "Dono lists me barabar aur valid numbers hone chahiye (comma se alag karke likho).";
+    return;
+  }
+  var n = a.length, mae = 0, mse = 0, mean = 0, i;
+  for(i=0;i<n;i++){ mean += a[i]; }
+  mean /= n;
+  var varY = 0;
+  for(i=0;i<n;i++){ var e = a[i]-p[i]; mae += Math.abs(e); mse += e*e; varY += (a[i]-mean)*(a[i]-mean); }
+  mae /= n; mse /= n; varY /= n;
+  var rmse = Math.sqrt(mse);
+  var r2 = varY === 0 ? 0 : 1 - mse/varY;
+  res.textContent = "n = " + n + "\nMAE  = " + mae.toFixed(4) + "\nMSE  = " + mse.toFixed(4) + "\nRMSE = " + rmse.toFixed(4) + "\nR²   = " + r2.toFixed(4) + "\n\nYaad rakho: MAE bade/chhote errors ko barabar tolta hai, MSE bade errors ko zyada saza deta hai, RMSE wapas original unit me aa jata hai.";
+});
+
+/* ---------- Lab 3: confusion matrix ---------- */
+function lab3Run(){
+  function num(id){ var v = parseFloat(document.getElementById(id).value); return isNaN(v) || v < 0 ? 0 : v; }
+  var tp = num("lab3-tp"), fp = num("lab3-fp"), fn = num("lab3-fn"), tn = num("lab3-tn");
+  document.getElementById("lab3-c-tp").textContent = tp;
+  document.getElementById("lab3-c-fp").textContent = fp;
+  document.getElementById("lab3-c-fn").textContent = fn;
+  document.getElementById("lab3-c-tn").textContent = tn;
+  var prec = (tp+fp) === 0 ? 0 : tp/(tp+fp);
+  var rec = (tp+fn) === 0 ? 0 : tp/(tp+fn);
+  var f1 = (prec+rec) === 0 ? 0 : 2*prec*rec/(prec+rec);
+  var acc = (tp+fp+fn+tn) === 0 ? 0 : (tp+tn)/(tp+fp+fn+tn);
+  document.getElementById("lab3-res").textContent = "Precision = " + prec.toFixed(3) + "  (TP / (TP+FP))\nRecall    = " + rec.toFixed(3) + "  (TP / (TP+FN))\nF1-score  = " + f1.toFixed(3) + "  (precision aur recall ka harmonic mean)\nAccuracy  = " + acc.toFixed(3) + "  ((TP+TN) / total)";
+}
+["lab3-tp","lab3-fp","lab3-fn","lab3-tn"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", lab3Run);
+});
+lab3Run();
+
+/* ---------- Lab 4: cross-entropy ---------- */
+function lab4Run(){
+  var q = parseFloat(document.getElementById("lab4-q").value);
+  document.getElementById("lab4-qval").textContent = q.toFixed(2);
+  var bits = -Math.log2(q), nats = -Math.log(q);
+  document.getElementById("lab4-res").textContent = "q = " + q.toFixed(2) + "\nSurprise = " + bits.toFixed(2) + " bits  (−log₂ q)\n         = " + nats.toFixed(2) + " nats (−ln q)\n\n" + (q >= 0.9 ? "Model confident hai — surprise bahut kam." : q >= 0.5 ? "Model aadha sure hai — surprise medium." : "Model ko ye token bilkul expected nahi tha — surprise bahut zyada. Training me cross-entropy isi surprise ko kam karti hai.");
+}
+document.getElementById("lab4-q").addEventListener("input", lab4Run);
+document.querySelectorAll("[data-q]").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.getElementById("lab4-q").value = b.getAttribute("data-q");
+    lab4Run();
+  });
+});
+lab4Run();
+
+/* ---------- Lab 5: LiteLLM call builder ---------- */
+function lab5Run(){
+  var model = document.getElementById("lab5-model").value;
+  var temp = document.getElementById("lab5-temp").value;
+  var prompt = document.getElementById("lab5-prompt").value.replace(/"/g, "'");
+  document.getElementById("lab5-tval").textContent = temp;
+  var apiBase = model.indexOf("ollama_chat") === 0 ? ',\n    api_base="http://localhost:11434"' : "";
+  var code = "from litellm import completion\n\nresponse = completion(\n    model=\"" + model + "\",\n    messages=[{\n        \"content\": \"" + prompt + "\",\n        \"role\": \"user\"\n    }],\n    temperature=" + temp + apiBase + "\n)\n\nprint(response.choices[0][\"message\"].content)";
+  document.getElementById("lab5-out").hidden = false;
+  document.getElementById("lab5-res").textContent = code;
+  document.getElementById("lab5-note").textContent = model.indexOf("ollama_chat") === 0
+    ? "Local model hai — Ollama container chal raha hona chahiye (docker ps se check karo). Temperature 0.1 factual kaam ke liye, zyada creative kaam ke liye badhao."
+    : "Hosted model hai — OpenRouter API key chahiye hogi. LiteLLM se local se hosted par switch karna sirf model string badalne jitna hai.";
+}
+document.getElementById("lab5-run").addEventListener("click", lab5Run);
+document.getElementById("lab5-temp").addEventListener("input", function(){
+  document.getElementById("lab5-tval").textContent = document.getElementById("lab5-temp").value;
+});
+
+/* ---------- Lab 6: SPARQL bug hunt ---------- */
+document.getElementById("lab6-check").addEventListener("click", function(){
+  var picked = [];
+  document.querySelectorAll("#lab6-opts input[type=checkbox]:checked").forEach(function(c){ picked.push(c.value); });
+  var correct = ["a","b","c","d"];
+  var out = document.getElementById("lab6-out"), res = document.getElementById("lab6-res");
+  out.hidden = false;
+  var missed = correct.filter(function(x){ return picked.indexOf(x) === -1; });
+  var wrong = picked.filter(function(x){ return correct.indexOf(x) === -1; });
+  var lines = [];
+  if(missed.length === 0 && wrong.length === 0){
+    lines.push("Bilkul sahi! Chaaro bugs pakde:");
+  } else {
+    lines.push("Abhi poora nahi hua.");
+    if(missed.length) lines.push("Chhoote hue bugs: " + missed.join(", "));
+    if(wrong.length) lines.push("Galat tick: " + wrong.join(", ") + " — PREFIX wdt wali line sahi hai (wdt: prop/direct/ ka prefix hota hai).");
+  }
+  lines.push("");
+  lines.push("a) wd: prefix define hi nahi hua — query me wd: use hua par PREFIX sirf wdt: ka hai.");
+  lines.push("b) wd:Q113745 (film) — invalid syntax; triple aise nahi likhte.");
+  lines.push("c) wdt:director property exist nahi karti — director ke liye wdt:P57 hoti hai.");
+  lines.push("d) film variable kahin bind nahi hua — use subject banane se pehle bind karna hota.");
+  lines.push("");
+  lines.push("Seekh: SPARQL model ne zyada dekha nahi, isliye guess kiya — aur guess galat nikla. Isi liye measurement zaroori hai.");
+  res.textContent = lines.join("\n");
+});
+
+/* ---------- Lab 7: model selector ---------- */
+document.getElementById("lab7-run").addEventListener("click", function(){
+  var ctx = document.getElementById("lab7-ctx").value;
+  var off = document.getElementById("lab7-off").value;
+  var tool = document.getElementById("lab7-tool").value;
+  var out = document.getElementById("lab7-out"), res = document.getElementById("lab7-res");
+  out.hidden = false;
+  if(ctx === "256"){
+    res.textContent = "Recommendation: Qwen3-4B-Instruct-2507\n\nKyun: is comparison me sirf isi ka context 262K hai. MMLU-Pro 69.6 aur GPQA 62.0 — open models me sabse strong scores. Tool use aur agentic systems ke liye design hua hai.";
+  } else if(tool === "yes"){
+    res.textContent = "Recommendation: Qwen3-4B-Instruct-2507\n\nKyun: tool use aur agentic kaam ke liye design hua hai, 262K context ke saath. Theoros jaise project ke liye yahi pehli pasand hai — chahe context 128K me bhi aa jaye.";
+  } else if(off === "yes"){
+    res.textContent = "Recommendation: Llama-3.2-3B\n\nKyun: chat aur summarization ke liye design hua, local chal sakta hai, 128K context. MMLU 63.4, GPQA 32.8. Tool use nahi chahiye to ye simple aur reliable pasand hai.";
+  } else {
+    res.textContent = "Recommendation: Llama-3.2-3B (open, local)\n\nKyun: hosted bhi chalega, par open model se shuru karna behtar hai — local chalao, measure karo, phir decide karo. Ceiling dekhna ho to GPT-5-mini (closed, MMLU-Pro 78) se compare karo — par wo reference point hai, deployment nahi.";
+  }
+});
+
+/* ---------- Lab 8: dataset estimator ---------- */
+document.getElementById("lab8-run").addEventListener("click", function(){
+  var classes = Math.max(1, parseInt(document.getElementById("lab8-classes").value, 10) || 1);
+  var per = Math.max(1, parseInt(document.getElementById("lab8-per").value, 10) || 1);
+  var sec = Math.max(1, parseInt(document.getElementById("lab8-sec").value, 10) || 1);
+  var ideal = classes * per;
+  var min = 1000;
+  var hoursIdeal = (ideal * sec / 3600).toFixed(1);
+  var hoursFew = (3000 * sec / 3600).toFixed(1);
+  var out = document.getElementById("lab8-out"), res = document.getElementById("lab8-res");
+  out.hidden = false;
+  res.textContent = "Classes: " + classes + " × " + per + " examples\nIdeal dataset size: " + ideal.toLocaleString("en-IN") + " examples\nMinimum (book): " + min.toLocaleString("en-IN") + " examples\n\nLabeling cost (ideal size): " + hoursIdeal + " hours\nLabeling cost (sirf 3,000 examples): " + hoursFew + " hours\n\nBook ka usool: poora dataset label karna 100–140 hours le sakta hai — isliye few thousand examples label karo aur genre ke hisaab se stratify karo.";
+});
+
+/* ---------- Trust Check ---------- */
+function count(sel){ return document.querySelectorAll(sel).length; }
+function refreshCounts(){
+  var docs = document.querySelectorAll('[data-doc="1"]');
+  var urls = {}; docs.forEach(function(d){ urls[d.getAttribute("data-url")] = true; });
+  var set = function(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; };
+  set("tc-sections", docs.length);
+  set("tc-sidebar", document.querySelectorAll(".sb-link[data-nav]").length);
+  set("tc-sources", count('[data-doc="1"] .source-box'));
+  set("tc-urls", Object.keys(urls).length);
+  set("tc-faqs", count("[data-faq]"));
+  set("tc-labs", count("[data-lab]"));
+  set("tc-figs", count("img.fig"));
+}
+refreshCounts();
+var runBtn = document.getElementById("run-check");
+if(runBtn){ runBtn.addEventListener("click", function(){
+  refreshCounts();
+  var checks = [], docs = document.querySelectorAll('[data-doc="1"]');
+  var urls = {}, dup = 0, noSrc = 0;
+  docs.forEach(function(d){
+    var u = d.getAttribute("data-url");
+    if(urls[u]) dup++; urls[u] = true;
+    var sb = d.querySelector(".source-box a");
+    if(!sb || sb.getAttribute("href") !== u) noSrc++;
+  });
+  var distinct = Object.keys(urls).length;
+  checks.push([docs.length === 36, "Sections = 36 (mile: " + docs.length + ")"]);
+  checks.push([count('[data-doc="1"] .source-box') === 36 && noSrc === 0, "Har section ke paas usi ke URL wali Source line hai (bina Source wale: " + noSrc + ")"]);
+  checks.push([distinct === 9, "Alag-alag source URLs = 9 (mile: " + distinct + ")"]);
+  checks.push([count("[data-lab]") === 8, "Interactive labs = 8 (mile: " + count("[data-lab]") + ")"]);
+  checks.push([count("[data-faq]") === 36, "Interview FAQs = 36 (mile: " + count("[data-faq]") + ")"]);
+  checks.push([document.querySelectorAll(".sb-link").length === 41, "Sidebar entries = 41 (36 sections + Home + 4 End Matter; mile: " + document.querySelectorAll(".sb-link").length + ")"]);
+  var badFaq = 0;
+  document.querySelectorAll("[data-faq]").forEach(function(f){
+    var q = (f.querySelector(".faq-q") || {}).textContent || "";
+    var a = (f.querySelector(".faq-a") || {}).textContent || "";
+    if(/^\s*(q|a)\s*$/i.test(q) || /^\s*(placeholder|lorem|todo)/i.test(q) || /^\s*(placeholder|lorem|todo)/i.test(a)) badFaq++;
+  });
+  checks.push([badFaq === 0, "Koi placeholder FAQ nahi (bare q/a ya placeholder/lorem/todo wale: " + badFaq + ")"]);
+  checks.push([count("img.fig") === 0, "Figures = 0 — PDF me koi content figure nahi tha (mile: " + count("img.fig") + ")"]);
+  var pass = checks.every(function(c){ return c[0]; });
+  var res = document.getElementById("check-result");
+  res.hidden = false; res.className = "check-result " + (pass ? "pass" : "fail");
+  res.innerHTML = "<strong>" + (pass ? "PASS — available 2 chapters (36 sections) poore cover hain, 8 labs, 36 FAQs." : "FAIL — neeche wali jaanch dekho.") + "</strong><ul>" +
+    checks.map(function(c){ return "<li>" + (c[0] ? "✓ " : "✗ ") + c[1] + "</li>"; }).join("") + "</ul>";
+  res.scrollIntoView({behavior:"smooth", block:"center"});
+}); }
+
+</script>
+</body>
+</html>
