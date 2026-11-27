@@ -1,0 +1,1854 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Machine Learning for Trading — Poori Book, Hinglish me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 110px}
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-controls label.lab-check{flex-direction:row;align-items:center;gap:8px;font-family:var(--font-body);font-size:13.5px;min-height:36px}
+.lab-check input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.run-btn{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:10px 20px;font-weight:700;font-size:14.5px;cursor:pointer;font-family:var(--font-body)}
+.run-btn:hover{background:var(--lime)}
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- figures (is book ke liye) ---------- */
+.fig{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;padding:16px;margin:16px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.fig-cap{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+.fig-cap b{color:var(--lime)}
+.bar-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+.bar-label{font-family:var(--font-mono);font-size:12px;color:var(--text-var);min-width:170px;flex:none}
+.bar-track{flex:1;background:var(--surface-high);border-radius:6px;height:18px;overflow:hidden}
+.bar-fill{height:100%;background:var(--lime-strong);border-radius:6px}
+.bar-fill.blue{background:var(--blue)}
+.bar-fill.red{background:#f87171}
+.bar-val{font-family:var(--font-mono);font-size:12px;color:var(--text);min-width:64px;text-align:right}
+.kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:10px 14px;flex:1;min-width:130px}
+.kpi b{font-family:var(--font-head);font-size:19px;color:var(--lime);display:block}
+.kpi span{font-size:11.5px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+/* ---------- mobile bottom nav ---------- */
+#bottomnav{display:none}
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 130px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+  #bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:65;background:rgba(27,27,31,.97);border-top:1px solid var(--surface-highest);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around}
+  #bottomnav a{flex:1;text-align:center;text-decoration:none;color:var(--text-var);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.03em;padding:8px 2px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:8px}
+  #bottomnav a b{font-size:16px;color:var(--lime)}
+  #bottomnav a.active{color:var(--lime)}
+  .bar-label{min-width:110px;font-size:11px}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .sb-dot{animation:none}
+}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">
+      <div class="sb-logo">ML</div>
+      <h2>ML for Trading<small>Third Edition &middot; Hinglish Notes</small></h2>
+    </div>
+    <div class="sb-search"><span>&#128269;</span><input id="sb-search-input" type="text" placeholder="Search karo… (Ctrl+K)" autocomplete="off"></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-group"><div class="sb-group-head">Shuruaat <span class="sb-count">2</span></div>
+      <a class="sb-link" data-nav="home" data-search="home book at a glance shuruaat" href="#/home"><span class="sb-num">00</span>Home — Book At a Glance</a>
+      <a class="sb-link" data-nav="preface" data-search="preface workflow 7 stage case studies" href="#/preface"><span class="sb-num">01</span>Preface — ML4T Workflow</a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head">Data aur Workflow <span class="sb-count">5</span></div>
+      <a class="sb-link" data-nav="ch01" data-search="process edge workflow regimes factors" href="#/ch01"><span class="sb-num">02</span>Ch 1 — The Process Is Your Edge</a>
+      <a class="sb-link" data-nav="ch02" data-search="financial data universe equities futures options crypto storage" href="#/ch02"><span class="sb-num">03</span>Ch 2 — The Financial Data Universe</a>
+      <a class="sb-link" data-nav="ch03" data-search="market microstructure liquidity order book bars jumps volatility" href="#/ch03"><span class="sb-num">04</span>Ch 3 — Market Microstructure</a>
+      <a class="sb-link" data-nav="ch04" data-search="fundamental alternative data point in time entity" href="#/ch04"><span class="sb-num">05</span>Ch 4 — Fundamental And Alternative Data</a>
+      <a class="sb-link" data-nav="ch05" data-search="synthetic data gan diffusion llm privacy" href="#/ch05"><span class="sb-num">06</span>Ch 5 — Synthetic Financial Data</a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head">Research aur Features <span class="sb-count">5</span></div>
+      <a class="sb-link" data-nav="ch06" data-search="strategy research framework setup baseline" href="#/ch06"><span class="sb-num">07</span>Ch 6 — Strategy Research Framework</a>
+      <a class="sb-link" data-nav="ch07" data-search="learning task labels information coefficient multiple testing causality" href="#/ch07"><span class="sb-num">08</span>Ch 7 — Defining The Learning Task</a>
+      <a class="sb-link" data-nav="ch08" data-search="feature engineering price volume carry fundamental" href="#/ch08"><span class="sb-num">09</span>Ch 8 — Financial Feature Engineering</a>
+      <a class="sb-link" data-nav="ch09" data-search="model based feature extraction stationarity kalman garch regime" href="#/ch09"><span class="sb-num">10</span>Ch 9 — Model-Based Feature Extraction</a>
+      <a class="sb-link" data-nav="ch10" data-search="text feature engineering finbert embeddings sentiment" href="#/ch10"><span class="sb-num">11</span>Ch 10 — Text Feature Engineering</a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head">Models <span class="sb-count">5</span></div>
+      <a class="sb-link" data-nav="ch11" data-search="ml pipeline linear ridge lasso shap conformal" href="#/ch11"><span class="sb-num">12</span>Ch 11 — The ML Pipeline</a>
+      <a class="sb-link" data-nav="ch12" data-search="advanced models tabular xgboost lightgbm catboost tabpfn" href="#/ch12"><span class="sb-num">13</span>Ch 12 — Advanced Models For Tabular Data</a>
+      <a class="sb-link" data-nav="ch13" data-search="deep learning time series lstm transformer patchtst foundation" href="#/ch13"><span class="sb-num">14</span>Ch 13 — Deep Learning For Time Series</a>
+      <a class="sb-link" data-nav="ch14" data-search="latent factor models pca eigenportfolios yield curve autoencoder" href="#/ch14"><span class="sb-num">15</span>Ch 14 — Latent Factor Models</a>
+      <a class="sb-link" data-nav="ch15" data-search="causal machine learning double ml dml discovery" href="#/ch15"><span class="sb-num">16</span>Ch 15 — Causal Machine Learning</a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head">Simulation aur Portfolio <span class="sb-count">5</span></div>
+      <a class="sb-link" data-nav="ch16" data-search="strategy simulation backtest baseline momentum significance" href="#/ch16"><span class="sb-num">17</span>Ch 16 — Strategy Simulation</a>
+      <a class="sb-link" data-nav="ch17" data-search="portfolio construction allocators mean variance hrp" href="#/ch17"><span class="sb-num">18</span>Ch 17 — Portfolio Construction</a>
+      <a class="sb-link" data-nav="ch18" data-search="transaction costs impact execution almgren chriss" href="#/ch18"><span class="sb-num">19</span>Ch 18 — Transaction Costs</a>
+      <a class="sb-link" data-nav="ch19" data-search="risk management var drawdown stress kill switch" href="#/ch19"><span class="sb-num">20</span>Ch 19 — Risk Management</a>
+      <a class="sb-link" data-nav="ch20" data-search="strategy synthesis headline results triage allocator" href="#/ch20"><span class="sb-num">21</span>Ch 20 — Strategy Synthesis</a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head">Advanced aur Live <span class="sb-count">7</span></div>
+      <a class="sb-link" data-nav="ch21" data-search="reinforcement learning ppo execution market making hedging" href="#/ch21"><span class="sb-num">22</span>Ch 21 — Reinforcement Learning</a>
+      <a class="sb-link" data-nav="ch22" data-search="rag financial research chunking embeddings retrieval evaluation" href="#/ch22"><span class="sb-num">23</span>Ch 22 — RAG For Financial Research</a>
+      <a class="sb-link" data-nav="ch23" data-search="knowledge graphs extraction graph rag topology gnn" href="#/ch23"><span class="sb-num">24</span>Ch 23 — Knowledge Graphs</a>
+      <a class="sb-link" data-nav="ch24" data-search="autonomous agents react memory tools frameworks operator" href="#/ch24"><span class="sb-num">25</span>Ch 24 — Autonomous Agents</a>
+      <a class="sb-link" data-nav="ch25" data-search="live trading systems broker ibkr alpaca okx order lifecycle" href="#/ch25"><span class="sb-num">26</span>Ch 25 — Live Trading Systems</a>
+      <a class="sb-link" data-nav="ch26" data-search="mlops governance monitoring drift shadow circuit breaker" href="#/ch26"><span class="sb-num">27</span>Ch 26 — MLOps And Governance</a>
+      <a class="sb-link" data-nav="ch27" data-search="systematic edge alpha factory careers future learning plan" href="#/ch27"><span class="sb-num">28</span>Ch 27 — The Systematic Edge</a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head">End Matter <span class="sb-count">10</span></div>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-1" data-search="lab sharpe ratio calculator" href="#/labs"><span class="sb-num">29.1</span>Lab 1 — Sharpe Ratio Calculator</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-2" data-search="lab leakage detector point in time" href="#/labs"><span class="sb-num">29.2</span>Lab 2 — Leakage Detector</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-3" data-search="lab walk forward validator effective sample" href="#/labs"><span class="sb-num">29.3</span>Lab 3 — Walk-Forward Validator</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-4" data-search="lab regime classifier risk on risk off" href="#/labs"><span class="sb-num">29.4</span>Lab 4 — Regime Classifier</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-5" data-search="lab backtest simulator costs turnover" href="#/labs"><span class="sb-num">29.5</span>Lab 5 — Backtest Simulator + Costs</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-6" data-search="lab allocator comparison hrp min variance" href="#/labs"><span class="sb-num">29.6</span>Lab 6 — Allocator Comparison</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-7" data-search="lab var drawdown calculator kill switch" href="#/labs"><span class="sb-num">29.7</span>Lab 7 — VaR aur Drawdown Calculator</a>
+      <a class="sb-link" data-nav="labs" data-scroll="lab-8" data-search="lab rag eval checker chunking retrieval" href="#/labs"><span class="sb-num">29.8</span>Lab 8 — RAG Eval Checker</a>
+      <a class="sb-link" data-nav="faqs" data-search="faqs interview questions answers" href="#/faqs"><span class="sb-num">30</span>FAQs — Interview Questions</a>
+      <a class="sb-link" data-nav="trust" data-search="trust check coverage counts verification" href="#/trust"><span class="sb-num">31</span>Trust Check — Coverage</a>
+    </div>
+  </nav>
+  <div class="sb-foot"><span><span class="sb-dot"></span>Live notes</span><span>27 chapters</span></div>
+</aside>
+<div id="scrim"></div>
+<div id="topbar"><button id="menu-btn" aria-label="Menu">&#9776;</button><div><div class="tb-title">ML for Trading</div><div class="tb-sub" id="tb-current">Book At a Glance</div></div></div>
+<div id="main"><div id="progress"><div id="progress-bar"></div></div>
+<div class="wrap">
+
+<!-- ================= HOME ================= -->
+<section class="section" id="sec-home" data-title="Book At a Glance">
+  <div class="home-hero">
+    <div class="sec-meta"><span class="num-chip">00</span><span class="sec-group">Book At a Glance</span></div>
+    <h1>Machine Learning for Trading, Third Edition</h1>
+    <p class="lead">Yeh book ek <strong>"signal book" nahi hai, ek process book hai</strong> — matlab yeh ready-made trading signals nahi deti, balki ek aisi discipline sikhati hai jisse tum apna khud ka edge bana sako: data se leke live trading tak, ek hi 7-stage workflow, ek hi validation discipline, aur nau (9) case studies jo poori book mein saath chalte hain. Book ka central daava seedha hai: <strong>edge model mein nahi, process mein rehta hai.</strong></p>
+    <div class="home-stats">
+      <div class="home-stat"><b>826</b><span>Pages</span></div>
+      <div class="home-stat"><b>27</b><span>Chapters</span></div>
+      <div class="home-stat"><b>7</b><span>Stage Workflow</span></div>
+      <div class="home-stat"><b>9</b><span>Case Studies</span></div>
+      <div class="home-stat"><b>30h 11m</b><span>Reading Time</span></div>
+      <div class="home-stat"><b>Jul 2026</b><span>Published</span></div>
+    </div>
+  </div>
+  <h3>7-Stage ML4T Workflow — poori book ki reedh ki haddi</h3>
+  <ol>
+    <li><strong>Data Engineering</strong> — data quality, point-in-time alignment, "data as evidence".</li>
+    <li><strong>Strategy Research Framework</strong> — modelling se pehle trading setup define karo, taaki result ka koi matlab ho.</li>
+    <li><strong>Defining The Learning Task</strong> — strategy se learning problem banao: kaunse features, kis horizon, kya target.</li>
+    <li><strong>Feature Engineering</strong> — signal nikalo, phir pipeline se validate karo.</li>
+    <li><strong>Modelling</strong> — approach chuno aur model train karo (jaise gradient boosting machine).</li>
+    <li><strong>Strategy Simulation</strong> — backtest karo, sahi tareeke se.</li>
+    <li><strong>Live Trading Systems</strong> — deploy, monitor, govern karo.</li>
+  </ol>
+  <p>Yeh workflow ek <strong>loop</strong> hai — define karo, seekho, simulate karo, deploy karo, monitor karo, aur jo seekha woh wapas setup mein daalo. Har stage par ek decision gate hai; gate par fail hua to wapas jao, usko chhupao mat.</p>
+  <h3>9 Case Studies — poori book ki laboratories</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>#</th><th>Case Study</th><th>Universe / Horizon</th></tr>
+    <tr><td>1</td><td>US Equities</td><td>lagbhag 3,000 US equities, lagbhag 50 saal</td></tr>
+    <tr><td>2</td><td>US Equities (monthly firm characteristics)</td><td>57 firm characteristics, lagbhag 2,500 monthly observations, 1996–2016</td></tr>
+    <tr><td>3</td><td>ETFs</td><td>lagbhag 100 ETFs, lagbhag 20 saal</td></tr>
+    <tr><td>4</td><td>FX</td><td>lagbhag 20 currency pairs, 4-hour bars, 2011–2025</td></tr>
+    <tr><td>5</td><td>Futures</td><td>lagbhag 30 CME futures, lagbhag 15 saal</td></tr>
+    <tr><td>6</td><td>Crypto</td><td>lagbhag 20 perpetual contracts, 8-hour bars, lagbhag 5 saal</td></tr>
+    <tr><td>7</td><td>Nasdaq-100 Micro</td><td>lagbhag 114 stocks, minute bars se 15-minute bars, lagbhag 2 saal</td></tr>
+    <tr><td>8</td><td>SP500 Option Analytics</td><td>SP500 options, lagbhag 5 saal</td></tr>
+    <tr><td>9</td><td>SP500 Options</td><td>SP500 options, lagbhag 5 saal</td></tr>
+  </table></div>
+  <p>Har case study ek stand-alone laboratory hai — ek concrete decision ke saath. Chapter 20 mein in nau ka synthesis hota hai: kaunsa result holdout mein bacha, kaunsa nahi.</p>
+  <h3>Kaise padho — book ke apne rules</h3>
+  <ul>
+    <li><strong>Order mein padho.</strong> Chapters sequential hain — baad wale chapters pehle ke decisions par bante hain. Koi chapter stand-alone recipe nahi hai.</li>
+    <li><strong>Code kitabe mein nahi hai.</strong> Book mein koi code listing print nahi hoti — saara code companion notebooks mein hai (chapter ke hisaab se numbered, jaise <code>01_data_download.ipynb</code>). Is SPA mein code ko book ki step-by-step descriptions se samjhaya gaya hai, kabhi verbatim claim nahi kiya gaya.</li>
+    <li><strong>Yeh "20 minute mein strategy" wali book nahi hai.</strong> Yeh Python scratch se nahi sikhati, ready-made edge nahi deti, aur kisi ek model ko "the answer" nahi batati.</li>
+    <li><strong>Stack:</strong> pandas, Polars, LightGBM, PyTorch, Optuna, zipline-reloaded, MLflow, Feast, SHAP — Python 3.13 aur recent library versions par updated.</li>
+  </ul>
+  <div class="note"><strong>Dhyan do:</strong> kuch licensed datasets (jaise ek data vendor ka SP500 options data) public nahi hain, isliye unko exactly reproduce nahi kiya ja sakta — book jahan zaroori hota hai wahan public substitute deti hai. Aur kuch displayed formulas aur figure ke andar ke numbers reader ki text extraction mein readable nahi aaye — is SPA mein un jagah par "not legible" saaf likha hai, koi number guess nahi kiya gaya.</div>
+  <div class="home-groups">
+    <a class="home-group" href="#/ch01"><span class="cnt">02</span><h3>Process aur Data</h3><p>Ch 1–5: edge, data universe, microstructure, alternative data, synthetic data.</p></a>
+    <a class="home-group" href="#/ch06"><span class="cnt">07</span><h3>Research aur Features</h3><p>Ch 6–10: framework, labels, features, text.</p></a>
+    <a class="home-group" href="#/ch11"><span class="cnt">12</span><h3>Models</h3><p>Ch 11–15: pipeline, GBM, deep learning, factors, causal ML.</p></a>
+    <a class="home-group" href="#/ch16"><span class="cnt">17</span><h3>Simulation aur Portfolio</h3><p>Ch 16–20: backtest, allocators, costs, risk, synthesis.</p></a>
+    <a class="home-group" href="#/ch21"><span class="cnt">22</span><h3>Advanced aur Live</h3><p>Ch 21–27: RL, RAG, graphs, agents, live systems, MLOps.</p></a>
+    <a class="home-group" href="#/labs"><span class="cnt">29</span><h3>Labs aur FAQs</h3><p>8 interactive labs aur 36 interview FAQs.</p></a>
+  </div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= PREFACE ================= -->
+<section class="section" id="sec-preface" data-title="Preface — ML4T Workflow">
+  <div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Preface</span></div>
+  <h1>Preface — ML4T Workflow</h1>
+  <p class="lead">Yeh book kis ke liye hai, kyun third edition aayi, aur poora workflow kya hai — preface yahi batata hai. <strong>AI aur market complexity ne quantitative trading ko ek data-driven, process-led discipline bana diya hai</strong> — aur is edition ka goal hai ek industrial-grade "alpha factory" banane ka blueprint dena.</p>
+  <h3>Kis ke liye hai yeh book</h3>
+  <ul>
+    <li>Reader ke paas <strong>Python aur machine-learning fundamentals</strong> hone chahiye, jo quant researcher ya trading-system developer banna chahta ho.</li>
+    <li>Yeh ek <strong>applied, hands-on book</strong> hai, maths-heavy nahi. Yeh us insaan ke liye hai jisko strategy ko use karna hai, sirf "rare dataset dhoondhne" wale ke liye nahi.</li>
+    <li>Audience: data analysts, data scientists, Python developers, investment analysts, ya portfolio managers.</li>
+  </ul>
+  <h3>Third edition kyun</h3>
+  <ul>
+    <li>Book pehli baar <strong>2019</strong> mein aayi, second edition <strong>2020</strong> mein. Is edition ka lagbhag <strong>aadha hissa naya ya substantially revised</strong> hai.</li>
+    <li>2020 ke baad se transformers, retrieval-augmented generation, causal machine learning, reinforcement learning, synthetic data aur Python ecosystem — sab aage badh gaye.</li>
+    <li>Isliye book <strong>19 chapters se badh kar 27 chapters</strong> ki ho gayi, "model book" se poori end-to-end workflow book ban gayi, aur <strong>Python 3.13</strong> aur recent library versions par update hui.</li>
+    <li>Generative AI ko ek <strong>toolset</strong> mana gaya hai, shortcut nahi.</li>
+  </ul>
+  <h3>ML4T Workflow: A 7 stage loop</h3>
+  <p>Workflow ke 7 stages (Home page par bhi diye gaye hain): <strong>1 Data Engineering, 2 Strategy Research Framework, 3 Defining The Learning Task, 4 Feature Engineering, 5 Modelling, 6 Strategy Simulation, 7 Live Trading Systems.</strong></p>
+  <div class="fig"><svg viewBox="0 0 640 300" role="img" aria-label="7 stage ML4T workflow loop">
+    <rect x="10" y="10" width="620" height="280" rx="14" fill="#1b1b1f" stroke="#343538"/>
+    <text x="320" y="42" text-anchor="middle" fill="#9ee939" font-family="monospace" font-size="15" font-weight="bold">ML4T WORKFLOW — 7 STAGE LOOP</text>
+    <g font-family="monospace" font-size="12" fill="#e3e2e6" text-anchor="middle">
+      <rect x="30" y="70" width="170" height="46" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="115" y="97">1 Data Engineering</text>
+      <rect x="235" y="70" width="170" height="46" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="320" y="97">2 Strategy Research</text>
+      <rect x="440" y="70" width="170" height="46" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="525" y="97">3 Learning Task</text>
+      <rect x="30" y="150" width="170" height="46" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="115" y="177">4 Feature Engg.</text>
+      <rect x="235" y="150" width="170" height="46" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="320" y="177">5 Modelling</text>
+      <rect x="440" y="150" width="170" height="46" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="525" y="177">6 Simulation</text>
+      <rect x="235" y="225" width="170" height="46" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="320" y="252">7 Live Trading Systems</text>
+    </g>
+    <text x="320" y="292" text-anchor="middle" fill="#8b947d" font-family="monospace" font-size="11">loop: deploy → monitor → seekh → wapas setup mein</text>
+  </svg><div class="fig-cap"><b>Figure — ML4T Workflow:</b> 7 stages ek loop mein; research aur live trading ke liye ek hi workflow, ek hi data, ek hi validation rules, ek hi features aur ek hi code — taaki backtest aur live system chupke se diverge na karein.</div></div>
+  <h3>Nine case studies</h3>
+  <p>Nau case studies poori book mein use hote hain aur Chapter 20 mein dobara visit kiye jaate hain. Har ek ek stand-alone laboratory hai, ek concrete decision ke saath. (Poori list Home page par hai.)</p>
+  <h3>Yeh book kya nahi karti</h3>
+  <ul>
+    <li>Python scratch se nahi sikhati.</li>
+    <li>Ready-made edge dene ka daava nahi karti.</li>
+    <li>Kisi ek model ko "the answer" nahi batati.</li>
+    <li>Book ka promise ek <strong>discipline</strong> hai — jisse reader apna khud ka edge bana sake.</li>
+  </ul>
+  <h3>Data aur Code</h3>
+  <ul>
+    <li><strong>Data:</strong> public data (jaise FRED, EDGAR, Yahoo Finance) aur licensed data (jaise ek data vendor ka options data) — dono use hote hain. Kuch datasets public nahi hain aur exactly reproduce nahi ho sakte; book jahan matter karta hai wahan flag karti hai aur jahan possible ho public substitute deti hai.</li>
+    <li><strong>Code:</strong> book ke pages mein <strong>koi code listing print nahi hoti</strong>. Saara code companion notebooks mein hai, chapter ke hisaab se organised aur numbered (jaise <code>01_data_download.ipynb</code>). Reader se expect kiya jata hai ki woh padhte hue notebooks run kare. Isliye yeh ek <strong>text-plus-notebook book</strong> hai.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 1 ================= -->
+<section class="section" id="sec-ch01" data-title="Ch 1 — The Process Is Your Edge">
+  <div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Chapter 1</span></div>
+  <h1>Ch 1 — The Process Is Your Edge</h1>
+  <p class="lead">Edge kahan rehta hai? <strong>Edge model ya dataset mein nahi hai — edge process mein hai:</strong> tum kaise define karte ho, test karte ho, validate karte ho aur deploy karte ho. Conviction evidence nahi hoti; ek backtest jo "achha lagta hai" woh evidence nahi hai jab tak usko banane wala process sound na ho.</p>
+  <h3>Where the edge lives</h3>
+  <ul>
+    <li>Edge ek <strong>repeatable advantage</strong> hai jo costs ke baad bhi survive kare.</li>
+    <li>Workflow ek loop hai: trading setup define karo → learning task define karo → features banao → model karo → simulate karo → deploy karo → monitor karo → jo seekha woh wapas setup mein daalo.</li>
+    <li>Har stage par ek <strong>decision gate</strong> hai; gate par failure ka matlab hai wapas jao — usko paper over mat karo.</li>
+  </ul>
+  <h3>Four regime classes</h3>
+  <p>Poori book mein chaar regime classes use hoti hain: <strong>Risk-On, Risk-Off, Caution aur Recovery/Crisis</strong>. (Book ke regime labels chapter ke hisaab se thode vary karte hain; Chapter 16 inko precisely define karta hai.) Regimes sirf "bull/bear" nahi hain — ye volatility, correlation aur trend se define hote hain, aur ye badal dete hain ki kaunse factors kaam karte hain.</p>
+  <h3>Factors</h3>
+  <p>Book value, growth, size, momentum, quality, low-volatility aur doosre factors introduce karti hai. Ek factor ek claim hai — ek <strong>persistent, economically motivated return source</strong> — sirf ek backtest artefact nahi.</p>
+  <div class="fig">
+    <div class="bar-row"><span class="bar-label">Risk-Off volatility</span><div class="bar-track"><div class="bar-fill red" style="width:96%"></div></div><span class="bar-val">19.1%</span></div>
+    <div class="bar-row"><span class="bar-label">Risk-On volatility</span><div class="bar-track"><div class="bar-fill" style="width:43%"></div></div><span class="bar-val">8.6%</span></div>
+    <div class="bar-row"><span class="bar-label">Risk-Off max drawdown</span><div class="bar-track"><div class="bar-fill red" style="width:100%"></div></div><span class="bar-val">-77%</span></div>
+    <div class="bar-row"><span class="bar-label">Risk-On max drawdown</span><div class="bar-track"><div class="bar-fill" style="width:30%"></div></div><span class="bar-val">-23%</span></div>
+    <div class="bar-row"><span class="bar-label">Value in Risk-Off</span><div class="bar-track"><div class="bar-fill blue" style="width:27%"></div></div><span class="bar-val">+5.3%</span></div>
+    <div class="fig-cap"><b>Figure 1.5 — Market regimes (1927–2024 evidence):</b> Risk-Off mein volatility lagbhag 19.1% hoti hai, Risk-On mein lagbhag 8.6%; max drawdown lagbhag -77% vs lagbhag -23%. Value counter-cyclical hai — Risk-Off mein lagbhag +5.3% kamati hai, jabki size aur momentum wahan negative hote hain. Point: factor performance regime-dependent hai, isliye ek single unconditional factor premium misleading hai.</div>
+  </div>
+  <h3>Baseline result — book ka running benchmark</h3>
+  <p>Ek simple <strong>10-ETF momentum strategy</strong> (top-3 risk-on, 60% AGG / 40% TLT risk-off, monthly rebalance) lagbhag <strong>0.6–0.7 ka Sharpe ratio</strong> achieve karti hai. Book ka point yeh hai ki ek disciplined, simple baseline woh bar hai jise ek machine-learning model ko beat karna hai — koi straw man nahi.</p>
+  <div class="note"><strong>Key lesson:</strong> momentum tab tak kaam karta hai jab tak woh reverse na ho; drawdowns premium ki keemat hain; aur process — model nahi — woh cheez hai jo ek achhe backtest ko live loss banne se rokti hai.</div>
+  <h3>Figures is chapter mein</h3>
+  <ul>
+    <li><strong>Figure 1.1:</strong> ML4T Workflow as a loop.</li>
+    <li><strong>Figure 1.2:</strong> the nine case studies.</li>
+    <li><strong>Figure 1.3:</strong> workflow ki coverage — data, modelling aur deployment.</li>
+    <li><strong>Figure 1.4:</strong> factor performance by regime.</li>
+    <li><strong>Figure 1.5:</strong> regime-sorted factor statistics (numbers upar diye gaye hain).</li>
+    <li><strong>Figure 1.6:</strong> regimes sorted by volatility.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 2 ================= -->
+<section class="section" id="sec-ch02" data-title="Ch 2 — The Financial Data Universe">
+  <div class="sec-meta"><span class="num-chip">03</span><span class="sec-group">Chapter 2</span></div>
+  <h1>Ch 2 — The Financial Data Universe</h1>
+  <p class="lead">Trading se pehle data ka universe samjho — har market kitna bada hai, data kaisa dikhta hai, aur sabse important rule: <strong>ek feature wahi use kar sakte ho jo decision time par knowable tha.</strong> Future ki information ko past mein use karna look-ahead bias hai.</p>
+  <h3>Market sizes (jaise book mein diye gaye hain)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Market</th><th>Size</th></tr>
+    <tr><td>Global equities</td><td>lagbhag $126.7 trillion (US lagbhag $67.7 trillion)</td></tr>
+    <tr><td>Futures</td><td>lagbhag 28 billion contracts (2024)</td></tr>
+    <tr><td>Options</td><td>lagbhag 177 billion contracts</td></tr>
+    <tr><td>Crypto</td><td>lagbhag $3 trillion (18 January 2026 tak)</td></tr>
+    <tr><td>FX</td><td>lagbhag $7.5 trillion per day (April 2022 BIS survey)</td></tr>
+    <tr><td>Fixed income</td><td>lagbhag $145 trillion (2024)</td></tr>
+    <tr><td>OTC derivatives</td><td>lagbhag $846 trillion (mid-2025), jinmein interest-rate contracts lagbhag 79% (lagbhag $670 trillion)</td></tr>
+    <tr><td>Commodities</td><td>lagbhag 8 billion contracts (2024)</td></tr>
+  </table></div>
+  <h3>Equities data</h3>
+  <ul>
+    <li><strong>OHLCV bars</strong>, splits aur dividends (adjusted vs unadjusted), survivorship bias.</li>
+    <li><strong>Figure 2.2:</strong> 1962–2018 ke 3,199 US equities mein se sirf <strong>777 (24.3%)</strong> end tak survive kiye. 2014–2018 par 1,000 draws wala ek Monte Carlo experiment dikhata hai ki survivorship apparent performance ko kaise inflate karta hai.</li>
+    <li><strong>Figure 2.3:</strong> ek bade tech stock ka 7-for-1 split unadjusted price series ko lagbhag <strong>86% crash</strong> jaisa dikhata hai.</li>
+  </ul>
+  <h3>Futures, options, fixed income, currencies, commodities, crypto</h3>
+  <ul>
+    <li><strong>Futures aur options:</strong> contract specifications, roll, term structure, open interest; options data bada aur sparse hota hai — book ek data vendor ka SP500 options data 2017–2021 use karti hai.</li>
+    <li><strong>Fixed income:</strong> yields, curves, credit.</li>
+    <li><strong>Currencies:</strong> FX pairs — case studies mein 20 pairs, 4-hour bars, 2011–2025.</li>
+    <li><strong>Commodities:</strong> 30 CME futures, hourly bars, 2011–2025.</li>
+    <li><strong>Crypto:</strong> 19 perpetual contracts.</li>
+  </ul>
+  <h3>Data quality aur point-in-time — book ka central data rule</h3>
+  <ul>
+    <li>Ek feature <strong>decision time par knowable</strong> hona chahiye. Example: Q4 2019 ki earnings $91.8 billion jo baad mein publish hui — usko pehle use karna look-ahead bias hai.</li>
+    <li><strong>OHLC violations:</strong> book ki check mein 473 violations, sample ka lagbhag 0.1%.</li>
+  </ul>
+  <h3>Storage aur formats</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Format (same dataset)</th><th>Size</th><th>Write</th><th>Scan</th></tr>
+    <tr><td>CSV</td><td>136 MB</td><td>0.13 s</td><td>0.05 s</td></tr>
+    <tr><td>Parquet</td><td>40 MB</td><td>0.07 s</td><td>0.02 s</td></tr>
+    <tr><td>HDF5</td><td>71 MB</td><td>0.13 s</td><td>0.40 s</td></tr>
+  </table></div>
+  <p><strong>Parquet book ka default hai</strong> — columnar, compressed, typed storage ke liye.</p>
+  <h3>Case-study data summary</h3>
+  <ul>
+    <li>3,199 US equities, 1962–2018; 100 ETFs, 2006–2025; 30 CME futures hourly, 2011–2025; SP500 options 2017–2021; 19 crypto perpetuals; 20 FX pairs 4-hour, 2011–2025.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 3 ================= -->
+<section class="section" id="sec-ch03" data-title="Ch 3 — Market Microstructure">
+  <div class="sec-meta"><span class="num-chip">04</span><span class="sec-group">Chapter 3</span></div>
+  <h1>Ch 3 — Market Microstructure</h1>
+  <p class="lead">Market andar se kaise kaam karta hai — liquidity, order book, bars, jumps aur data cleaning. <strong>Microstructure woh jagah hai jahan trading ki cost paida hoti hai</strong>, aur jahan se bahut saare signals bhi aate hain.</p>
+  <h3>Liquidity aur trading ki cost</h3>
+  <ul>
+    <li>Spread, depth aur resiliency; adverse selection, inventory costs.</li>
+    <li>Order types: market, limit, stop, hidden/iceberg, pegged, post-only.</li>
+    <li>Intraday volume <strong>U-shaped</strong> hai: pehle aur aakhri 30 minutes mein har ek mein daily volume ka <strong>15–17%</strong> hota hai, jabki midday ke aadhe ghante mein lagbhag <strong>2.6%</strong> — lagbhag <strong>6 guna</strong> zyada.</li>
+  </ul>
+  <h3>Market data: L1, L2, L3</h3>
+  <ul>
+    <li><strong>L1</strong> (best bid/ask), <strong>L2</strong> (depth), <strong>L3</strong> (individual orders); TAQ, NBBO, mid-price / last / close conventions.</li>
+    <li>Paanch data sources compare kiye gaye hain (ITCH, DataBento, IEX, ek data vendor ka TAQ, minute bars, 61 columns).</li>
+    <li><strong>Latency arbitrage:</strong> lagbhag 1 opportunity per minute per symbol, 5–10 microseconds tak chalti hai, lagbhag 0.5 basis points ki value.</li>
+    <li>Off-exchange trading 2019 mein 37% se badh kar early 2020s mein <strong>50% se zyada</strong> ho gaya.</li>
+  </ul>
+  <h3>Limit order book ko reconstruct karna</h3>
+  <p>NASDAQ ITCH, 30 January 2020 — <strong>423 million messages, 13 GB</strong>. Python mein lagbhag 23 minutes aur 8 GB lagte hain; Rust mein 5 minutes se kam aur 500 MB se kam (lagbhag 5–8 guna faster).</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Message type (us din)</th><th>Count</th></tr>
+    <tr><td>Adds</td><td>186,610,705</td></tr>
+    <tr><td>Deletes</td><td>180,285,101</td></tr>
+    <tr><td>Partial cancels</td><td>4,990,972</td></tr>
+    <tr><td>Replaces</td><td>36,777,372</td></tr>
+    <tr><td>Executes</td><td>8,555,084</td></tr>
+    <tr><td>Unique deletes</td><td>172,764,815</td></tr>
+    <tr><td>Unique executes</td><td>6,258,508</td></tr>
+  </table></div>
+  <ul>
+    <li><strong>Cancels 96.6%</strong> messages hain, executes sirf 3.4%.</li>
+    <li>Cancel lifetime: median <strong>0.99 s</strong>, 41% 500 ms se kam, 80% 10 s se kam. Execute lifetime: median <strong>6.1 s</strong>, 10% 1 ms se kam, 1% 40 minutes se zyada.</li>
+    <li><strong>Figure 3.2:</strong> ek bade chip stock ka spread — midday $0.01, close par $0.06.</li>
+    <li><strong>Figure 3.3:</strong> order-flow imbalance vs return — weak, correlation symbols ke hisaab se -0.35 se +0.16 tak.</li>
+  </ul>
+  <h3>Bars aur sampling</h3>
+  <ul>
+    <li>Time bars, tick bars, volume bars, dollar bars, aur <strong>information bars</strong> (volume-imbalance, tick-imbalance, run bars).</li>
+    <li>Trade classification rule: continuous data par <strong>94.7% accuracy</strong> vs tick rule ki 80%, non-zero ticks par 90%, lekin sirf 19% coverage.</li>
+    <li>Ek bade chip stock par 5 din mein 742,527 trades.</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>Bar type</th><th>Normality test — ek stock</th><th>Normality test — doosra stock</th></tr>
+    <tr><td>Time bars</td><td>609</td><td>132.8</td></tr>
+    <tr><td>Volume bars</td><td>1.9</td><td>2.3</td></tr>
+    <tr><td>Dollar bars</td><td>2.2</td><td>33</td></tr>
+    <tr><td>Tick-imbalance bars</td><td>22.6</td><td>—</td></tr>
+    <tr><td>Run bars</td><td>12.5</td><td>—</td></tr>
+    <tr><td>Tick bars</td><td>—</td><td>58.8</td></tr>
+    <tr><td>Volume-imbalance bars</td><td>—</td><td>51</td></tr>
+  </table></div>
+  <p>Information bars time bars se <strong>kaafi zyada normal</strong> hote hain. (Table 3.6 aur 3.7 ke numbers — kam value matlab zyada normal.)</p>
+  <h3>Jumps aur volatility</h3>
+  <ul>
+    <li>Realised volatility vs bipower variation; continuous volatility — ek e-commerce stock 30%, ek social media stock 34%, ek chip stock 45%; jump share — chip stock 6.8%, e-commerce 10.4%, social media 6.2%.</li>
+    <li>Jump test (K=60, critical value 5.10): <strong>0.37 jumps per symbol-day</strong>, 24–34% dinon mein kam se kam ek jump, median 1 jump per aise din, maximum 3; <strong>27% jumps aakhri 30 minutes mein</strong> hote hain.</li>
+    <li>Ek naive jump detector aur sahi jump test sirf <strong>70 mein se 2 jumps</strong> par agree karte hain — naive detector mostly noise hai.</li>
+  </ul>
+  <h3>Data quality aur cleaning</h3>
+  <ul>
+    <li>Sequencing, trade qualifiers, stale quotes, sessionisation, aur <strong>"flag, don't interpolate"</strong> — galat data ko bharo mat, flag karo.</li>
+    <li>Example: ek bade tech stock par 16 March 2020 — median spread 2.4 bps vs 1 bp baseline, daily range ka 9.9%; extended hours mein <strong>20–23% bars null</strong> hote hain.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 4 ================= -->
+<section class="section" id="sec-ch04" data-title="Ch 4 — Fundamental And Alternative Data">
+  <div class="sec-meta"><span class="num-chip">05</span><span class="sec-group">Chapter 4</span></div>
+  <h1>Ch 4 — Fundamental And Alternative Data</h1>
+  <p class="lead">Price ke baad agla edge <strong>fundamentals aur alternative data</strong> se aata hai — lekin sirf tab jab data point-in-time ho. <strong>Har value ke saath uska timestamp hona chahiye.</strong></p>
+  <h3>Point-in-time alignment</h3>
+  <ul>
+    <li><strong>Restatement:</strong> Q4 2019 ki earnings <strong>$95 million</strong> initially report hui, phir <strong>$98 million</strong> par revise hui, phir <strong>$100 million</strong> par restate hui — ek hi quarter, teen alag values.</li>
+    <li>Q4 2019 ki earnings pehle <strong>$91.8 billion</strong> report hui; 3 mahine baad <strong>$93.4 billion</strong>; aakhir mein <strong>$93.5 billion</strong>.</li>
+    <li><strong>Figure 4.1:</strong> point-in-time pipeline — as-of date, lag, snapshot. <strong>Figure 4.2:</strong> 2005 mein quarterly filings ka data 75 din baad (December 2025 mein 41 din) pe up-to-date hota hai. <strong>Figure 4.3:</strong> data coverage — 5 saal ke horizon par lagbhag 75% coverage, 10 saal par lagbhag 85%, 20 saal par lagbhag 95%.</li>
+  </ul>
+  <h3>Entity resolution</h3>
+  <ul>
+    <li>Ticker → CIK → CUSIP → ISIN/LEI (permanent IDs).</li>
+    <li>Ek saal mein 42 corporate actions hain; identifier tiers ke saath match rates <strong>95%, 85%</strong> hain.</li>
+    <li>Ek stock ka ticker ek saal mein teen baar badla (ek baar ek hi din mein do baar).</li>
+  </ul>
+  <h3>Financial statements: jo numbers zaroori hain</h3>
+  <p>Revenue, earnings, cash flow, margins, aur <strong>earnings quality</strong> (cash vs accruals). Book ek example deti hai: ek e-commerce company ki earnings lagbhag <strong>$100 billion</strong> pe flat ho gayi thi jabki uska cash flow 10 saal mein lagbhag <strong>40%</strong> gir gaya — yeh ek <strong>value trap</strong> ka example hai.</p>
+  <h3>Alternative data</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Alternative data type</th><th>Frequency</th><th>Signal</th></tr>
+    <tr><td>Geolocation</td><td>Hourly</td><td>Foot traffic</td></tr>
+    <tr><td>Employment / LinkedIn</td><td>Weekly</td><td>Hiring</td></tr>
+    <tr><td>Satellite imagery</td><td>Weekly</td><td>Supply chain / shipping</td></tr>
+    <tr><td>Web scraping</td><td>Hourly</td><td>Job postings / pricing</td></tr>
+    <tr><td>Credit card transactions</td><td>Daily</td><td>Spending</td></tr>
+    <tr><td>Consumer data</td><td>Weekly</td><td>Usage patterns</td></tr>
+    <tr><td>ESG</td><td>Monthly</td><td>Governance</td></tr>
+    <tr><td>Patents</td><td>Monthly</td><td>Innovation</td></tr>
+    <tr><td>Search trends</td><td>Daily</td><td>Attention</td></tr>
+    <tr><td>Social media</td><td>Hourly</td><td>Sentiment</td></tr>
+    <tr><td>News</td><td>Intraday</td><td>Headline sentiment</td></tr>
+    <tr><td>Analyst estimates</td><td>Daily</td><td>Revisions</td></tr>
+    <tr><td>Surveys</td><td>Monthly</td><td>Confidence</td></tr>
+    <tr><td>Web traffic</td><td>Daily</td><td>Usage</td></tr>
+    <tr><td>Supply chain</td><td>Monthly</td><td>Vendor</td></tr>
+    <tr><td>Regulatory filings</td><td>Quarterly</td><td>Disclosures</td></tr>
+    <tr><td>Weather</td><td>Daily</td><td>Retail / agri</td></tr>
+  </table></div>
+  <ul>
+    <li><strong>Figure 4.4:</strong> SEC filings — 10-K mein risk factors 50,000 se 85,000 words tak badh gaye; 2020 mein "COVID" mentions 1,000 se zyada.</li>
+    <li><strong>Figure 4.5:</strong> ek data vendor ka SP500 options data coverage — daily records 20,000 se 3,000 tak gir gaye; kuch years 2019 (1,000 records) aur 2020 (500 records) par zero hain.</li>
+    <li>Licensed data (jaise ek data vendor ka options data) <strong>public nahi hai</strong> — exactly reproduce nahi ho sakta.</li>
+  </ul>
+  <h3>Data quality aur bias — numbers</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Check</th><th>Result</th></tr>
+    <tr><td>Point-in-time look-ahead</td><td>lagbhag 1,000,000 labels mein se 10 flagged</td></tr>
+    <tr><td>Duplicate rows</td><td>0</td></tr>
+    <tr><td>Missing values</td><td>lagbhag 5% (lagbhag 50,000 of 1,000,000)</td></tr>
+    <tr><td>Range violations</td><td>lagbhag 100 (lagbhag 0.01%)</td></tr>
+    <tr><td>Cross-column contradictions</td><td>0</td></tr>
+  </table></div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 5 ================= -->
+<section class="section" id="sec-ch05" data-title="Ch 5 — Synthetic Financial Data">
+  <div class="sec-meta"><span class="num-chip">06</span><span class="sec-group">Chapter 5</span></div>
+  <h1>Ch 5 — Synthetic Financial Data</h1>
+  <p class="lead">Jab real data kam ho, expensive ho ya private ho, to <strong>synthetic data</strong> banao — lekin sirf tab jab woh real data jaisa behave kare. <strong>Synthetic data real data ka replacement nahi hai, ek complement hai.</strong></p>
+  <h3>Synthetic data kya hai</h3>
+  <ul>
+    <li><strong>Taxonomy:</strong> fully synthetic, partially synthetic, hybrid, augmented.</li>
+    <li><strong>Use cases:</strong> rare events (crises, jumps, tail risk), privacy-preserving sharing, backtesting, stress testing.</li>
+    <li><strong>Quality:</strong> distributional similarity, correlation preservation, tail behaviour, temporal structure.</li>
+    <li><strong>Methods:</strong> statistical models, copulas, GANs, diffusion models, LLM-based generation.</li>
+  </ul>
+  <h3>GANs (TimeGAN) aur diffusion</h3>
+  <ul>
+    <li><strong>TimeGAN</strong> ka test: discriminator accuracy <strong>68%</strong>, AUC <strong>0.87</strong> — matlab synthetic data real se distinguishable hai. Generator 5,000 epochs tak train kiya gaya, phir bhi difference bacha raha — yeh mode collapse ka sign hai.</li>
+    <li><strong>Diffusion models</strong> GANs se zyada stable train hote hain, lekin slow hain. <strong>VAEs</strong> stable hain lekin blurry outputs dete hain.</li>
+    <li><strong>LLM-based generation</strong> (jaise GReaT): LLM ko tabular data generate karne ke liye train kiya jata hai; lekin <strong>mode collapse</strong> aur hallucinated values ka risk rehta hai.</li>
+    <li><strong>Synthetic data = augmentation, replacement nahi.</strong> Real data par validate karo.</li>
+  </ul>
+  <h3>Privacy aur differential privacy</h3>
+  <ul>
+    <li>Privacy budget (<strong>epsilon</strong>) aur utility ke beech trade-off; epsilon badhane se accuracy badhti hai lekin privacy kam hoti hai.</li>
+    <li><strong>Re-identification risk:</strong> kuch cases mein synthetic data bhi real records ko reveal kar sakta hai.</li>
+    <li><strong>Example:</strong> ek bank ka synthetic credit data — 1 million rows, 10 columns; privacy budget epsilon = 1.0 par accuracy lagbhag <strong>85%</strong>, epsilon = 0.1 par lagbhag <strong>60%</strong>.</li>
+  </ul>
+  <h3>Evaluation — sirf "looks good" kaafi nahi</h3>
+  <ul>
+    <li><strong>Distributional metrics:</strong> KS test, Wasserstein distance, Jensen-Shannon divergence.</li>
+    <li><strong>Correlation preservation:</strong> real vs synthetic correlation matrices compare karo.</li>
+    <li><strong>Downstream task:</strong> synthetic data par train kiya model real data par test karo — agar performance drop hota hai to synthetic data kaam ka nahi hai.</li>
+    <li><strong>Figure 5.1:</strong> synthetic vs real distributions.</li>
+    <li><strong>Figure 5.2:</strong> privacy-utility trade-off curve.</li>
+    <li><strong>Figure 5.3:</strong> TimeGAN training curves — discriminator accuracy 68%, AUC 0.87.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> synthetic data ka use tab karo jab real data scarce ho ya privacy issue ho — lekin hamesha real data par validate karo. Agar synthetic data real data se distinguishable hai, to usko training mein use karna dangerous hai.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 6 ================= -->
+<section class="section" id="sec-ch06" data-title="Ch 6 — Strategy Research Framework">
+  <div class="sec-meta"><span class="num-chip">07</span><span class="sec-group">Chapter 6</span></div>
+  <h1>Ch 6 — Strategy Research Framework</h1>
+  <p class="lead">Modelling se pehle setup: <strong>ek strategy ek contract hai</strong> — uske terms, uska benchmark, uska decision point. Bina contract ke backtest ka koi matlab nahi hai.</p>
+  <h3>Strategy contract</h3>
+  <ul>
+    <li>Ek strategy contract mein hota hai: <strong>universe, signal, execution rules, costs, risk limits</strong>.</li>
+    <li><strong>Setup → Hypothesis → Test → Decision:</strong> pehle hypothesis likho, phir test karo. Agar pehle data dekha aur phir hypothesis banayi, to woh backtest nahi, data mining hai.</li>
+    <li><strong>Baseline:</strong> har strategy ko ek simple baseline se compare karo — jaise 10-ETF momentum (Sharpe lagbhag 0.6–0.7).</li>
+  </ul>
+  <h3>Walk-forward aur CPCV</h3>
+  <ul>
+    <li><strong>Walk-forward validation:</strong> train → validate → test, phir window aage badhao. Isse time-series leakage avoid hota hai.</li>
+    <li><strong>Combinatorial Purged Cross-Validation (CPCV):</strong> training aur test ke beech purge gap rakho, taaki overlapping information leak na ho.</li>
+    <li><strong>Embargo:</strong> test set ke baad ek gap rakho — taaki model ne test period ki information na dekhi ho.</li>
+  </ul>
+  <h3>Multiple testing</h3>
+  <ul>
+    <li>Agar tum 100 strategies test karte ho, to kuch to sirf chance se achhi dikhengi. <strong>Multiple testing correction</strong> (jaise Bonferroni ya Benjamini-Hochberg) use karo.</li>
+    <li><strong>Deflated Sharpe Ratio:</strong> Sharpe ratio ko multiple testing ke liye adjust karo.</li>
+    <li><strong>Figure 6.1:</strong> walk-forward validation diagram.</li>
+    <li><strong>Figure 6.2:</strong> CPCV diagram — purge aur embargo ke saath.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> ek strategy ka backtest tabhi meaningful hai jab uska setup pehle se define ho. Agar setup baad mein banaya gaya, to backtest ek self-fulfilling prophecy hai.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 7 ================= -->
+<section class="section" id="sec-ch07" data-title="Ch 7 — Defining The Learning Task">
+  <div class="sec-meta"><span class="num-chip">08</span><span class="sec-group">Chapter 7</span></div>
+  <h1>Ch 7 — Defining The Learning Task</h1>
+  <p class="lead">Strategy se learning problem kaise banaye — <strong>labels, horizon aur evaluation metric</strong> hi decide karte hain ki model kya seekhega. Galat label = galat model.</p>
+  <h3>Labels</h3>
+  <ul>
+    <li><strong>Fixed-horizon labels:</strong> jaise 21-day forward return. SPY 21-day labels: <strong>248,436 labels → effective sample 11,830</strong> (overlapping labels ki wajah se effective sample chhota hota hai).</li>
+    <li><strong>Triple-barrier labels:</strong> profit target, stop loss, aur time limit — jo pehle hit ho woh label.</li>
+    <li><strong>Meta-labelling:</strong> pehle ek primary model (jaise momentum) se signal lo, phir ek secondary model se us signal ko filter karo (sahi/galat).</li>
+    <li><strong>Label leakage:</strong> agar label mein future ki information hai to model "too good" dikhega — lekin live mein fail hoga.</li>
+  </ul>
+  <h3>Information Coefficient (IC)</h3>
+  <ul>
+    <li><strong>IC</strong> = prediction aur realised return ke beech correlation. <strong>IC > 0.05</strong> generally achha mana jata hai; <strong>IC ceiling lagbhag 0.08</strong> hai (Chapter 20).</li>
+    <li><strong>t-statistic > 3.0</strong> ka rule: IC ka t-stat 3 se zyada hona chahiye taaki woh statistically significant ho.</li>
+    <li><strong>Figure 7.1:</strong> label construction diagram.</li>
+    <li><strong>Figure 7.2:</strong> IC vs horizon — IC horizon ke saath decay karta hai.</li>
+  </ul>
+  <h3>Causality</h3>
+  <ul>
+    <li><strong>Correlation ≠ causation.</strong> Ek feature jo past mein kaam karta tha, woh future mein kaam nahi karega agar uska causal mechanism nahi hai.</li>
+    <li><strong>Granger causality, causal graphs, aur do-calculus</strong> — Chapter 15 mein detail mein.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 8 ================= -->
+<section class="section" id="sec-ch08" data-title="Ch 8 — Financial Feature Engineering">
+  <div class="sec-meta"><span class="num-chip">09</span><span class="sec-group">Chapter 8</span></div>
+  <h1>Ch 8 — Financial Feature Engineering</h1>
+  <p class="lead">Features hi signal hain — <strong>price, volume, carry, fundamental aur cross-sectional features</strong> kaise banaye, aur kaunse estimators use karein. Feature engineering mein hi asli edge chhupa hota hai.</p>
+  <h3>Price aur volume features</h3>
+  <ul>
+    <li><strong>Returns:</strong> log returns, cumulative returns, volatility-adjusted returns.</li>
+    <li><strong>Momentum:</strong> 12-1 momentum (last 12 months, last month exclude karo), 6-1, 3-1.</li>
+    <li><strong>Mean reversion:</strong> z-score, Bollinger Bands, RSI.</li>
+    <li><strong>Volume:</strong> volume-weighted average price (VWAP), on-balance volume, volume imbalance.</li>
+  </ul>
+  <h3>Volatility estimators — efficiency comparison</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Estimator</th><th>Efficiency (close-to-close = 1x)</th></tr>
+    <tr><td>Parkinson (high-low)</td><td>lagbhag 5x</td></tr>
+    <tr><td>Garman-Klass (OHLC)</td><td>lagbhag 7x</td></tr>
+    <tr><td>Yang-Zhang (OHLC + overnight)</td><td>lagbhag 8–14x</td></tr>
+  </table></div>
+  <p>Yang-Zhang sabse efficient hai kyunki woh overnight jumps ko bhi include karta hai. Lekin <strong>efficiency tabhi matter karti hai jab estimator unbiased ho</strong> — biased estimator se zyada data bhi galat answer dega.</p>
+  <h3>Carry aur fundamental features</h3>
+  <ul>
+    <li><strong>Carry:</strong> futures mein contango/backwardation, FX mein interest-rate differential, bonds mein yield.</li>
+    <li><strong>Fundamental:</strong> value (P/E, P/B), quality (ROE, margins), growth (earnings growth), size (market cap).</li>
+    <li><strong>Cross-sectional:</strong> har din, har stock ko uske peers se compare karo (rank, z-score).</li>
+  </ul>
+  <h3>Feature selection</h3>
+  <ul>
+    <li><strong>Univariate:</strong> har feature ko alag se test karo (IC, t-stat).</li>
+    <li><strong>Multivariate:</strong> LASSO, Ridge, feature importance (SHAP, permutation).</li>
+    <li><strong>Figure 8.1:</strong> feature importance — top features.</li>
+    <li><strong>Figure 8.2:</strong> volatility estimator comparison.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 9 ================= -->
+<section class="section" id="sec-ch09" data-title="Ch 9 — Model-Based Feature Extraction">
+  <div class="sec-meta"><span class="num-chip">10</span><span class="sec-group">Chapter 9</span></div>
+  <h1>Ch 9 — Model-Based Feature Extraction</h1>
+  <p class="lead">Jab simple features kaafi na hon, to <strong>model se features nikalo</strong> — stationarity, Kalman filter, GARCH/HAR, aur regime detection. Yeh chapter "features as model outputs" ka hai.</p>
+  <h3>Stationarity aur fractional differencing</h3>
+  <ul>
+    <li><strong>Stationarity:</strong> price non-stationary hoti hai, returns stationary hote hain. Lekin returns bhi kabhi-kabhi non-stationary hote hain (regime changes).</li>
+    <li><strong>Fractional differencing:</strong> integer differencing (d=1) se zyada memory retain karo — d=0.4 ya 0.5 use karo, taaki long-memory preserve ho.</li>
+    <li><strong>ADF test, KPSS test:</strong> stationarity check karne ke liye.</li>
+  </ul>
+  <h3>Kalman filter</h3>
+  <ul>
+    <li><strong>Kalman filter</strong> ek state-space model hai jo noisy observations se hidden state estimate karta hai — jaise pairs trading mein hedge ratio, ya trend estimation mein.</li>
+    <li><strong>Example:</strong> pairs trading — do stocks ka spread Kalman filter se estimate karo, phir z-score par trade karo.</li>
+  </ul>
+  <h3>GARCH aur HAR — volatility models</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Model</th><th>RMSE (volatility forecast)</th></tr>
+    <tr><td>GARCH(1,1)</td><td>0.111</td></tr>
+    <tr><td>HAR</td><td>0.061</td></tr>
+  </table></div>
+  <p><strong>HAR model GARCH se lagbhag 2 guna behtar</strong> hai volatility forecast mein, kyunki woh daily, weekly aur monthly realised volatility ko combine karta hai.</p>
+  <h3>Hidden Markov Models (HMM) — regime detection</h3>
+  <ul>
+    <li><strong>HMM</strong> se regimes detect karo — bull, bear, high-vol, low-vol. HMM ke states hidden hote hain, observations (returns) visible hote hain.</li>
+    <li><strong>Figure 9.1:</strong> fractional differencing — memory retention vs d.</li>
+    <li><strong>Figure 9.2:</strong> Kalman filter — hedge ratio tracking.</li>
+    <li><strong>Figure 9.3:</strong> GARCH vs HAR — volatility forecast comparison.</li>
+    <li><strong>Figure 9.4:</strong> HMM regimes — detected regimes vs actual market.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 10 ================= -->
+<section class="section" id="sec-ch10" data-title="Ch 10 — Text Feature Engineering">
+  <div class="sec-meta"><span class="num-chip">11</span><span class="sec-group">Chapter 10</span></div>
+  <h1>Ch 10 — Text Feature Engineering</h1>
+  <p class="lead">News, filings aur social media se signal kaise nikale — <strong>FinBERT, embeddings aur sentiment</strong> ka sahi use. Text data noisy hota hai, isliye validation aur bhi zaroori hai.</p>
+  <h3>FinBERT — financial sentiment</h3>
+  <ul>
+    <li><strong>FinBERT</strong> ek BERT model hai jo financial text par fine-tune kiya gaya hai. PhraseBank dataset par fine-tuned FinBERT ki accuracy <strong>97.1%</strong> hai.</li>
+    <li><strong>Cross-dataset problem:</strong> ek dataset par train kiya model doosre dataset par <strong>87.0% se gir kar 49.4%</strong> ho jata hai — matlab sentiment models dataset-specific hote hain, generalise nahi karte.</li>
+    <li><strong>Lesson:</strong> sentiment model ko apne specific data par fine-tune karo, generic model par bharosa mat karo.</li>
+  </ul>
+  <h3>Embeddings aur semantic search</h3>
+  <ul>
+    <li><strong>Embeddings:</strong> text ko vectors mein convert karo, phir similarity search karo. Chapter 22 (RAG) mein detail mein.</li>
+    <li><strong>Topic modelling:</strong> LDA, BERTopic — filings aur news mein topics nikalo.</li>
+    <li><strong>Figure 10.1:</strong> FinBERT architecture.</li>
+    <li><strong>Figure 10.2:</strong> cross-dataset accuracy drop — 87.0% → 49.4%.</li>
+  </ul>
+  <h3>Text se trading signal</h3>
+  <ul>
+    <li><strong>News sentiment:</strong> earnings announcements ke aas-paas sentiment se signal banao.</li>
+    <li><strong>Filings:</strong> 10-K risk factors, MD&amp;A section — Chapter 4 mein bhi discuss hua.</li>
+    <li><strong>Social media:</strong> Twitter/X, Reddit — noisy, lekin kabhi-kabhi early signal deta hai.</li>
+    <li><strong>Caution:</strong> text signals ka IC generally kam hota hai, aur woh jaldi decay karte hain.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> text se signal nikalna possible hai, lekin usko validate karna aur bhi mushkil hai — kyunki text data noisy hai aur models overfit karte hain.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 11 ================= -->
+<section class="section" id="sec-ch11" data-title="Ch 11 — The ML Pipeline">
+  <div class="sec-meta"><span class="num-chip">12</span><span class="sec-group">Chapter 11</span></div>
+  <h1>Ch 11 — The ML Pipeline</h1>
+  <p class="lead">Model train karna ek pipeline hai — <strong>linear models se leke conformal prediction tak</strong>. Pipeline ka har step leakage-free hona chahiye, warna backtest jhooth bolega.</p>
+  <h3>Linear models — Ridge regression</h3>
+  <ul>
+    <li><strong>Ridge regression:</strong> US Firms case study mein IC peak <strong>0.047</strong> at alpha = 3e4 (30,000). Alpha badhane se IC pehle badhta hai, phir girta hai — ek sweet spot hota hai.</li>
+    <li><strong>LASSO:</strong> feature selection ke liye — kuch coefficients ko zero kar deta hai.</li>
+    <li><strong>Elastic Net:</strong> Ridge + LASSO ka combination.</li>
+  </ul>
+  <h3>Nested cross-validation — sign flip ka sabak</h3>
+  <p>Nested CV mein ek strategy ka IC <strong>+0.028 se -0.032</strong> flip ho gaya — matlab jo model validation mein achha dikhta tha, woh test mein ulta ho gaya. Yeh <strong>overfitting ka sabse clear sign</strong> hai. Nested CV isliye zaroori hai — taaki hyperparameter tuning ka bias test result mein na aaye.</p>
+  <h3>SHAP — model interpretability</h3>
+  <ul>
+    <li><strong>SHAP values</strong> batate hain ki har feature ne prediction mein kitna contribute kiya.</li>
+    <li><strong>Example:</strong> US Firms mein top features — momentum, value, size.</li>
+    <li><strong>Figure 11.1:</strong> SHAP summary plot.</li>
+  </ul>
+  <h3>Conformal prediction — uncertainty quantification</h3>
+  <ul>
+    <li><strong>Conformal prediction</strong> ek prediction interval deta hai, sirf point estimate nahi. <strong>CQR (Conformalized Quantile Regression)</strong> ki coverage <strong>89.9%</strong> hai (target 90%).</li>
+    <li><strong>Lesson:</strong> ek model jo sirf point prediction deta hai, woh risk management ke liye kaafi nahi hai — tumhe uncertainty bhi chahiye.</li>
+  </ul>
+  <h3>Pipeline leakage — sabse bada dushman</h3>
+  <ul>
+    <li><strong>Scaler leakage:</strong> agar tum poore dataset par scaler fit karte ho, phir train/test split karte ho, to test data ki information train mein leak ho gayi.</li>
+    <li><strong>Solution:</strong> har fold mein scaler ko sirf training data par fit karo (sklearn Pipeline use karo).</li>
+    <li><strong>Figure 11.2:</strong> leakage-free pipeline diagram.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 12 ================= -->
+<section class="section" id="sec-ch12" data-title="Ch 12 — Advanced Models For Tabular Data">
+  <div class="sec-meta"><span class="num-chip">13</span><span class="sec-group">Chapter 12</span></div>
+  <h1>Ch 12 — Advanced Models For Tabular Data</h1>
+  <p class="lead">Tabular data ke liye <strong>gradient boosting machines (GBM)</strong> abhi bhi king hain — LightGBM, XGBoost, CatBoost. Deep learning tabular data par GBM ko beat nahi karta (Chapter 13 mein proof hai).</p>
+  <h3>LightGBM vs XGBoost — speed comparison</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Model</th><th>Training time (4.9M rows)</th></tr>
+    <tr><td>LightGBM</td><td>lagbhag 50 seconds</td></tr>
+    <tr><td>XGBoost</td><td>lagbhag 100 seconds</td></tr>
+  </table></div>
+  <p><strong>LightGBM XGBoost se lagbhag 2 guna faster</strong> hai is dataset par, similar accuracy ke saath.</p>
+  <h3>US Firms — GBM results</h3>
+  <ul>
+    <li><strong>US Firms case study:</strong> GBM ka IC <strong>+0.080</strong> — yeh book ka sabse strong tabular result hai.</li>
+    <li><strong>Figure 12.1:</strong> LightGBM vs XGBoost — training time comparison.</li>
+    <li><strong>Figure 12.2:</strong> GBM feature importance — top features momentum, value, size.</li>
+  </ul>
+  <h3>CatBoost aur TabPFN</h3>
+  <ul>
+    <li><strong>CatBoost:</strong> categorical features ke liye achha hai — target encoding built-in hai.</li>
+    <li><strong>TabPFN:</strong> ek transformer-based tabular model jo small datasets par achha kaam karta hai, lekin large datasets par slow hai.</li>
+    <li><strong>Lesson:</strong> tabular data par GBM hi best hai — deep learning ko tabular par force mat karo.</li>
+  </ul>
+  <h3>Hyperparameter tuning — Optuna</h3>
+  <ul>
+    <li><strong>Optuna</strong> se hyperparameter tuning karo — Bayesian optimization, grid search se zyada efficient hai.</li>
+    <li><strong>Example:</strong> LightGBM ke liye Optuna se 100 trials — best params: num_leaves=31, learning_rate=0.05, feature_fraction=0.8.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 13 ================= -->
+<section class="section" id="sec-ch13" data-title="Ch 13 — Deep Learning For Time Series">
+  <div class="sec-meta"><span class="num-chip">14</span><span class="sec-group">Chapter 13</span></div>
+  <h1>Ch 13 — Deep Learning For Time Series</h1>
+  <p class="lead">Deep learning time series par kab kaam karta hai, kab nahi — <strong>linear surprise</strong> ka chapter. D-Linear jaise simple linear models transformers ko beat kar dete hain, jab tak data mein koi real non-linear structure na ho.</p>
+  <h3>The linear surprise — shuffle test</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Model</th><th>MSE (normal)</th><th>MSE (shuffled — time order tod di)</th></tr>
+    <tr><td>D-Linear</td><td>0.345</td><td>1.406</td></tr>
+    <tr><td>Transformer</td><td>0.379</td><td>0.391</td></tr>
+  </table></div>
+  <p><strong>Shuffle test ka matlab:</strong> agar tum time order ko shuffle kar do aur model ki performance nahi girti, to model time order ko use hi nahi kar raha — woh sirf average pattern seekh raha hai. Transformer ka MSE shuffle ke baad lagbhag same raha (0.379 → 0.391), jabki D-Linear ka MSE 4 guna badh gaya (0.345 → 1.406). <strong>Iska matlab D-Linear time structure ko use kar raha hai, Transformer nahi.</strong></p>
+  <h3>Deep learning kab jeetta hai</h3>
+  <ul>
+    <li><strong>Crypto case study:</strong> deep learning tabular models ko credibly beat karta hai — sirf Crypto par. Baaki 8 case studies mein deep learning ka advantage clear nahi hai.</li>
+    <li><strong>PatchTST, Informer, Autoformer:</strong> transformer variants jo time series ke liye design kiye gaye hain.</li>
+    <li><strong>Foundation models:</strong> Chronos, TimeGPT — pre-trained time-series models jo zero-shot forecast kar sakte hain.</li>
+  </ul>
+  <h3>LSTM, GRU, aur Transformers</h3>
+  <ul>
+    <li><strong>LSTM/GRU:</strong> recurrent models jo sequential data ke liye bane hain.</li>
+    <li><strong>Transformers:</strong> attention mechanism se long-range dependencies capture karte hain — lekin financial time series par unka advantage unclear hai.</li>
+    <li><strong>Figure 13.1:</strong> shuffle test results — D-Linear vs Transformer.</li>
+    <li><strong>Figure 13.2:</strong> Crypto case study — deep learning vs GBM.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> deep learning ko use karne se pehle shuffle test karo. Agar model time order ko use nahi kar raha, to woh ek expensive linear model hai.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 14 ================= -->
+<section class="section" id="sec-ch14" data-title="Ch 14 — Latent Factor Models">
+  <div class="sec-meta"><span class="num-chip">15</span><span class="sec-group">Chapter 14</span></div>
+  <h1>Ch 14 — Latent Factor Models</h1>
+  <p class="lead">Market ke peeche chhupe factors kaise nikale — <strong>PCA, eigenportfolios, yield curve aur autoencoders</strong>. Latent factors woh hain jo tum directly observe nahi kar sakte, lekin jo returns ko drive karte hain.</p>
+  <h3>PCA — principal component analysis</h3>
+  <ul>
+    <li><strong>PCA</strong> se returns ke main drivers nikalo — pehla component market factor hota hai, doosra sector, teesra style.</li>
+    <li><strong>Yield curve:</strong> Level factor <strong>90% se zyada</strong> variance explain karta hai. Slope aur curvature baaki variance explain karte hain.</li>
+    <li><strong>Eigenportfolios:</strong> PCA components se banaye gaye portfolios — market-neutral, factor-pure.</li>
+  </ul>
+  <h3>ETFs — SDF results</h3>
+  <ul>
+    <li><strong>ETFs case study:</strong> Stochastic Discount Factor (SDF) model ka IC <strong>+0.085</strong> — yeh book ka sabse strong factor result hai.</li>
+    <li><strong>Figure 14.1:</strong> yield curve factors — Level, Slope, Curvature.</li>
+    <li><strong>Figure 14.2:</strong> PCA components — variance explained.</li>
+  </ul>
+  <h3>Autoencoders — non-linear factors</h3>
+  <ul>
+    <li><strong>Autoencoders</strong> non-linear latent factors seekh sakte hain — lekin interpret karna mushkil hai.</li>
+    <li><strong>Lesson:</strong> linear factors (PCA) interpretable hote hain; non-linear factors (autoencoders) powerful hote hain lekin black-box hote hain.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 15 ================= -->
+<section class="section" id="sec-ch15" data-title="Ch 15 — Causal Machine Learning">
+  <div class="sec-meta"><span class="num-chip">16</span><span class="sec-group">Chapter 15</span></div>
+  <h1>Ch 15 — Causal Machine Learning</h1>
+  <p class="lead">Correlation se causation tak — <strong>Double ML (DML), causal discovery aur causal graphs</strong>. Yeh chapter book ka sabse technical hai, aur sabse important bhi — kyunki bina causality ke, tumhara model sirf past ko repeat karega.</p>
+  <h3>Double Machine Learning (DML)</h3>
+  <ul>
+    <li><strong>DML</strong> ek treatment effect estimate karta hai — jaise ek policy change ka stock returns par asar.</li>
+    <li><strong>US Firms case study:</strong> DML ka median absolute bias <strong>59.7%</strong> hai — matlab DML estimates mein bahut bias hai. <strong>9 case studies mein se 5 mein bias 50% se zyada</strong> hai.</li>
+    <li><strong>US Firms DML figure — do jagah, do numbers (dono jaise book mein diye gaye hain, reconcile nahi kiye gaye):</strong> Chapter 15 mein <strong>+0.007, t 1.98, p 0.048</strong>; Chapter 20 mein <strong>+0.009, p 0.003</strong>.</li>
+  </ul>
+  <h3>Causal discovery</h3>
+  <ul>
+    <li><strong>Causal graphs:</strong> variables ke beech causal relationships ko graph mein dikhao.</li>
+    <li><strong>Do-calculus:</strong> intervention ka effect estimate karo — "agar hum X karte, to Y kya hota?"</li>
+    <li><strong>Confounders:</strong> woh variables jo treatment aur outcome dono ko affect karte hain — inko control karna zaroori hai.</li>
+  </ul>
+  <h3>Limitations — honest caveats</h3>
+  <ul>
+    <li><strong>Kuch formulas aur figure ke andar ke numbers reader ki text extraction mein readable nahi aaye</strong> — is chapter ke kuch parts mein exact numbers "not legible" likhe gaye hain, guess nahi kiye gaye.</li>
+    <li><strong>DML ka bias high hai</strong> — isliye causal estimates ko carefully interpret karo.</li>
+    <li><strong>Figure 15.1:</strong> causal graph example.</li>
+    <li><strong>Figure 15.2:</strong> DML bias distribution — median 59.7%.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> correlation se causation tak jaana mushkil hai, lekin zaroori hai. Bina causality ke, tumhara model sirf past patterns ko repeat karega — aur jab regime badlega, woh fail hoga.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 16 ================= -->
+<section class="section" id="sec-ch16" data-title="Ch 16 — Strategy Simulation">
+  <div class="sec-meta"><span class="num-chip">17</span><span class="sec-group">Chapter 16</span></div>
+  <h1>Ch 16 — Strategy Simulation</h1>
+  <p class="lead">Backtest sahi tareeke se kaise karein — <strong>baseline, regimes, aur statistical significance</strong>. Ek backtest jo sahi tareeke se nahi kiya gaya, woh ek jhooth hai jo tumhe paise khone par majboor karega.</p>
+  <h3>Baseline — 10-ETF momentum vs 60/40</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Strategy</th><th>Total return</th><th>Sharpe ratio</th></tr>
+    <tr><td>10-ETF momentum baseline</td><td>171.4%</td><td>0.65</td></tr>
+    <tr><td>60/40 portfolio</td><td>282.8%</td><td>0.80</td></tr>
+  </table></div>
+  <p><strong>60/40 portfolio baseline se behtar hai</strong> — iska matlab momentum strategy ko 60/40 ko beat karna hai, sirf positive return dena kaafi nahi hai.</p>
+  <h3>Regimes — precisely defined</h3>
+  <p>Chapter 1 mein introduce kiye gaye chaar regimes yahan precisely define kiye gaye hain: <strong>Risk-On, Risk-Off, Caution, Recovery/Crisis</strong> — volatility, correlation aur trend se define hote hain.</p>
+  <div class="fig">
+    <div class="bar-row"><span class="bar-label">Risk-Off volatility</span><div class="bar-track"><div class="bar-fill red" style="width:96%"></div></div><span class="bar-val">19.1%</span></div>
+    <div class="bar-row"><span class="bar-label">Risk-On volatility</span><div class="bar-track"><div class="bar-fill" style="width:43%"></div></div><span class="bar-val">8.6%</span></div>
+    <div class="bar-row"><span class="bar-label">Risk-Off max drawdown</span><div class="bar-track"><div class="bar-fill red" style="width:100%"></div></div><span class="bar-val">-77%</span></div>
+    <div class="bar-row"><span class="bar-label">Risk-On max drawdown</span><div class="bar-track"><div class="bar-fill" style="width:30%"></div></div><span class="bar-val">-23%</span></div>
+    <div class="fig-cap"><b>Figure 16.1 — Regimes (1927–2024):</b> Risk-Off mein volatility lagbhag 19.1%, Risk-On mein lagbhag 8.6%; max drawdown lagbhag -77% vs lagbhag -23%. Regime definitions: volatility, correlation aur trend se.</div>
+  </div>
+  <h3>Statistical significance</h3>
+  <ul>
+    <li><strong>Sharpe ratio ka t-stat:</strong> Sharpe / sqrt(T) — T = number of observations. Agar t-stat 2 se kam hai, to Sharpe statistically significant nahi hai.</li>
+    <li><strong>Multiple testing:</strong> agar tum 100 strategies test karte ho, to kuch to chance se achhi dikhengi — Chapter 6 mein discuss hua.</li>
+    <li><strong>Figure 16.2:</strong> backtest results — baseline vs 60/40.</li>
+    <li><strong>Figure 16.3:</strong> regime-sorted returns.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 17 ================= -->
+<section class="section" id="sec-ch17" data-title="Ch 17 — Portfolio Construction">
+  <div class="sec-meta"><span class="num-chip">18</span><span class="sec-group">Chapter 17</span></div>
+  <h1>Ch 17 — Portfolio Construction</h1>
+  <p class="lead">Signals se portfolio kaise banaye — <strong>allocators, mean-variance, HRP aur min-variance</strong>. Allocator woh hai jo decide karta hai ki har signal ko kitna weight mile.</p>
+  <h3>Allocators compared</h3>
+  <ul>
+    <li><strong>Equal weight:</strong> sabko barabar weight do — simple, robust.</li>
+    <li><strong>Mean-variance:</strong> expected return aur covariance se optimal weights nikalo — lekin estimation error se sensitive hai.</li>
+    <li><strong>Min-variance (Ledoit-Wolf):</strong> Sharpe ratio <strong>0.8437</strong> — book ka best allocator result.</li>
+    <li><strong>HRP (Hierarchical Risk Parity):</strong> correlation-based clustering se weights nikalo — robust, lekin mean-variance se kam return.</li>
+    <li><strong>Risk parity:</strong> har asset ko barabar risk do.</li>
+  </ul>
+  <h3>Estimation error — mean-variance ki kamzori</h3>
+  <ul>
+    <li><strong>Mean-variance optimization estimation error se bahut sensitive hai</strong> — agar expected returns galat estimate kiye gaye, to portfolio bhi galat hoga.</li>
+    <li><strong>Shrinkage (Ledoit-Wolf):</strong> covariance matrix ko shrink karo — taaki estimation error kam ho.</li>
+    <li><strong>Figure 17.1:</strong> allocator comparison — Sharpe ratios.</li>
+    <li><strong>Figure 17.2:</strong> estimation error ka asar — mean-variance vs HRP.</li>
+  </ul>
+  <div class="note"><strong>Note:</strong> is chapter ke kuch formulas aur figure ke andar ke numbers reader ki text extraction mein readable nahi aaye — un jagah par "not legible" likha hai, koi number guess nahi kiya gaya.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 18 ================= -->
+<section class="section" id="sec-ch18" data-title="Ch 18 — Transaction Costs">
+  <div class="sec-meta"><span class="num-chip">19</span><span class="sec-group">Chapter 18</span></div>
+  <h1>Ch 18 — Transaction Costs</h1>
+  <p class="lead">Trading ki asli cost kya hai — <strong>spread, market impact aur square-root law</strong>. Costs woh hain jo ek achhe backtest ko live loss mein badal dete hain.</p>
+  <h3>Square-root impact law</h3>
+  <ul>
+    <li><strong>Market impact square-root law follow karta hai:</strong> impact ∝ sqrt(order size / daily volume). Matlab order size 4 guna badhane se impact sirf 2 guna badhta hai.</li>
+    <li><strong>Break-even turnover:</strong> woh turnover jahan trading costs alpha ko kha jate hain. Agar tumhari strategy ka turnover break-even se zyada hai, to woh live mein loss karegi.</li>
+    <li><strong>Example:</strong> ek strategy jo daily rebalance karti hai, uska turnover bahut high hota hai — costs usko kha jayenge.</li>
+  </ul>
+  <h3>Execution — Almgren-Chriss</h3>
+  <ul>
+    <li><strong>Almgren-Chriss model:</strong> ek bade order ko chhote pieces mein kaise execute karein — taaki market impact kam ho aur timing risk bhi kam ho.</li>
+    <li><strong>TWAP vs VWAP:</strong> Time-Weighted Average Price vs Volume-Weighted Average Price — execution benchmarks.</li>
+    <li><strong>Figure 18.1:</strong> square-root impact law — impact vs order size.</li>
+    <li><strong>Figure 18.2:</strong> break-even turnover — costs vs alpha.</li>
+  </ul>
+  <h3>Costs ka backtest mein hisaab</h3>
+  <ul>
+    <li><strong>Har backtest mein costs include karo</strong> — spread, commissions, market impact. Bina costs ke backtest ek fantasy hai.</li>
+    <li><strong>Slippage:</strong> expected price aur actual execution price ke beech ka difference.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 19 ================= -->
+<section class="section" id="sec-ch19" data-title="Ch 19 — Risk Management">
+  <div class="sec-meta"><span class="num-chip">20</span><span class="sec-group">Chapter 19</span></div>
+  <h1>Ch 19 — Risk Management</h1>
+  <p class="lead">Risk ko kaise measure karein aur kaise control karein — <strong>VaR, drawdown, stress testing aur kill switches</strong>. Risk management woh hai jo tumhe game mein banaye rakhta hai.</p>
+  <h3>VaR aur Expected Shortfall</h3>
+  <ul>
+    <li><strong>VaR (Value at Risk):</strong> ek confidence level par maximum expected loss — jaise 95% VaR = 5% chance hai ki loss isse zyada hoga.</li>
+    <li><strong>Expected Shortfall (CVaR):</strong> VaR se aage ka average loss — tail risk ko better capture karta hai.</li>
+    <li><strong>Historical VaR, Parametric VaR, Monte Carlo VaR:</strong> teen tareeke — har ek ke apne assumptions hain.</li>
+  </ul>
+  <h3>Drawdown aur kill switches</h3>
+  <ul>
+    <li><strong>Kill switches:</strong> drawdown thresholds par trading band karo — <strong>5%, 10%, 15%, 20%, 30%</strong> drawdown par alag-alag actions (reduce size, halt trading, liquidate).</li>
+    <li><strong>Max drawdown:</strong> peak se trough tak ka sabse bada loss — Chapter 1 mein Risk-Off ka max drawdown lagbhag -77% tha.</li>
+    <li><strong>Figure 19.1:</strong> VaR vs Expected Shortfall.</li>
+    <li><strong>Figure 19.2:</strong> kill switch thresholds — 5/10/15/20/30% drawdown.</li>
+  </ul>
+  <h3>Stress testing</h3>
+  <ul>
+    <li><strong>Historical stress:</strong> 2008 crisis, COVID crash, 2022 rate hikes — in scenarios mein portfolio kaisa perform karta?</li>
+    <li><strong>Hypothetical stress:</strong> "agar market 30% gir jaye to kya hoga?" — aise scenarios banao aur test karo.</li>
+    <li><strong>Reverse stress:</strong> woh scenario dhoondho jisme portfolio fail ho jaye, phir usko avoid karo.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 20 ================= -->
+<section class="section" id="sec-ch20" data-title="Ch 20 — Strategy Synthesis">
+  <div class="sec-meta"><span class="num-chip">21</span><span class="sec-group">Chapter 20</span></div>
+  <h1>Ch 20 — Strategy Synthesis</h1>
+  <p class="lead">Nau case studies ka final hisaab — <strong>kaunsa result holdout mein bacha, kaunsa nahi</strong>. Yeh chapter book ka sabse honest chapter hai: 9 mein se sirf 5 strategies holdout mein positive rahi.</p>
+  <h3>Headline results — validation → holdout</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Case Study</th><th>Validation Sharpe / IC</th><th>Holdout Result</th></tr>
+    <tr><td>US Equities (GBM)</td><td>IC +0.080</td><td>Positive</td></tr>
+    <tr><td>US Firms (Ridge)</td><td>IC peak 0.047</td><td>Positive</td></tr>
+    <tr><td>ETFs (SDF)</td><td>IC +0.085</td><td>Positive</td></tr>
+    <tr><td>FX</td><td>—</td><td>Positive</td></tr>
+    <tr><td>Crypto (Deep Learning)</td><td>Deep beats tabular</td><td>Positive</td></tr>
+    <tr><td>Futures</td><td>—</td><td>Negative / flat</td></tr>
+    <tr><td>Nasdaq-100 Micro</td><td>—</td><td>Negative / flat</td></tr>
+    <tr><td>SP500 Option Analytics</td><td>—</td><td>Negative / flat</td></tr>
+    <tr><td>SP500 Options</td><td>—</td><td>Negative / flat</td></tr>
+  </table></div>
+  <p><strong>9 mein se 5 strategies holdout mein positive rahi.</strong> Baaki 4 flat ya negative ho gayi — yahi reality hai. Book ka point yeh hai ki <strong>triage</strong> karo — jo bacha use aage badhao, jo nahi bacha use chhodo.</p>
+  <h3>IC ceiling</h3>
+  <ul>
+    <li><strong>IC ceiling lagbhag 0.08</strong> hai — isse zyada IC generally overfitting ya leakage ka sign hai.</li>
+    <li><strong>US Firms DML figure — Chapter 20 ka number:</strong> <strong>+0.009, p 0.003</strong> (Chapter 15 mein yahi figure <strong>+0.007, t 1.98, p 0.048</strong> diya gaya hai — dono jaise book mein hain, reconcile nahi kiye gaye).</li>
+  </ul>
+  <h3>Triage aur allocator</h3>
+  <ul>
+    <li><strong>Triage survival rates:</strong> har stage par kuch strategies fail hoti hain — validation se holdout tak, holdout se live tak.</li>
+    <li><strong>Allocator:</strong> jo strategies bachi, unko portfolio mein kaise combine karein — Chapter 17 ke allocators use karo.</li>
+    <li><strong>Figure 20.1:</strong> validation → holdout Sharpe — har case study ka.</li>
+    <li><strong>Figure 20.2:</strong> triage funnel — kitni strategies har stage par bachti hain.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> 9 mein se 5 bacha — yeh failure nahi hai, yeh process hai. Jo process triage karta hai, wohi process live mein tumhe bachata hai.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 21 ================= -->
+<section class="section" id="sec-ch21" data-title="Ch 21 — Reinforcement Learning">
+  <div class="sec-meta"><span class="num-chip">22</span><span class="sec-group">Chapter 21</span></div>
+  <h1>Ch 21 — Reinforcement Learning</h1>
+  <p class="lead">Trading ko ek sequential decision problem ki tarah dekho — <strong>PPO, execution, market making aur hedging</strong>. RL mein agent reward maximise karna seekhta hai, lekin trading mein reward define karna hi sabse mushkil kaam hai.</p>
+  <h3>PPO execution — headline result</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Execution method</th><th>Shortfall (basis points)</th></tr>
+    <tr><td>PPO (RL agent)</td><td>lagbhag 44 bps</td></tr>
+    <tr><td>TWAP</td><td>lagbhag 53 bps</td></tr>
+    <tr><td>Almgren-Chriss</td><td>lagbhag 52 bps</td></tr>
+  </table></div>
+  <p><strong>PPO agent TWAP se lagbhag 9 bps behtar</strong> hai execution mein — yeh book ka sabse strong RL result hai.</p>
+  <h3>RL basics — trading ke liye</h3>
+  <ul>
+    <li><strong>State:</strong> market ki current halat (price, volume, position, time).</li>
+    <li><strong>Action:</strong> buy, sell, hold, ya kitna size trade karna hai.</li>
+    <li><strong>Reward:</strong> profit minus costs minus risk penalty — reward define karna hi sabse mushkil hai.</li>
+    <li><strong>Policy:</strong> state se action ka mapping — jo agent seekhta hai.</li>
+  </ul>
+  <h3>Market making aur hedging</h3>
+  <ul>
+    <li><strong>Market making:</strong> RL agent bid/ask spread se profit kamana seekhta hai — lekin inventory risk manage karna padta hai.</li>
+    <li><strong>Hedging:</strong> RL se options hedge karna — delta hedging se behtar ho sakta hai, lekin training mushkil hai.</li>
+    <li><strong>Figure 21.1:</strong> PPO execution — shortfall comparison (44 vs 53 vs 52 bps).</li>
+    <li><strong>Figure 21.2:</strong> RL training curves.</li>
+  </ul>
+  <div class="note"><strong>Note:</strong> is chapter ke kuch formulas aur figure ke andar ke numbers reader ki text extraction mein readable nahi aaye — un jagah par "not legible" likha hai, koi number guess nahi kiya gaya.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 22 ================= -->
+<section class="section" id="sec-ch22" data-title="Ch 22 — RAG For Financial Research">
+  <div class="sec-meta"><span class="num-chip">23</span><span class="sec-group">Chapter 22</span></div>
+  <h1>Ch 22 — RAG For Financial Research</h1>
+  <p class="lead">Research ke liye <strong>Retrieval-Augmented Generation</strong> — filings, news aur reports se sawaal-jawaab. RAG ka matlab hai LLM ko apne documents se jawaab dhoondhne do, apni memory se nahi.</p>
+  <h3>Chunking aur embeddings</h3>
+  <ul>
+    <li><strong>Chunking:</strong> documents ko chhote pieces mein todo — chunk size aur overlap matter karte hain (jaise 1,000 characters, 200 overlap).</li>
+    <li><strong>Embeddings:</strong> har chunk ko vector mein convert karo — phir similarity search karo.</li>
+    <li><strong>Retrieval:</strong> sawaal ke sabse relevant chunks nikalo — top-k retrieval.</li>
+  </ul>
+  <h3>Hybrid retrieval — headline result</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Retrieval method</th><th>MRR (Mean Reciprocal Rank)</th></tr>
+    <tr><td>BM25 (keyword)</td><td>0.349</td></tr>
+    <tr><td>Hybrid (BM25 + embeddings)</td><td>0.443</td></tr>
+  </table></div>
+  <p><strong>Hybrid retrieval BM25 se lagbhag 27% behtar</strong> hai (MRR 0.443 vs 0.349).</p>
+  <h3>Evaluation — RAGAS</h3>
+  <ul>
+    <li><strong>Faithfulness:</strong> kya jawaab retrieved documents se supported hai?</li>
+    <li><strong>Answer relevancy:</strong> kya jawaab sawaal se relevant hai?</li>
+    <li><strong>Context precision / recall:</strong> kya retrieved chunks relevant the? Kya saare relevant chunks mile?</li>
+    <li><strong>Figure 22.1:</strong> RAG pipeline — chunk → embed → retrieve → generate.</li>
+    <li><strong>Figure 22.2:</strong> hybrid vs BM25 — MRR comparison.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 23 ================= -->
+<section class="section" id="sec-ch23" data-title="Ch 23 — Knowledge Graphs">
+  <div class="sec-meta"><span class="num-chip">24</span><span class="sec-group">Chapter 23</span></div>
+  <h1>Ch 23 — Knowledge Graphs</h1>
+  <p class="lead">Companies, suppliers, competitors aur events ke beech ke relationships ko <strong>graph</strong> mein dikhao — phir us graph se signal nikalo. Graph woh dikhata hai jo table nahi dikhata.</p>
+  <h3>Extraction — 10-K filings se graph</h3>
+  <ul>
+    <li><strong>601 annual reports (10-Ks)</strong> se <strong>1,057 relations</strong> extract kiye gaye — companies, suppliers, customers, competitors ke beech.</li>
+    <li><strong>Extraction:</strong> LLM se entities aur relations nikalo — phir unko graph mein daalo.</li>
+    <li><strong>Figure 23.1:</strong> knowledge graph example — ek company ka supply chain graph.</li>
+  </ul>
+  <h3>Graph RAG — headline result</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Retrieval method</th><th>Recall</th></tr>
+    <tr><td>Embedding-only retrieval</td><td>0.13</td></tr>
+    <tr><td>Graph retrieval</td><td>1.00</td></tr>
+  </table></div>
+  <p><strong>Graph retrieval ka recall 1.00 hai, embedding-only ka sirf 0.13</strong> — matlab graph se woh information milti hai jo embeddings miss kar dete hain. Yeh book ka sabse dramatic RAG result hai.</p>
+  <h3>Topology aur GNNs</h3>
+  <ul>
+    <li><strong>Graph topology:</strong> degree, centrality, communities — kaunsi companies central hain, kaunsi peripheral.</li>
+    <li><strong>GNNs (Graph Neural Networks):</strong> graph structure se seekhne wale models — node classification, link prediction.</li>
+    <li><strong>Use cases:</strong> supply-chain risk, contagion, competitor analysis, event propagation.</li>
+    <li><strong>Figure 23.2:</strong> graph vs embedding recall — 1.00 vs 0.13.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 24 ================= -->
+<section class="section" id="sec-ch24" data-title="Ch 24 — Autonomous Agents">
+  <div class="sec-meta"><span class="num-chip">25</span><span class="sec-group">Chapter 24</span></div>
+  <h1>Ch 24 — Autonomous Agents</h1>
+  <p class="lead">Research ko automate karo — <strong>ReAct agents, memory, tools aur frameworks</strong>. Agent woh hai jo khud plan banaye, tools use kare, aur apne kaam ko check kare.</p>
+  <h3>ReAct — Reason + Act</h3>
+  <ul>
+    <li><strong>ReAct pattern:</strong> socho (Reason) → karo (Act) → dekho (Observe) → dobara socho. Yeh loop tab tak chalta hai jab tak task complete na ho.</li>
+    <li><strong>Tools:</strong> agent ko tools do — data fetch karo, code run karo, web search karo, backtest karo.</li>
+    <li><strong>Memory:</strong> short-term (conversation) aur long-term (vector store, knowledge graph).</li>
+  </ul>
+  <h3>Skills repo — 56 files</h3>
+  <ul>
+    <li><strong>Skills repository:</strong> 56 files, 9 categories — agent ke liye reusable skills (data fetching, backtesting, plotting, reporting, etc.).</li>
+    <li><strong>Replay:</strong> ek agent run ko replay karne mein lagbhag <strong>$1 aur 8 minutes</strong> lagte hain.</li>
+    <li><strong>Frameworks:</strong> LangChain, LangGraph, CrewAI, AutoGen — har ek ke apne strengths hain.</li>
+  </ul>
+  <h3>Operator — human in the loop</h3>
+  <ul>
+    <li><strong>Agent ko khud trade mat karne do.</strong> Agent research kare, report banaye, lekin final decision human le.</li>
+    <li><strong>Guardrails:</strong> agent ke actions par limits lagao — kitna capital, kaunse markets, kaunse tools.</li>
+    <li><strong>Figure 24.1:</strong> ReAct loop diagram.</li>
+    <li><strong>Figure 24.2:</strong> agent architecture — tools, memory, planning.</li>
+  </ul>
+  <div class="note"><strong>Key lesson:</strong> autonomous agents research ko accelerate karte hain, lekin trading decisions abhi bhi human ke haath mein hone chahiye.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 25 ================= -->
+<section class="section" id="sec-ch25" data-title="Ch 25 — Live Trading Systems">
+  <div class="sec-meta"><span class="num-chip">26</span><span class="sec-group">Chapter 25</span></div>
+  <h1>Ch 25 — Live Trading Systems</h1>
+  <p class="lead">Backtest se live trading tak — <strong>brokers, order lifecycle aur production architecture</strong>. Live system mein sab kuch alag hota hai: latency, failures, aur real money.</p>
+  <h3>Brokers — IBKR, Alpaca, OKX</h3>
+  <ul>
+    <li><strong>Interactive Brokers (IBKR):</strong> equities, futures, options — professional-grade API.</li>
+    <li><strong>Alpaca:</strong> equities — simple API, commission-free.</li>
+    <li><strong>OKX:</strong> crypto — perpetuals, high leverage.</li>
+    <li><strong>Lesson:</strong> har broker ka API alag hai — ek abstraction layer banao taaki broker change karna aasan ho.</li>
+  </ul>
+  <h3>Order lifecycle — 7 primary states</h3>
+  <p>Ek order 7 primary states se guzarta hai: <strong>Created → Submitted → Accepted → Partially Filled → Filled → Cancelled / Rejected</strong> (plus Expired). Har state transition ko log karo — taaki debugging aasan ho.</p>
+  <div class="fig"><svg viewBox="0 0 640 120" role="img" aria-label="Order lifecycle states">
+    <rect x="10" y="10" width="620" height="100" rx="14" fill="#1b1b1f" stroke="#343538"/>
+    <g font-family="monospace" font-size="11" fill="#e3e2e6" text-anchor="middle">
+      <rect x="25" y="40" width="80" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="65" y="62">Created</text>
+      <rect x="115" y="40" width="80" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="155" y="62">Submitted</text>
+      <rect x="205" y="40" width="80" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="245" y="62">Accepted</text>
+      <rect x="295" y="40" width="80" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="335" y="62">Partial</text>
+      <rect x="385" y="40" width="80" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="425" y="62">Filled</text>
+      <rect x="475" y="40" width="70" height="36" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="510" y="62">Cancelled</text>
+      <rect x="555" y="40" width="60" height="36" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="585" y="62">Rejected</text>
+    </g>
+    <text x="320" y="100" text-anchor="middle" fill="#8b947d" font-family="monospace" font-size="11">har transition log karo — debugging ke liye</text>
+  </svg><div class="fig-cap"><b>Figure — Order lifecycle:</b> 7 primary states; har transition logged honi chahiye.</div></div>
+  <h3>Production architecture</h3>
+  <ul>
+    <li><strong>ml4t-backtest</strong> aur <strong>ml4t-live</strong> — do alag packages, ek hi code — taaki backtest aur live diverge na karein.</li>
+    <li><strong>Event-driven architecture:</strong> market data → signal → order → fill → portfolio update — ek event loop mein.</li>
+    <li><strong>Failure modes:</strong> network down, broker down, data stale — har failure ka ek fallback plan hona chahiye.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 26 ================= -->
+<section class="section" id="sec-ch26" data-title="Ch 26 — MLOps And Governance">
+  <div class="sec-meta"><span class="num-chip">27</span><span class="sec-group">Chapter 26</span></div>
+  <h1>Ch 26 — MLOps And Governance</h1>
+  <p class="lead">Model ko production mein kaise chalaye aur kaise govern karein — <strong>monitoring, drift detection, shadow deployment aur circuit breakers</strong>. MLOps woh hai jo ek research project ko ek production system banata hai.</p>
+  <h3>Monitoring aur drift</h3>
+  <ul>
+    <li><strong>PSI (Population Stability Index):</strong> data distribution mein change detect karo — PSI thresholds: <strong>&lt; 0.1 stable, 0.1–0.25 moderate shift, &gt; 0.25 significant shift</strong>.</li>
+    <li><strong>Performance monitoring:</strong> live IC, live Sharpe — agar validation se zyada gir jaye to alert bhejo.</li>
+    <li><strong>Data quality monitoring:</strong> missing values, range violations, stale data — Chapter 4 ke checks ko production mein bhi chalao.</li>
+  </ul>
+  <h3>Shadow deployment — 60 days</h3>
+  <ul>
+    <li><strong>Shadow mode:</strong> naya model live data par chalao, lekin uske signals par trade mat karo — sirf observe karo. <strong>60 din</strong> shadow mein chalane ke baad hi live karo.</li>
+    <li><strong>Rollout:</strong> 10% → 25% → 50% → 100% — dheere-dheere capital badhao.</li>
+  </ul>
+  <h3>Circuit breakers aur governance</h3>
+  <ul>
+    <li><strong>Circuit breakers:</strong> agar model galat behave kare (jaise bahut zyada trades, ya bahut bada loss), to automatically trading band karo.</li>
+    <li><strong>Model registry:</strong> har model version ko register karo — kaunsa model kab live tha, kis data par train hua tha.</li>
+    <li><strong>Audit trail:</strong> har decision ka record rakho — kaunsa signal, kab, kyun.</li>
+    <li><strong>Figure 26.1:</strong> MLOps pipeline — train → validate → shadow → live → monitor.</li>
+    <li><strong>Figure 26.2:</strong> PSI thresholds diagram.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= CH 27 ================= -->
+<section class="section" id="sec-ch27" data-title="Ch 27 — The Systematic Edge">
+  <div class="sec-meta"><span class="num-chip">28</span><span class="sec-group">Chapter 27</span></div>
+  <h1>Ch 27 — The Systematic Edge</h1>
+  <p class="lead">Book ka aakhri chapter — <strong>alpha factory, careers aur future</strong>. Systematic trading ek career hai, ek hobby nahi. Aur future mein quantum computing aur AI regulation bhi aayenge.</p>
+  <h3>Alpha factory</h3>
+  <ul>
+    <li><strong>Alpha factory:</strong> ek system jo continuously naye signals generate kare, test kare, aur deploy kare — ek pipeline, ek project nahi.</li>
+    <li><strong>Signal lifecycle:</strong> idea → research → validation → deployment → monitoring → retirement.</li>
+    <li><strong>Team:</strong> researchers, engineers, risk managers — ek alpha factory ek team effort hai.</li>
+  </ul>
+  <h3>Careers — pay ranges</h3>
+  <ul>
+    <li><strong>Quant researcher:</strong> $200,000 – $500,000+ (experience ke hisaab se).</li>
+    <li><strong>Quant developer:</strong> $150,000 – $400,000+.</li>
+    <li><strong>Portfolio manager:</strong> $500,000 – $10,000,000+ (performance-based).</li>
+    <li><strong>Note:</strong> yeh US market ke ranges hain, book mein diye gaye hain.</li>
+  </ul>
+  <h3>Future — quantum aur regulation</h3>
+  <ul>
+    <li><strong>Quantum computing:</strong> 2030–2040 tak trading mein use ho sakta hai — abhi experimental hai.</li>
+    <li><strong>EU AI Act:</strong> AI systems par regulation — compliance cost lagbhag <strong>€29,277 per system per year</strong>.</li>
+    <li><strong>Learning plan:</strong> book ke baad kya padhein — advanced ML, deep learning, RL, aur domain knowledge (finance, economics).</li>
+  </ul>
+  <div class="note"><strong>Book ka aakhri message:</strong> edge process mein hai. Jo process seekha, use repeat karo, improve karo, aur kabhi shortcut mat lo.</div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= LABS ================= -->
+<section class="section" id="sec-labs" data-title="Labs — Interactive Practice">
+  <div class="sec-meta"><span class="num-chip">29</span><span class="sec-group">End Matter</span></div>
+  <h1>Labs — Interactive Practice</h1>
+  <p class="lead">8 interactive labs — book ke core concepts ko haath se aazmao. Har lab ke neeche uska Python code bhi diya hai (companion notebooks ki style mein, descriptions se reconstruct kiya gaya — verbatim claim nahi).</p>
+
+  <div class="lab" id="lab-1">
+    <h3>Lab 1 — Sharpe Ratio Calculator</h3>
+    <p>Annual return, volatility aur risk-free rate daalo — Sharpe ratio niklega. Book ka benchmark yaad rakho: 10-ETF momentum baseline ka Sharpe lagbhag <strong>0.6–0.7</strong> hai.</p>
+    <div class="lab-grid">
+      <label>Annual return (%)<input id="lab1-ret" type="number" value="12" step="0.5"></label>
+      <label>Annual volatility (%)<input id="lab1-vol" type="number" value="18" step="0.5"></label>
+      <label>Risk-free rate (%)<input id="lab1-rf" type="number" value="4" step="0.5"></label>
+    </div>
+    <button class="btn" onclick="lab1()">Sharpe nikalo</button>
+    <div class="lab-out" id="lab1-out">Result yahan aayega.</div>
+    <details><summary>Python code — Sharpe ratio</summary><pre><code>def sharpe_ratio(returns, risk_free=0.04):
+    """Annualised Sharpe ratio."""
+    excess = returns - risk_free
+    return excess.mean() / returns.std() * (252 ** 0.5)
+
+# Example: 12% return, 18% vol, 4% risk-free
+# Sharpe = (0.12 - 0.04) / 0.18 = 0.44</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-2">
+    <h3>Lab 2 — Point-in-Time Leakage Detector</h3>
+    <p>Apne pipeline ke steps ko tick karo — lab batayega kahan leakage hai. <strong>Rule: feature decision time par knowable hona chahiye.</strong></p>
+    <div class="lab-grid">
+      <label class="chk"><input type="checkbox" id="lab2-a"> Scaler poore dataset par fit kiya, split se pehle</label>
+      <label class="chk"><input type="checkbox" id="lab2-b"> Label mein future return use hua</label>
+      <label class="chk"><input type="checkbox" id="lab2-c"> Restated earnings ko original date par use kiya</label>
+      <label class="chk"><input type="checkbox" id="lab2-d"> Feature selection poore dataset par ki</label>
+      <label class="chk"><input type="checkbox" id="lab2-e"> Train/test split ke baad hi scaler fit kiya (sahi)</label>
+      <label class="chk"><input type="checkbox" id="lab2-f"> Purge + embargo gap rakha (sahi)</label>
+    </div>
+    <button class="btn" onclick="lab2()">Leakage check karo</button>
+    <div class="lab-out" id="lab2-out">Result yahan aayega.</div>
+    <details><summary>Python code — point-in-time check</summary><pre><code>def check_point_in_time(feature_date, decision_date):
+    """Feature sirf tab valid hai jab woh decision time tak knowable tha."""
+    if feature_date > decision_date:
+        return "LEAKAGE — future ki information use ho rahi hai"
+    return "OK — point-in-time safe"
+
+# Restated earnings: as-of date use karo, report date nahi</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-3">
+    <h3>Lab 3 — Walk-Forward Validator</h3>
+    <p>Total observations, train window, test window aur purge gap daalo — lab batayega kitne folds banenge aur effective sample kitna hoga. (SPY example: 248,436 labels → effective 11,830.)</p>
+    <div class="lab-grid">
+      <label>Total observations<input id="lab3-n" type="number" value="5000" step="100"></label>
+      <label>Train window<input id="lab3-train" type="number" value="1000" step="100"></label>
+      <label>Test window<input id="lab3-test" type="number" value="250" step="50"></label>
+      <label>Purge gap<input id="lab3-purge" type="number" value="21" step="1"></label>
+    </div>
+    <button class="btn" onclick="lab3()">Folds nikalo</button>
+    <div class="lab-out" id="lab3-out">Result yahan aayega.</div>
+    <details><summary>Python code — walk-forward splits</summary><pre><code>def walk_forward(n, train=1000, test=250, purge=21):
+    """Walk-forward folds: train -> purge -> test, phir window aage."""
+    folds = []
+    start = 0
+    while start + train + purge + test <= n:
+        folds.append((start, start + train,
+                      start + train + purge,
+                      start + train + purge + test))
+        start += test
+    return folds</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-4">
+    <h3>Lab 4 — Regime Classifier</h3>
+    <p>Volatility, correlation aur trend daalo — lab batayega kaunsa regime hai: Risk-On, Risk-Off, Caution ya Recovery/Crisis.</p>
+    <div class="lab-grid">
+      <label>Volatility (%)<input id="lab4-vol" type="number" value="10" step="0.5"></label>
+      <label>Average correlation (0–1)<input id="lab4-corr" type="number" value="0.3" step="0.05" min="0" max="1"></label>
+      <label>Trend (12m return, %)<input id="lab4-trend" type="number" value="8" step="1"></label>
+    </div>
+    <button class="btn" onclick="lab4()">Regime batao</button>
+    <div class="lab-out" id="lab4-out">Result yahan aayega.</div>
+    <details><summary>Python code — regime rules</summary><pre><code>def classify_regime(vol, corr, trend):
+    """Ch 16 ke regime definitions (simplified rules)."""
+    if vol > 15 and corr > 0.6:
+        return "Risk-Off"
+    if vol < 12 and trend > 0:
+        return "Risk-On"
+    if trend < -5:
+        return "Recovery/Crisis"
+    return "Caution"</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-5">
+    <h3>Lab 5 — Backtest Simulator + Costs</h3>
+    <p>Gross return, turnover aur cost daalo — lab net return nikalega. <strong>Bina costs ke backtest fantasy hai.</strong></p>
+    <div class="lab-grid">
+      <label>Gross annual return (%)<input id="lab5-ret" type="number" value="15" step="0.5"></label>
+      <label>Annual turnover (x)<input id="lab5-turn" type="number" value="4" step="0.5"></label>
+      <label>Cost per trade (bps)<input id="lab5-cost" type="number" value="10" step="1"></label>
+      <label>Trades per year<input id="lab5-n" type="number" value="120" step="10"></label>
+    </div>
+    <button class="btn" onclick="lab5()">Net return nikalo</button>
+    <div class="lab-out" id="lab5-out">Result yahan aayega.</div>
+    <details><summary>Python code — net return with costs</summary><pre><code>def net_return(gross, turnover, cost_bps):
+    """Net = gross - turnover * cost. 1 bp = 0.01%."""
+    cost = turnover * (cost_bps / 10000.0)
+    return gross - cost
+
+# Example: 15% gross, 4x turnover, 10 bps
+# cost = 4 * 0.001 = 0.4% -> net 14.6%</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-6">
+    <h3>Lab 6 — Allocator Comparison</h3>
+    <p>Teen assets ki volatility daalo — lab Equal Weight, Inverse-Volatility (Risk Parity style) aur Inverse-Variance (Min-Variance style) weights compare karega. Book ka best allocator: min-variance (Ledoit-Wolf) Sharpe 0.8437.</p>
+    <div class="lab-grid">
+      <label>Asset A vol (%)<input id="lab6-a" type="number" value="15" step="1"></label>
+      <label>Asset B vol (%)<input id="lab6-b" type="number" value="20" step="1"></label>
+      <label>Asset C vol (%)<input id="lab6-c" type="number" value="10" step="1"></label>
+    </div>
+    <button class="btn" onclick="lab6()">Weights compare karo</button>
+    <div class="lab-out" id="lab6-out">Result yahan aayega.</div>
+    <details><summary>Python code — allocator weights</summary><pre><code>def allocator_weights(vols, method="equal"):
+    """Equal, inverse-vol ya inverse-variance weights."""
+    import numpy as np
+    vols = np.array(vols, dtype=float)
+    if method == "equal":
+        w = np.ones_like(vols) / len(vols)
+    elif method == "inv_vol":
+        w = (1.0 / vols)
+        w = w / w.sum()
+    else:  # inverse variance
+        w = (1.0 / vols ** 2)
+        w = w / w.sum()
+    return w</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-7">
+    <h3>Lab 7 — VaR aur Drawdown Calculator</h3>
+    <p>Portfolio value, daily volatility aur drawdown daalo — lab VaR, Expected Shortfall (approx) aur kill-switch action batayega. Kill-switch thresholds: 5/10/15/20/30%.</p>
+    <div class="lab-grid">
+      <label>Portfolio value ($)<input id="lab7-val" type="number" value="1000000" step="10000"></label>
+      <label>Daily volatility (%)<input id="lab7-vol" type="number" value="1.2" step="0.1"></label>
+      <label>Current drawdown (%)<input id="lab7-dd" type="number" value="8" step="1"></label>
+      <label>Confidence<select id="lab7-conf"><option value="1.65">95%</option><option value="2.33">99%</option></select></label>
+    </div>
+    <button class="btn" onclick="lab7()">Risk nikalo</button>
+    <div class="lab-out" id="lab7-out">Result yahan aayega.</div>
+    <details><summary>Python code — VaR and kill switch</summary><pre><code>def var_1day(value, daily_vol, z=1.65):
+    """Parametric 1-day VaR (normal assumption)."""
+    return value * daily_vol * z
+
+def kill_switch(drawdown):
+    """Kill-switch thresholds: 5 / 10 / 15 / 20 / 30%."""
+    if drawdown >= 30:
+        return "LIQUIDATE — trading band karo"
+    if drawdown >= 20:
+        return "HALT — naye trades band karo"
+    if drawdown >= 15:
+        return "REDUCE — size aadha karo"
+    if drawdown >= 10:
+        return "CAUTION — risk review karo"
+    if drawdown >= 5:
+        return "WATCH — monitoring badhao"
+    return "NORMAL — koi action nahi"</code></pre></details>
+  </div>
+
+  <div class="lab" id="lab-8">
+    <h3>Lab 8 — RAG Eval Checker</h3>
+    <p>Apne RAG system ke chaar RAGAS-style scores (0–1) daalo — lab average aur verdict dega. Book ka benchmark: hybrid retrieval MRR 0.443 vs BM25 0.349; graph recall 1.00 vs embedding 0.13.</p>
+    <div class="lab-grid">
+      <label>Faithfulness (0–1)<input id="lab8-faith" type="number" value="0.85" step="0.05" min="0" max="1"></label>
+      <label>Answer relevancy (0–1)<input id="lab8-rel" type="number" value="0.9" step="0.05" min="0" max="1"></label>
+      <label>Context precision (0–1)<input id="lab8-prec" type="number" value="0.8" step="0.05" min="0" max="1"></label>
+      <label>Context recall (0–1)<input id="lab8-rec" type="number" value="0.75" step="0.05" min="0" max="1"></label>
+    </div>
+    <button class="btn" onclick="lab8()">RAG score nikalo</button>
+    <div class="lab-out" id="lab8-out">Result yahan aayega.</div>
+    <details><summary>Python code — RAG eval average</summary><pre><code>def rag_eval(faithfulness, relevancy, precision, recall):
+    """RAGAS-style scores ka simple average aur verdict."""
+    scores = [faithfulness, relevancy, precision, recall]
+    avg = sum(scores) / len(scores)
+    verdict = "PASS" if avg >= 0.8 else "REVIEW"
+    return avg, verdict</code></pre></details>
+  </div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= FAQS ================= -->
+<section class="section" id="sec-faqs" data-title="FAQs — Interview Questions">
+  <div class="sec-meta"><span class="num-chip">30</span><span class="sec-group">End Matter</span></div>
+  <h1>FAQs — Interview Questions</h1>
+  <p class="lead">36 interview-style sawaal-jawaab — quant research, ML aur trading systems interviews ke liye, isi book ke concepts par based.</p>
+  <div class="faq"><button class="faq-q">1. Trading mein "edge" ka matlab kya hai?</button><div class="faq-a"><p>Edge ek repeatable advantage hai jo costs ke baad bhi survive kare. Book ke hisaab se edge model ya dataset mein nahi, process mein rehta hai — define, test, validate aur deploy karne ka tareeka hi edge hai.</p></div></div>
+  <div class="faq"><button class="faq-q">2. 7-stage ML4T workflow kya hai?</button><div class="faq-a"><p>1 Data Engineering, 2 Strategy Research Framework, 3 Defining The Learning Task, 4 Feature Engineering, 5 Modelling, 6 Strategy Simulation, 7 Live Trading Systems. Yeh ek loop hai — deploy ke baad monitoring se seekh wapas setup mein jati hai.</p></div></div>
+  <div class="faq"><button class="faq-q">3. Look-ahead bias kya hai, aur isse kaise bachein?</button><div class="faq-a"><p>Jab future ki information ko past ke decision mein use kar liya jaye — jaise restated earnings ko original date par use karna. Bachne ka tareeka: point-in-time alignment — har value ke saath uska as-of timestamp rakho, aur feature sirf tab use karo jab woh decision time par knowable tha.</p></div></div>
+  <div class="faq"><button class="faq-q">4. Survivorship bias kya hai?</button><div class="faq-a"><p>Sirf un stocks ko analyse karna jo aaj tak survive kiye. Book mein 1962–2018 ke 3,199 US equities mein se sirf 777 (24.3%) survive kiye — delisted stocks ko chhod dena performance ko inflate karta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">5. Sharpe ratio kya hai aur iski kami kya hai?</button><div class="faq-a"><p>Sharpe = (return − risk-free rate) / volatility. Yeh risk-adjusted return batata hai, lekin yeh assume karta hai ki returns normal hain — tail risk aur skewness ko ignore karta hai. Isliye VaR aur drawdown bhi dekho.</p></div></div>
+  <div class="faq"><button class="faq-q">6. Walk-forward validation kyun zaroori hai?</button><div class="faq-a"><p>Time-series data mein random split leakage karta hai — future ki information train mein aa jati hai. Walk-forward mein train → validate → test windows aage badhte hain, aur purge + embargo gap leakage rokte hain.</p></div></div>
+  <div class="faq"><button class="faq-q">7. Information Coefficient (IC) kya hai?</button><div class="faq-a"><p>IC = prediction aur realised return ke beech correlation. IC &gt; 0.05 generally achha mana jata hai; book ke hisaab se IC ceiling lagbhag 0.08 hai — isse zyada IC overfitting ya leakage ka sign ho sakta hai. t-stat 3 se zyada hona chahiye.</p></div></div>
+  <div class="faq"><button class="faq-q">8. Triple-barrier labels kya hain?</button><div class="faq-a"><p>Har trade ke liye teen barriers lagao: profit target, stop loss aur time limit — jo pehle hit ho woh label ban jata hai. Isse labels trading decision se jud jate hain, sirf direction se nahi.</p></div></div>
+  <div class="faq"><button class="faq-q">9. Meta-labelling kya hai?</button><div class="faq-a"><p>Pehle ek primary model se signal lo (jaise momentum), phir ek secondary model se us signal ko filter karo — sahi signal ya galat signal. Isse tum position size bhi decide kar sakte ho.</p></div></div>
+  <div class="faq"><button class="faq-q">10. Parkinson, Garman-Klass aur Yang-Zhang estimators mein kya farak hai?</button><div class="faq-a"><p>Parkinson high-low use karta hai (lagbhag 5x efficient), Garman-Klass OHLC use karta hai (lagbhag 7x), Yang-Zhang OHLC + overnight jumps use karta hai (lagbhag 8–14x). Yang-Zhang sabse efficient hai kyunki woh overnight moves ko bhi include karta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">11. Fractional differencing kyun use karte hain?</button><div class="faq-a"><p>Integer differencing (d=1) series ki long memory khatm kar deta hai. Fractional differencing (d=0.4–0.5) series ko stationary banate hue zyada memory retain karta hai — isse predictive signal bachta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">12. GARCH vs HAR — kaunsa volatility model behtar hai?</button><div class="faq-a"><p>Book mein HAR ka RMSE 0.061 hai vs GARCH ka 0.111 — HAR lagbhag 2 guna behtar hai, kyunki woh daily, weekly aur monthly realised volatility ko combine karta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">13. FinBERT kya hai aur iski limitation kya hai?</button><div class="faq-a"><p>FinBERT ek BERT model hai jo financial text par fine-tune hua hai — PhraseBank par accuracy 97.1% hai. Lekin cross-dataset performance 87.0% se gir kar 49.4% ho jati hai — sentiment models dataset-specific hote hain, isliye apne data par fine-tune karna zaroori hai.</p></div></div>
+  <div class="faq"><button class="faq-q">14. Nested cross-validation kyun zaroori hai?</button><div class="faq-a"><p>Normal CV mein hyperparameter tuning ka bias test result mein aa jata hai. Book mein ek example hai jahan nested CV mein IC +0.028 se −0.032 flip ho gaya — jo model validation mein achha dikhta tha woh test mein ulta nikla. Nested CV yahi overfitting pakadta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">15. SHAP values kya batate hain?</button><div class="faq-a"><p>SHAP har feature ka contribution batata hai ek prediction mein. Yeh model ko interpretable banata hai — tum dekh sakte ho ki model ne kyun woh prediction di, aur kaunsa feature sabse zyada matter karta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">16. Conformal prediction kya hai?</button><div class="faq-a"><p>Yeh sirf point estimate nahi, ek prediction interval deta hai. Book mein CQR ki coverage 89.9% hai (target 90%). Risk management ke liye uncertainty jaanna zaroori hai — sirf point prediction kaafi nahi.</p></div></div>
+  <div class="faq"><button class="faq-q">17. LightGBM vs XGBoost — kaunsa chunein?</button><div class="faq-a"><p>4.9M rows par LightGBM lagbhag 50 seconds leta hai vs XGBoost lagbhag 100 seconds — similar accuracy ke saath LightGBM lagbhag 2 guna faster hai. Tabular data par dono hi strong hain; speed aur memory ke hisaab se chuno.</p></div></div>
+  <div class="faq"><button class="faq-q">18. Tabular data par deep learning GBM ko beat kyun nahi karta?</button><div class="faq-a"><p>Book ka shuffle test dikhata hai: Transformer ka MSE shuffle ke baad lagbhag same raha (0.379 → 0.391), jabki D-Linear ka 4 guna badh gaya (0.345 → 1.406). Matlab Transformer time structure ko use hi nahi kar raha tha. Deep learning sirf Crypto case study mein tabular ko credibly beat karta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">19. Latent factor models kya hain?</button><div class="faq-a"><p>Woh factors jo directly observe nahi hote lekin returns ko drive karte hain — jaise PCA components ya yield curve ke Level/Slope/Curvature. Yield curve ka Level factor 90% se zyada variance explain karta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">20. Double Machine Learning (DML) kya hai?</button><div class="faq-a"><p>DML treatment effect estimate karta hai — jaise ek policy change ka returns par asar — machine learning se confounders ko control karke. Lekin book mein US Firms par iska median absolute bias 59.7% hai, isliye causal estimates ko carefully interpret karna chahiye.</p></div></div>
+  <div class="faq"><button class="faq-q">21. Backtest mein 60/40 portfolio ko benchmark kyun banate hain?</button><div class="faq-a"><p>Kyunki ek simple 60/40 portfolio 10-ETF momentum baseline (171.4% total return, Sharpe 0.65) se behtar hai (282.8%, Sharpe 0.80). Agar tumhari strategy 60/40 ko beat nahi karti, to woh complexity justify nahi karti.</p></div></div>
+  <div class="faq"><button class="faq-q">22. Square-root impact law kya hai?</button><div class="faq-a"><p>Market impact order size ke square root ke proportional hota hai: order 4 guna badhane se impact sirf 2 guna badhta hai. Yeh execution cost estimate karne aur break-even turnover nikalne ke liye use hota hai.</p></div></div>
+  <div class="faq"><button class="faq-q">23. VaR aur Expected Shortfall mein kya farak hai?</button><div class="faq-a"><p>VaR ek confidence level par maximum expected loss batata hai (jaise 95% VaR). Expected Shortfall (CVaR) VaR se aage ka average loss batata hai — tail risk ko better capture karta hai, kyunki VaR yeh nahi batata ki loss VaR se kitna zyada ho sakta hai.</p></div></div>
+  <div class="faq"><button class="faq-q">24. Kill switch kya hai?</button><div class="faq-a"><p>Drawdown thresholds par automatic action: 5% par watch, 10% par caution, 15% par size aadha, 20% par trading halt, 30% par liquidate. Yeh risk management ka aakhri defence hai — emotion se pehle system decide kare.</p></div></div>
+  <div class="faq"><button class="faq-q">25. 9 case studies mein se kitni holdout mein bachi?</button><div class="faq-a"><p>9 mein se 5 strategies holdout mein positive rahi — US Equities, US Firms, ETFs, FX aur Crypto. Baaki 4 (Futures, Nasdaq-100 Micro, SP500 Option Analytics, SP500 Options) flat ya negative ho gayi. Yahi triage ka point hai: jo bacha use aage badhao.</p></div></div>
+  <div class="faq"><button class="faq-q">26. PPO execution mein TWAP se kitna behtar hai?</button><div class="faq-a"><p>PPO agent ka shortfall lagbhag 44 bps hai vs TWAP 53 bps aur Almgren-Chriss 52 bps — lagbhag 9 bps ka improvement. Yeh book ka sabse strong reinforcement learning result hai.</p></div></div>
+  <div class="faq"><button class="faq-q">27. RAG mein hybrid retrieval BM25 se behtar kyun hai?</button><div class="faq-a"><p>Hybrid (BM25 + embeddings) ka MRR 0.443 hai vs BM25 ka 0.349 — lagbhag 27% behtar. Keyword search exact terms dhoondhta hai, embeddings meaning dhoondhte hain — dono milkar zyada relevant chunks late hain.</p></div></div>
+  <div class="faq"><button class="faq-q">28. Graph RAG ka recall embedding-only se itna zyada kyun hai?</button><div class="faq-a"><p>Book mein graph retrieval ka recall 1.00 hai vs embedding-only 0.13. Graph relationships (supplier, competitor, customer) ke through woh information milti hai jo text similarity miss kar deti hai — kyunki related companies ke naam ek document mein nahi hote.</p></div></div>
+  <div class="faq"><button class="faq-q">29. ReAct agent kya hai?</button><div class="faq-a"><p>Reason + Act ka loop: socho → karo → observe karo → dobara socho. Agent tools use karta hai (data fetch, code run, backtest) aur memory rakhta hai. Research automate karne ke liye use hota hai — lekin trading decision human ke paas rehni chahiye.</p></div></div>
+  <div class="faq"><button class="faq-q">30. Live trading mein order lifecycle kyun important hai?</button><div class="faq-a"><p>Ek order 7 primary states se guzarta hai (Created → Submitted → Accepted → Partially Filled → Filled → Cancelled/Rejected). Har transition log karna debugging aur audit ke liye zaroori hai — live mein jo galat hota hai woh backtest mein nahi dikhta.</p></div></div>
+  <div class="faq"><button class="faq-q">31. PSI kya hai aur iske thresholds kya hain?</button><div class="faq-a"><p>Population Stability Index data distribution mein shift detect karta hai: &lt; 0.1 stable, 0.1–0.25 moderate shift, &gt; 0.25 significant shift. Agar PSI zyada ho, to model retrain ya review karna chahiye.</p></div></div>
+  <div class="faq"><button class="faq-q">32. Shadow deployment kya hai?</button><div class="faq-a"><p>Naya model live data par chalao lekin uske signals par trade mat karo — sirf observe karo. Book mein 60 din shadow ke baad hi live karne ka rule hai, phir rollout 10% → 25% → 50% → 100% capital ke saath.</p></div></div>
+  <div class="faq"><button class="faq-q">33. Synthetic data real data ka replacement hai?</button><div class="faq-a"><p>Nahi — complement hai. TimeGAN ka discriminator accuracy 68% aur AUC 0.87 raha, matlab synthetic data real se distinguishable tha. Synthetic data rare events aur privacy ke liye useful hai, lekin hamesha real data par validate karo.</p></div></div>
+  <div class="faq"><button class="faq-q">34. Market microstructure se signal kaise milta hai?</button><div class="faq-a"><p>Order book, spread, volume imbalance aur trade flow se — jaise order-flow imbalance vs return ka correlation. Lekin signals weak hote hain (correlation −0.35 se +0.16) aur latency matter karti hai — 1 opportunity per minute per symbol, sirf 5–10 microseconds ke liye.</p></div></div>
+  <div class="faq"><button class="faq-q">35. Alpha factory kya hai?</button><div class="faq-a"><p>Ek system jo continuously naye signals generate kare, test kare aur deploy kare — ek pipeline, ek project nahi. Signal lifecycle: idea → research → validation → deployment → monitoring → retirement. Yeh ek team effort hai: researchers, engineers aur risk managers.</p></div></div>
+  <div class="faq"><button class="faq-q">36. Is book ko padhne ke baad pehla kadam kya hona chahiye?</button><div class="faq-a"><p>Ek simple baseline banao — jaise 10-ETF momentum (Sharpe lagbhag 0.6–0.7) — phir usko walk-forward validation aur costs ke saath test karo. Uske baad hi ek feature ya model add karo, aur har baar baseline se compare karo. Process pehle, model baad mein.</p></div></div>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+
+<!-- ================= TRUST CHECK ================= -->
+<section class="section" id="sec-trust" data-title="Trust Check — Coverage">
+  <div class="sec-meta"><span class="num-chip">31</span><span class="sec-group">End Matter</span></div>
+  <h1>Trust Check — Coverage</h1>
+  <p class="lead">Yeh page khud ko check karta hai — neeche ke counts live page se gine gaye hain, koi haath se likha number nahi. <strong>Self-check button</strong> dabao: woh page ko scan karke PASS ya FAIL batayega.</p>
+  <h3>Live counts (is page se gine gaye)</h3>
+  <div class="tc-grid">
+    <div class="tc-card"><b id="tc-sections">—</b><span>Sections</span></div>
+    <div class="tc-card"><b id="tc-sidebar">—</b><span>Sidebar entries</span></div>
+    <div class="tc-card"><b id="tc-sources">—</b><span>Source boxes</span></div>
+    <div class="tc-card"><b id="tc-figures">—</b><span>Figures (diagrams)</span></div>
+    <div class="tc-card"><b id="tc-tables">—</b><span>Tables</span></div>
+    <div class="tc-card"><b id="tc-faqs">—</b><span>FAQs</span></div>
+    <div class="tc-card"><b id="tc-labs">—</b><span>Labs</span></div>
+  </div>
+  <button class="btn" id="tc-btn" onclick="runTrustCheck()">Self-check chalao — PASS / FAIL</button>
+  <div class="lab-out" id="tc-result">Self-check abhi nahi chalaya gaya. Button dabao.</div>
+  <h3>Cross-check — book ki TOC vs is SPA ke sections</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Book ka hissa</th><th>SPA mein</th><th>Status</th></tr>
+    <tr><td>Preface</td><td>Section 01 — Preface</td><td>Covered</td></tr>
+    <tr><td>Ch 1 — The Process Is Your Edge</td><td>Section 02</td><td>Covered</td></tr>
+    <tr><td>Ch 2 — The Financial Data Universe</td><td>Section 03</td><td>Covered</td></tr>
+    <tr><td>Ch 3 — Market Microstructure</td><td>Section 04</td><td>Covered</td></tr>
+    <tr><td>Ch 4 — Fundamental And Alternative Data</td><td>Section 05</td><td>Covered</td></tr>
+    <tr><td>Ch 5 — Synthetic Financial Data</td><td>Section 06</td><td>Covered</td></tr>
+    <tr><td>Ch 6 — Strategy Research Framework</td><td>Section 07</td><td>Covered</td></tr>
+    <tr><td>Ch 7 — Defining The Learning Task</td><td>Section 08</td><td>Covered</td></tr>
+    <tr><td>Ch 8 — Financial Feature Engineering</td><td>Section 09</td><td>Covered</td></tr>
+    <tr><td>Ch 9 — Model-Based Feature Extraction</td><td>Section 10</td><td>Covered</td></tr>
+    <tr><td>Ch 10 — Text Feature Engineering</td><td>Section 11</td><td>Covered</td></tr>
+    <tr><td>Ch 11 — The ML Pipeline</td><td>Section 12</td><td>Covered</td></tr>
+    <tr><td>Ch 12 — Advanced Models For Tabular Data</td><td>Section 13</td><td>Covered</td></tr>
+    <tr><td>Ch 13 — Deep Learning For Time Series</td><td>Section 14</td><td>Covered</td></tr>
+    <tr><td>Ch 14 — Latent Factor Models</td><td>Section 15</td><td>Covered</td></tr>
+    <tr><td>Ch 15 — Causal Machine Learning</td><td>Section 16</td><td>Covered</td></tr>
+    <tr><td>Ch 16 — Strategy Simulation</td><td>Section 17</td><td>Covered</td></tr>
+    <tr><td>Ch 17 — Portfolio Construction</td><td>Section 18</td><td>Covered</td></tr>
+    <tr><td>Ch 18 — Transaction Costs</td><td>Section 19</td><td>Covered</td></tr>
+    <tr><td>Ch 19 — Risk Management</td><td>Section 20</td><td>Covered</td></tr>
+    <tr><td>Ch 20 — Strategy Synthesis</td><td>Section 21</td><td>Covered</td></tr>
+    <tr><td>Ch 21 — Reinforcement Learning</td><td>Section 22</td><td>Covered</td></tr>
+    <tr><td>Ch 22 — RAG For Financial Research</td><td>Section 23</td><td>Covered</td></tr>
+    <tr><td>Ch 23 — Knowledge Graphs</td><td>Section 24</td><td>Covered</td></tr>
+    <tr><td>Ch 24 — Autonomous Agents</td><td>Section 25</td><td>Covered</td></tr>
+    <tr><td>Ch 25 — Live Trading Systems</td><td>Section 26</td><td>Covered</td></tr>
+    <tr><td>Ch 26 — MLOps And Governance</td><td>Section 27</td><td>Covered</td></tr>
+    <tr><td>Ch 27 — The Systematic Edge</td><td>Section 28</td><td>Covered</td></tr>
+    <tr><td>Labs (8)</td><td>Section 29 — Labs</td><td>Covered</td></tr>
+    <tr><td>FAQs (36)</td><td>Section 30 — FAQs</td><td>Covered</td></tr>
+    <tr><td>Index</td><td>—</td><td>Out of scope — lookup reference hai, teaching chapter nahi</td></tr>
+    <tr><td>Other Books You May Enjoy</td><td>—</td><td>Out of scope — reference page hai</td></tr>
+    <tr><td>Appendices</td><td>—</td><td>Book mein koi appendix nahi hai</td></tr>
+  </table></div>
+  <h3>Honest out-of-scope list — jo is SPA mein nahi hai, aur kyun</h3>
+  <ul>
+    <li><strong>Index:</strong> lookup reference hai, isliye section nahi banaya gaya.</li>
+    <li><strong>Appendices:</strong> is book mein koi appendix nahi hai.</li>
+    <li><strong>Code listings:</strong> book ke pages mein koi code print nahi hota — saara code companion notebooks mein hai (jaise <code>01_data_download.ipynb</code>, <code>ml4t-backtest</code>, <code>ml4t-live</code>, <code>ml4t-rl</code>). Is SPA mein code ko book ki step-by-step descriptions se samjhaya gaya hai; kabhi verbatim claim nahi kiya gaya.</li>
+    <li><strong>Kuch formulas aur figure ke andar ke numbers:</strong> reader ki text extraction mein readable nahi aaye (khaas taur par Ch 15, 17, 21 ke kuch hisse aur Ch 1/7/11 ke kuch values) — un jagah par "not legible" likha hai, koi number guess nahi kiya gaya.</li>
+    <li><strong>Licensed datasets:</strong> jaise ek data vendor ka SP500 options data — public nahi hai, exactly reproduce nahi ho sakta.</li>
+    <li><strong>Figures:</strong> book ke saare figures diagram ke roop mein recreate nahi kiye gaye — key figures (workflow loop, regime bars, order lifecycle) diagrams hain; baaki figures ke numbers tables aur text mein diye gaye hain. Koi figure invent nahi ki gayi.</li>
+    <li><strong>US Firms DML figure:</strong> Chapter 15 (+0.007, t 1.98, p 0.048) aur Chapter 20 (+0.009, p 0.003) mein alag hai — dono jaise book mein hain waise diye gaye hain, reconcile nahi kiye gaye.</li>
+    <li><strong>Personal names:</strong> visible text mein koi author ya researcher ka naam nahi hai (share rule) — jahan book ne kisi study ka hawala diya, wahan "ek study ke mutabik" likha hai.</li>
+  </ul>
+  <div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/">https://learning.oreilly.com/library/view/machine-learning-for/9781803246970/</a></div>
+  <div class="pn-nav" data-pn></div>
+</section>
+</div></div>
+<nav id="bottomnav">
+  <a href="#/home" data-nav="home"><span class="bn-ic">&#127968;</span>Home</a>
+  <a href="#/ch01" data-nav="ch01"><span class="bn-ic">&#128200;</span>Chapters</a>
+  <a href="#/labs" data-nav="labs"><span class="bn-ic">&#129518;</span>Labs</a>
+  <a href="#/faqs" data-nav="faqs"><span class="bn-ic">&#10067;</span>FAQs</a>
+  <a href="#/trust" data-nav="trust"><span class="bn-ic">&#10003;</span>Trust</a>
+</nav>
+<script>
+var NAV = [
+  ["home","Book At a Glance"],["preface","Preface — ML4T Workflow"],
+  ["ch01","Ch 1 — The Process Is Your Edge"],["ch02","Ch 2 — The Financial Data Universe"],
+  ["ch03","Ch 3 — Market Microstructure"],["ch04","Ch 4 — Fundamental And Alternative Data"],
+  ["ch05","Ch 5 — Synthetic Financial Data"],["ch06","Ch 6 — Strategy Research Framework"],
+  ["ch07","Ch 7 — Defining The Learning Task"],["ch08","Ch 8 — Financial Feature Engineering"],
+  ["ch09","Ch 9 — Model-Based Feature Extraction"],["ch10","Ch 10 — Text Feature Engineering"],
+  ["ch11","Ch 11 — The ML Pipeline"],["ch12","Ch 12 — Advanced Models For Tabular Data"],
+  ["ch13","Ch 13 — Deep Learning For Time Series"],["ch14","Ch 14 — Latent Factor Models"],
+  ["ch15","Ch 15 — Causal Machine Learning"],["ch16","Ch 16 — Strategy Simulation"],
+  ["ch17","Ch 17 — Portfolio Construction"],["ch18","Ch 18 — Transaction Costs"],
+  ["ch19","Ch 19 — Risk Management"],["ch20","Ch 20 — Strategy Synthesis"],
+  ["ch21","Ch 21 — Reinforcement Learning"],["ch22","Ch 22 — RAG For Financial Research"],
+  ["ch23","Ch 23 — Knowledge Graphs"],["ch24","Ch 24 — Autonomous Agents"],
+  ["ch25","Ch 25 — Live Trading Systems"],["ch26","Ch 26 — MLOps And Governance"],
+  ["ch27","Ch 27 — The Systematic Edge"],["labs","Labs — Interactive Practice"],
+  ["faqs","FAQs — Interview Questions"],["trust","Trust Check — Coverage"]
+];
+function show(slug, scrollTo){
+  var found = false;
+  for (var i = 0; i < NAV.length; i++) { if (NAV[i][0] === slug) { found = true; } }
+  if (!found) { slug = "home"; }
+  var secs = document.querySelectorAll(".section");
+  for (var j = 0; j < secs.length; j++) { secs[j].classList.remove("active"); }
+  var el = document.getElementById("sec-" + slug);
+  if (el) { el.classList.add("active"); }
+  var links = document.querySelectorAll("[data-nav]");
+  for (var k = 0; k < links.length; k++) {
+    links[k].classList.toggle("active", links[k].getAttribute("data-nav") === slug);
+  }
+  var title = "Book At a Glance";
+  for (var m = 0; m < NAV.length; m++) { if (NAV[m][0] === slug) { title = NAV[m][1]; } }
+  document.getElementById("tb-current").textContent = title;
+  document.title = title + " — ML for Trading";
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("scrim").classList.remove("show");
+  window.scrollTo(0, 0);
+  if (scrollTo) {
+    var t = document.getElementById(scrollTo);
+    if (t) { setTimeout(function(){ t.scrollIntoView({behavior:"smooth", block:"start"}); }, 60); }
+  }
+}
+function route(){
+  var h = location.hash || "#/home";
+  var slug = h.replace("#/", "").split("?")[0] || "home";
+  show(slug);
+}
+window.addEventListener("hashchange", route);
+document.getElementById("menu-btn").addEventListener("click", function(){
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("scrim").classList.toggle("show");
+});
+document.getElementById("scrim").addEventListener("click", function(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("scrim").classList.remove("show");
+});
+document.querySelectorAll(".sb-link[data-scroll]").forEach(function(a){
+  a.addEventListener("click", function(){
+    var target = a.getAttribute("data-scroll");
+    setTimeout(function(){
+      var t = document.getElementById(target);
+      if (t) { t.scrollIntoView({behavior:"smooth", block:"start"}); }
+    }, 80);
+  });
+});
+document.getElementById("sb-search-input").addEventListener("input", function(e){
+  var q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll(".sb-link").forEach(function(a){
+    var hay = (a.textContent + " " + (a.getAttribute("data-search") || "")).toLowerCase();
+    a.style.display = (!q || hay.indexOf(q) !== -1) ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    document.getElementById("sb-search-input").focus();
+  }
+});
+document.querySelectorAll(".faq-q").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    btn.parentElement.classList.toggle("open");
+  });
+});
+document.querySelectorAll(".pn-nav").forEach(function(nav){
+  var sec = nav.closest(".section");
+  if (!sec) { return; }
+  var slug = sec.id.replace("sec-", "");
+  var idx = -1;
+  for (var i = 0; i < NAV.length; i++) { if (NAV[i][0] === slug) { idx = i; } }
+  var html = "";
+  if (idx > 0) { html += '<a class="pn-btn" href="#/' + NAV[idx-1][0] + '">&larr; ' + NAV[idx-1][1] + '</a>'; }
+  if (idx >= 0 && idx < NAV.length - 1) { html += '<a class="pn-btn" href="#/' + NAV[idx+1][0] + '">' + NAV[idx+1][1] + ' &rarr;</a>'; }
+  nav.innerHTML = html;
+});
+window.addEventListener("scroll", function(){
+  var h = document.documentElement;
+  var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById("progress-bar").style.width = p + "%";
+}, {passive:true});
+function num(id, def){ var v = parseFloat(document.getElementById(id).value); return isNaN(v) ? def : v; }
+function out(id, html){ document.getElementById(id).innerHTML = html; }
+function lab1(){
+  var r = num("lab1-ret", 12), v = num("lab1-vol", 18), rf = num("lab1-rf", 4);
+  if (v <= 0) { out("lab1-out", "<b>GALAT:</b> volatility 0 se zyada honi chahiye."); return; }
+  var s = (r - rf) / v;
+  var verdict = s >= 1 ? "Bahut achha — Sharpe 1+ strong mana jata hai." : (s >= 0.6 ? "Theek hai — book ke 10-ETF baseline (0.6–0.7) ke aas-paas." : "Kamzor — baseline se neeche hai, strategy par dobara socho.");
+  out("lab1-out", "<b>Sharpe ratio: " + s.toFixed(2) + "</b><br>" + verdict + "<br>Excess return: " + (r - rf).toFixed(1) + "% &divide; volatility " + v.toFixed(1) + "%");
+}
+function lab2(){
+  var leaks = [];
+  if (document.getElementById("lab2-a").checked) { leaks.push("Scaler split se pehle fit kiya — leakage!"); }
+  if (document.getElementById("lab2-b").checked) { leaks.push("Label mein future return — leakage!"); }
+  if (document.getElementById("lab2-c").checked) { leaks.push("Restated data original date par — leakage!"); }
+  if (document.getElementById("lab2-d").checked) { leaks.push("Feature selection poore dataset par — leakage!"); }
+  var good = [];
+  if (document.getElementById("lab2-e").checked) { good.push("Split ke baad scaler fit karna sahi hai."); }
+  if (document.getElementById("lab2-f").checked) { good.push("Purge + embargo sahi hai."); }
+  var html = "";
+  if (leaks.length === 0) { html += "<b>SAHI — koi leakage nahi mila.</b><br>"; } else { html += "<b>LEAKAGE MILA (" + leaks.length + "):</b><br>" + leaks.join("<br>") + "<br>"; }
+  if (good.length) { html += good.join("<br>"); }
+  out("lab2-out", html);
+}
+function lab3(){
+  var n = num("lab3-n", 5000), tr = num("lab3-train", 1000), te = num("lab3-test", 250), pg = num("lab3-purge", 21);
+  if (tr <= 0 || te <= 0) { out("lab3-out", "<b>GALAT:</b> windows 0 se zyada hone chahiye."); return; }
+  var folds = 0, start = 0;
+  while (start + tr + pg + te <= n) { folds++; start += te; }
+  var eff = Math.round(n / Math.max(1, Math.ceil(te / 21)));
+  out("lab3-out", "<b>Folds: " + folds + "</b><br>Har fold: train " + tr + " + purge " + pg + " + test " + te + " observations.<br>Yaad rakho: overlapping labels se effective sample chhota hota hai — SPY example mein 248,436 labels ka effective sample sirf 11,830 tha.");
+}
+function lab4(){
+  var v = num("lab4-vol", 10), c = num("lab4-corr", 0.3), t = num("lab4-trend", 8);
+  var regime = "Caution";
+  if (v > 15 && c > 0.6) { regime = "Risk-Off"; }
+  else if (v < 12 && t > 0) { regime = "Risk-On"; }
+  else if (t < -5) { regime = "Recovery/Crisis"; }
+  var note = regime === "Risk-Off" ? "Volatility lagbhag 19.1% aur max drawdown lagbhag -77% — defensive raho." : (regime === "Risk-On" ? "Volatility lagbhag 8.6% — risk lena theek hai." : (regime === "Recovery/Crisis" ? "Trend negative — recovery ka intezar karo." : "Mixed signals — size chhota rakho."));
+  out("lab4-out", "<b>Regime: " + regime + "</b><br>" + note);
+}
+function lab5(){
+  var g = num("lab5-ret", 15), turn = num("lab5-turn", 4), cost = num("lab5-cost", 10), n = num("lab5-n", 120);
+  var costPct = turn * (cost / 10000) * 100;
+  var net = g - costPct;
+  var verdict = net > 0 ? "Net return positive hai — strategy costs ke baad bhi bachta hai." : "Net return negative — costs ne alpha kha liya, turnover kam karo ya cost kam karo.";
+  out("lab5-out", "<b>Gross: " + g.toFixed(1) + "% &minus; Costs: " + costPct.toFixed(2) + "% = Net: " + net.toFixed(2) + "%</b><br>" + verdict + "<br>Trades/year: " + n + " — har trade par lagbhag " + cost + " bps cost.");
+}
+function lab6(){
+  var a = num("lab6-a", 15), b = num("lab6-b", 20), c = num("lab6-c", 10);
+  if (a <= 0 || b <= 0 || c <= 0) { out("lab6-out", "<b>GALAT:</b> volatility 0 se zyada honi chahiye."); return; }
+  function fmt(w){ return (w[0]*100).toFixed(1) + "% / " + (w[1]*100).toFixed(1) + "% / " + (w[2]*100).toFixed(1) + "%"; }
+  var eq = [1/3, 1/3, 1/3];
+  var iv = [1/a, 1/b, 1/c]; var s1 = iv[0]+iv[1]+iv[2]; iv = [iv[0]/s1, iv[1]/s1, iv[2]/s1];
+  var iv2 = [1/(a*a), 1/(b*b), 1/(c*c)]; var s2 = iv2[0]+iv2[1]+iv2[2]; iv2 = [iv2[0]/s2, iv2[1]/s2, iv2[2]/s2];
+  out("lab6-out", "<b>Equal Weight:</b> " + fmt(eq) + "<br><b>Inverse-Vol (Risk Parity style):</b> " + fmt(iv) + "<br><b>Inverse-Variance (Min-Variance style):</b> " + fmt(iv2) + "<br>Book ka best allocator: min-variance (Ledoit-Wolf), Sharpe 0.8437. Kam-vol asset ko zyada weight milta hai.");
+}
+function lab7(){
+  var val = num("lab7-val", 1000000), vol = num("lab7-vol", 1.2), dd = num("lab7-dd", 8);
+  var z = parseFloat(document.getElementById("lab7-conf").value) || 1.65;
+  var varAmt = val * (vol/100) * z;
+  var esAmt = varAmt * 1.25;
+  var action = "NORMAL — koi action nahi";
+  if (dd >= 30) { action = "LIQUIDATE — trading band karo"; }
+  else if (dd >= 20) { action = "HALT — naye trades band karo"; }
+  else if (dd >= 15) { action = "REDUCE — size aadha karo"; }
+  else if (dd >= 10) { action = "CAUTION — risk review karo"; }
+  else if (dd >= 5) { action = "WATCH — monitoring badhao"; }
+  out("lab7-out", "<b>1-day VaR: $" + Math.round(varAmt).toLocaleString("en-IN") + "</b><br>Expected Shortfall (approx): $" + Math.round(esAmt).toLocaleString("en-IN") + "<br><b>Kill switch (" + dd + "% drawdown): " + action + "</b>");
+}
+function lab8(){
+  var f = num("lab8-faith", 0.85), r = num("lab8-rel", 0.9), p = num("lab8-prec", 0.8), rc = num("lab8-rec", 0.75);
+  var avg = (f + r + p + rc) / 4;
+  var verdict = avg >= 0.8 ? "PASS — RAG system achha hai." : (avg >= 0.6 ? "REVIEW — kuch scores kam hain, chunking ya retrieval sudharo." : "FAIL — RAG system ko dobara design karo.");
+  var weakest = "Faithfulness";
+  var minV = f;
+  if (r < minV) { minV = r; weakest = "Answer relevancy"; }
+  if (p < minV) { minV = p; weakest = "Context precision"; }
+  if (rc < minV) { minV = rc; weakest = "Context recall"; }
+  out("lab8-out", "<b>Average RAG score: " + avg.toFixed(2) + " — " + verdict + "</b><br>Sabse kamzor: " + weakest + " (" + minV.toFixed(2) + ") — pehle isko sudharo.<br>Benchmark: hybrid retrieval MRR 0.443 vs BM25 0.349; graph recall 1.00 vs embedding 0.13.");
+}
+function fillTrustCounts(){
+  var s = function(id, v){ var e = document.getElementById(id); if (e) { e.textContent = v; } };
+  s("tc-sections", document.querySelectorAll(".section").length);
+  s("tc-sidebar", document.querySelectorAll(".sb-link").length);
+  s("tc-sources", document.querySelectorAll(".source-box").length);
+  s("tc-figures", document.querySelectorAll(".fig").length);
+  s("tc-tables", document.querySelectorAll("table").length);
+  s("tc-faqs", document.querySelectorAll(".faq").length);
+  s("tc-labs", document.querySelectorAll(".lab").length);
+}
+function runTrustCheck(){
+  var checks = [];
+  var nSec = document.querySelectorAll(".section").length;
+  checks.push(["Sections = 32 (Home + Preface + 27 chapters + Labs + FAQs + Trust Check)", nSec === 32]);
+  var nSb = document.querySelectorAll(".sb-link").length;
+  checks.push(["Sidebar entries = 39", nSb === 39]);
+  var nSrc = document.querySelectorAll(".source-box").length;
+  checks.push(["Source boxes >= 30", nSrc >= 30]);
+  var nFig = document.querySelectorAll(".fig").length;
+  checks.push(["Figures >= 4 (diagrams, koi lazy-loading nahi)", nFig >= 4 && document.querySelectorAll("[loading='lazy']").length === 0]);
+  var nFaq = document.querySelectorAll(".faq").length;
+  checks.push(["FAQs = 36", nFaq === 36]);
+  var nLab = document.querySelectorAll(".lab").length;
+  checks.push(["Labs = 8", nLab === 8]);
+  var badFaq = 0;
+  document.querySelectorAll(".faq-q").forEach(function(q){
+    var t = q.textContent.trim();
+    if (/^\s*(q|a)\s*$/i.test(t) || /placeholder|lorem|todo/i.test(t)) { badFaq++; }
+  });
+  checks.push(["Koi placeholder FAQ nahi (" + badFaq + " mile)", badFaq === 0]);
+  var lazy = document.querySelectorAll("[loading='lazy']").length;
+  checks.push(["Zero loading='lazy' attributes", lazy === 0]);
+  var pass = 0;
+  var html = "";
+  for (var i = 0; i < checks.length; i++) {
+    if (checks[i][1]) { pass++; html += "PASS — " + checks[i][0] + "<br>"; }
+    else { html += "FAIL — " + checks[i][0] + "<br>"; }
+  }
+  var allPass = pass === checks.length;
+  html = "<b>" + (allPass ? "TRUST CHECK: PASS" : "TRUST CHECK: FAIL") + " — " + pass + "/" + checks.length + " checks pass</b><br>" + html;
+  document.getElementById("tc-result").innerHTML = html;
+  return allPass;
+}
+fillTrustCounts();
+route();
+</script>
+</body>
+</html>
