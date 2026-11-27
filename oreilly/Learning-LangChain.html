@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Learning LangChain — Hinglish Notes (O'Reilly Top 100 #45)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+/* ---------- layout ---------- */
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 70px}
+/* ---------- sections ---------- */
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+/* ---------- labs ---------- */
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-controls label.lab-check{flex-direction:row;align-items:center;gap:8px;font-family:var(--font-body);font-size:13.5px;min-height:36px}
+.lab-check input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-color{width:56px;height:38px;border:1px solid var(--surface-highest);border-radius:8px;background:var(--surface);padding:3px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-css{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#d9e7c8;white-space:pre-wrap;word-break:break-word}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.demo-box{background:var(--lime-strong);color:var(--on-lime);font-family:var(--font-mono);font-weight:700;border-radius:8px;display:flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:10px}
+.demo-box.tall{min-height:84px}
+.fx-stage{display:flex;min-height:150px;background:var(--surface);border-radius:8px;padding:10px}
+.gr-stage{display:grid;background:var(--surface);border-radius:8px;padding:10px}
+.sp-stage{display:flex;justify-content:center}
+#sp-box{background:rgba(132,204,22,.22);border:1px solid var(--lime-dim);border-radius:6px;transition:padding .15s}
+.sp-inner{background:var(--surface-high);border-radius:6px;padding:16px 20px;text-align:center}
+.rp-box{border-radius:10px;padding:26px;text-align:center;font-family:var(--font-mono);font-weight:700;color:#12100a;transition:background .2s}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.st-cell{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.st-cell code{align-self:flex-start}
+.st-btn-hover{background:#0369a1;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-hover:hover{background:#075985}
+.st-input{width:100%;background:var(--bg);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.st-input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.55)}
+.st-btn-active{background:#65a30d;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-active:active{background:#3f6212}
+.st-btn-disabled{background:#525252;color:#d4d4d4;border:none;border-radius:8px;padding:10px 16px;opacity:.5;cursor:not-allowed;font-size:14px}
+.st-group{cursor:pointer}
+.st-group-inner{border:1px solid var(--surface-highest);border-radius:8px;padding:12px;width:100%}
+.st-group:hover .st-group-inner{color:var(--lime);border-color:var(--lime-dim)}
+.st-peer-label{display:flex;gap:8px;align-items:center;min-height:36px;cursor:pointer}
+.st-peer-label input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.st-peer-msg{visibility:hidden;background:#450a0a;color:#fca5a5;border-radius:6px;padding:8px 10px;font-size:13px}
+.st-peer-msg.show{visibility:visible}
+.dk-card{background:#fff;color:#374151;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.35);transition:background .25s,color .25s}
+.dk-card .dk-title{font-family:var(--font-head);font-weight:700;font-size:18px;color:#111827;margin-bottom:6px}
+.dk-card.dark{background:#1f2937;color:#9ca3af}
+.dk-card.dark .dk-title{color:#f9fafb}
+.mo-stage{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.mo-box{width:92px;height:92px;background:var(--blue);color:#00354a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;cursor:pointer}
+.mo-box:hover{transform:scale(1.18) rotate(8deg)}
+.mo-anim{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mo-dot{width:34px;height:34px;border-radius:99px;background:var(--lime-strong);display:block}
+.mo-anim-label{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.mo-spin{animation:mspin 1.4s linear infinite;border-radius:8px}
+@keyframes mspin{to{transform:rotate(360deg)}}
+.mo-pulse{animation:mpulse 1.6s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mo-bounce{animation:mbounce 1.2s ease-in-out infinite}
+@keyframes mbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.mo-ping{animation:mping 1.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes mping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.9);opacity:0}}
+.gd-box{height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:rgba(0,0,0,.55)}
+.th-swatches{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.th-swatch{border-radius:10px;padding:18px 14px;font-family:var(--font-mono);font-size:12.5px;flex:1;min-width:140px;text-align:center;background:var(--surface);border:1px solid var(--surface-high)}
+/* ---------- faq / sources / trust ---------- */
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-n{font-family:var(--font-mono)}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+/* ---------- home ---------- */
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 60px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .mo-spin,.mo-pulse,.mo-bounce,.mo-ping,.sb-dot{animation:none}
+}
+
+/* ---------- figures (book diagrams, recreated as SVG/CSS) ---------- */
+.fig{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;margin:18px 0;max-width:100%}
+.fig-body{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;justify-content:center}
+.fig-box{background:var(--surface-high);border:1px solid var(--surface-highest);border-radius:8px;padding:10px 12px;font-size:13px;text-align:center;color:var(--text);flex:1;min-width:110px}
+.fig-box b{color:var(--lime);display:block;font-family:var(--font-mono);font-size:11.5px;margin-bottom:4px}
+.fig-box.blue{background:rgba(123,208,255,.09);border-color:#1d4e63}
+.fig-box.blue b{color:var(--blue)}
+.fig-box.red{background:rgba(244,114,182,.08);border-color:#5b2144}
+.fig-box.red b{color:#f9a8d4}
+.fig-arrow{align-self:center;color:var(--lime);font-weight:700;font-size:18px;flex:none}
+.fig-arrow.down{transform:rotate(90deg)}
+.fig-cap{margin:12px 0 0;font-size:12.5px;color:var(--muted);text-align:center}
+.fig-cap b{color:var(--text-var);font-family:var(--font-mono)}
+.fig-v{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.fig-note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:8px}
+.fig-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%}
+.callout{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:12px 15px;margin:14px 0;font-size:14px}
+.callout b{color:var(--lime)}
+.warn{background:#2a1a10;border:1px solid #7c4a12;border-radius:10px;padding:12px 15px;margin:14px 0;font-size:14px}
+.warn b{color:#fbbf24}
+.kpi-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.lab-select{width:100%;min-width:0}
+.lab-controls label{min-width:0;max-width:100%}
+.kpi{flex:1;min-width:120px;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px;text-align:center}
+.kpi b{font-family:var(--font-head);font-size:22px;color:var(--lime);display:block}
+.kpi span{font-size:11.5px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.lab-out{white-space:pre-wrap;word-break:break-word}
+
+</style>
+</head>
+<body>
+<div id="topbar"><button id="menu-btn" aria-label="Menu">&#9776;</button><div><div class="tb-title">Learning LangChain</div><div class="tb-sub" id="tb-current">Learning LangChain</div></div></div>
+<div id="scrim"></div>
+<aside id="sidebar"><div class="sb-top"><a href="#/home" style="text-decoration:none;color:inherit"><div class="sb-brand"><span class="sb-logo">L45</span><h2>Learning LangChain<small>O'Reilly Top 100 · #45</small></h2></div></a><div class="sb-search"><span>&#128269;</span><input id="sb-search-input" type="search" placeholder="Search — Ctrl+K" aria-label="Search"></div></div><nav class="sb-nav"><div class="sb-group"><div class="sb-group-head"><span>Neenv — LLMs aur RAG</span><span class="sb-count">4</span></div><a class="sb-link" href="#/preface" data-nav="preface" data-search="preface — ye kitab kis liye hai neenv — llms aur rag"><span class="sb-num">00</span><span class="sb-title">Preface — Ye kitab kis liye hai</span></a><a class="sb-link" href="#/ch1" data-nav="ch1" data-search="ch 1 — llm fundamentals with langchain neenv — llms aur rag"><span class="sb-num">01</span><span class="sb-title">Ch 1 — LLM Fundamentals with LangChain</span></a><a class="sb-link" href="#/ch2" data-nav="ch2" data-search="ch 2 — rag part i: indexing your data neenv — llms aur rag"><span class="sb-num">02</span><span class="sb-title">Ch 2 — RAG Part I: Indexing Your Data</span></a><a class="sb-link" href="#/ch3" data-nav="ch3" data-search="ch 3 — rag part ii: chatting with your data neenv — llms aur rag"><span class="sb-num">03</span><span class="sb-title">Ch 3 — RAG Part II: Chatting with Your Data</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Memory aur Architecture</span><span class="sb-count">3</span></div><a class="sb-link" href="#/ch4" data-nav="ch4" data-search="ch 4 — langgraph se chatbot me memory memory aur architecture"><span class="sb-num">04</span><span class="sb-title">Ch 4 — LangGraph se Chatbot me Memory</span></a><a class="sb-link" href="#/ch5" data-nav="ch5" data-search="ch 5 — cognitive architectures with langgraph memory aur architecture"><span class="sb-num">05</span><span class="sb-title">Ch 5 — Cognitive Architectures with LangGraph</span></a><a class="sb-link" href="#/ch6" data-nav="ch6" data-search="ch 6 — agent architecture memory aur architecture"><span class="sb-num">06</span><span class="sb-title">Ch 6 — Agent Architecture</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Agents aur Patterns</span><span class="sb-count">2</span></div><a class="sb-link" href="#/ch7" data-nav="ch7" data-search="ch 7 — agents ii agents aur patterns"><span class="sb-num">07</span><span class="sb-title">Ch 7 — Agents II</span></a><a class="sb-link" href="#/ch8" data-nav="ch8" data-search="ch 8 — patterns to make the most of llms agents aur patterns"><span class="sb-num">08</span><span class="sb-title">Ch 8 — Patterns to Make the Most of LLMs</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Production aur Aage</span><span class="sb-count">3</span></div><a class="sb-link" href="#/ch9" data-nav="ch9" data-search="ch 9 — deployment: production me launch production aur aage"><span class="sb-num">09</span><span class="sb-title">Ch 9 — Deployment: Production me Launch</span></a><a class="sb-link" href="#/ch10" data-nav="ch10" data-search="ch 10 — testing: evaluation aur monitoring production aur aage"><span class="sb-num">10</span><span class="sb-title">Ch 10 — Testing: Evaluation aur Monitoring</span></a><a class="sb-link" href="#/ch11" data-nav="ch11" data-search="ch 11 — building with llms production aur aage"><span class="sb-num">11</span><span class="sb-title">Ch 11 — Building with LLMs</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Labs — Try It Yourself</span><span class="sb-count">8</span></div><a class="sb-link" href="#/lab1" data-nav="lab1" data-search="lab 1 — token counter aur cost estimator labs — try it yourself"><span class="sb-num">12</span><span class="sb-title">Lab 1 — Token Counter aur Cost Estimator</span></a><a class="sb-link" href="#/lab2" data-nav="lab2" data-search="lab 2 — chunking simulator labs — try it yourself"><span class="sb-num">13</span><span class="sb-title">Lab 2 — Chunking Simulator</span></a><a class="sb-link" href="#/lab3" data-nav="lab3" data-search="lab 3 — temperature aur top-p explorer labs — try it yourself"><span class="sb-num">14</span><span class="sb-title">Lab 3 — Temperature aur Top-P Explorer</span></a><a class="sb-link" href="#/lab4" data-nav="lab4" data-search="lab 4 — age checker: tool par blind trust? labs — try it yourself"><span class="sb-num">15</span><span class="sb-title">Lab 4 — Age Checker: Tool par Blind Trust?</span></a><a class="sb-link" href="#/lab5" data-nav="lab5" data-search="lab 5 — ragas score calculator labs — try it yourself"><span class="sb-num">16</span><span class="sb-title">Lab 5 — RAGAS Score Calculator</span></a><a class="sb-link" href="#/lab6" data-nav="lab6" data-search="lab 6 — prompting technique picker labs — try it yourself"><span class="sb-num">17</span><span class="sb-title">Lab 6 — Prompting Technique Picker</span></a><a class="sb-link" href="#/lab7" data-nav="lab7" data-search="lab 7 — langgraph memory simulator labs — try it yourself"><span class="sb-num">18</span><span class="sb-title">Lab 7 — LangGraph Memory Simulator</span></a><a class="sb-link" href="#/lab8" data-nav="lab8" data-search="lab 8 — agent pattern chooser + react loop labs — try it yourself"><span class="sb-num">19</span><span class="sb-title">Lab 8 — Agent Pattern Chooser + ReAct Loop</span></a></div><div class="sb-group"><div class="sb-group-head"><span>End Matter</span><span class="sb-count">2</span></div><a class="sb-link" href="#/faqs" data-nav="faqs" data-search="faqs — interview sawal-jawab end matter"><span class="sb-num">20</span><span class="sb-title">FAQs — Interview Sawal-Jawab</span></a><a class="sb-link" href="#/trust" data-nav="trust" data-search="trust check — sab kuch cover hai? end matter"><span class="sb-num">21</span><span class="sb-title">Trust Check — Sab kuch cover hai?</span></a></div></nav><div class="sb-foot"><span><span class="sb-dot"></span>Obsidian Terminal UI</span><span>11 chapters</span></div></aside>
+<div id="progress"><div id="progress-bar"></div></div>
+<main id="main"><div class="wrap">
+<section class="section" id="sec-home" data-title="Learning LangChain">
+<div class="home-hero">
+<div class="sec-meta"><span class="num-chip">O'REILLY TOP 100 · #45</span><span class="sec-group">Fresh Rebuild — Real Book Content</span></div>
+<h1>Learning LangChain</h1>
+<p class="lead">Chatbot banana ab sirf model ko call karna nahi raha — <strong>ek poori application banana hai</strong>. Ye kitab LangChain aur LangGraph se sikhati hai ki LLM app kaise banti hai: pehle ek simple chatbot, phir apne documents se jawab dene wala RAG system, phir memory wala chatbot, phir agents jo tools istemal karte hain, aur ant me production deployment, testing aur responsible AI — sab kuch ek hi running project par: ek personal product-knowledge chatbot, jo aage chalkar <strong>"Ask Your Books"</strong> naam ki ek working storefront application ban jata hai.</p>
+<div class="home-stats">
+<div class="home-stat"><b>296</b><span>pages</span></div>
+<div class="home-stat"><b>Feb 2025</b><span>published · O'Reilly</span></div>
+<div class="home-stat"><b>11</b><span>chapters + Preface</span></div>
+<div class="home-stat"><b>~6h 39m</b><span>padhne ka samay</span></div>
+<div class="home-stat"><b>4.3/5</b><span>rating · 12 ratings</span></div>
+<div class="home-stat"><b>1k+</b><span>readers</span></div>
+</div>
+<p><strong>Kis ke liye hai:</strong> data engineers, machine-learning engineers, data scientists, software developers aur product managers — jinke paas Python aur basic ML ki samajh hai. Code <strong>LangChain 0.3 aur LangGraph 0.2</strong> par hai, Python 3.11 me, aur kitab khud chetavni deti hai ki APIs badal sakte hain.</p>
+<p><strong>Is SPA me kya milega:</strong> Preface aur saare 11 chapters ki poori Hinglish notes — har section heading, har worked example apne numbers ke saath, har figure ek diagram ke roop me, har table poori, har code listing notes se banayi gayi — plus 8 interactive labs, 36 interview FAQs, aur ek Trust Check jo gin kar batata hai ki sab kuch cover hua ya nahi.</p>
+<div class="callout"><b>Kaise padhein:</b> Sidebar se chapter chuno, ya neeche diye gaye hisson se shuru karo. Har chapter ke end me Source line hai. Labs me haath aazmao — tokens gin lo, chunking chalao, temperature ka asar dekho, RAGAS scores nikalo, memory simulator me thread badlo. Ye notes kitab ko dobaara khole bina poora samajhne ke liye banaye gaye hain.</div>
+<div class="home-groups">
+<a class="home-group" href="#/ch1"><span class="cnt">Ch 1</span><h3>LLM Fundamentals</h3><p>Token, pretraining, embeddings, LCEL — pehla chatbot, prompt | model | parser.</p></a>
+<a class="home-group" href="#/ch2"><span class="cnt">Ch 2</span><h3>RAG Part I — Indexing</h3><p>Load → split → embed → store. Chunk 1000/200, Chroma, token limits.</p></a>
+<a class="home-group" href="#/ch3"><span class="cnt">Ch 3</span><h3>RAG Part II — Chatting</h3><p>Retriever + prompt + model; hybrid search, reranking; RAGAS scores.</p></a>
+<a class="home-group" href="#/ch4"><span class="cnt">Ch 4</span><h3>Memory with LangGraph</h3><p>StateGraph + MemorySaver + thread_id — chatbot jo naam yaad rakhta hai.</p></a>
+<a class="home-group" href="#/ch6"><span class="cnt">Ch 6</span><h3>Agent Architecture</h3><p>ReAct loop; calculator ne 61 diya, sahi jawab 60 tha — tool ko blindly trust mat karo.</p></a>
+<a class="home-group" href="#/ch9"><span class="cnt">Ch 9</span><h3>Deployment</h3><p>LangGraph Platform, Docker, Supabase + pgvector — prototype product nahi hota.</p></a>
+</div>
+</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div>
+</section>
+<section class="section" id="sec-preface" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Preface — Ye kitab kis liye hai"><div class="sec-meta"><span class="num-chip">00</span><span class="sec-group">Neenv — LLMs aur RAG</span></div><h1>Preface — Ye kitab kis liye hai</h1><p class="lead">ChatGPT ke launch se lekar LangChain tak — build karna hi seekhne ka tareeka hai.</p>
+<h3>Shuruaat — November 2022 se</h3>
+<p>Kitab <strong>November 2022 me ChatGPT ke launch</strong> se shuru hoti hai — paanch din me <strong>ek million users</strong>, aur 2024 tak LLM par bane chatbots ko <strong>hundreds of millions</strong> log istemal kar rahe the. Lekhakon ka kehna hai ki us point ke baad koi bhi software project language models ko ignore nahi kar sakta. Usse do saal pehle, <strong>October 2022 me LangChain aaya</strong> — tab in models par applications banana abhi bhi mushkil tha; LangChain ne use aasan banaya.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>2012</b>Neural-network breakthroughs</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>2017</b>Transformer paper</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>2018</b>GPT-1</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>2019</b>GPT-2</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>2020</b>GPT-3</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>2021</b>Pehle multimodal models</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>2022</b>InstructGPT, phir ChatGPT</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>2023</b>GPT-4</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>2024–25</b>Multimodal, agents, small models</div></div><figcaption class="fig-cap"><b>Fig. P-1</b> — LLM timeline — 2012 se 2025 tak</figcaption></figure>
+<p>Timeline ka point ye hai: <strong>koi ek dominant design nahi hai</strong> — isliye practical tareeka ye hai ki build karo, dekhna seekho, aur iterate karo.</p>
+<h3>LLM kya hai — do tarah ke models</h3>
+<p>Large language model ek aisi application hai jo <strong>natural-language input leti hai aur natural-language output deti hai</strong>. Do tarah bataye gaye hain: <strong>general-purpose (chat) models</strong> — wide usefulness ke liye; aur <strong>reasoning models</strong> — careful, multi-step kaam ke liye. Dono text lete hain, aur aaj kal kai models images aur audio bhi lete hain.</p>
+<h3>Central idea — prompt template</h3>
+<p>Kitab ka central building idea hai <strong>prompt template</strong> — variables ke liye placeholders wala reusable prompt. Example: English-to-French translation ka instruction, jisme source language aur target language ke liye placeholders hain — har sentence ke liye fill karo. Prompt templates prompts ko <strong>repeatable aur testable</strong> banate hain.</p>
+<h3>Nau prompting techniques — ek jhalak</h3>
+<ul>
+<li><strong>Zero-shot prompting</strong> — bina worked examples ke task do, jaise sentence ko French me translate karo ya names ki list ko do groups me sort karo.</li>
+<li><strong>Few-shot prompting</strong> — pehle worked examples do, jaise English-to-French ki do lines, phir teesri maango.</li>
+<li><strong>Chain-of-thought</strong> — model se step by step reasoning dikhane ko kaho, jaise "Let's think step by step."</li>
+<li><strong>Self-consistency</strong> — kai baar reasoning karke kai answers generate karo, aur jo answer sabse zyada baar aaye use lo — accuracy badhane ke liye.</li>
+<li><strong>ReAct (Reason + Act)</strong> — model reason karta hai, phir tool call karke act karta hai, result observe karta hai, phir dobaara reason karta hai — jab tak jawab ke liye kaafi na ho.</li>
+<li><strong>Tool calling / function calling</strong> — model khud choose karta hai ki kaunsa external function invoke karna hai, aur uske arguments deta hai.</li>
+<li><strong>Structured outputs</strong> — model ko ek defined structure me jawab dene par majboor karo, taaki output ko program seedha istemal kar sake.</li>
+<li><strong>Prompt engineering aur system prompts</strong> — system prompts role aur tone set karte hain, user prompts task dete hain, assistant prompts conversation continue karte hain; clarity aur specificity par zor hai.</li>
+<li><strong>Retrieval-augmented generation (RAG)</strong> — pehle relevant information retrieve karo aur prompt me daalo, taaki model apne documents se jawab de, sirf training data se nahi.</li>
+</ul>
+<h3>Kis ke liye hai, aur kaise padhein</h3>
+<p>Kitab <strong>data engineers, ML engineers, data scientists, software developers aur product managers</strong> ke liye hai, aur Python aur basic ML knowledge assume karti hai. Poori kitab ek hi product par bani hai — ek personal product-knowledge chatbot, ek <strong>"digital brain"</strong>, jo aage chalkar <strong>"Ask Your Books"</strong> naam ki ek working storefront application ban jata hai. Companion repository online hai, <strong>AGPL-3.0 license</strong> ke saath, ek companion website aur ek forum ke saath. Lekhak prompts ko <strong>clear, unambiguous language</strong> me likhne par zor dete hain, aur kehte hain ki prompting ek creative craft hai.</p>
+<h3>Development approach — paanch stages</h3>
+<div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>1 · MVP</b>Pehle minimal viable product banao</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>2 · Iterate</b>Application par iterate karo</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>3 · Ship + Feedback</b>Ship karo, feedback lo, seekho</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>4 · Improve</b>Feedback ke basis par sudhaaro</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>5 · Repeat</b>Phir se dohrayo</div></div>
+<p>Kitab kyun likhi gayi: AI application banane ka <strong>step-by-step tareeka</strong> sikhane ke liye, aur use build aur evaluate karna practical tareeke se sikhane ke liye — sirf model ko call karna sikhane ke liye nahi.</p>
+<h3>Conventions aur code examples</h3>
+<p>Preface me ye sections hain: Who Should Read This Book; How to Read This Book; Conventions Used in This Book; Using Code Examples; O'Reilly Online Learning; Acknowledgments. Code examples ko padhkar adapt karne ke liye likha gaya hai, aur O'Reilly Online Learning platform ke baare me bataya gaya hai.</p>
+<h3>Lekhakon ke baare me (bina naam ke)</h3>
+<p>Kitab ke do lekhak hain. Ek lekhak tech entrepreneur aur AI advisor hain, aur <strong>LangChain library ke early developer contributor aur advocate</strong> rahe hain — "chat with data" movement ke early pioneer, jinke ideas se <strong>5 million se zyada log</strong> tak pahunche; unhone bade institutions ke hundreds of engineers aur product managers ko consult, advise aur train kiya hai. Doosre lekhak <strong>LangChain company ke founding software engineer</strong> hain — Python aur JavaScript software engineer, architect aur open-source maintainer ke roop me decade ka experience, aur MSc in Finance.</p>
+<div class="callout"><b>Preface ka ek line me saar:</b> LLM field me koi ek jeeta hua design nahi hai — <strong>seekhne ka tareeka build karna hai</strong>, aur is kitab ka har chapter usi ek project par haath aazmane ke liye likha gaya hai.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><span class="pn-spacer"></span><a class="pn-btn" href="#/ch1"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 1 — LLM Fundamentals with LangChain</span></a></nav></section><section class="section" id="sec-ch1" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 1 — LLM Fundamentals with LangChain"><div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Neenv — LLMs aur RAG</span></div><h1>Ch 1 — LLM Fundamentals with LangChain</h1><p class="lead">Agla token predict karna, embeddings, LangChain ke teen layers, aur pehla chatbot.</p>
+<h3>LLM kaise kaam karta hai — agla token predict karna</h3>
+<p>Language model <strong>pehle ke tokens ko dekhkar agla token predict</strong> karta hai. Token woh unit hai jise model padhta hai. Kitab English alphabet se samjhati hai: sirf <strong>26 letters</strong> hain, to <strong>26³ = 17,576</strong> possible three-letter sequences hain — lekin words random strings se bahut kam hote hain, isliye model har possibility ko yaad karne ke bajay <strong>training data se patterns seekhta</strong> hai. Words aur sentences ke liye wahi reasoning, bahut bade scale par.</p>
+<h3>Training ke teen stages</h3>
+<div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>1 · Pretraining</b>Bahut zyada text se general patterns seekhna</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>2 · Supervised fine-tuning</b>Labelled examples (jaise Q&A form) par training</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>3 · Alignment</b>RLHF jaise techniques se helpful aur appropriate responses sikhana</div></div>
+<p>Har step par output agle token par ek <strong>probability distribution</strong> hota hai; model usme se sample karta hai — isliye sampling settings badalne se result ki randomness badalti hai.</p>
+<h3>Embeddings — matlab ko vector me badalna</h3>
+<p>Embeddings text ki <strong>vector representations</strong> hain jo meaning preserve karti hain. Semantically similar texts ke similar vectors hote hain, aur similarity <strong>cosine measure</strong> se measure hoti hai — kitab me likha formula: <strong>cos(θ) = (A · B) / (||A|| ||B||)</strong>, jisme similar texts ka score <strong>1 ke paas</strong> hota hai.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>User</b>Sawal likhta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Chatbot</b>Natural language me jawab deta hai</div></div><figcaption class="fig-cap"><b>Fig. 1-1</b> — Claude — chatbot natural language me sawal ka jawab deta hai</figcaption></figure>
+<h3>Model landscape — open-weight vs closed-weight</h3>
+<p>Models ko do tarah se baanta gaya hai: <strong>open-weight</strong> models aur <strong>closed-weight (proprietary)</strong> models — aur context window, capabilities aur price ke hisaab se bhi. Kitab GPT-4, GPT-4o, Claude, Mistral aur Llama ko compare karti hai, aur batati hai ki kuch evaluations me <strong>Llama 3.1 70B ne GPT-4o ke barabar score</strong> kiya — jo cost ke liye matter karta hai. Salah: jab chhota, sasta model kaafi ho, use wahi chuno; <strong>context length check karo</strong>; aur yaad rakho ki landscape tezi se badalta hai.</p>
+<h3>LangChain — teen layers</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Instruction</b>Model ko kya karna hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Task</b>Kis par karna hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Prompt</b>Dono milkar poora prompt</div></div><figcaption class="fig-cap"><b>Fig. 1-2</b> — Prompt engineering — instruction + task</figcaption></figure>
+<div class="tbl-wrap"><table><thead><tr><th>Layer</th><th>Kya hai</th></tr></thead><tbody><tr><td><strong>LangChain Core</strong> (base)</td><td>Abstractions, LCEL, runnable interface, output parsing aur callbacks ke tools</td></tr><tr><td><strong>Integrations</strong> (beech me)</td><td>Jaise OpenAI aur Anthropic ke saath integrations</td></tr><tr><td><strong>Application layers</strong> (upar)</td><td>LangGraph, LangGraph Platform, LangSmith aur LangChain Hub</td></tr></tbody></table></div>
+<p>Kitab ka code <strong>LangChain 0.3 aur LangGraph 0.2</strong> istemal karta hai, aur chetavni deta hai ki APIs badal sakte hain.</p>
+<h3>Development environment setup</h3>
+<p>Python virtual environment banao, packages install karo, aur keys ko <strong>".env" file</strong> me store karo. Keys jo naam liye gaye hain: <strong>OPENAI_API_KEY, ANTHROPIC_API_KEY, TAVILY_API_KEY, LANGSMITH_API_KEY aur LANGSMITH_TRACING</strong>. Examples <strong>Python 3.11</strong>, ek <strong>"llm_app"</strong> folder, ek requirements file aur ek notebook istemal karte hain.</p>
+<h3>Prompt engineering — prompts brittle hote hain</h3>
+<p>System prompt model ka <strong>role aur tone</strong> set karta hai. Kitab chetavni deti hai ki prompts <strong>brittle</strong> hote hain — wording me chhota sa badlav result badal sakta hai — isliye prompts ko <strong>test aur version</strong> karna chahiye.</p>
+<h3>Pehla chatbot banana</h3>
+<p>Code pehle chat model banata hai — <strong>ChatOpenAI(model="gpt-4o-mini", temperature=0)</strong> — phir <strong>ChatPromptTemplate.from_messages</strong> se prompt banata hai: ek system message jaise <strong>"You are a helpful assistant"</strong> aur placeholder wala human message — phir chain karta hai: <strong>prompt | model | StrOutputParser()</strong>. Example prompt <strong>"Hello, how are you?"</strong> hai aur kitab me diya gaya jawab hai: "I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with whatever you need! How can I assist you today?" Point ye hai ki wahi chain alag-alag inputs ke saath dobaara istemal ho sakti hai.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Pehla chatbot — chain (notes se banaya gaya)</span><span>Python — notes se banaya gaya, verbatim nahi</span></div><pre>from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+model = ChatOpenAI(model=&quot;gpt-4o-mini&quot;, temperature=0)
+prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;You are a helpful assistant&quot;),
+    (&quot;human&quot;, &quot;{question}&quot;),
+])
+chain = prompt | model | StrOutputParser()
+print(chain.invoke({&quot;question&quot;: &quot;Hello, how are you?&quot;}))</pre></div>
+<h3>Chatbot me intelligence add karna</h3>
+<p>Wahi chain ek specific sawal par chalayi jati hai — is kitab ke baare me: <strong>"Is kitab ka title kya hai?"</strong> — jawab milta hai <strong>"Learning LangChain"</strong>. Ek aur detailed example kitab ke baare me poochhta hai aur jawab me kitab ka naam aata hai. Kitab inhe isliye dikhati hai ki model apni <strong>training knowledge se jawab de sakta hai</strong> — lekin ye apne documents se jawab dene jaisa nahi hai — aur isiliye aage RAG ki zaroorat padegi.</p>
+<h3>LCEL ke fundamentals</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Prompt</b>Template + input</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Model</b>ChatOpenAI</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Output parser</b>StrOutputParser</div></div><figcaption class="fig-cap"><b>Fig. 1-3</b> — LCEL — chain: prompt → model → output parser</figcaption></figure>
+<p>Pipe operator <strong>"|"</strong> runnables ko jodta hai. Runnable interface: <strong>invoke</strong> ek input ke liye, <strong>batch</strong> kai inputs ke liye, <strong>stream</strong> token-by-token output ke liye, aur <strong>ainvoke / abatch / astream</strong> unke asynchronous versions.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>User input</b>Sawal</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Chain</b>prompt | model | parser</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Jawab</b>Natural language me</div></div><figcaption class="fig-cap"><b>Fig. 1-4</b> — Chatbot — poori conversational application</figcaption></figure>
+<div class="callout"><b>Ch 1 ka saar:</b> LLM agla token predict karta hai, embeddings meaning ko vector me encode karte hain, LangChain building blocks deta hai, LCEL unhe chain karta hai — aur ek minimal chatbot baaki kitab ka starting point hai.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/preface"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Preface — Ye kitab kis liye hai</span></a><a class="pn-btn" href="#/ch2"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 2 — RAG Part I: Indexing Your Data</span></a></nav></section><section class="section" id="sec-ch2" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 2 — RAG Part I: Indexing Your Data"><div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Neenv — LLMs aur RAG</span></div><h1>Ch 2 — RAG Part I: Indexing Your Data</h1><p class="lead">Load → split → embed → store — indexing hi RAG ki neev hai.</p>
+<h3>RAG kya hai — aur kyun chahiye</h3>
+<p><strong>RAG (retrieval-augmented generation)</strong>: pehle apne data se relevant information retrieve karo, phir use model ko do taaki woh us data par grounded jawab generate kar sake. Zaroorat isliye hai kyunki model ki training knowledge ek <strong>cutoff date par fixed</strong> hoti hai, usme private ya recent data nahi hota, aur woh <strong>hallucinate</strong> kar sakta hai. RAG grounding se hallucination kam karta hai — lekin <strong>khatm nahi karta</strong>.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>Phase 1 · Indexing</b>Load → split → embed → store</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>Phase 2 · Retrieval + Generation</b>Retrieve → generate</div></div></div><figcaption class="fig-cap"><b>Fig. 2-1</b> — RAG diagram — do phases: indexing aur retrieval + generation</figcaption></figure>
+<h3>RAG system design karna</h3>
+<p>User ke sawal se shuru karo: kaunsa data chahiye, use kaise index karenge, kaise retrieve karenge, aur jawab kaise generate hoga. Kitab zor deti hai ki <strong>jawab ki quality retrieval ki quality par depend</strong> karti hai.</p>
+<h3>Document loaders</h3>
+<p>Examples kitab ka apna text <strong>PyPDFLoader</strong> se PDF se load karte hain, aur web pages <strong>WebBaseLoader</strong> se. Loader <strong>Document objects</strong> deta hai — har ek me <strong>page_content</strong> aur metadata jaise source aur page number.</p>
+<h3>Text splitters — chunking</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Document</b>Poora text</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Chunks</b>Chhote tukde</div></div><figcaption class="fig-cap"><b>Fig. 2-2</b> — Split — document chunks me bat-ta hai</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Fixed-size</b>Barabar size ke chunks</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Recursive</b>Structure ke hisaab se</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Document-specific</b>Doc type ke hisaab se</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Semantic</b>Matlab ke hisaab se</div></div><figcaption class="fig-cap"><b>Fig. 2-3</b> — Chunking strategies — chaar tareeke</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Chunk 1</b>Pehla hissa</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Chunk 2</b>Doosra hissa (overlap ke saath)</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Chunk 3</b>Teesra hissa</div></div><figcaption class="fig-cap"><b>Fig. 2-4</b> — Chunks — resulting pieces</figcaption></figure>
+<p>Code <strong>RecursiveCharacterTextSplitter</strong> istemal karta hai — <strong>chunk_size=1000, chunk_overlap=200</strong>. Trade-off samjho: chunks <strong>bahut bade</strong> hon to relevance dilute ho jati hai; <strong>bahut chhote</strong> hon to context kho jata hai; aur <strong>overlap</strong> boundaries ke across continuity preserve karta hai.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Indexing pipeline — chunk + embed (notes se banaya gaya)</span><span>Python — notes se banaya gaya, verbatim nahi</span></div><pre>from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+chunks = splitter.split_documents(docs)
+
+embeddings = OpenAIEmbeddings(model=&quot;text-embedding-3-small&quot;)
+store = Chroma.from_documents(chunks, embeddings, persist_directory=&quot;./chroma&quot;)
+retriever = store.as_retriever()</pre></div>
+<h3>Embeddings models</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Text</b>'What is LangChain?'</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Embedding model</b>text-embedding-3-small</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Vector</b>Numbers ki list</div></div><figcaption class="fig-cap"><b>Fig. 2-5</b> — Embedding — text vector me badalta hai</figcaption></figure>
+<p>Kitab <strong>OpenAIEmbeddings (model text-embedding-3-small)</strong> istemal karti hai. Embeddings semantic similarity capture karte hain — "LangChain" ke baare me query ka matlab alag wording wale text se bhi match karega.</p>
+<h3>Vector stores</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Query vector</b>Sawal ka vector</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Compare</b>Similarity score</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Top chunks</b>Sabse relevant pieces</div></div><figcaption class="fig-cap"><b>Fig. 2-6</b> — Vector search — query vector stored vectors se compare hota hai</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Documents</b>Chunks</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Chroma store</b>persist_directory ke saath</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Retriever</b>Similarity search</div></div><figcaption class="fig-cap"><b>Fig. 2-7</b> — Chroma — examples me istemal hone wala vector store</figcaption></figure>
+<p>Code documents aur embeddings se <strong>Chroma store</strong> banata hai (persist_directory ke saath), phir usse <strong>retriever</strong> banata hai. Similarity search <strong>"What is LangChain?"</strong> par chalayi jati hai aur sabse relevant chunks milte hain.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Load</b>PyPDFLoader / WebBaseLoader</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Split</b>1000 / 200 overlap</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Embed</b>text-embedding-3-small</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Store</b>Chroma</div></div><figcaption class="fig-cap"><b>Fig. 2-8</b> — Indexing pipeline — load, split, embed, store ka summary</figcaption></figure>
+<div class="tbl-wrap"><table><thead><tr><th>Table 2-1 — Chunking strategies ka comparison</th><th>Complexity</th><th>Context preservation</th><th>Use cases</th></tr></thead><tbody><tr><td><strong>Fixed-size</strong></td><td>Low</td><td>Kam</td><td>Simple, uniform documents</td></tr><tr><td><strong>Recursive</strong></td><td>Medium</td><td>Behtar</td><td>Structured documents</td></tr><tr><td><strong>Document-specific</strong></td><td>High</td><td>Sabse behtar</td><td>Khaas formats</td></tr><tr><td><strong>Semantic</strong></td><td>High</td><td>Matlab ke hisaab se</td><td>Jahan meaning matter kare</td></tr></tbody></table></div>
+<div class="tbl-wrap"><table><thead><tr><th>Table 2-2 — Token limits</th><th>Context limit</th></tr></thead><tbody><tr><td><strong>GPT-4o</strong></td><td>128,000 tokens</td></tr><tr><td><strong>Claude 3.5 Sonnet</strong></td><td>200,000 tokens</td></tr><tr><td><strong>Llama 3.1</strong></td><td>128,000 tokens</td></tr></tbody></table></div>
+<div class="callout"><b>Ch 2 ka saar:</b> Indexing hai <strong>load → split → embed → store</strong>; loader, splitter, embedding model aur vector store ke choices retrieval quality tay karte hain — aur isliye jawab ki quality bhi.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch1"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 1 — LLM Fundamentals with LangChain</span></a><a class="pn-btn" href="#/ch3"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 3 — RAG Part II: Chatting with Your Data</span></a></nav></section><section class="section" id="sec-ch3" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 3 — RAG Part II: Chatting with Your Data"><div class="sec-meta"><span class="num-chip">03</span><span class="sec-group">Neenv — LLMs aur RAG</span></div><h1>Ch 3 — RAG Part II: Chatting with Your Data</h1><p class="lead">Retriever + prompt + model — aur RAGAS scores jo batate hain ki system kitna bharosemand hai.</p>
+<h3>RAG chain banana</h3>
+<p>RAG chain banti hai <strong>retriever + prompt template + model</strong> se. Prompt model ko instruct karta hai ki woh sirf retrieved context se jawab de, aur jab context me jawab na ho to <strong>keh de ki use nahi pata</strong>. Chain: relevant documents retrieve karo → unhe context ke roop me daalo → jawab generate karo.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Query</b>User ka sawal</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Retriever</b>Relevant chunks dhoondta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Context</b>Chunks prompt me</div></div><figcaption class="fig-cap"><b>Fig. 3-1</b> — Retrieval — query documents retrieve karti hai</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Query vector</b>Sawal</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Similarity</b>Cosine score</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Ranked chunks</b>Sabse similar pehle</div></div><figcaption class="fig-cap"><b>Fig. 3-2</b> — Vector — vector similarity</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>BM25 keyword</b>Exact terms</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Vector search</b>Matlab</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Combined</b>Dono ka fayda</div></div><figcaption class="fig-cap"><b>Fig. 3-3</b> — Hybrid — keyword + vector search ek saath</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Retrieved docs</b>Pehli list</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Cross-encoder</b>Relevance score</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Reordered</b>Behtar order</div></div><figcaption class="fig-cap"><b>Fig. 3-4</b> — Reranking — cross-encoder results ko dobaara order karta hai</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>User</b>Sawal</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>History + query</b>Context ke saath</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>RAG chain</b>Jawab + sources</div></div><figcaption class="fig-cap"><b>Fig. 3-5</b> — Conversation — conversational RAG flow</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Retrieve</b>Relevant docs</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Prompt</b>Context + sawal</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Generate</b>Grounded jawab</div></div><figcaption class="fig-cap"><b>Fig. 3-6</b> — RAG pipeline — retrieval se generation tak ka poora flow</figcaption></figure>
+<h3>Jawab generate karna</h3>
+<p>Kitab chain ko <strong>"What is LangChain?"</strong> aur is kitab ke baare me sawalon par chalakar dikhati hai — jawab retrieved text se aate hain. Zor is par hai ki <strong>retrieved source ko cite karo</strong> aur usse aage ki information add mat karo.</p>
+<h3>Testing — jawab dena chahiye ya mana karna chahiye</h3>
+<p>Examples chain ko un sawalon par test karte hain jinke jawab use dene chahiye, aur un par bhi jinke jawab use <strong>mana karna chahiye</strong> — jaise documents me na ho aisa topic. Expected behaviour hai <strong>refusal ya "I don't know"</strong> — hallucinated jawab nahi.</p>
+<h3>Retrieval ko behtar karna — paanch tareeke</h3>
+<ul>
+<li><strong>Hybrid search</strong> — keyword (BM25) aur vector search combine karo, taaki exact terms aur meaning dono matter karein.</li>
+<li><strong>Query rewriting / expansion</strong> — user ke sawal ko dobaara likho taaki matching behtar ho.</li>
+<li><strong>Reranking</strong> — cross-encoder se retrieved documents ko relevance ke hisaab se dobaara order karo.</li>
+<li><strong>Metadata filtering</strong> — jaise source ya date ke hisaab se filter karo.</li>
+<li><strong>Multi-query retrieval</strong> — sawal ke kai versions generate karo aur results combine karo.</li>
+</ul>
+<h3>Generation ko behtar karna</h3>
+<p>Behtar prompt istemal karo, few-shot examples add karo, factual jawabon ke liye <strong>temperature low</strong> rakho, aur jahan answer format matter karta ho wahan <strong>structured outputs</strong> istemal karo. Model ko ye bhi batana chahiye ki woh <strong>sirf context istemal kare</strong>.</p>
+<h3>Deploy karna</h3>
+<p>RAG application ek simple web interface me wrap ki jati hai — sawal ke liye text input, aur jawab aur uske sources ke liye display area. Kitab batati hai ki wahi chain <strong>API ke through bhi serve</strong> ki ja sakti hai.</p>
+<h3>Evaluation</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Questions</b>Test set</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Run chain</b>Jawab generate karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Score</b>Metrics se measure karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Improve</b>Kamzor jagah sudhaaro</div></div><figcaption class="fig-cap"><b>Fig. 3-7</b> — Evaluation — evaluation loop</figcaption></figure>
+<div class="tbl-wrap"><table><thead><tr><th>Table 3-1 — Evaluation metrics</th><th>Kya measure karta hai</th></tr></thead><tbody><tr><td><strong>Faithfulness</strong></td><td>Jawab context ke prati kitna wafadar hai</td></tr><tr><td><strong>Answer relevancy</strong></td><td>Jawab sawal ke liye kitna relevant hai</td></tr><tr><td><strong>Context precision</strong></td><td>Retrieved context kitna precise hai</td></tr><tr><td><strong>Context recall</strong></td><td>Relevant context kitna retrieve hua</td></tr><tr><td><strong>Answer correctness</strong></td><td>Jawab kitna sahi hai</td></tr></tbody></table></div>
+<p><strong>Table 3-2 — RAGAS metrics</strong> inhi measures ke RAGAS versions deti hai.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Table 3-3 — Evaluation results (example scores)</th><th>Score</th></tr></thead><tbody><tr><td><strong>Faithfulness</strong></td><td>0.85</td></tr><tr><td><strong>Answer relevancy</strong></td><td>0.92</td></tr><tr><td><strong>Context precision</strong></td><td>0.78</td></tr><tr><td><strong>Context recall</strong></td><td>0.88</td></tr><tr><td><strong>Answer correctness</strong></td><td>0.81</td></tr></tbody></table></div>
+<p>Ye wahi figures hain jo Chapter 10 me dobaara aate hain. Figures 3-8, 3-9 aur 3-10 evaluation aur running application ke screenshots hain.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Faithfulness 0.85</b>Answer relevancy 0.92</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Context precision 0.78</b>Context recall 0.88</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Answer correctness 0.81</b>Overall view</div></div><figcaption class="fig-cap"><b>Fig. 3-8</b> — Evaluation screenshot — scores ka display (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Input box</b>Sawal likho</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Answer area</b>Jawab + sources</div></div><figcaption class="fig-cap"><b>Fig. 3-9</b> — Running application — pehla screenshot (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Question</b>User ka sawal</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Sources</b>Cite kiye gaye chunks</div></div><figcaption class="fig-cap"><b>Fig. 3-10</b> — Running application — doosra screenshot (diagram roop)</figcaption></figure>
+<div class="callout"><b>Ch 3 ka saar:</b> RAG chain hai <strong>retriever + prompt + model</strong>; retrieval hybrid search, rewriting aur reranking se behtar hoti hai; generation prompt design aur low temperature se; aur evaluation me faithfulness aur relevance measure karni chahiye — sirf ye nahi ki jawab plausible lag raha hai ya nahi.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch2"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 2 — RAG Part I: Indexing Your Data</span></a><a class="pn-btn" href="#/ch4"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 4 — LangGraph se Chatbot me Memory</span></a></nav></section><section class="section" id="sec-ch4" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 4 — LangGraph se Chatbot me Memory"><div class="sec-meta"><span class="num-chip">04</span><span class="sec-group">Memory aur Architecture</span></div><h1>Ch 4 — LangGraph se Chatbot me Memory</h1><p class="lead">StateGraph + MemorySaver + thread_id — chatbot jo naam yaad rakhta hai.</p>
+<h3>Chatbot me memory kya hai</h3>
+<p>Memory chatbot ki woh ability hai jo <strong>conversation ke pehle ke turns ko yaad</strong> rakhti hai. Bina iske har message ko naya samjha jata hai; iske saath model pehle kahi gayi baat — jaise naam ya preference — ka reference de sakta hai.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Table 4-1 — Types of memory</th><th>Kya hai</th></tr></thead><tbody><tr><td><strong>Short-term memory</strong></td><td>Current conversation, message history me rakhi hui</td></tr><tr><td><strong>Long-term memory</strong></td><td>Sessions ke across persist karne wali jaankari, jaise user preferences aur facts</td></tr></tbody></table></div>
+<p>Kitab <strong>working memory, episodic memory aur semantic memory</strong> me bhi farak batati hai, aur kehti hai ki LangGraph ki <strong>checkpointing</strong> persistence layer deti hai.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>User</b>Message</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Model</b>Jawab</div></div><figcaption class="fig-cap"><b>Fig. 4-1</b> — Chatbot — basic chatbot</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>User</b>Message</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>History + message</b>Poora context</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Model</b>Yaad ke saath jawab</div></div><figcaption class="fig-cap"><b>Fig. 4-2</b> — Memory — memory add hone ke baad</figcaption></figure>
+<p>Ek stateless model call ki <strong>koi memory nahi hoti</strong> — isliye application ko history store karke dobaara supply karni padti hai.</p>
+<h3>Memory wala chatbot banana</h3>
+<p>Code ek <strong>stateful graph</strong> banata hai — ek node jo model ko call karta hai, aur ek <strong>checkpointer</strong> jo har step ke baad state save karta hai. State messages ki list hai, aur har naya user message model ko call karne se pehle usme append hota hai — taaki model poori history dekhe.</p>
+<h3>LangGraph — nodes, edges, checkpointers</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>START</b>Shuruaat</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>chatbot node</b>Model call</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>END</b>Jawab</div></div><figcaption class="fig-cap"><b>Fig. 4-3</b> — LangGraph — nodes aur edges wala graph</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>State</b>messages list</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Node: chatbot</b>Model invoke</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Checkpointer</b>State save karta hai</div></div><figcaption class="fig-cap"><b>Fig. 4-4</b> — Graph — example me istemal hone wala state graph</figcaption></figure>
+<p>Key concepts: <strong>state</strong> (nodes ke beech pass hone wala data), <strong>nodes</strong> (kaam karne wale steps), <strong>edges</strong> (steps ke beech transitions), aur <strong>checkpointers</strong> (storage jo state ko persist karta hai).</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Invoke</b>thread_id ke saath</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>chatbot node</b>Model call</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Checkpoint</b>State save</div></div><figcaption class="fig-cap"><b>Fig. 4-5</b> — Graph running — graph chalta hua (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Message 1</b>History me add</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Message 2</b>History badhti hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Model</b>Poori history dekhta hai</div></div><figcaption class="fig-cap"><b>Fig. 4-6</b> — Memory update hoti hui (diagram roop)</figcaption></figure>
+<h3>Implementation</h3>
+<p>Code ek <strong>StateGraph</strong> define karta hai — messages state ke saath — ek node add karta hai jiska naam <strong>"chatbot"</strong> hai jo messages par model invoke karta hai, start se us node tak aur us node se end tak edge add karta hai, graph ko <strong>MemorySaver checkpointer</strong> ke saath compile karta hai, aur phir use config me <strong>thread_id</strong> ke saath invoke karta hai, jaise <strong>{"configurable": {"thread_id": "1"}}</strong>. Wahi thread_id follow-up messages ke liye reuse hota hai — history preserve rehti hai; alag thread_id nayi conversation shuru karta hai.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Memory wala chatbot — StateGraph + checkpointer (notes se banaya gaya)</span><span>Python — notes se banaya gaya, verbatim nahi</span></div><pre>from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
+
+graph = StateGraph(MessagesState)
+graph.add_node(&quot;chatbot&quot;, lambda state: {&quot;messages&quot;: [model.invoke(state[&quot;messages&quot;])]})
+graph.add_edge(START, &quot;chatbot&quot;)
+graph.add_edge(&quot;chatbot&quot;, END)
+
+app = graph.compile(checkpointer=MemorySaver())
+config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;1&quot;}}
+app.invoke({&quot;messages&quot;: [(&quot;user&quot;, &quot;Hi, my name is Rahul.&quot;)]}, config)</pre></div>
+<h3>Memory test karna</h3>
+<p>Example conversation: user kehta hai <strong>"Hi, my name is Rahul."</strong> Assistant greeting ke saath jawab deta hai. User phir poochhta hai <strong>"What is my name?"</strong> aur assistant jawab deta hai <strong>"Rahul"</strong> — dikhata hai ki naam retain hua. Doosra test alag thread istemal karta hai aur dikhata hai ki wahan naam yaad nahi hai — isse confirm hota hai ki <strong>memory thread se scoped</strong> hoti hai.</p>
+<div class="callout"><b>Ch 4 ka saar:</b> LangGraph stateless chain ko stateful application bana deta hai; <strong>checkpointing + thread_id</strong> per-conversation short-term memory dete hain — aur wahi mechanism aage ke chapters ki long-term memory aur complex graphs ki neev hai. Chapter ka summary chat messages ko summarise karne ka bhi zikr karta hai (lambi histories ko context limits me rakhne ke liye), halanki detailed summarisation code ek alag section ke roop me notes me nahi diya gaya.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch3"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 3 — RAG Part II: Chatting with Your Data</span></a><a class="pn-btn" href="#/ch5"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 5 — Cognitive Architectures with LangGraph</span></a></nav></section><section class="section" id="sec-ch5" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 5 — Cognitive Architectures with LangGraph"><div class="sec-meta"><span class="num-chip">05</span><span class="sec-group">Memory aur Architecture</span></div><h1>Ch 5 — Cognitive Architectures with LangGraph</h1><p class="lead">Single-agent, multi-agent, aur human-in-the-loop — LangGraph ke primitives.</p>
+<h3>Cognitive architecture kya hai</h3>
+<p>Cognitive architecture woh design hai jo batata hai ki agent <strong>kaise sochta aur act karta hai</strong> — kaunse steps, kis order me, kya yaad rakhta hai, aur kab human intervene karta hai. Kitab simple chain se compare karti hai — jo steps ko fixed order me chalati hai — aur agent se, jo <strong>apne steps khud decide</strong> karta hai.</p>
+<h3>Single-agent system</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Model</b>Sochta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Tools</b>Act karta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Loop</b>Jawab milne tak</div></div><figcaption class="fig-cap"><b>Fig. 5-1</b> — Single-agent system — ek agent tools ke saath</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Model node</b>Tool call chahiye?</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Tools node</b>Tool chalao</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Model node</b>Ya final jawab</div></div><figcaption class="fig-cap"><b>Fig. 5-2</b> — Graph — single-agent ki LangGraph implementation</figcaption></figure>
+<p>Code ek graph banata hai — ek node jo model ko call karta hai, ek node jo tools ko call karta hai, aur ek <strong>conditional edge</strong> jo tool call chahiye hone par model par wapas route karta hai aur na chahiye hone par end par. Agent tab tak loop karta hai jab tak uske paas jawab ke liye kaafi information na ho.</p>
+<h3>Multi-agent system</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Supervisor</b>Kaun karega?</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Researcher</b>Jaankari lao</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Coder</b>Code likho</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Supervisor</b>Final jawab</div></div><figcaption class="fig-cap"><b>Fig. 5-3</b> — Supervisor — supervisor agent workers ko delegate karta hai</figcaption></figure>
+<p>Example me ek <strong>supervisor, ek researcher aur ek coder</strong> hain. Supervisor decide karta hai ki kis worker ko call karna hai, worker apna task karke report karta hai, aur supervisor ya to dobaara delegate karta hai ya final jawab deta hai.</p>
+<h3>Human-in-the-loop</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Agent</b>Sensitive action se pehle</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Human</b>Approve ya reject</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Agent</b>Aage badho ya ruko</div></div><figcaption class="fig-cap"><b>Fig. 5-4</b> — Human-in-the-loop — graph me human approval step</figcaption></figure>
+<p>Graph sensitive action se pehle rukta hai — jaise tool execute karne se pehle — aur human ke <strong>approve ya reject</strong> karne ka wait karta hai. Ye control rakhne ka tareeka hai jab agent asli actions le sakta hai.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Step A</b>Ek saath</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Step B</b>Ek saath</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Combine</b>Results milao</div></div><figcaption class="fig-cap"><b>Fig. 5-5</b> — Parallel — independent steps ek saath chalte hain</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>State check</b>Kya condition hai?</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Path 1</b>Agar haan</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Path 2</b>Agar nahi</div></div><figcaption class="fig-cap"><b>Fig. 5-6</b> — Conditional — state ke basis par routing</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Main graph</b>Bada workflow</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Subgraph node</b>Reusable hissa</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Main graph</b>Aage badho</div></div><figcaption class="fig-cap"><b>Fig. 5-7</b> — Subgraphs — graph ke andar doosra graph ek node ke roop me</figcaption></figure>
+<div class="callout"><b>Ch 5 ka saar:</b> LangGraph primitives deta hai — <strong>nodes, edges, conditional edges, parallel branches, subgraphs aur human-in-the-loop interrupts</strong> — jinse single-agent aur multi-agent cognitive architectures bante hain.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch4"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 4 — LangGraph se Chatbot me Memory</span></a><a class="pn-btn" href="#/ch6"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 6 — Agent Architecture</span></a></nav></section><section class="section" id="sec-ch6" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 6 — Agent Architecture"><div class="sec-meta"><span class="num-chip">06</span><span class="sec-group">Memory aur Architecture</span></div><h1>Ch 6 — Agent Architecture</h1><p class="lead">ReAct loop aur tool calling — aur kyun tool ke output ko blindly trust nahi karna chahiye.</p>
+<h3>Agent kya hai</h3>
+<p>Agent ek aisa system hai jo language model ko istemal karke <strong>decide karta hai ki aage kya karna hai</strong> — fixed sequence follow karne ke bajay. Uske paas model, tools, memory aur ek loop hota hai: <strong>plan, act, observe, repeat</strong>.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Plan</b>Sochna</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Act</b>Tool chalana</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Observe</b>Result dekhna</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Repeat</b>Jawab milne tak</div></div><figcaption class="fig-cap"><b>Fig. 6-1</b> — Agent architecture — plan-act-observe loop</figcaption></figure>
+<h3>ReAct framework</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Thought</b>Kya chahiye?</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Action</b>Tool chuno</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Observation</b>Result dekho</div></div><figcaption class="fig-cap"><b>Fig. 6-2</b> — ReAct — Thought → Action → Observation ka cycle</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>Thought</b>Agla step socho</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>Action</b>Search ya calculator</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>Observation</b>Dates ya number mile</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>Thought</b>Ab jawab banao</div></div></div><figcaption class="fig-cap"><b>Fig. 6-3</b> — ReAct loop — cycle dobaara chalta hai</figcaption></figure>
+<p>Kitab ek worked example se samjhati hai: ek prasiddh vyakti ki mrityu ke samay umar kitni thi? Agent pehle sochta hai ki use <strong>janm aur mrityu ki dates</strong> chahiye, phir search karke act karta hai, observe karta hai ki vyakti ka janm <strong>4 July 1872</strong> ko hua aur mrityu <strong>5 January 1933</strong> ko hui, phir sochta hai ki use umar calculate karni hai, phir calculator call karke act karta hai, aur result observe karta hai.</p>
+<div class="warn"><b>Kitab ka key numerical example — dhyaan se padho:</b> Sirf saal ghata dena — <strong>1933 − 1872 = 61 — GALAT hai</strong>, kyunki mrityu 5 January ko hui thi, janmdin 4 July se pehle — isliye vyakti ne abhi 61 saal poore nahi kiye the. <strong>Sahi umar 60 hai.</strong> Example me model pehle 60 deta hai; ek alag calculator call jo sirf saal ghata-ti hai, 61 deti hai — kitab isse dikhati hai ki <strong>tool ke output ko interpret karna chahiye, blindly trust nahi</strong>.</div>
+<h3>LangChain se agent banana</h3>
+<p>Code ek ChatOpenAI model banata hai, <strong>@tool decorator</strong> se tools define karta hai, unhe <strong>bind_tools</strong> se model se bind karta hai, aur ek LangGraph banata hai — ek model node aur ek tools node, ek conditional edge se jude hue. Example tools hain ek <strong>search tool</strong> aur ek <strong>calculator tool</strong>.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Agent — bind_tools + LangGraph loop (notes se banaya gaya)</span><span>Python — notes se banaya gaya, verbatim nahi</span></div><pre>from langchain_core.tools import tool
+
+@tool
+def calculator(expression: str) -&gt; str:
+    &quot;&quot;&quot;Ek maths expression evaluate karo.&quot;&quot;&quot;
+    return str(eval(expression))
+
+@tool
+def search(query: str) -&gt; str:
+    &quot;&quot;&quot;Web par search karo.&quot;&quot;&quot;
+    return search_tool.run(query)
+
+model = ChatOpenAI(model=&quot;gpt-4o-mini&quot;, temperature=0)
+model_with_tools = model.bind_tools([search, calculator])
+
+# LangGraph: model node -&gt; tools node (conditional edge)
+# tool call hai to tools node, nahi to END</pre></div>
+<h3>Tool calling</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Model</b>Structured tool call</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Application</b>Tool chalao</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>ToolMessage</b>Result model ko wapas</div></div><figcaption class="fig-cap"><b>Fig. 6-4</b> — Tool calling — model tool call deta hai, application use execute karti hai</figcaption></figure>
+<p>Model ek <strong>structured tool call</strong> deta hai — naam aur arguments ke saath — application tool chalati hai, aur result <strong>ToolMessage</strong> ke roop me model ko wapas milta hai.</p>
+<h3>Errors handle karna</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Tool call</b>Fail ho gaya?</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Error model ko batao</b>Kya galat hua</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Retry / doosra tool</b>Crash mat karo</div></div><figcaption class="fig-cap"><b>Fig. 6-5</b> — Error handling — error ka path</figcaption></figure>
+<p>Tool calls fail ho sakte hain — jaise search kuch na de, ya calculator ko invalid input mile — aur agent ko error catch karke model ko batana chahiye ki <strong>kya galat hua</strong>, aur use retry karne ya doosra tool chunne dena chahiye — crash karne ke bajay.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Model node</b>Tool call?</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Tools node</b>Execute</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Model node</b>Final jawab</div></div><figcaption class="fig-cap"><b>Fig. 6-6</b> — Agent graph — model aur tools nodes wala graph (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Tool call</b>Name + args</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Run</b>Asli function</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Observation</b>Result</div></div><figcaption class="fig-cap"><b>Fig. 6-7</b> — Tool node — tool execution ka node (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Sawal</b>Umar kitni thi?</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Search + calc</b>Dates, phir hisaab</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Jawab</b>60 saal</div></div><figcaption class="fig-cap"><b>Fig. 6-8</b> — Running agent — agent chalta hua (diagram roop)</figcaption></figure>
+<div class="tbl-wrap"><table><thead><tr><th>Table 6-1 — Agent types</th><th>Kaise kaam karta hai</th></tr></thead><tbody><tr><td><strong>ReAct</strong></td><td>Thought → Action → Observation loop, ek-ek step</td></tr><tr><td><strong>Plan-and-execute</strong></td><td>Pehle poora plan banao, phir execute karo</td></tr><tr><td><strong>Doosre designs</strong></td><td>Task ke hisaab se alag-alag structures</td></tr></tbody></table></div>
+<div class="tbl-wrap"><table><thead><tr><th>Table 6-2 — Tool types</th><th>Inputs</th><th>Outputs</th><th>Risks</th></tr></thead><tbody><tr><td><strong>Search</strong></td><td>Query</td><td>Snippets / pages</td><td>Galat ya purani jaankari</td></tr><tr><td><strong>Calculator</strong></td><td>Expression</td><td>Number</td><td>Galat formula ya interpretation</td></tr><tr><td><strong>Code execution</strong></td><td>Code</td><td>Result / error</td><td>Unsafe code chal sakta hai</td></tr><tr><td><strong>Doosre tools</strong></td><td>Task par depend</td><td>Task par depend</td><td>Har tool ka apna risk</td></tr></tbody></table></div>
+<div class="callout"><b>Ch 6 ka saar:</b> Agent ek model hai jo tools ke saath loop me hai; <strong>ReAct plan-act-observe loop</strong> hai; tool calling woh tareeka hai jisse model tools ko invoke karta hai; aur <strong>error handling</strong> hi loop ko robust banati hai.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch5"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 5 — Cognitive Architectures with LangGraph</span></a><a class="pn-btn" href="#/ch7"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 7 — Agents II</span></a></nav></section><section class="section" id="sec-ch7" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 7 — Agents II"><div class="sec-meta"><span class="num-chip">07</span><span class="sec-group">Agents aur Patterns</span></div><h1>Ch 7 — Agents II</h1><p class="lead">Reflection, planning aur multi-agent systems — ek output ko behtar karna, ek task ko todna, kaam baantna.</p>
+<h3>Reflection</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Draft</b>Pehla version</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Critique</b>Accuracy aur style check</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Revise</b>Behtar version</div></div><figcaption class="fig-cap"><b>Fig. 7-1</b> — Reflection — draft banao, critique karo, revise karo</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>Writer</b>Draft likhta hai</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>Critic</b>Review karta hai</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>Writer</b>Revise karta hai</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>Stop</b>Kaafi achha ya limit</div></div></div><figcaption class="fig-cap"><b>Fig. 7-2</b> — Reflection loop — loop tab tak jab tak draft kaafi achha na ho</figcaption></figure>
+<p>Worked example ek essay hai — <strong>"The Little Prince"</strong> par. Pehla draft likha jata hai, phir ek critic node use accuracy aur style ke liye review karta hai, phir writer revise karta hai. Loop tab tak repeat hota hai jab tak draft kaafi achha na ho ya limit na aa jaye. Kitab ise bina bada model liye <strong>quality behtar karne ka tareeka</strong> batati hai.</p>
+<h3>Planning</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Planner</b>Plan banata hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Executor</b>Har step karta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Revise</b>Step fail ho to plan badlo</div></div><figcaption class="fig-cap"><b>Fig. 7-3</b> — Planning — pehle steps me todo, phir execute karo</figcaption></figure>
+<p>Example ek research task hai: planner ek plan banata hai, executor har step karta hai, aur planner plan revise karta hai agar koi step fail ho. Ye ReAct se alag hai — ReAct ek-ek step plan karta hai, planning <strong>pehle se poora plan</strong> banati hai.</p>
+<h3>Multi-agent systems</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Agent 1</b>Researcher</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Agent 2</b>Writer</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Shared state</b>Ek doosre se baat</div></div><figcaption class="fig-cap"><b>Fig. 7-4</b> — Multi-agent — kai agents ek saath kaam karte hain</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Supervisor</b>Coordinate karta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Researcher</b>Jaankari</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Writer</b>Output</div></div><figcaption class="fig-cap"><b>Fig. 7-5</b> — Multi-agent system — team ka structure</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Task</b>Bada kaam</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Plan</b>Steps me todo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Execute</b>Ek-ek step</div></div><figcaption class="fig-cap"><b>Fig. 7-6</b> — Planner — planning agent</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Supervisor</b>Kaam baanto</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Researcher</b>Gather karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Coder / Writer</b>Output banao</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Supervisor</b>Kab done hai?</div></div><figcaption class="fig-cap"><b>Fig. 7-7</b> — Supervisor — Ch 5 wala supervisor pattern, research-and-writing team par</figcaption></figure>
+<p>Example team me ek <strong>researcher</strong> hai jo information gather karta hai, aur ek <strong>coder / writer</strong> hai jo output banata hai — supervisor coordinate karta hai. Agents <strong>shared state</strong> ke through communicate karte hain, aur supervisor decide karta hai ki kaam kab done hai.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Table 7-1 — Multi-agent patterns</th><th>Coordination</th><th>Complexity</th><th>Use cases</th></tr></thead><tbody><tr><td><strong>Supervisor</strong></td><td>Ek central coordinator</td><td>Medium</td><td>Research-and-writing team</td></tr><tr><td><strong>Hierarchical</strong></td><td>Levels me delegation</td><td>High</td><td>Bade, layered tasks</td></tr><tr><td><strong>Peer-to-peer</strong></td><td>Agents seedha baat karte hain</td><td>Medium</td><td>Jahan sab barabar hon</td></tr><tr><td><strong>Doosre patterns</strong></td><td>Task par depend</td><td>Task par depend</td><td>Task par depend</td></tr></tbody></table></div>
+<div class="callout"><b>Ch 7 ka saar:</b> Reflection ek output ko critique aur revision se behtar karta hai; planning complex tasks ko pehle decompose karke behtar karti hai; aur multi-agent systems kaam ko specialised agents me baant-te hain — supervisor ya plan ke coordination se.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch6"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 6 — Agent Architecture</span></a><a class="pn-btn" href="#/ch8"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 8 — Patterns to Make the Most of LLMs</span></a></nav></section><section class="section" id="sec-ch8" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 8 — Patterns to Make the Most of LLMs"><div class="sec-meta"><span class="num-chip">08</span><span class="sec-group">Agents aur Patterns</span></div><h1>Ch 8 — Patterns to Make the Most of LLMs</h1><p class="lead">Chaining, parallelization, routing, orchestrator-workers, evaluator-optimizer — task ki structure se pattern chuno.</p>
+<h3>Chaining</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Extract</b>Jaankari nikalo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Summarise</b>Sankshep me likho</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Format</b>Shape do</div></div><figcaption class="fig-cap"><b>Fig. 8-1</b> — Chaining — steps sequence me, har ek agle ko feed karta hai</figcaption></figure>
+<p>Example ek pipeline hai jo pehle information extract karti hai, phir use summarise karti hai, phir format karti hai. Chaining tab appropriate hai jab <strong>har step pehle wale par depend</strong> karta hai.</p>
+<h3>Parallelization</h3>
+<p>Independent steps ek saath chalaye jate hain — jaise kai models se wahi sawal poochhna, ya document ko sections me baantkar har section ko alag summarise karna, phir results combine karna. Isse <strong>latency kam</strong> hoti hai aur coverage behtar ho sakti hai.</p>
+<h3>Routing</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Request</b>Sawal aaya</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Router</b>Kis type ka hai?</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>General / Code / Research</b>Sahi jagah bhejo</div></div><figcaption class="fig-cap"><b>Fig. 8-2</b> — Routing — router request ko sahi specialist ko bhejta hai</figcaption></figure>
+<p>Example ek sawal ko general model, code model ya research tool me se sahi jagah route karta hai — uske type ke hisaab se. Routing cost bachati hai: <strong>aasan tasks ke liye chhota model, bada model sirf jab zaroorat ho</strong>.</p>
+<h3>Orchestrator-workers</h3>
+<p>Orchestrator task ko subtasks me todta hai, unhe workers ko assign karta hai, aur unke results combine karta hai. Example ek research task hai jo topic ke hisaab se split hota hai — <strong>har worker ek topic</strong> research karta hai.</p>
+<h3>Evaluator-optimizer</h3>
+<p>Ek model output generate karta hai aur doosra use evaluate karta hai — feedback dekar generator use behtar karta hai. Ye wahi idea hai jo Chapter 7 me <strong>reflection</strong> ke roop me tha — yahan ek general pattern ke roop me present hai.</p>
+<h3>Multitasking LLMs / double texting</h3>
+<p>Kitab ek doosra message bhejne par baat karti hai jab model abhi pehle ka jawab generate kar raha ho — <strong>"double texting"</strong> — aur concurrent tasks chalane ke related idea par. Chetavni: ye model ko <strong>confuse kar sakta hai aur tokens waste</strong> kar sakta hai agar doosra message context badal de — isliye use sirf tab karo jab tasks <strong>independent</strong> hon.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Table 8-1 — Patterns</th><th>Strengths</th><th>Weaknesses</th></tr></thead><tbody><tr><td><strong>Chaining</strong></td><td>Dependent steps ke liye clear flow</td><td>Slow — steps sequence me hain</td></tr><tr><td><strong>Parallelization</strong></td><td>Tez, behtar coverage</td><td>Sirf independent steps par</td></tr><tr><td><strong>Routing</strong></td><td>Cost bachata hai</td><td>Router galat ho sakta hai</td></tr><tr><td><strong>Orchestrator-workers</strong></td><td>Bade tasks decompose hote hain</td><td>Coordination ka overhead</td></tr><tr><td><strong>Evaluator-optimizer</strong></td><td>Quality behtar hoti hai</td><td>Do models = zyada cost/time</td></tr></tbody></table></div>
+<div class="tbl-wrap"><table><thead><tr><th>Table 8-2 — Pattern selection</th><th>Kaunsa pattern fit hai</th></tr></thead><tbody><tr><td><strong>Dependent steps</strong></td><td>Chaining</td></tr><tr><td><strong>Independent steps</strong></td><td>Parallelization</td></tr><tr><td><strong>Varied inputs</strong></td><td>Routing</td></tr><tr><td><strong>Decomposition</strong></td><td>Orchestrator-workers</td></tr><tr><td><strong>Quality improvement</strong></td><td>Evaluator-optimizer</td></tr></tbody></table></div>
+<div class="callout"><b>Ch 8 ka saar:</b> Pattern woh chuno jo task ki structure se match kare — sequence dependent steps ke liye, parallel independent steps ke liye, routing varied inputs ke liye, orchestrator-workers decomposition ke liye, aur evaluator-optimizer quality improvement ke liye.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch7"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 7 — Agents II</span></a><a class="pn-btn" href="#/ch9"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 9 — Deployment: Production me Launch</span></a></nav></section><section class="section" id="sec-ch9" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 9 — Deployment: Launching Your AI Application into Production"><div class="sec-meta"><span class="num-chip">09</span><span class="sec-group">Production aur Aage</span></div><h1>Ch 9 — Deployment: Launching Your AI Application into Production</h1><p class="lead">Prototype product nahi hota — pinned, versioned, monitored deployment.</p>
+<h3>Deploy karne se pehle — prototype product nahi hota</h3>
+<p>Kitab zor deti hai ki <strong>prototype product nahi hota</strong>. Deploy karne se pehle application ko test karna chahiye, uske prompts aur models ko <strong>version</strong> karna chahiye, dependencies ko <strong>pin</strong> karna chahiye, aur secrets ko <strong>code ke bahar</strong> store karna chahiye.</p>
+<h3>Deployment platform chunna</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Self-hosting</b>Khud ka server</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Cloud hosting</b>Cloud par</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Managed platforms</b>Platform sambhalega</div></div><figcaption class="fig-cap"><b>Fig. 9-1</b> — Deployment — deployment options</figcaption></figure>
+<p>Kitab self-hosting, cloud hosting aur managed platforms ko compare karti hai — <strong>cost, control aur operational burden</strong> ke trade-offs ke saath.</p>
+<h3>LangGraph Platform se deploy karna</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Code</b>LangGraph app</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>langgraph.json</b>Graph + deps + env vars</div></div><figcaption class="fig-cap"><b>Fig. 9-3</b> — LangGraph Platform deployment flow — pehla hissa (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Deploy</b>Platform par</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Hosting</b>Scale hota hai</div></div><figcaption class="fig-cap"><b>Fig. 9-4</b> — LangGraph Platform deployment flow — doosra hissa (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Studio</b>Testing interface</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Trace</b>Runs dekho</div></div><figcaption class="fig-cap"><b>Fig. 9-5</b> — LangGraph Platform deployment flow — Studio interface (diagram roop)</figcaption></figure>
+<p>Code ek LangGraph application ke roop me deploy hota hai — ek <strong>langgraph.json configuration file</strong> ke saath jo graph, uski dependencies aur uske environment variables ka naam deti hai. Platform <strong>hosting, scaling aur Studio interface</strong> deta hai testing ke liye.</p>
+<div class="codeblock"><div class="codeblock-head"><span>langgraph.json — deployment config (notes se banaya gaya)</span><span>Python — notes se banaya gaya, verbatim nahi</span></div><pre>{
+  &quot;dependencies&quot;: [&quot;.&quot;],
+  &quot;graphs&quot;: {
+    &quot;agent&quot;: &quot;./app.py:graph&quot;
+  },
+  &quot;env&quot;: &quot;.env&quot;
+}</pre></div>
+<h3>Docker se deploy karna</h3>
+<p>Kitab ek <strong>Dockerfile</strong> dikhati hai jo dependencies install karta hai, code copy karta hai, aur application chalata hai — aur samjhati hai ki Docker deployment ko <strong>machines ke across reproducible</strong> banata hai.</p>
+<h3>Supabase / pgvector — production vector store</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Supabase</b>URL + key se connect</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>pgvector</b>Embeddings table</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Store / Retrieve</b>Vectors yahin</div></div><figcaption class="fig-cap"><b>Fig. 9-2</b> — Supabase — Supabase dashboard (diagram roop)</figcaption></figure>
+<p>Kitab <strong>Supabase with pgvector extension</strong> ko production vector store ke roop me istemal karti hai — development me istemal hone wale local Chroma store ki jagah. Code Supabase se uske URL aur key se connect hota hai, embeddings ke liye ek table banata hai, aur wahan vectors store aur retrieve karta hai.</p>
+<h3>Monitoring aur maintenance</h3>
+<p>Kitab salah deti hai ki <strong>requests log karo, latency aur cost track karo, failures ke liye alerts</strong> set karo. Ye bhi note hai ki jab provider model update karta hai to model behaviour badal sakta hai — isliye <strong>version pinning aur regression tests</strong> matter karte hain.</p>
+<h3>Security</h3>
+<p>Kitab cover karti hai: <strong>authentication, authorisation, input validation, aur API keys ki protection</strong>. Chetavni: keys ko client code me expose mat karo, <strong>prompt injection</strong> se bacho, aur model ko bina checks ke untrusted code execute karne ya untrusted data access karne mat do.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Table 9-1 — Deployment options</th><th>Cost</th><th>Scalability</th><th>Operational effort</th></tr></thead><tbody><tr><td><strong>LangGraph Platform</strong></td><td>Managed pricing</td><td>Platform sambhalta hai</td><td>Kam</td></tr><tr><td><strong>Docker / self-hosting</strong></td><td>Infra cost</td><td>Khud scale karo</td><td>Zyada</td></tr><tr><td><strong>Doosre options</strong></td><td>Option par depend</td><td>Option par depend</td><td>Option par depend</td></tr></tbody></table></div>
+<div class="callout"><b>Ch 9 ka saar:</b> Pinned, versioned application ke saath deploy karo; hosting ke liye LangGraph Platform ya Docker istemal karo; production vector store jaise <strong>Supabase with pgvector</strong> istemal karo; aur launch ke baad application ko monitor, secure aur maintain karo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch8"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 8 — Patterns to Make the Most of LLMs</span></a><a class="pn-btn" href="#/ch10"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 10 — Testing: Evaluation aur Monitoring</span></a></nav></section><section class="section" id="sec-ch10" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 10 — Testing: Evaluation, Monitoring, and Continuous Improvement"><div class="sec-meta"><span class="num-chip">10</span><span class="sec-group">Production aur Aage</span></div><h1>Ch 10 — Testing: Evaluation, Monitoring, and Continuous Improvement</h1><p class="lead">Non-deterministic outputs — isliye testing ek continuous loop hai, ek baar ka check nahi.</p>
+<h3>Testing kyun matter karta hai</h3>
+<p>Language-model outputs <strong>non-deterministic</strong> hote hain — wahi prompt alag-alag answers de sakta hai. Isliye testing ek one-off check nahi hai — ye <strong>evaluation, monitoring aur improvement ka continuous process</strong> hai.</p>
+<h3>Evaluation frameworks</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Dataset</b>Questions + expected answers</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Run</b>Chain chalao</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Score</b>Metrics</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Improve</b>Fix karo, dobaara evaluate karo</div></div><figcaption class="fig-cap"><b>Fig. 10-1</b> — Evaluation — evaluation loop</figcaption></figure>
+<p>Kitab <strong>RAGAS aur LangSmith</strong> ko main frameworks ke roop me present karti hai — RAGAS metrics deta hai, LangSmith tracing, datasets aur evaluation runs deta hai.</p>
+<h3>Evaluation dataset banana</h3>
+<p>Dataset banao — questions, expected answers aur relevant contexts — <strong>real user questions</strong> aur documents se. Dataset un cases ko cover kare jo application ko handle karne chahiye — <strong>edge cases aur woh sawal bhi jinke jawab use mana karna chahiye</strong>.</p>
+<h3>Evaluations chalana</h3>
+<p>Code ek <strong>LangSmith dataset</strong> banata hai, har question par RAG chain chalata hai, aur results ko evaluators se score karta hai — faithfulness, answer relevancy, context precision, context recall aur answer correctness. Example results jo report kiye gaye hain: <strong>faithfulness 0.85, answer relevancy 0.92, context precision 0.78, context recall 0.88, answer correctness 0.81</strong> — wahi figures jo Chapter 3, Table 3-3 me the.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Datasets</b>Test questions</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Runs</b>Evaluation runs</div></div><figcaption class="fig-cap"><b>Fig. 10-2</b> — LangSmith interface — pehla view (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Scores</b>Har metric ka score</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Compare</b>Runs compare karo</div></div><figcaption class="fig-cap"><b>Fig. 10-3</b> — LangSmith interface — doosra view (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Chain</b>RAG chain</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Retriever</b>Docs mile</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Model</b>Jawab bana</div></div><figcaption class="fig-cap"><b>Fig. 10-4</b> — Trace — ek individual run ka trace (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Run 1</b>Scores</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Run 2</b>Scores</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Trend</b>Sudhaar dikhta hai</div></div><figcaption class="fig-cap"><b>Fig. 10-5</b> — Evaluation runs — runs aur unke scores (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Faithfulness 0.85</b>Relevancy 0.92</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Precision 0.78</b>Recall 0.88</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Correctness 0.81</b>Overall</div></div><figcaption class="fig-cap"><b>Fig. 10-6</b> — Evaluation runs — scores ka detail (diagram roop)</figcaption></figure>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Failures</b>Kahan fail hua</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Fix</b>Data / prompt / retrieval</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Re-evaluate</b>Dobara check</div></div><figcaption class="fig-cap"><b>Fig. 10-7</b> — Evaluation runs — teesra view (diagram roop)</figcaption></figure>
+<h3>Production me monitoring</h3>
+<p>Kitab salah deti hai ki <strong>latency, token usage, cost, error rates aur user feedback</strong> track karo, aur jab kuch galat ho to individual runs ko inspect karne ke liye <strong>LangSmith tracing</strong> istemal karo.</p>
+<h3>Continuous improvement</h3>
+<p>Loop hai: <strong>evaluate → failures dhoondho → retrieval, prompt ya model fix karo → re-evaluate</strong>. Kitab zor deti hai ki evaluation me failure ka matlab ye hona chahiye ki <strong>data, chunking, retrieval ya prompt</strong> me badlav ho — sirf bada model lena nahi.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Table 10-1 — Evaluation metrics</th><th>Kya measure karta hai</th></tr></thead><tbody><tr><td><strong>Faithfulness</strong></td><td>Jawab context ke prati kitna wafadar hai</td></tr><tr><td><strong>Answer relevancy</strong></td><td>Jawab sawal ke liye kitna relevant hai</td></tr><tr><td><strong>Context precision</strong></td><td>Retrieved context kitna precise hai</td></tr><tr><td><strong>Context recall</strong></td><td>Relevant context kitna retrieve hua</td></tr><tr><td><strong>Answer correctness</strong></td><td>Jawab kitna sahi hai</td></tr></tbody></table></div>
+<div class="tbl-wrap"><table><thead><tr><th>Table 10-2 — Monitoring metrics</th><th>Target</th></tr></thead><tbody><tr><td><strong>Latency</strong></td><td>Kam rakho, alerts set karo</td></tr><tr><td><strong>Cost</strong></td><td>Token usage track karo</td></tr><tr><td><strong>Error rate</strong></td><td>Failures par alert</td></tr><tr><td><strong>User satisfaction</strong></td><td>Feedback se measure karo</td></tr></tbody></table></div>
+<div class="callout"><b>Ch 10 ka saar:</b> Real dataset se test karo, faithfulness aur relevance evaluate karo, production me monitor karo, aur ek loop me improve karo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch9"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 9 — Deployment: Production me Launch</span></a><a class="pn-btn" href="#/ch11"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 11 — Building with LLMs</span></a></nav></section><section class="section" id="sec-ch11" data-chapter="1" data-url="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/" data-title="Ch 11 — Building with LLMs"><div class="sec-meta"><span class="num-chip">11</span><span class="sec-group">Production aur Aage</span></div><h1>Ch 11 — Building with LLMs</h1><p class="lead">Future, responsible AI, aur shuru karne ka practical plan.</p>
+<h3>LLMs ka future</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Smaller models</b>Saste aur capable</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Multimodal</b>Text + image + audio</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>More agents</b>Tools + data ke saath</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Application design</b>Bottleneck yahin shift hoga</div></div><figcaption class="fig-cap"><b>Fig. 11-1</b> — Future — field kis direction me ja raha hai</figcaption></figure>
+<p>Kitab predict karti hai: <strong>chhote, saste aur zyada capable models, zyada multimodal models, zyada agents</strong>, aur models ko tools aur data ke saath combine karke banayi gayi zyada applications. Uska kehna hai ki bottleneck <strong>model capability se application design ki taraf shift</strong> hoga.</p>
+<h3>Responsible AI banana</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>Bias</b>Harmful outputs test karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>Privacy</b>User data protect karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Transparency</b>User ko batao ki woh AI se baat kar raha hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>Accountability</b>Zimmedari lo</div></div><figcaption class="fig-cap"><b>Fig. 11-2</b> — Responsible AI — considerations</figcaption></figure>
+<p>Kitab cover karti hai: <strong>bias, fairness, privacy, transparency aur accountability</strong> — harmful outputs ke liye test karo, user data protect karo, aur users ke saath clear raho jab woh AI se baat kar rahe hon.</p>
+<h3>Getting started — practical plan</h3>
+<ul>
+<li><strong>Ek real problem chuno</strong> — koi aisi problem jo asal me matter karti hai.</li>
+<li><strong>Minimal version banao</strong> — pehle chhota, kaam karne wala version.</li>
+<li><strong>Real users se test karo</strong> — feedback lo.</li>
+<li><strong>Evaluate karo</strong> — metrics se measure karo.</li>
+<li><strong>Iterate karo</strong> — sudhaarte raho.</li>
+</ul>
+<p>Kitab readers ko companion repository aur LangChain documentation ki taraf point karti hai, aur <strong>build karte rehne</strong> ke liye encourage karti hai.</p>
+<div class="callout"><b>Ch 11 ka saar — aur poori kitab ka saar:</b> Is field ko seekhne ka tareeka <strong>build karna hai</strong> — aur responsible tareeke se build karna hai, evaluation aur user feedback ke saath.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch10"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 10 — Testing: Evaluation aur Monitoring</span></a><a class="pn-btn" href="#/lab1"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 1 — Token Counter aur Cost Estimator</span></a></nav></section><section class="section" id="sec-lab1" data-lab="1" data-title="Lab 1 — Token Counter aur Cost Estimator"><div class="sec-meta"><span class="num-chip lab-chip">12</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 1 — Token Counter aur Cost Estimator</h1><p class="lead">Text likho — tokens, words aur context-window usage dekho. Kitab ka rule: 1,000 tokens ≈ 750 words.</p>
+<div class="lab-controls">
+<label>Text likho (token count ke liye):
+<textarea id="tk-text" rows="3" style="width:100%;min-width:0">Hello, how are you? I want to learn LangChain and build a chatbot with RAG.</textarea></label>
+<button class="chip-btn on" onclick="labTokens()">Tokens gino</button>
+</div>
+<pre class="lab-out" id="tk-out">Button dabao — tokens, words aur context-window usage dikhega.</pre>
+<p>Kitab ka rule of thumb: <strong>1,000 tokens ≈ 750 words</strong>. Token counts isliye matter karte hain kyunki models ki context-window limits hoti hain aur pricing per token hoti hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch11"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 11 — Building with LLMs</span></a><a class="pn-btn" href="#/lab2"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 2 — Chunking Simulator</span></a></nav></section><section class="section" id="sec-lab2" data-lab="1" data-title="Lab 2 — Chunking Simulator"><div class="sec-meta"><span class="num-chip lab-chip">13</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 2 — Chunking Simulator</h1><p class="lead">Chunk size aur overlap badlo — kitne chunks bante hain, dekho. Kitab: 1000 / 200.</p>
+<div class="lab-controls">
+<label>Text likho:
+<textarea id="ck-text" rows="3" style="width:100%;min-width:0">LangChain se chatbot banana seekho. Pehle documents load karo, phir unhe chunks me todo, phir embeddings banao, aur phir Chroma store me save karo. Retrieval quality hi jawab ki quality tay karti hai. Chunk size aur overlap ka trade-off samajhna zaroori hai.</textarea></label>
+<label>Chunk size (characters): <input id="ck-size" type="number" value="1000" min="50" max="5000" step="50" style="width:100%;min-width:0"></label>
+<label>Chunk overlap (characters): <input id="ck-overlap" type="number" value="200" min="0" max="1000" step="50" style="width:100%;min-width:0"></label>
+<button class="chip-btn on" onclick="labChunk()">Chunks banao</button>
+</div>
+<pre class="lab-out" id="ck-out">Button dabao — kitne chunks bane aur har chunk kya hai, dikhega.</pre>
+<p>Kitab ka example: <strong>RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)</strong>. Chunks bahut bade hon to relevance dilute hoti hai; bahut chhote hon to context kho jata hai; overlap boundaries ke across continuity preserve karta hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab1"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 1 — Token Counter aur Cost Estimator</span></a><a class="pn-btn" href="#/lab3"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 3 — Temperature aur Top-P Explorer</span></a></nav></section><section class="section" id="sec-lab3" data-lab="1" data-title="Lab 3 — Temperature aur Top-P Explorer"><div class="sec-meta"><span class="num-chip lab-chip">14</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 3 — Temperature aur Top-P Explorer</h1><p class="lead">Temperature, Top-P aur Top-K badlo — token distribution kaise badalta hai, dekho.</p>
+<div class="lab-controls">
+<label>Temperature (0.0 – 1.0): <input id="tp-temp" type="range" min="0" max="1" step="0.1" value="0.7" style="width:100%" oninput="labTemp()"> <span id="tp-temp-val">0.7</span></label>
+<label>Top-P (0.1 – 1.0): <input id="tp-topp" type="range" min="0.1" max="1" step="0.1" value="0.9" style="width:100%" oninput="labTemp()"> <span id="tp-topp-val">0.9</span></label>
+<label>Top-K: <input id="tp-topk" type="range" min="1" max="100" step="1" value="50" style="width:100%" oninput="labTemp()"> <span id="tp-topk-val">50</span></label>
+</div>
+<pre class="lab-out" id="tp-out">Sliders badlo — token distribution kaise badalta hai, dekho.</pre>
+<p>Temperature <strong>randomness</strong> control karta hai — 0.2 deterministic/focused, 0.9 random/creative. Top-P cumulative probability mass control karta hai — top_p=0.9 ka matlab sirf un tokens ko consider karo jinki cumulative probability 90% hai. Top-K choice ko K sabse likely tokens tak limit karta hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab2"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 2 — Chunking Simulator</span></a><a class="pn-btn" href="#/lab4"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 4 — Age Checker: Tool par Blind Trust?</span></a></nav></section><section class="section" id="sec-lab4" data-lab="1" data-title="Lab 4 — Age Checker: Tool par Blind Trust?"><div class="sec-meta"><span class="num-chip lab-chip">15</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 4 — Age Checker: Tool par Blind Trust?</h1><p class="lead">Janm aur mrityu ki dates do — sahi umar vs naive saal-ghatao hisaab. Kitab ka example: 60 sahi, 61 galat.</p>
+<div class="lab-controls">
+<label>Janm ki date: <input id="ag-birth" type="date" value="1872-07-04" style="width:100%;min-width:0"></label>
+<label>Mrityu ki date: <input id="ag-death" type="date" value="1933-01-05" style="width:100%;min-width:0"></label>
+<button class="chip-btn on" onclick="labCoolidge()">Umar nikalo</button>
+</div>
+<pre class="lab-out" id="ag-out">Button dabao — sahi umar aur naive hisaab ka farak dekho.</pre>
+<p>Kitab ka example: sirf saal ghata dena (<strong>1933 − 1872 = 61</strong>) GALAT hai, kyunki mrityu janmdin se pehle hui thi. <strong>Sahi umar 60 hai.</strong> Tool ke output ko interpret karo, blindly trust mat karo.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab3"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 3 — Temperature aur Top-P Explorer</span></a><a class="pn-btn" href="#/lab5"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 5 — RAGAS Score Calculator</span></a></nav></section><section class="section" id="sec-lab5" data-lab="1" data-title="Lab 5 — RAGAS Score Calculator"><div class="sec-meta"><span class="num-chip lab-chip">16</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 5 — RAGAS Score Calculator</h1><p class="lead">Paanch RAGAS metrics ke sliders — average aur verdict. Kitab ke scores default me hain.</p>
+<div class="lab-controls">
+<label>Faithfulness: <input id="rg-f" type="range" min="0" max="1" step="0.01" value="0.85" style="width:100%" oninput="labRagas()"> <span id="rg-f-val">0.85</span></label>
+<label>Answer relevancy: <input id="rg-r" type="range" min="0" max="1" step="0.01" value="0.92" style="width:100%" oninput="labRagas()"> <span id="rg-r-val">0.92</span></label>
+<label>Context precision: <input id="rg-p" type="range" min="0" max="1" step="0.01" value="0.78" style="width:100%" oninput="labRagas()"> <span id="rg-p-val">0.78</span></label>
+<label>Context recall: <input id="rg-c" type="range" min="0" max="1" step="0.01" value="0.88" style="width:100%" oninput="labRagas()"> <span id="rg-c-val">0.88</span></label>
+<label>Answer correctness: <input id="rg-a" type="range" min="0" max="1" step="0.01" value="0.81" style="width:100%" oninput="labRagas()"> <span id="rg-a-val">0.81</span></label>
+</div>
+<pre class="lab-out" id="rg-out">Sliders badlo — average score aur verdict dekho.</pre>
+<p>Kitab ke example scores (Ch 3, Table 3-3 — Ch 10 me dobaara): <strong>faithfulness 0.85, answer relevancy 0.92, context precision 0.78, context recall 0.88, answer correctness 0.81</strong>. Evaluation me faithfulness aur relevance measure karo — sirf ye nahi ki jawab plausible lag raha hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab4"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 4 — Age Checker: Tool par Blind Trust?</span></a><a class="pn-btn" href="#/lab6"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 6 — Prompting Technique Picker</span></a></nav></section><section class="section" id="sec-lab6" data-lab="1" data-title="Lab 6 — Prompting Technique Picker"><div class="sec-meta"><span class="num-chip lab-chip">17</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 6 — Prompting Technique Picker</h1><p class="lead">Task chuno — zero-shot, few-shot, CoT, self-consistency, ReAct ya structured output me se kaun fit hai?</p>
+<div class="lab-controls">
+<label>Task kya hai?
+<select id="pp-task" class="lab-select" onchange="labPromptPick()">
+<option value="translate">Translate karo — sentence ko French me badlo</option>
+<option value="classify">Review classify karo — Positive / Negative</option>
+<option value="math">Multi-step maths problem solve karo</option>
+<option value="format">Format me jawab chahiye — table / JSON / email</option>
+<option value="agent">Tool istemal karke sawal ka jawab do</option>
+<option value="refuse">Aise topic par sawal jiska documents me jawab nahi hai</option>
+</select></label>
+</div>
+<pre class="lab-out" id="pp-out">Task chuno — kaunsi prompting technique fit hai, dekho.</pre>
+<p>Techniques: <strong>zero-shot</strong> (bina examples ke), <strong>few-shot</strong> (examples do), <strong>chain-of-thought</strong> ("Let's think step by step"), <strong>self-consistency</strong> (kai reasoning paths, majority lo), <strong>ReAct</strong> (reason + act + observe), <strong>structured outputs</strong> (defined format me jawab).</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab5"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 5 — RAGAS Score Calculator</span></a><a class="pn-btn" href="#/lab7"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 7 — LangGraph Memory Simulator</span></a></nav></section><section class="section" id="sec-lab7" data-lab="1" data-title="Lab 7 — LangGraph Memory Simulator"><div class="sec-meta"><span class="num-chip lab-chip">18</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 7 — LangGraph Memory Simulator</h1><p class="lead">Thread 1 aur Thread 2 me messages bhejo — memory kis thread me rehti hai, dekho.</p>
+<div class="lab-controls">
+<label>Thread chuno:
+<select id="mm-thread" class="lab-select" onchange="labMemoryShow()">
+<option value="1">Thread 1</option>
+<option value="2">Thread 2</option>
+</select></label>
+<label>Message likho: <input id="mm-msg" type="text" value="Hi, my name is Rahul." style="width:100%;min-width:0"></label>
+<button class="chip-btn on" onclick="labMemorySend()">Bhejo</button>
+<button class="chip-btn" onclick="labMemoryAsk()">"What is my name?" poochho</button>
+<button class="chip-btn" onclick="labMemoryReset()">Memory reset karo</button>
+</div>
+<pre class="lab-out" id="mm-out">Thread 1 me message bhejo, phir "What is my name?" poochho.</pre>
+<p>Kitab ka test: wahi thread_id reuse karo to history preserve rehti hai; <strong>alag thread_id nayi conversation</strong> shuru karta hai. MemorySaver in-memory hai — process restart hote hi history gayab; production ke liye persistent checkpointer chahiye.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab6"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 6 — Prompting Technique Picker</span></a><a class="pn-btn" href="#/lab8"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 8 — Agent Pattern Chooser + ReAct Loop</span></a></nav></section><section class="section" id="sec-lab8" data-lab="1" data-title="Lab 8 — Agent Pattern Chooser + ReAct Loop"><div class="sec-meta"><span class="num-chip lab-chip">19</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 8 — Agent Pattern Chooser + ReAct Loop</h1><p class="lead">Task ki structure chuno — sahi pattern milega; ReAct demo se Thought → Action → Observation dekho.</p>
+<div class="lab-controls">
+<label>Task ki structure kya hai?
+<select id="pt-task" class="lab-select" onchange="labPattern()">
+<option value="chain">Steps ek doosre par depend karte hain — pehle extract, phir summarise, phir format</option>
+<option value="parallel">Independent steps — document ke sections alag-alag summarise karo</option>
+<option value="routing">Varied inputs — sawal ko general / code / research me se sahi jagah bhejo</option>
+<option value="orchestrator">Bada task — topic ke hisaab se split karo, har worker ek topic</option>
+<option value="evaluator">Quality chahiye — ek model likhe, doosra evaluate kare</option>
+</select></label>
+<button class="chip-btn on" onclick="labReactDemo()">ReAct loop demo chalao</button>
+</div>
+<pre class="lab-out" id="pt-out">Task chuno — kaunsa pattern fit hai, dekho.</pre>
+<pre class="lab-out" id="pt-react">ReAct demo: Thought → Action → Observation — kitab ke umar wale example par.</pre>
+<p>Patterns (Ch 8): <strong>chaining, parallelization, routing, orchestrator-workers, evaluator-optimizer</strong>. ReAct loop (Ch 6): Thought → Action → Observation — aur tool ke output ko interpret karo, blindly trust mat karo.</p>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab7"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 7 — LangGraph Memory Simulator</span></a><a class="pn-btn" href="#/faqs"><span class="pn-label">Agla &rarr;</span><span class="pn-title">FAQs — Interview Sawal-Jawab</span></a></nav></section><section class="section" id="sec-faqs" data-title="FAQs — Interview Sawal-Jawab"><div class="sec-meta"><span class="num-chip">20</span><span class="sec-group">End Matter</span></div><h1>FAQs — Interview Sawal-Jawab</h1><p class="lead">Current-era interviews ke liye <strong>36 sawal-jawab</strong> — har chapter se, kitab ke concepts, numbers aur examples par based. Har jawab khud me poora hai.</p><div class="faq-list"><details class="faq" data-faq="1"><summary><span class="faq-num">Q1</span><span class="faq-q">LLM kaise kaam karta hai? Token kya hai?</span></summary><div class="faq-a">LLM pehle ke tokens ko dekhkar agla token predict karta hai. Token text ka ek tukda hai — ek word, word ka hissa, ya punctuation. Kitab ka example: 26 letters se 26³ = 17,576 possible three-letter sequences bante hain, lekin words random strings se kam hote hain — isliye model patterns seekhta hai, har possibility yaad nahi karta.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q2</span><span class="faq-q">Pretraining, fine-tuning aur alignment me kya farak hai?</span></summary><div class="faq-a">Pretraining me model bahut zyada text se general patterns seekhta hai. Supervised fine-tuning me use labelled examples (jaise Q&A form) par train karte hain. Alignment me RLHF jaise techniques se use helpful aur appropriate responses sikhate hain. Har step par output agle token par ek probability distribution hota hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q3</span><span class="faq-q">Embeddings kya hain? Cosine similarity ka formula kya hai?</span></summary><div class="faq-a">Embeddings text ki vector representations hain jo meaning preserve karti hain — similar texts ke similar vectors hote hain. Cosine measure: cos(θ) = (A · B) / (||A|| ||B||) — similar texts ka score 1 ke paas hota hai. Lab 1 me token aur context-window ka hisaab karke dekho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q4</span><span class="faq-q">Open-weight aur closed-weight models me kya farak hai?</span></summary><div class="faq-a">Open-weight models ke weights openly available hote hain (jaise Llama), closed-weight proprietary hote hain (jaise GPT-4, Claude). Kitab batati hai ki kuch evaluations me Llama 3.1 70B ne GPT-4o ke barabar score kiya — jo cost ke liye matter karta hai. Salah: jab chhota sasta model kaafi ho, use wahi chuno; context length check karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q5</span><span class="faq-q">LangChain ke teen layers kaunse hain?</span></summary><div class="faq-a">Base layer LangChain Core hai — abstractions, LCEL, runnable interface, output parsing aur callbacks. Beech me integrations hain — jaise OpenAI aur Anthropic. Upar application layers hain — LangGraph, LangGraph Platform, LangSmith aur LangChain Hub. Kitab ka code LangChain 0.3 aur LangGraph 0.2 par hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q6</span><span class="faq-q">LCEL kya hai? Pipe operator kaise kaam karta hai?</span></summary><div class="faq-a">LCEL (LangChain Expression Language) components ko pipe operator | se chain karta hai — prompt | model | output_parser. Example: ChatPromptTemplate → ChatOpenAI (gpt-4o-mini, temperature=0) → StrOutputParser. Runnable interface: invoke ek input ke liye, batch kai ke liye, stream token-by-token ke liye, aur ainvoke / abatch / astream async versions.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q7</span><span class="faq-q">Pehla chatbot kaise banta hai? 'Hello, how are you?' ka jawab kya aaya?</span></summary><div class="faq-a">ChatOpenAI(model='gpt-4o-mini', temperature=0) banao, ChatPromptTemplate.from_messages se prompt banao (system: 'You are a helpful assistant', human: placeholder), phir chain karo: prompt | model | StrOutputParser(). 'Hello, how are you?' par kitab me diya gaya jawab hai: 'I'm just a computer program, so I don't have feelings, but I'm here and ready to help you...' Wahi chain alag inputs se dobaara chal sakti hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q8</span><span class="faq-q">RAG kya hai aur ye hallucination kyun kam karta hai?</span></summary><div class="faq-a">RAG (retrieval-augmented generation): pehle apne data se relevant information retrieve karo, phir use model ko do taaki woh grounded jawab de. Zaroorat isliye hai kyunki model ki knowledge cutoff date par fixed hoti hai, usme private/recent data nahi hota, aur woh hallucinate kar sakta hai. Grounding se hallucination kam hota hai — khatm nahi hota.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q9</span><span class="faq-q">RAG indexing pipeline ke chaar steps kaunse hain?</span></summary><div class="faq-a">Load → split → embed → store. Load: PyPDFLoader se PDF, WebBaseLoader se web pages — Document objects (page_content + metadata). Split: RecursiveCharacterTextSplitter, chunk_size=1000, chunk_overlap=200. Embed: OpenAIEmbeddings, text-embedding-3-small. Store: Chroma, persist_directory ke saath, phir retriever banao.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q10</span><span class="faq-q">Chunk size 1000 aur overlap 200 kyun? Trade-off kya hai?</span></summary><div class="faq-a">Chunks bahut bade hon to relevance dilute ho jati hai; bahut chhote hon to context kho jata hai; overlap boundaries ke across continuity preserve karta hai. Lab 2 me chunk size aur overlap badalkar dekho — kitne chunks bante hain aur har chunk me kya hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q11</span><span class="faq-q">Token limits kya hain? GPT-4o, Claude 3.5 Sonnet aur Llama 3.1 ke kitne hain?</span></summary><div class="faq-a">Table 2-2 ke hisaab se: GPT-4o — 128,000 tokens; Claude 3.5 Sonnet — 200,000 tokens; Llama 3.1 — 128,000 tokens. Lab 1 me apne text ka token estimate aur context-window usage dekho. Rule of thumb: 1,000 tokens ≈ 750 words.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q12</span><span class="faq-q">RAG chain kaise banti hai? 'I don't know' kab kehna chahiye?</span></summary><div class="faq-a">Retriever + prompt template + model. Prompt model ko instruct karta hai ki woh sirf retrieved context se jawab de, aur jab context me jawab na ho to keh de ki use nahi pata. Testing me chain ko un sawalon par bhi test karo jinke jawab use mana karna chahiye — expected behaviour refusal ya 'I don't know' hai, hallucinated jawab nahi.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q13</span><span class="faq-q">Retrieval behtar karne ke paanch tareeke kaunse hain?</span></summary><div class="faq-a">Hybrid search (BM25 keyword + vector), query rewriting/expansion, reranking (cross-encoder se reorder), metadata filtering (source/date ke hisaab se), aur multi-query retrieval (sawal ke kai versions, results combine karo). Generation behtar karne ke liye: behtar prompt, few-shot examples, factual jawabon ke liye low temperature, aur structured outputs.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q14</span><span class="faq-q">RAGAS metrics kya hain? Kitab ke example scores kya hain?</span></summary><div class="faq-a">Paanch metrics: faithfulness, answer relevancy, context precision, context recall, answer correctness. Kitab ke example scores (Table 3-3, Ch 10 me dobaara): faithfulness 0.85, answer relevancy 0.92, context precision 0.78, context recall 0.88, answer correctness 0.81. Lab 5 me in sliders se average aur verdict nikalo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q15</span><span class="faq-q">Chatbot me memory kya hai? Short-term aur long-term memory me farak?</span></summary><div class="faq-a">Memory chatbot ki ability hai jo pehle ke turns ko yaad rakhti hai. Short-term memory current conversation hai (message history me); long-term memory sessions ke across persist karti hai (preferences, facts). Kitab working, episodic aur semantic memory me bhi farak batati hai; LangGraph ki checkpointing persistence layer deti hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q16</span><span class="faq-q">LangGraph me StateGraph, checkpointer aur thread_id kaise kaam karte hain?</span></summary><div class="faq-a">StateGraph messages state ke saath banta hai; ek 'chatbot' node messages par model invoke karta hai; START → chatbot → END edges hote hain; graph MemorySaver checkpointer ke saath compile hota hai. Invoke config me thread_id dete hain, jaise {'configurable': {'thread_id': '1'}}. Wahi thread_id reuse karo to history preserve rehti hai; alag thread_id nayi conversation shuru karta hai. Lab 7 me dono threads try karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q17</span><span class="faq-q">Memory test ka example kya tha? Naam kaise yaad raha?</span></summary><div class="faq-a">User kehta hai 'Hi, my name is Rahul.' Assistant greeting deta hai. User poochhta hai 'What is my name?' — assistant jawab deta hai 'Rahul'. Doosra test alag thread me dikhata hai ki wahan naam yaad nahi hai — memory thread se scoped hoti hai. MemorySaver in-memory hai — process restart hote hi history gayab; production ke liye persistent checkpointer chahiye.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q18</span><span class="faq-q">Cognitive architecture kya hai? Chain aur agent me farak?</span></summary><div class="faq-a">Cognitive architecture design hai ki agent kaise sochta aur act karta hai — kaunse steps, kis order me, kya yaad rakhta hai, kab human intervene kare. Simple chain steps ko fixed order me chalati hai; agent apne steps khud decide karta hai. LangGraph primitives: nodes, edges, conditional edges, parallel branches, subgraphs, human-in-the-loop interrupts.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q19</span><span class="faq-q">Single-agent aur multi-agent system me kya farak hai?</span></summary><div class="faq-a">Single-agent me ek agent tools ke saath loop karta hai — model node, tools node, conditional edge. Multi-agent me supervisor agent workers (researcher, coder) ko delegate karta hai — supervisor decide karta hai kis ko call karna hai, worker report karta hai, supervisor dobaara delegate karta hai ya final jawab deta hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q20</span><span class="faq-q">Human-in-the-loop kyun zaroori hai?</span></summary><div class="faq-a">Graph sensitive action se pehle rukta hai — jaise tool execute karne se pehle — aur human ke approve ya reject ka wait karta hai. Ye control rakhne ka tareeka hai jab agent asli actions le sakta hai. System prompt me 'stop and ask' rule bhi isi liye hota hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q21</span><span class="faq-q">Agent kya hai? Plan-act-observe loop samjhao.</span></summary><div class="faq-a">Agent ek system hai jo LLM ko istemal karke decide karta hai ki aage kya karna hai — fixed sequence ke bajay. Uske paas model, tools, memory aur loop hota hai: plan, act, observe, repeat. ReAct cycle hai: Thought → Action → Observation → Thought, aur aise hi chalta hai jab tak jawab ke liye kaafi na ho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q22</span><span class="faq-q">Umar wala example samjhao — 60 sahi hai ya 61?</span></summary><div class="faq-a">Vyakti ka janm 4 July 1872 ko hua, mrityu 5 January 1933 ko hui. Sirf saal ghatao to 1933 − 1872 = 61 milta hai — lekin ye GALAT hai, kyunki mrityu janmdin (4 July) se pehle hui thi, isliye 61 saal poore nahi hue the. Sahi umar 60 hai. Model pehle 60 deta hai; calculator jo sirf saal ghata-ta hai, 61 deta hai — isiliye tool ke output ko interpret karo, blindly trust mat karo. Lab 4 me khud hisaab karke dekho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q23</span><span class="faq-q">Tool calling kaise kaam karta hai? bind_tools kya hai?</span></summary><div class="faq-a">Tools @tool decorator se Python functions se bante hain; model se bind_tools se bind karte hain. Model structured tool call deta hai (naam + arguments), application tool chalati hai, aur result ToolMessage ke roop me model ko wapas milta hai. LangGraph me model node aur tools node conditional edge se jude hote hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q24</span><span class="faq-q">Tool call fail ho to kya karna chahiye?</span></summary><div class="faq-a">Error catch karo, model ko batao ki kya galat hua, aur use retry karne ya doosra tool chunne do — crash mat karo. Example: search kuch na de, ya calculator ko invalid input mile. Error handling hi loop ko robust banati hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q25</span><span class="faq-q">Reflection kya hai? 'The Little Prince' wala example samjhao.</span></summary><div class="faq-a">Reflection me agent draft banata hai, phir critic node use accuracy aur style ke liye review karta hai, phir writer revise karta hai — loop tab tak jab tak draft kaafi achha na ho ya limit na aa jaye. Example: 'The Little Prince' par essay. Ye bina bada model liye quality behtar karne ka tareeka hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q26</span><span class="faq-q">Planning aur ReAct me kya farak hai?</span></summary><div class="faq-a">Planning me planner pehle task ko steps me todta hai, executor har step karta hai, aur step fail ho to planner plan revise karta hai. ReAct ek-ek step plan karta hai — pehle se poora plan nahi banata. Research task planning ka example hai; umar wala sawal ReAct ka.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q27</span><span class="faq-q">Multi-agent patterns kaunse hain? Supervisor pattern kya hai?</span></summary><div class="faq-a">Table 7-1 ke hisaab se: supervisor (ek central coordinator), hierarchical (levels me delegation), peer-to-peer (agents seedha baat karte hain), aur doosre patterns. Supervisor pattern me researcher jaankari gather karta hai, coder/writer output banata hai, supervisor coordinate karta hai; agents shared state se communicate karte hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q28</span><span class="faq-q">Chaining, parallelization aur routing me kya farak hai?</span></summary><div class="faq-a">Chaining: steps sequence me, har ek agle ko feed karta hai — jab har step pehle wale par depend kare. Parallelization: independent steps ek saath — latency kam hoti hai. Routing: router request ko sahi specialist ko bhejta hai — general, code ya research — cost bachti hai kyunki bada model sirf jab zaroorat ho tab istemal hota hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q29</span><span class="faq-q">Orchestrator-workers aur evaluator-optimizer kya hain?</span></summary><div class="faq-a">Orchestrator-workers: orchestrator task ko subtasks me todta hai, workers ko assign karta hai, results combine karta hai — jaise research task topic ke hisaab se split. Evaluator-optimizer: ek model output generate karta hai, doosra evaluate karta hai aur feedback deta hai — Ch 7 wali reflection ka hi general roop.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q30</span><span class="faq-q">Double texting kya hai aur ye risky kyun hai?</span></summary><div class="faq-a">Double texting matlab doosra message bhejna jab model abhi pehle ka jawab generate kar raha ho. Ye model ko confuse kar sakta hai aur tokens waste kar sakta hai agar doosra message context badal de. Sirf tab istemal karo jab tasks independent hon.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q31</span><span class="faq-q">Prototype product kyun nahi hota? Deploy se pehle kya karna chahiye?</span></summary><div class="faq-a">Deploy se pehle application ko test karo, prompts aur models ko version karo, dependencies pin karo, aur secrets ko code ke bahar store karo. LangGraph Platform hosting, scaling aur Studio interface deta hai; Docker deployment ko machines ke across reproducible banata hai; production vector store ke liye Supabase with pgvector istemal hota hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q32</span><span class="faq-q">langgraph.json me kya hota hai? Supabase kyun istemal hota hai?</span></summary><div class="faq-a">langgraph.json configuration file hai jo graph, uski dependencies aur environment variables ka naam deti hai. Supabase with pgvector extension production vector store hai — development ke local Chroma store ki jagah. Code Supabase se URL aur key se connect hota hai, embeddings ke liye table banata hai, aur wahan vectors store/retrieve karta hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q33</span><span class="faq-q">Testing kyun continuous process hai? RAGAS aur LangSmith kya karte hain?</span></summary><div class="faq-a">LLM outputs non-deterministic hote hain — wahi prompt alag answers de sakta hai. Isliye testing ek baar ka check nahi, evaluation → monitoring → improvement ka loop hai. RAGAS metrics deta hai, LangSmith tracing, datasets aur evaluation runs deta hai. Loop: evaluate → failures dhoondho → data/chunking/retrieval/prompt fix karo → re-evaluate — sirf bada model lena nahi.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q34</span><span class="faq-q">Production me kya monitor karna chahiye? Security me kya dhyaan rakhein?</span></summary><div class="faq-a">Latency, token usage, cost, error rates aur user feedback track karo; problems par LangSmith tracing se individual runs inspect karo. Security: authentication, authorisation, input validation, API keys ki protection — keys ko client code me expose mat karo, prompt injection se bacho, aur model ko bina checks ke untrusted code ya data access mat do.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q35</span><span class="faq-q">LLMs ka future kya hai? Responsible AI me kya aata hai?</span></summary><div class="faq-a">Kitab predict karti hai: chhote, saste aur zyada capable models, zyada multimodal models, zyada agents, aur models ko tools/data ke saath combine karke applications. Bottleneck model capability se application design ki taraf shift hoga. Responsible AI: bias, fairness, privacy, transparency, accountability — harmful outputs test karo, user data protect karo, users ko batao ki woh AI se baat kar rahe hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q36</span><span class="faq-q">Shuru kaise karein? Kitab ka practical plan kya hai?</span></summary><div class="faq-a">Ek real problem chuno, minimal version banao, real users se test karo, evaluate karo, aur iterate karo. Companion repository aur LangChain documentation se aage badho. Kitab ka aakhri sandesh: seekhne ka tareeka build karna hai — responsible tareeke se, evaluation aur user feedback ke saath.</div></details></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab8"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 8 — Agent Pattern Chooser + ReAct Loop</span></a><a class="pn-btn" href="#/trust"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Trust Check — Sab kuch cover hai?</span></a></nav></section><section class="section" id="sec-trust" data-title="Trust Check — Sab kuch cover hai?"><div class="sec-meta"><span class="num-chip">21</span><span class="sec-group">End Matter</span></div><h1>Trust Check — Sab kuch cover hai?</h1><p class="lead">Ye section live gin kar batata hai ki is SPA me kitab ka kitna content hai. <strong>Self-check button</strong> dabao — ye page ko scan karke PASS ya FAIL deta hai, placeholder FAQs aur personal names bhi check karta hai.</p><div class="tc-cards"><div class="tc-card"><div class="tc-num" id="tc-sections">–</div><div class="tc-lbl">Chapter sections</div></div><div class="tc-card"><div class="tc-num" id="tc-sidebar">–</div><div class="tc-lbl">Sidebar entries</div></div><div class="tc-card"><div class="tc-num" id="tc-sources">–</div><div class="tc-lbl">Source boxes</div></div><div class="tc-card"><div class="tc-num" id="tc-figures">–</div><div class="tc-lbl">Figures</div></div><div class="tc-card"><div class="tc-num" id="tc-labs">–</div><div class="tc-lbl">Labs</div></div><div class="tc-card"><div class="tc-num" id="tc-faqs">–</div><div class="tc-lbl">FAQs</div></div></div><button class="run-check" id="run-check" onclick="runTrustCheck()">Self-check chalao</button><div class="check-result" id="check-result" hidden></div><h3>Cross-check — kitab ki Table of Contents se</h3><div class="tbl-wrap"><table><thead><tr><th>Kitab ka hissa</th><th>Is SPA me</th><th>Kahan</th></tr></thead><tbody><tr><td>Preface</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 00 — saare Preface headings, Fig. P-1 timeline ke saath</td></tr><tr><td>Ch 1 — LLM Fundamentals with LangChain</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 01 — tokens, 3 training stages, embeddings, LCEL, Fig. 1-1 se 1-4</td></tr><tr><td>Ch 2 — RAG Part I: Indexing Your Data</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 02 — load/split/embed/store, 1000/200, Table 2-1 aur 2-2, Fig. 2-1 se 2-8</td></tr><tr><td>Ch 3 — RAG Part II: Chatting with Your Data</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 03 — RAG chain, 5 retrieval improvements, RAGAS scores, Fig. 3-1 se 3-10</td></tr><tr><td>Ch 4 — Using LangGraph to Add Memory to Your Chatbot</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 04 — StateGraph, MemorySaver, thread_id, Table 4-1, Fig. 4-1 se 4-6</td></tr><tr><td>Ch 5 — Cognitive Architectures with LangGraph</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 05 — single-agent, multi-agent, human-in-the-loop, Fig. 5-1 se 5-7</td></tr><tr><td>Ch 6 — Agent Architecture</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 06 — ReAct, umar example (60 sahi, 61 galat), tool calling, Table 6-1 aur 6-2, Fig. 6-1 se 6-8</td></tr><tr><td>Ch 7 — Agents II</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 07 — reflection, planning, multi-agent, Table 7-1, Fig. 7-1 se 7-7</td></tr><tr><td>Ch 8 — Patterns to Make the Most of LLMs</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 08 — paanch patterns, double texting, Table 8-1 aur 8-2, Fig. 8-1 aur 8-2</td></tr><tr><td>Ch 9 — Deployment: Launching Your AI Application into Production</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 09 — LangGraph Platform, Docker, Supabase/pgvector, Table 9-1, Fig. 9-1 se 9-5</td></tr><tr><td>Ch 10 — Testing: Evaluation, Monitoring, and Continuous Improvement</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 10 — RAGAS + LangSmith, evaluation loop, Table 10-1 aur 10-2, Fig. 10-1 se 10-7</td></tr><tr><td>Ch 11 — Building with LLMs</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 11 — future, responsible AI, getting started, Fig. 11-1 aur 11-2</td></tr><tr><td>Index</td><td>— Reference list</td><td>Out of scope (neeche dekho)</td></tr><tr><td>About the Authors</td><td><span class="tc-ok">✓ Cover</span></td><td>Preface section ke "Lekhakon ke baare me" me — bina naam ke, generic roop me</td></tr></tbody></table></div><h3>Honest out-of-scope list — jo is SPA me nahi hai</h3><ul class="oos"><li><strong>Index</strong> — ye ek A–Z lookup reference hai, chapter nahi; iske entries ka koi naya concept nahi hai — sabhi apne chapters me cover hain. Index ki poori entry list is SPA me reproduce nahi ki gayi hai.</li><li><strong>Kitab ka verbatim text</strong> — ye notes apne shabdon me hain; code snippets descriptions se banaye gaye hain, verbatim claim nahi karte.</li><li><strong>Kitab ke original images / screenshots</strong> — saare 67 figures notes ke descriptions se SVG/CSS diagrams ke roop me banaye gaye hain; LangSmith dashboard aur running application ke screenshots bhi diagrams hain, asli screenshots nahi.</li><li><strong>ISBN</strong> — kitab ke page par koi labelled ISBN field display nahi hui; URL identifier 9781098167271 ko ISBN ke roop me present nahi kiya gaya hai.</li><li><strong>Ch 4 summary me mentioned chat summarisation ka detailed code</strong> — notes me bataya gaya hai ki summary me iska zikr hai lekin detailed code ek alag section ke roop me nahi diya gaya; isliye SPA me concept cover hai, code nahi.</li><li><strong>Companion repository ka poora code</strong> — kitab ka code online repository me hai (AGPL-3.0); SPA me sirf notes se banaye gaye chhote reconstructed excerpts hain, poora codebase nahi.</li></ul><div class="callout"><b>Self-sufficiency:</b> Is SPA me kitab ke notes ka har number, har worked example aur har figure ka diagram hai — kitab ko dobaara khole bina samajhne ke liye kaafi hai.</div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/learning-langchain/9781098167271/">https://learning.oreilly.com/library/view/learning-langchain/9781098167271/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/faqs"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">FAQs — Interview Sawal-Jawab</span></a><span class="pn-spacer"></span></nav></section></div></main>
+<script>
+/* ---------- routing + sidebar (top-level, no IIFE) ---------- */
+var sections = Array.prototype.slice.call(document.querySelectorAll(".section"));
+var links = Array.prototype.slice.call(document.querySelectorAll(".sb-link"));
+var byId = {};
+sections.forEach(function(s){ byId[s.id.replace("sec-","")] = s; });
+var order = sections.map(function(s){ return s.id.replace("sec-",""); });
+var sidebarEl = document.getElementById("sidebar");
+var scrimEl = document.getElementById("scrim");
+function closeDrawer(){ sidebarEl.classList.remove("open"); scrimEl.classList.remove("on"); }
+document.getElementById("menu-btn").addEventListener("click", function(){
+  var open = sidebarEl.classList.toggle("open"); scrimEl.classList.toggle("on", open);
+});
+scrimEl.addEventListener("click", closeDrawer);
+function show(slug){
+  if(!byId[slug]) slug = "home";
+  sections.forEach(function(s){ s.hidden = s.id !== "sec-" + slug; });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  var act = document.querySelector('.sb-link[data-nav="' + slug + '"]');
+  if(act && window.innerWidth > 900){ act.scrollIntoView({block:"nearest"}); }
+  var idx = order.indexOf(slug);
+  document.getElementById("progress-bar").style.width = (order.length > 1 ? (idx/(order.length-1))*100 : 0) + "%";
+  var tb = document.getElementById("tb-current");
+  if(tb){ var sec = byId[slug]; tb.textContent = sec ? (sec.getAttribute("data-title") || "Learning LangChain") : "Learning LangChain"; }
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+function route(){
+  var h = location.hash.replace(/^#\/?/, "");
+  show(h || "home");
+}
+window.addEventListener("hashchange", route);
+var searchEl = document.getElementById("sb-search-input");
+searchEl.addEventListener("input", function(){
+  var q = searchEl.value.trim().toLowerCase();
+  links.forEach(function(a){
+    var hay = a.getAttribute("data-search") || "";
+    a.classList.toggle("hidden", q !== "" && hay.indexOf(q) === -1);
+  });
+  document.querySelectorAll(".sb-group").forEach(function(g){
+    var any = g.querySelector(".sb-link:not(.hidden)");
+    g.style.display = any ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); searchEl.focus(); if(window.innerWidth<=900){ sidebarEl.classList.add("open"); scrimEl.classList.add("on"); } }
+});
+route();
+
+/* ---------- Lab 1: token counter ---------- */
+function labTokens(){
+  var t = document.getElementById("tk-text").value;
+  var chars = t.length;
+  var words = t.trim() ? t.trim().split(/\s+/).length : 0;
+  var tokA = Math.ceil(chars / 4);
+  var tokB = Math.ceil(words * 1.33);
+  var tokens = Math.max(tokA, tokB);
+  var equiv = Math.round(tokens * 0.75);
+  function pct(limit){ return ((tokens / limit) * 100).toFixed(2) + "%"; }
+  document.getElementById("tk-out").textContent =
+    "Characters: " + chars + "  |  Words: " + words + String.fromCharCode(10) +
+    "Estimated tokens: " + tokens + "  (chars/4 = " + tokA + ", words x 1.33 = " + tokB + ", bada wala liya)" + String.fromCharCode(10) +
+    "1,000 tokens ≈ 750 words — is hisaab se ye text ≈ " + equiv + " words ke barabar hai" + String.fromCharCode(10) +
+    "Context-window usage: GPT-4o (128,000) = " + pct(128000) + "  |  Claude 3.5 Sonnet (200,000) = " + pct(200000) + "  |  Llama 3.1 (128,000) = " + pct(128000);
+}
+
+/* ---------- Lab 2: chunking simulator ---------- */
+function labChunk(){
+  var t = document.getElementById("ck-text").value;
+  var size = parseInt(document.getElementById("ck-size").value, 10) || 1000;
+  var overlap = parseInt(document.getElementById("ck-overlap").value, 10) || 0;
+  if(overlap >= size){ overlap = Math.max(0, size - 1); }
+  var step = size - overlap;
+  var chunks = [];
+  var i = 0;
+  while(i < t.length){
+    chunks.push(t.slice(i, i + size));
+    if(i + size >= t.length) break;
+    i += step;
+  }
+  var out = "Text length: " + t.length + " characters  |  chunk_size=" + size + ", chunk_overlap=" + overlap + String.fromCharCode(10) +
+    "Chunks bane: " + chunks.length + String.fromCharCode(10);
+  chunks.slice(0, 3).forEach(function(c, idx){
+    out += String.fromCharCode(10) + "--- Chunk " + (idx + 1) + " (" + c.length + " chars) ---" + String.fromCharCode(10) + c;
+  });
+  if(chunks.length > 3){ out += String.fromCharCode(10) + "... aur " + (chunks.length - 3) + " chunks aur hain."; }
+  document.getElementById("ck-out").textContent = out;
+}
+
+/* ---------- Lab 3: temperature / top-p explorer ---------- */
+function labTemp(){
+  var temp = parseFloat(document.getElementById("tp-temp").value);
+  var topp = parseFloat(document.getElementById("tp-topp").value);
+  var topk = parseInt(document.getElementById("tp-topk").value, 10);
+  document.getElementById("tp-temp-val").textContent = temp.toFixed(1);
+  document.getElementById("tp-topp-val").textContent = topp.toFixed(1);
+  document.getElementById("tp-topk-val").textContent = String(topk);
+  var base = [0.50, 0.25, 0.12, 0.08, 0.05];
+  var names = ["the", "a", "LangChain", "model", "data"];
+  var adj = base.map(function(p){ return Math.pow(p, 1 / Math.max(temp, 0.05)); });
+  var sum = adj.reduce(function(a, b){ return a + b; }, 0);
+  var probs = adj.map(function(p){ return p / sum; });
+  var kept = [];
+  var cum = 0;
+  for(var i = 0; i < probs.length && kept.length < topk; i++){
+    if(cum < topp){ kept.push(i); cum += probs[i]; } else { break; }
+  }
+  var lines = ["Temperature " + temp.toFixed(1) + "  |  Top-P " + topp.toFixed(1) + "  |  Top-K " + topk + String.fromCharCode(10)];
+  probs.forEach(function(p, i){
+    var bar = "";
+    var n = Math.round(p * 40);
+    for(var j = 0; j < n; j++){ bar += "#"; }
+    lines.push((kept.indexOf(i) >= 0 ? "[rakha] " : "[hata]  ") + names[i] + "  " + (p * 100).toFixed(1) + "%  " + bar);
+  });
+  lines.push(String.fromCharCode(10) + (temp <= 0.2 ? "Low temperature: distribution sharp hai — pehla token lagbhag pakka hai (deterministic)." : (temp >= 0.9 ? "High temperature: distribution flat hai — kai tokens ka chance hai (creative/random)." : "Medium temperature: pehla token likely hai, lekin doosre bhi possible hain.")));
+  document.getElementById("tp-out").textContent = lines.join(String.fromCharCode(10));
+}
+
+/* ---------- Lab 4: age checker ---------- */
+function labCoolidge(){
+  var b = new Date(document.getElementById("ag-birth").value + "T00:00:00");
+  var d = new Date(document.getElementById("ag-death").value + "T00:00:00");
+  var naive = d.getFullYear() - b.getFullYear();
+  var age = naive;
+  if(d.getMonth() < b.getMonth() || (d.getMonth() === b.getMonth() && d.getDate() < b.getDate())){ age = naive - 1; }
+  document.getElementById("ag-out").textContent =
+    "Janm: " + b.toDateString() + "  |  Mrityu: " + d.toDateString() + String.fromCharCode(10) +
+    "Naive hisaab (sirf saal ghatao): " + d.getFullYear() + " - " + b.getFullYear() + " = " + naive + String.fromCharCode(10) +
+    "Sahi umar: " + age + " saal (janmdin se pehle mrityu hui, isliye ek saal kam)" + String.fromCharCode(10) +
+    (naive === age ? "Is case me dono barabar hain — janmdin mrityu se pehle aa gaya tha." : "FARAK: naive hisaab " + naive + " deta hai, sahi jawab " + age + " hai — tool ke output ko interpret karo, blindly trust mat karo.");
+}
+
+/* ---------- Lab 5: RAGAS calculator ---------- */
+function labRagas(){
+  var f = parseFloat(document.getElementById("rg-f").value);
+  var r = parseFloat(document.getElementById("rg-r").value);
+  var p = parseFloat(document.getElementById("rg-p").value);
+  var c = parseFloat(document.getElementById("rg-c").value);
+  var a = parseFloat(document.getElementById("rg-a").value);
+  document.getElementById("rg-f-val").textContent = f.toFixed(2);
+  document.getElementById("rg-r-val").textContent = r.toFixed(2);
+  document.getElementById("rg-p-val").textContent = p.toFixed(2);
+  document.getElementById("rg-c-val").textContent = c.toFixed(2);
+  document.getElementById("rg-a-val").textContent = a.toFixed(2);
+  var avg = (f + r + p + c + a) / 5;
+  var weakest = "faithfulness";
+  var minv = f;
+  if(r < minv){ minv = r; weakest = "answer relevancy"; }
+  if(p < minv){ minv = p; weakest = "context precision"; }
+  if(c < minv){ minv = c; weakest = "context recall"; }
+  if(a < minv){ minv = a; weakest = "answer correctness"; }
+  var verdict = avg >= 0.85 ? "Bahut achha — system reliable lag raha hai." : (avg >= 0.75 ? "Theek-thaak — sabse kamzor metric par kaam karo." : "Kamzor — retrieval ya prompt me sudhaar chahiye, sirf bada model lena nahi.");
+  document.getElementById("rg-out").textContent =
+    "Faithfulness " + f.toFixed(2) + "  |  Answer relevancy " + r.toFixed(2) + "  |  Context precision " + p.toFixed(2) + String.fromCharCode(10) +
+    "Context recall " + c.toFixed(2) + "  |  Answer correctness " + a.toFixed(2) + String.fromCharCode(10) +
+    "Average: " + avg.toFixed(3) + String.fromCharCode(10) +
+    "Sabse kamzor metric: " + weakest + " (" + minv.toFixed(2) + ")" + String.fromCharCode(10) + verdict;
+}
+
+/* ---------- Lab 6: prompting technique picker ---------- */
+function labPromptPick(){
+  var v = document.getElementById("pp-task").value;
+  var map = {
+    translate: "Zero-shot — simple task hai, bina examples ke seedha poochho. Example: sentence ko French me translate karo.",
+    classify: "Few-shot — do labelled examples do (ek Positive, ek Negative), phir naya review do — model pattern follow karega aur labeling consistent rahegi.",
+    math: "Chain-of-thought + self-consistency — 'Let's think step by step' kaho, phir kai reasoning paths sample karke majority answer lo.",
+    format: "Specify Format + structured outputs — table, JSON ya email ka format tay karo; model ko defined structure me jawab dene par majboor karo.",
+    agent: "ReAct — Reason + Act: model reason kare, tool call kare, result observe kare, dobaara reason kare — jab tak jawab ke liye kaafi na ho.",
+    refuse: "RAG + grounded prompt — model ko sirf retrieved context se jawab dene ko kaho; jab context me jawab na ho to 'I don't know' kehna chahiye, hallucinate nahi."
+  };
+  document.getElementById("pp-out").textContent = map[v] || "";
+}
+
+/* ---------- Lab 7: memory simulator ---------- */
+var MM_THREADS = {"1": [], "2": []};
+function labMemoryShow(){
+  var t = document.getElementById("mm-thread").value;
+  var hist = MM_THREADS[t];
+  var out = "Thread " + t + " — history (" + hist.length + " messages):" + String.fromCharCode(10);
+  if(!hist.length){ out += "(abhi khaali hai — message bhejo)"; }
+  hist.forEach(function(m){ out += String.fromCharCode(10) + m.role + ": " + m.text; });
+  document.getElementById("mm-out").textContent = out;
+}
+function labMemorySend(){
+  var t = document.getElementById("mm-thread").value;
+  var msg = document.getElementById("mm-msg").value.trim();
+  if(!msg){ document.getElementById("mm-out").textContent = "Pehle message likho."; return; }
+  MM_THREADS[t].push({role: "user", text: msg});
+  var m = msg.match(/my name is\s+([A-Za-z]+)/i);
+  var reply = m ? ("Hello, " + m[1] + "! Main aapki kya madad kar sakta hoon?") : "Samajh gaya — aapne kaha: " + msg;
+  MM_THREADS[t].push({role: "assistant", text: reply});
+  labMemoryShow();
+}
+function labMemoryAsk(){
+  var t = document.getElementById("mm-thread").value;
+  var hist = MM_THREADS[t];
+  var name = null;
+  hist.forEach(function(m){ var mm = m.text.match(/my name is\s+([A-Za-z]+)/i); if(mm) name = mm[1]; });
+  MM_THREADS[t].push({role: "user", text: "What is my name?"});
+  MM_THREADS[t].push({role: "assistant", text: name ? ("Aapka naam " + name + " hai — maine thread " + t + " ki history se yaad rakha.") : "Mujhe aapka naam nahi pata — is thread me aapne abhi tak apna naam bataya hi nahi."});
+  labMemoryShow();
+}
+function labMemoryReset(){
+  MM_THREADS = {"1": [], "2": []};
+  labMemoryShow();
+}
+
+/* ---------- Lab 8: pattern chooser + ReAct demo ---------- */
+function labPattern(){
+  var v = document.getElementById("pt-task").value;
+  var map = {
+    chain: "Chaining — steps sequence me chalao: pehle extract, phir summarise, phir format. Har step agle ko feed karta hai.",
+    parallel: "Parallelization — independent steps ek saath chalao: document ke sections alag-alag summarise karo, phir combine karo. Latency kam hogi.",
+    routing: "Routing — router banao jo sawal ko sahi specialist ko bheje: general model, code model ya research tool. Bada model sirf jab zaroorat ho.",
+    orchestrator: "Orchestrator-workers — orchestrator task ko topic ke hisaab se subtasks me tode, har worker ek topic research kare, phir results combine hon.",
+    evaluator: "Evaluator-optimizer — ek model output generate kare, doosra evaluate kare aur feedback de; generator use behtar kare. Ch 7 wali reflection ka general roop."
+  };
+  document.getElementById("pt-out").textContent = map[v] || "";
+}
+function labReactDemo(){
+  var nl = String.fromCharCode(10);
+  document.getElementById("pt-react").textContent =
+    "Sawal: ek prasiddh vyakti ki mrityu ke samay umar kitni thi?" + nl +
+    "Thought 1: Mujhe janm aur mrityu ki dates chahiye." + nl +
+    "Action 1: search['janm aur mrityu ki dates']" + nl +
+    "Observation 1: Janm 4 July 1872, mrityu 5 January 1933." + nl +
+    "Thought 2: Ab umar calculate karni hai — calculator istemal karo." + nl +
+    "Action 2: calculator['1933 - 1872']" + nl +
+    "Observation 2: Calculator ne 61 diya." + nl +
+    "Thought 3: Ruko — mrityu 5 January ko hui, janmdin 4 July se pehle. 61 saal poore nahi hue." + nl +
+    "Final Answer: 60 saal. Tool ka output interpret kiya gaya, blindly trust nahi kiya.";
+}
+
+/* ---------- Trust Check ---------- */
+function count(sel){ return document.querySelectorAll(sel).length; }
+function refreshCounts(){
+  var set = function(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; };
+  set("tc-sections", count("[data-chapter]"));
+  set("tc-sidebar", count(".sb-link"));
+  set("tc-sources", count(".source-box"));
+  set("tc-figures", count(".fig"));
+  set("tc-labs", count("[data-lab]"));
+  set("tc-faqs", count("[data-faq]"));
+}
+refreshCounts();
+var BOOK_URL_TC = "https://learning.oreilly.com/library/view/learning-langchain/9781098167271/";
+function runTrustCheck(){
+  refreshCounts();
+  var checks = [];
+  var chaps = document.querySelectorAll("[data-chapter]");
+  checks.push([chaps.length === 12, "Chapter sections = 12 (Preface + Ch 1-11; mile: " + chaps.length + ")"]);
+  checks.push([count(".sb-link") === 22, "Sidebar entries = 22 (12 chapters + 8 labs + FAQ + Trust Check; mile: " + count(".sb-link") + ")"]);
+  var boxes = document.querySelectorAll(".source-box a");
+  var badSrc = 0;
+  boxes.forEach(function(a){ if(a.getAttribute("href") !== BOOK_URL_TC) badSrc++; });
+  checks.push([boxes.length === 23 && badSrc === 0, "Source boxes = 23 (Home + har section me ek), sabhi ka URL kitab ka page hai (mile: " + boxes.length + ", galat URL: " + badSrc + ")"]);
+  var chapsWithSrc = 0;
+  chaps.forEach(function(s){ if(s.querySelector(".source-box")) chapsWithSrc++; });
+  checks.push([chapsWithSrc === 12, "Har chapter section me Source box hai (mile: " + chapsWithSrc + "/12)"]);
+  checks.push([count(".fig") === 67, "Figures = 67 (Fig. P-1 se 11-2 tak, notes ke descriptions se banaye gaye; mile: " + count(".fig") + ")"]);
+  checks.push([count("[data-lab]") === 8, "Interactive labs = 8 (mile: " + count("[data-lab]") + ")"]);
+  var faqs = document.querySelectorAll("[data-faq]");
+  var badFaq = 0;
+  faqs.forEach(function(f){
+    var q = (f.querySelector(".faq-q") || {}).textContent || "";
+    var a = (f.querySelector(".faq-a") || {}).textContent || "";
+    if(/^\s*(q|a)\s*$/i.test(q) || /^\s*(q|a)\s*$/i.test(a) || /^\s*(placeholder|lorem|todo)/i.test(q) || /^\s*(placeholder|lorem|todo)/i.test(a)) badFaq++;
+  });
+  checks.push([faqs.length === 36 && badFaq === 0, "Interview FAQs = 36, koi placeholder nahi (mile: " + faqs.length + ", placeholder: " + badFaq + ")"]);
+  checks.push([document.querySelectorAll("[loading]").length === 0, "Koi lazy-loading attribute nahi (figures fresh load par ginne layak hain; mile: " + document.querySelectorAll("[loading]").length + ")"]);
+  var secText = "";
+  document.querySelectorAll(".section").forEach(function(s){ secText += " " + (s.textContent || ""); });
+  var names = ["Oshin", "Campos", "Mayo", "Nuno", "Coolidge", "Calvin"];
+  var found = [];
+  names.forEach(function(n){ if(new RegExp("\\b" + n + "\\b").test(secText)) found.push(n); });
+  checks.push([found.length === 0, "Visible text me koi personal name nahi (mile: " + (found.length ? found.join(", ") : "koi nahi") + ")"]);
+  var markers = ["yaad rakho", "kaise", "kya", "hai", "ke", "ki", "me", "se", "aur", "bhi", "yeh", "woh", "karo", "dekho", "samjho", "matlab", "jaise", "lekin", "phir", "pehle", "saath", "liye", "hoga", "chahiye", "sakte", "karte", "hota", "hoti", "hain", "tha", "thi", "jahan", "jab", "toh", "isiliye", "isliye", "wala", "wali"];
+  var low = secText.toLowerCase();
+  var hits = 0;
+  markers.forEach(function(m){ var idx = low.indexOf(m); while(idx !== -1){ hits++; idx = low.indexOf(m, idx + m.length); } });
+  checks.push([hits >= 500, "Hinglish markers >= 500 (mile: " + hits + ")"]);
+  var pass = checks.every(function(c){ return c[0]; });
+  var res = document.getElementById("check-result");
+  res.hidden = false; res.className = "check-result " + (pass ? "pass" : "fail");
+  res.innerHTML = "<strong>" + (pass ? "PASS — saare 12 chapter sections, 67 figures, 8 labs aur 36 FAQs is SPA me maujood hain." : "FAIL — neeche wali jaanch dekho.") + "</strong><ul>" +
+    checks.map(function(c){ return "<li>" + (c[0] ? "✓ " : "✗ ") + c[1] + "</li>"; }).join("") + "</ul>";
+  res.scrollIntoView({behavior:"smooth", block:"center"});
+}
+labTokens();
+labChunk();
+labTemp();
+labRagas();
+labPromptPick();
+labMemoryShow();
+labPattern();
+</script>
+</body>
+</html>

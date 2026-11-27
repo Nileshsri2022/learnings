@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Forward Deployed Engineer — Hinglish</title>
+<style>
+
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+/* ---------- layout ---------- */
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 70px}
+/* ---------- sections ---------- */
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+/* ---------- labs ---------- */
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-controls label.lab-check{flex-direction:row;align-items:center;gap:8px;font-family:var(--font-body);font-size:13.5px;min-height:36px}
+.lab-check input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-color{width:56px;height:38px;border:1px solid var(--surface-highest);border-radius:8px;background:var(--surface);padding:3px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-css{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#d9e7c8;white-space:pre-wrap;word-break:break-word}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.demo-box{background:var(--lime-strong);color:var(--on-lime);font-family:var(--font-mono);font-weight:700;border-radius:8px;display:flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:10px}
+.demo-box.tall{min-height:84px}
+.fx-stage{display:flex;min-height:150px;background:var(--surface);border-radius:8px;padding:10px}
+.gr-stage{display:grid;background:var(--surface);border-radius:8px;padding:10px}
+.sp-stage{display:flex;justify-content:center}
+#sp-box{background:rgba(132,204,22,.22);border:1px solid var(--lime-dim);border-radius:6px;transition:padding .15s}
+.sp-inner{background:var(--surface-high);border-radius:6px;padding:16px 20px;text-align:center}
+.rp-box{border-radius:10px;padding:26px;text-align:center;font-family:var(--font-mono);font-weight:700;color:#12100a;transition:background .2s}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.st-cell{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.st-cell code{align-self:flex-start}
+.st-btn-hover{background:#0369a1;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-hover:hover{background:#075985}
+.st-input{width:100%;background:var(--bg);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.st-input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.55)}
+.st-btn-active{background:#65a30d;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-active:active{background:#3f6212}
+.st-btn-disabled{background:#525252;color:#d4d4d4;border:none;border-radius:8px;padding:10px 16px;opacity:.5;cursor:not-allowed;font-size:14px}
+.st-group{cursor:pointer}
+.st-group-inner{border:1px solid var(--surface-highest);border-radius:8px;padding:12px;width:100%}
+.st-group:hover .st-group-inner{color:var(--lime);border-color:var(--lime-dim)}
+.st-peer-label{display:flex;gap:8px;align-items:center;min-height:36px;cursor:pointer}
+.st-peer-label input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.st-peer-msg{visibility:hidden;background:#450a0a;color:#fca5a5;border-radius:6px;padding:8px 10px;font-size:13px}
+.st-peer-msg.show{visibility:visible}
+.dk-card{background:#fff;color:#374151;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.35);transition:background .25s,color .25s}
+.dk-card .dk-title{font-family:var(--font-head);font-weight:700;font-size:18px;color:#111827;margin-bottom:6px}
+.dk-card.dark{background:#1f2937;color:#9ca3af}
+.dk-card.dark .dk-title{color:#f9fafb}
+.mo-stage{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.mo-box{width:92px;height:92px;background:var(--blue);color:#00354a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;cursor:pointer}
+.mo-box:hover{transform:scale(1.18) rotate(8deg)}
+.mo-anim{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mo-dot{width:34px;height:34px;border-radius:99px;background:var(--lime-strong);display:block}
+.mo-anim-label{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.mo-spin{animation:mspin 1.4s linear infinite;border-radius:8px}
+@keyframes mspin{to{transform:rotate(360deg)}}
+.mo-pulse{animation:mpulse 1.6s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mo-bounce{animation:mbounce 1.2s ease-in-out infinite}
+@keyframes mbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.mo-ping{animation:mping 1.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes mping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.9);opacity:0}}
+.gd-box{height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:rgba(0,0,0,.55)}
+.th-swatches{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.th-swatch{border-radius:10px;padding:18px 14px;font-family:var(--font-mono);font-size:12.5px;flex:1;min-width:140px;text-align:center;background:var(--surface);border:1px solid var(--surface-high)}
+/* ---------- faq / sources / trust ---------- */
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-n{font-family:var(--font-mono)}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+/* ---------- home ---------- */
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 60px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .mo-spin,.mo-pulse,.mo-bounce,.mo-ping,.sb-dot{animation:none}
+}
+
+
+/* ---- figures (added for fresh build) ---- */
+.fig{max-width:100%;overflow-x:auto;background:var(--surface);border:1px solid var(--surface-high);border-radius:12px;padding:14px;margin:14px 0}
+.fig svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.fig-cap{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);margin:10px 0 0;text-align:center}
+figure.fig{margin:14px 0}
+img.fig,svg.fig{max-width:100%;height:auto}
+/* ---- callouts ---- */
+.callout{border:1px solid var(--surface-highest);border-left:3px solid var(--lime);background:var(--surface);border-radius:10px;padding:12px 14px;margin:14px 0}
+.callout-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);display:block;margin-bottom:6px}
+/* ---- hard guards ---- */
+pre{max-width:100%;overflow-x:auto}
+table{max-width:100%}
+img,svg,video{max-width:100%}
+/* ---- mobile bottom nav ---- */
+#bottomnav{display:none}
+@media (max-width:900px){
+  #bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(18,19,22,.97);border-top:1px solid var(--surface-high);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around}
+  #bottomnav a{flex:1;text-align:center;color:var(--muted);text-decoration:none;font-family:var(--font-mono);font-size:11px;padding:10px 2px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  #bottomnav a .bn-ic{font-size:18px;line-height:1}
+  #bottomnav a.active{color:var(--lime)}
+  body{padding-bottom:64px}
+  .sb-link{min-height:44px}
+  .chip-btn,.lab-select,.lab-input{min-height:44px}
+}
+
+</style>
+</head>
+<body>
+<header id="topbar">
+  <button id="menu-btn" type="button" aria-label="Sidebar kholo">☰</button>
+  <div><div class="tb-title">The Forward Deployed Engineer</div><div class="tb-sub" id="tb-current">Home</div></div>
+</header>
+<div id="scrim"></div>
+<aside id="sidebar" aria-label="Saare sections">
+  <div class="sb-top">
+    <div class="sb-brand"><div class="sb-logo">FD</div><div><h2>The Forward Deployed Engineer</h2><small>Early Release · Hinglish</small></div></div>
+    <div class="sb-search"><span>⌕</span><input id="sb-search-input" type="text" placeholder="Search karo… (Ctrl+K)" aria-label="Sections search karo"></div>
+  </div>
+  <nav class="sb-nav">
+<div class="sb-group"><a class="sb-link" href="#/home" data-nav="home" data-search="home shuruaat start"><span class="sb-num">⌂</span><span class="sb-title">Home</span></a></div>
+<div class="sb-group"><div class="sb-group-head"><span>Shuruaat</span><span class="sb-count">2</span></div>
+<a class="sb-link" href="#/front-matter" data-nav="front-matter" data-search="01 front matter   brief table of contents  not yet final  shuruaat"><span class="sb-num">01</span><span class="sb-title">Front Matter — Brief Table of Contents (Not Yet Final)</span></a>
+<a class="sb-link" href="#/book-at-a-glance" data-nav="book-at-a-glance" data-search="02 book at a glance   kya  kab  kitna shuruaat"><span class="sb-num">02</span><span class="sb-title">Book At a Glance — kya, kab, kitna</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Chapter 1 — Founder Inside Someone Else's Company</span><span class="sb-count">12</span></div>
+<a class="sb-link" href="#/ch1-opening" data-nav="ch1-opening" data-search="1 1 opening scene    500 million ki meeting aur core thesis chapter 1   founder inside someone else s company"><span class="sb-num">1.1</span><span class="sb-title">Opening Scene — $500 Million ki Meeting aur Core Thesis</span></a>
+<a class="sb-link" href="#/ch1-old-term" data-nav="ch1-old-term" data-search="1 2 an old term  a new job    forward deployed  kahan se aaya chapter 1   founder inside someone else s company"><span class="sb-num">1.2</span><span class="sb-title">An Old Term, a New Job — 'Forward Deployed' Kahan se Aaya</span></a>
+<a class="sb-link" href="#/ch1-borders" data-nav="ch1-borders" data-search="1 3 role ki borders   fde kya hai  kya nahi  table 1 1  chapter 1   founder inside someone else s company"><span class="sb-num">1.3</span><span class="sb-title">Role ki Borders — FDE Kya Hai, Kya Nahi (Table 1-1)</span></a>
+<a class="sb-link" href="#/ch1-flavors" data-nav="ch1-flavors" data-search="1 4 flavors of deployment   fde kaam ke 3 tarike chapter 1   founder inside someone else s company"><span class="sb-num">1.4</span><span class="sb-title">Flavors of Deployment — FDE Kaam ke 3 Tarike</span></a>
+<a class="sb-link" href="#/ch1-founder-job" data-nav="ch1-founder-job" data-search="1 5 a founder sized job   4 founder responsibilities chapter 1   founder inside someone else s company"><span class="sb-num">1.5</span><span class="sb-title">A Founder-Sized Job — 4 Founder Responsibilities</span></a>
+<a class="sb-link" href="#/ch1-surface-area" data-nav="ch1-surface-area" data-search="1 6 the surface area   5 areas jo fde ko ek saath cover karne hote hain chapter 1   founder inside someone else s company"><span class="sb-num">1.6</span><span class="sb-title">The Surface Area — 5 Areas Jo FDE ko Ek Saath Cover Karne Hote Hain</span></a>
+<a class="sb-link" href="#/ch1-engagement-arc" data-nav="ch1-engagement-arc" data-search="1 7 the engagement arc   har deployment ke 4 phases chapter 1   founder inside someone else s company"><span class="sb-num">1.7</span><span class="sb-title">The Engagement Arc — Har Deployment ke 4 Phases</span></a>
+<a class="sb-link" href="#/ch1-on-their-turf" data-nav="ch1-on-their-turf" data-search="1 8 on their turf   a week in the life   thursday aur friday chapter 1   founder inside someone else s company"><span class="sb-num">1.8</span><span class="sb-title">On Their Turf + A Week in the Life — Thursday aur Friday</span></a>
+<a class="sb-link" href="#/ch1-working-room" data-nav="ch1-working-room" data-search="1 9 working the room   organisational maps chapter 1   founder inside someone else s company"><span class="sb-num">1.9</span><span class="sb-title">Working the Room — Organisational Maps</span></a>
+<a class="sb-link" href="#/ch1-why-it-pays" data-nav="ch1-why-it-pays" data-search="1 10 why it pays   compensation  numbers ke saath  table figure 1 2  chapter 1   founder inside someone else s company"><span class="sb-num">1.10</span><span class="sb-title">Why It Pays — Compensation, Numbers ke Saath (Table/Figure 1-2)</span></a>
+<a class="sb-link" href="#/ch1-hard-parts" data-nav="ch1-hard-parts" data-search="1 11 the hard parts   who this role is for   5 difficulties  5 traits chapter 1   founder inside someone else s company"><span class="sb-num">1.11</span><span class="sb-title">The Hard Parts + Who This Role Is For — 5 Difficulties, 5 Traits</span></a>
+<a class="sb-link" href="#/ch1-what-you-learn" data-nav="ch1-what-you-learn" data-search="1 12 what you will learn   conclusion   key terms chapter 1   founder inside someone else s company"><span class="sb-num">1.12</span><span class="sb-title">What You Will Learn + Conclusion + Key Terms</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Chapter 2 — Technical Discovery and Scoping</span><span class="sb-count">11</span></div>
+<a class="sb-link" href="#/ch2-opening" data-nav="ch2-opening" data-search="2 1 opening scene   35 minutes   50 million  aur guessing ki cost chapter 2   technical discovery and scoping"><span class="sb-num">2.1</span><span class="sb-title">Opening Scene — 35 Minutes, $50 Million, aur Guessing ki Cost</span></a>
+<a class="sb-link" href="#/ch2-discovery-problem" data-nav="ch2-discovery-problem" data-search="2 2 the discovery problem   6 questions  2 chhupi hui chapter 2   technical discovery and scoping"><span class="sb-num">2.2</span><span class="sb-title">The Discovery Problem — 6 Questions, 2 Chhupi Hui</span></a>
+<a class="sb-link" href="#/ch2-what-discovery-is" data-nav="ch2-what-discovery-is" data-search="2 3 discovery kya hai  kya nahi   5 ways discovery fails  table 2 1  chapter 2   technical discovery and scoping"><span class="sb-num">2.3</span><span class="sb-title">Discovery Kya Hai, Kya Nahi + 5 Ways Discovery Fails (Table 2-1)</span></a>
+<a class="sb-link" href="#/ch2-discovery-system" data-nav="ch2-discovery-system" data-search="2 4 a discovery system that works   3 phases chapter 2   technical discovery and scoping"><span class="sb-num">2.4</span><span class="sb-title">A Discovery System That Works — 3 Phases</span></a>
+<a class="sb-link" href="#/ch2-three-people" data-nav="ch2-three-people" data-search="2 5 the three people you need   champion  skeptic  operator chapter 2   technical discovery and scoping"><span class="sb-num">2.5</span><span class="sb-title">The Three People You Need — Champion, Skeptic, Operator</span></a>
+<a class="sb-link" href="#/ch2-four-things" data-nav="ch2-four-things" data-search="2 6 four things every discovery must establish   5 questions that survive chapter 2   technical discovery and scoping"><span class="sb-num">2.6</span><span class="sb-title">Four Things Every Discovery Must Establish + 5 Questions That Survive</span></a>
+<a class="sb-link" href="#/ch2-scoping" data-nav="ch2-scoping" data-search="2 7 turning discovery into scoping   3 principles   build   don t build test  table 2 2  chapter 2   technical discovery and scoping"><span class="sb-num">2.7</span><span class="sb-title">Turning Discovery Into Scoping — 3 Principles + Build / Don't-Build Test (Table 2-2)</span></a>
+<a class="sb-link" href="#/ch2-five-line-spec" data-nav="ch2-five-line-spec" data-search="2 8 the five line spec   chapter ka central artefact   2 worked examples chapter 2   technical discovery and scoping"><span class="sb-num">2.8</span><span class="sb-title">The Five-Line Spec — Chapter ka Central Artefact + 2 Worked Examples</span></a>
+<a class="sb-link" href="#/ch2-discovery-week" data-nav="ch2-discovery-week" data-search="2 9 how to run the discovery week   monday to friday   6 traps  table 2 3  chapter 2   technical discovery and scoping"><span class="sb-num">2.9</span><span class="sb-title">How to Run the Discovery Week — Monday to Friday + 6 Traps (Table 2-3)</span></a>
+<a class="sb-link" href="#/ch2-scoping-right-problem" data-nav="ch2-scoping-right-problem" data-search="2 10 scoping the right problem   4 checks   code artefacts chapter 2   technical discovery and scoping"><span class="sb-num">2.10</span><span class="sb-title">Scoping the Right Problem — 4 Checks + Code Artefacts</span></a>
+<a class="sb-link" href="#/ch2-conclusion" data-nav="ch2-conclusion" data-search="2 11 chapter 2 conclusion   key terms chapter 2   technical discovery and scoping"><span class="sb-num">2.11</span><span class="sb-title">Chapter 2 Conclusion + Key Terms</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>End Matter</span><span class="sb-count">1</span></div>
+<a class="sb-link" href="#/about-author" data-nav="about-author" data-search="e1 about the author   role ke andar se likhi kitab end matter"><span class="sb-num">E1</span><span class="sb-title">About the Author — Role ke Andar se Likhi Kitab</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Labs</span><span class="sb-count">8</span></div>
+<a class="sb-link" href="#/lab-discovery-cost" data-nav="lab-discovery-cost" data-search="lab L1 lab 1   discovery cost calculator"><span class="sb-num lab-num">L1</span><span class="sb-title">Lab 1 — Discovery Cost Calculator</span></a>
+<a class="sb-link" href="#/lab-org-map" data-nav="lab-org-map" data-search="lab L2 lab 2   org map builder"><span class="sb-num lab-num">L2</span><span class="sb-title">Lab 2 — Org Map Builder</span></a>
+<a class="sb-link" href="#/lab-six-questions" data-nav="lab-six-questions" data-search="lab L3 lab 3   six discovery questions checker"><span class="sb-num lab-num">L3</span><span class="sb-title">Lab 3 — Six Discovery Questions Checker</span></a>
+<a class="sb-link" href="#/lab-five-line-spec" data-nav="lab-five-line-spec" data-search="lab L4 lab 4   five line spec builder"><span class="sb-num lab-num">L4</span><span class="sb-title">Lab 4 — Five-Line Spec Builder</span></a>
+<a class="sb-link" href="#/lab-build-test" data-nav="lab-build-test" data-search="lab L5 lab 5   build   don t build test"><span class="sb-num lab-num">L5</span><span class="sb-title">Lab 5 — Build / Don't-Build Test</span></a>
+<a class="sb-link" href="#/lab-ten-column-table" data-nav="lab-ten-column-table" data-search="lab L6 lab 6   10 column discovery table filler"><span class="sb-num lab-num">L6</span><span class="sb-title">Lab 6 — 10-Column Discovery Table Filler</span></a>
+<a class="sb-link" href="#/lab-discovery-week" data-nav="lab-discovery-week" data-search="lab L7 lab 7   discovery week planner"><span class="sb-num lab-num">L7</span><span class="sb-title">Lab 7 — Discovery Week Planner</span></a>
+<a class="sb-link" href="#/lab-pay-gap" data-nav="lab-pay-gap" data-search="lab L8 lab 8   pay gap calculator"><span class="sb-num lab-num">L8</span><span class="sb-title">Lab 8 — Pay Gap Calculator</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>End Sections</span></div><a class="sb-link" href="#/faqs" data-nav="faqs" data-search="interview faqs questions"><span class="sb-num">F</span><span class="sb-title">Interview FAQs</span></a><a class="sb-link" href="#/sources" data-nav="sources" data-search="sources all urls reference"><span class="sb-num">S</span><span class="sb-title">Sources</span></a><a class="sb-link" href="#/trust" data-nav="trust" data-search="trust check verification coverage"><span class="sb-num">✓</span><span class="sb-title">Trust Check</span></a></div>
+  </nav>
+  <div class="sb-foot"><span><span class="sb-dot"></span>26 sections loaded</span><span>O&apos;Reilly</span></div>
+</aside>
+<div id="progress"><div id="progress-bar"></div></div>
+<main id="main"><div class="wrap">
+
+<article class="section" id="sec-home" data-title="AI Engineering — Home" hidden>
+  <div class="home-hero">
+    <div class="sec-meta"><span class="num-chip">AI</span><span class="sec-group">The Forward Deployed Engineer · Early Release · Hinglish</span></div>
+    <h1>The Forward Deployed Engineer — available content, ek hi jagah.</h1>
+    <p class="lead">Ye SPA <strong>The Forward Deployed Engineer</strong> kitab ke <strong>available content (Front Matter, Chapter 1, Chapter 2, About the Author)</strong> ko ek hi page me samjhata hai — Hinglish me, har concept, number aur table ke saath. Content asli kitab se liya gaya hai. <strong>Important: ye Early Release kitab hai — sirf 2 chapters publish hue hain; baaki 10 planned chapters ka content abhi exist nahi karta, isliye is SPA me nahi hai.</strong> Sidebar se koi bhi chapter kholo, beech-beech me <strong>8 interactive labs</strong> me haath se try karo, aur ant me <strong>Interview FAQs</strong> aur <strong>Trust Check</strong> ke saath apni taiyaari pakki karo.</p>
+    <div class="home-stats">
+      <div class="home-stat"><b>26</b><span>Sections</span></div>
+      <div class="home-stat"><b>4</b><span>Groups (Shuruaat, Ch 1, Ch 2, End)</span></div>
+      <div class="home-stat"><b>8</b><span>Interactive labs</span></div>
+      <div class="home-stat"><b>36</b><span>Interview FAQs</span></div>
+      <div class="home-stat"><b>26</b><span>Source lines</span></div>
+      <div class="home-stat"><b>8</b><span>Figures (diagrams)</span></div>
+    </div>
+    <p>Shuruaat ke liye sabse sahi kram: pehle <strong>Front Matter</strong> se samjho ki kitab ka scope kya hai, phir <strong>Chapter 1</strong> me FDE role kya hai, aur phir <strong>Chapter 2</strong> me discovery aur scoping ka system — interview, maps, five-line spec aur build/don&apos;t-build test.</p>
+  </div>
+  <h3>Saare chapters</h3>
+  <div class="home-groups"><a class="home-group" href="#/front-matter"><span class="cnt">2 sections</span><h3>Shuruaat</h3><p>Front Matter — Brief Table of Contents (Not Yet Final)</p></a><a class="home-group" href="#/ch1-opening"><span class="cnt">12 sections</span><h3>Chapter 1 — Founder Inside Someone Else's Company</h3><p>Opening Scene — $500 Million ki Meeting aur Core Thesis</p></a><a class="home-group" href="#/ch2-opening"><span class="cnt">11 sections</span><h3>Chapter 2 — Technical Discovery and Scoping</h3><p>Opening Scene — 35 Minutes, $50 Million, aur Guessing ki Cost</p></a><a class="home-group" href="#/about-author"><span class="cnt">1 sections</span><h3>End Matter</h3><p>About the Author — Role ke Andar se Likhi Kitab</p></a></div>
+</article>
+
+
+<article class="section content-sec" id="sec-front-matter" data-title="Front Matter — Brief Table of Contents (Not Yet Final)" hidden>
+  <div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Shuruaat</span></div>
+  <h1>Front Matter — Brief Table of Contents (Not Yet Final)</h1>
+
+<p class="lead">Ye kitab <strong>Forward Deployed Engineering (FDE)</strong> ke baare me hai — ek aisa kaam jo lambe samay se exist karta hai, lekin jiska naam abhi haal me pada hai. Ye kitab pehli koshish hai is kaam ko end-to-end likhne ki: pehli customer meeting se lekar production system aur renewal tak.</p>
+<p>Kitab ka central image ye hai: FDE ek <strong>kisi aur ki company ke andar ka founder</strong> hota hai — use problem dhoondhni hai, solution bechna hai, use banana hai, use aise customer ke andar deploy karna hai jisne use banaya nahi, aur jab wo toote to zimmedari bhi usi ki hai.</p>
+<h3>Kitab ka promised arc</h3>
+<p>Kitab ka flow practical aur sequential hai: pehle role define karo, phir deployment stack seekho, phir discover aur scope karo, prototype banao, real data sambhalo, securely deploy karo, production AI chalao, integrate karo, adoption badhao, pricing aur negotiation sambhalo, failure se recover karo, aur aage dekho.</p>
+<h3>Ek zaroori baat — kitab abhi poori nahi hai</h3>
+<p>Ye <strong>Early Release, Raw &amp; Unedited</strong> kitab hai. Iske contents <strong>"Not Yet Final"</strong> hain aur zyadatar chapters <strong>"Not available"</strong> mark kiye gaye hain. Is SPA me sirf wahi content hai jo publish ho chuka hai: <strong>Chapter 1 aur Chapter 2 (reader numbering)</strong>. Baaki 10 planned chapters ka content abhi exist hi nahi karta — unhe invent nahi kiya gaya hai; unki list Trust Check ke out-of-scope section me di gayi hai.</p>
+<div class="callout"><span class="callout-tag">Yaad rakho</span>Is kitab me koi alag "Preface" chapter nahi hai — front matter sirf "Brief Table of Contents (Not Yet Final)" page hai.</div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/home"><span class="pn-label">← Pichhla</span><span class="pn-title">Home</span></a><a class="pn-btn" href="#/book-at-a-glance"><span class="pn-label">Agla →</span><span class="pn-title">Book At a Glance — kya, kab, kitna</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-book-at-a-glance" data-title="Book At a Glance — kya, kab, kitna" hidden>
+  <div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Shuruaat</span></div>
+  <h1>Book At a Glance — kya, kab, kitna</h1>
+
+<p class="lead">Ek nazar me kitab ki pehchan: Early Release status, planned size, aur jo content abhi available hai uska hisaab.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Detail</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Kitab</td><td>The Forward Deployed Engineer</td></tr>
+<tr><td>Publisher</td><td>O&apos;Reilly Media, Inc.</td></tr>
+<tr><td>Publication date (listed)</td><td>December 2027 (planned)</td></tr>
+<tr><td>Pages (planned total)</td><td>350 pages</td></tr>
+<tr><td>Status</td><td>Early Release, Raw &amp; Unedited</td></tr>
+<tr><td>ISBN</td><td>Not shown — koi ISBN list nahi hua, isliye yahan bhi nahi diya gaya</td></tr>
+<tr><td>Catalogue ID (URL me)</td><td>0642572416485</td></tr>
+<tr><td>Available content padhne ka time</td><td>Lagbhag 1 ghanta 9 minute (reader ke hisab se)</td></tr>
+<tr><td>Book page rating</td><td>4.5 stars, 2 ratings</td></tr>
+<tr><td>Available chapters</td><td>2 (Chapter 1 + reader Chapter 2)</td></tr>
+<tr><td>Planned chapters (total)</td><td>12 + About the Author</td></tr>
+</tbody>
+</table></div>
+<h3>Numbering note — dhyaan se padho</h3>
+<p>Reader ka Contents panel available chapters ko sequentially number karta hai: "1. The Founder Inside Someone Else's Company" aur "2. Technical Discovery and Scoping…". Lekin Brief Table of Contents me Technical Discovery ko <strong>Chapter 3</strong> number diya gaya hai — kyunki planned Chapter 2 (The Deployment Stack) abhi publish nahi hua. Is SPA me reader ki numbering use ki gayi hai (Chapter 2 = Technical Discovery), aur jahan zaroorat padi wahan planned number bhi bataya gaya hai.</p>
+<h3>Planned TOC — kya available hai, kya nahi</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Planned #</th><th>Chapter</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>The Founder Inside Someone Else&apos;s Company</td><td>Available</td></tr>
+<tr><td>2</td><td>The Deployment Stack</td><td>Not available</td></tr>
+<tr><td>3</td><td>Technical Discovery and Scoping</td><td>Available (reader Ch 2)</td></tr>
+<tr><td>4</td><td>The Prototype That Proves It</td><td>Not available</td></tr>
+<tr><td>5</td><td>Data Reality</td><td>Not available</td></tr>
+<tr><td>6</td><td>Deploying Inside Their World</td><td>Not available</td></tr>
+<tr><td>7</td><td>Production AI</td><td>Not available</td></tr>
+<tr><td>8</td><td>The Build-and-Buy Line</td><td>Not available</td></tr>
+<tr><td>9</td><td>Adoption</td><td>Not available</td></tr>
+<tr><td>10</td><td>The Business of Deployment</td><td>Not available</td></tr>
+<tr><td>11</td><td>When Deployment Goes Wrong</td><td>Not available</td></tr>
+<tr><td>12</td><td>The Road Ahead</td><td>Not available</td></tr>
+<tr><td>—</td><td>About the Author</td><td>Available</td></tr>
+</tbody>
+</table></div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/front-matter"><span class="pn-label">← Pichhla</span><span class="pn-title">Front Matter — Brief Table of Contents (Not Yet Final)</span></a><a class="pn-btn" href="#/ch1-opening"><span class="pn-label">Agla →</span><span class="pn-title">Opening Scene — $500 Million ki Meeting aur Core Thesis</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-opening" data-title="Opening Scene — $500 Million ki Meeting aur Core Thesis" hidden>
+  <div class="sec-meta"><span class="num-chip">1.1</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>Opening Scene — $500 Million ki Meeting aur Core Thesis</h1>
+
+<p class="lead">Chapter 1 ek scene se khulta hai: subah 8:00 baje, 2022, ek bade platform vendor ke office me. Narrator hoodie pehne, teesri coffee peete hue, ek global bank ke senior person, ek government agency ke person aur ek healthcare company ke person ke saamne baitha hai — ek aisi deal ki meeting me jo <strong>$500 million</strong> ki hai.</p>
+<p>Us room me narrator ka kaam code likhna nahi hai. Uska kaam hai business samajhna, data map karna, aur kuch aisa banana jo customer ki duniya me kaam kare. Room ke baaki log use engineer samajhte hain; asal me, wo kehta hai, wo <strong>kisi aur ki company ke andar ka founder</strong> hai. Yahi kitab ki central image hai: FDE founder-level zimmedari uthata hai — problem ki, customer ki, outcome ki — bina company ka malik bane.</p>
+<h3>Chapter ki thesis</h3>
+<p>FDE koi nayi tarah ki software engineering nahi hai — ye engineering ke upar bana ek <strong>naya tarah ka kaam</strong> hai: part engineer, part consultant, part product thinker, part founder. Ye isliye exist karta hai kyunki enterprise software ka sabse mushkil hissa ab product banana nahi raha; mushkil hissa hai use ek real customer ki organisation, data, politics aur constraints ke andar kaam karwana.</p>
+<div class="callout"><span class="callout-tag">Core idea</span>Product zaroori hai, lekin kaafi nahi — deployment wahi jagah hai jahan value banti hai ya kho jati hai.</div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/book-at-a-glance"><span class="pn-label">← Pichhla</span><span class="pn-title">Book At a Glance — kya, kab, kitna</span></a><a class="pn-btn" href="#/ch1-old-term"><span class="pn-label">Agla →</span><span class="pn-title">An Old Term, a New Job — 'Forward Deployed' Kahan se Aaya</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-old-term" data-title="An Old Term, a New Job — 'Forward Deployed' Kahan se Aaya" hidden>
+  <div class="sec-meta"><span class="num-chip">1.2</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>An Old Term, a New Job — 'Forward Deployed' Kahan se Aaya</h1>
+
+<p class="lead">"Forward deployed" term military se aaya hai, jahan forward-deployed units headquarters ke bajay action ke paas station ki jati hain. Ek bade platform vendor ne is term ko un engineers par apply kiya jo customers ke saath on-site kaam karte hain.</p>
+<p>Kitab stress karti hai ki <strong>kaam purana hai</strong> — consultants, systems integrators aur field engineers ne iske versions dashakon se kiye hain — lekin <strong>job, ek naam wali deliberate career ke roop me, nayi hai</strong>, aur AI ne use phir se important bana diya hai. Teen forces isko drive karti hain:</p>
+<ol>
+<li><strong>AI products banne par khatm nahi hote:</strong> ek model ko har customer ke data aur workflows ke andar tune, ground aur prove karna padta hai.</li>
+<li><strong>Enterprise customers apna data vendor ke cloud ko nahi denge</strong> aur roadmap ka wait nahi karenge; unhe cheez abhi, apne environment ke andar kaam karti chahiye.</li>
+<li><strong>Demo aur deployment ke beech ka gap</strong> wahi jagah ban gaya hai jahan AI deals jeete ya haare jate hain. FDE usi gap me rehta hai.</li>
+</ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-opening"><span class="pn-label">← Pichhla</span><span class="pn-title">Opening Scene — $500 Million ki Meeting aur Core Thesis</span></a><a class="pn-btn" href="#/ch1-borders"><span class="pn-label">Agla →</span><span class="pn-title">Role ki Borders — FDE Kya Hai, Kya Nahi (Table 1-1)</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-borders" data-title="Role ki Borders — FDE Kya Hai, Kya Nahi (Table 1-1)" hidden>
+  <div class="sec-meta"><span class="num-chip">1.3</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>Role ki Borders — FDE Kya Hai, Kya Nahi (Table 1-1)</h1>
+
+<p class="lead">Chapter role ki boundaries paanch padosi jobs ke against khinchta hai. Ye Table 1-1, "The FDE in the org chart", me diya gaya hai — hierarchy ka point nahi hai, <strong>accountability</strong> ka point hai: FDE wo person hai jo problem wapas nahi de sakta.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Role</th><th>Kya karta hai</th><th>Success kya hai</th></tr></thead>
+<tbody>
+<tr><td>Software engineer</td><td>Office me product banata hai; spec se kaam karta hai; platform par code ship karta hai</td><td>Code quality aur velocity</td></tr>
+<tr><td><strong>Forward deployed engineer</strong></td><td>Customer ke andar solution banata hai; customer ki problem se kaam karta hai; unke environment me working system ship karta hai</td><td>Customer ko value milna</td></tr>
+<tr><td>Solutions architect</td><td>Solution design karta hai aur handover kar deta hai</td><td>FDE rukta hai aur use kaam karwata hai</td></tr>
+<tr><td>Sales engineer</td><td>Demonstrate aur sell karta hai</td><td>FDE build, deploy karta hai aur sale ke baad accountable rehta hai</td></tr>
+<tr><td>Consultant</td><td>Advise aur recommend karta hai</td><td>FDE build karta hai aur result own karta hai</td></tr>
+<tr><td>Product manager</td><td>Many customers ke liye kya banana hai, ye decide karta hai</td><td>FDE is customer ke liye, abhi, kya banana hai ye decide karta hai</td></tr>
+</tbody>
+</table></div>
+<p>Agar data messy hai, integration fail hoti hai, users adopt nahi karte, ya system raat 3 baje toot jata hai — to wo FDE ki problem hai. Chapter FDE ko contractor se bhi alag karta hai (contractor ek task ke liye hire hota hai; FDE ek outcome ke liye zimmedar hota hai) aur founder se bhi (founder company ka malik hota hai; FDE engagement ki duration ke liye customer ki company borrow karta hai).</p>
+<figure class="fig"><svg viewBox="0 0 760 200" width="100%" role="img" aria-label="The FDE sits between product and customer"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><text x="380" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Product team + platform</text><rect x="60" y="60" width="170" height="70" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="145" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Product</text><text x="145" y="110" text-anchor="middle" font-size="11" fill="#8b947d" font-family="JetBrains Mono,monospace">platform</text><rect x="295" y="50" width="170" height="90" rx="10" fill="#1f3700" stroke="#9ee939" stroke-width="2"/><text x="380" y="84" text-anchor="middle" font-size="14" font-weight="700" fill="#9ee939" font-family="Inter,system-ui,sans-serif">THE FDE</text><text x="380" y="106" text-anchor="middle" font-size="11" fill="#c1cab0" font-family="JetBrains Mono,monospace">the interface itself</text><rect x="530" y="60" width="170" height="70" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="615" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Customer</text><text x="615" y="110" text-anchor="middle" font-size="11" fill="#8b947d" font-family="JetBrains Mono,monospace">their world</text><line x1="230" y1="95" x2="290" y2="95" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><line x1="530" y1="95" x2="470" y2="95" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><text x="380" y="180" text-anchor="middle" font-size="12" fill="#8b947d" font-family="Inter,system-ui,sans-serif">FDE bridge hai: problem ko product ki bhasha me, aur product ko customer ki duniya me translate karta hai.</text></svg><figcaption>Figure 1-1 — The FDE sits between product and customer</figcaption></figure><div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-old-term"><span class="pn-label">← Pichhla</span><span class="pn-title">An Old Term, a New Job — 'Forward Deployed' Kahan se Aaya</span></a><a class="pn-btn" href="#/ch1-flavors"><span class="pn-label">Agla →</span><span class="pn-title">Flavors of Deployment — FDE Kaam ke 3 Tarike</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-flavors" data-title="Flavors of Deployment — FDE Kaam ke 3 Tarike" hidden>
+  <div class="sec-meta"><span class="num-chip">1.4</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>Flavors of Deployment — FDE Kaam ke 3 Tarike</h1>
+
+<p class="lead">Role is hisab se badalta hai ki kya deploy ho raha hai aur kahan. Teen flavours hain — lekin core ek hi hai: tum customer ke paas jate ho, unki duniya seekhte ho, usi me banate ho, aur jab tak kaam na kare, ruke rehte ho.</p>
+<ol>
+<li><strong>Platform deployment:</strong> customer ke andar ek vendor ka platform deploy karna (jaise ek bada data platform, ya company ka apna platform) — use configure karna, data integrate karna aur customer ke pehle use cases us par banana. Skill hai platform + customer ka domain.</li>
+<li><strong>Custom solution deployment:</strong> ek customer ke liye bespoke application banana — workflow tool, decision-support system, automation — vendor ke tools aur models use karke. Skill hai scoping, speed aur ye judgement ki kya <em>nahi</em> banana hai.</li>
+<li><strong>AI deployment (Forward Deployed AI Engineer):</strong> kitab ke author ki apni current role — enterprise environments ke andar AI systems deploy karna: copilots, agents, search aur retrieval systems — jahan kaam data grounding, evaluation, guardrails, cost aur trust se dominate hota hai. Chapter ka argument hai ki ye sabse fast-growing flavour hai, kyunki AI wahi product hai jise real banane ke liye customer ki building me ek insaan ki sabse zyada zaroorat hoti hai.</li>
+</ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-borders"><span class="pn-label">← Pichhla</span><span class="pn-title">Role ki Borders — FDE Kya Hai, Kya Nahi (Table 1-1)</span></a><a class="pn-btn" href="#/ch1-founder-job"><span class="pn-label">Agla →</span><span class="pn-title">A Founder-Sized Job — 4 Founder Responsibilities</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-founder-job" data-title="A Founder-Sized Job — 4 Founder Responsibilities" hidden>
+  <div class="sec-meta"><span class="num-chip">1.5</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>A Founder-Sized Job — 4 Founder Responsibilities</h1>
+
+<p class="lead">Chapter ka argument hai ki FDE ka kaam chaar specific senses me founder-sized hai:</p>
+<ol>
+<li><strong>Find the problem.</strong> Customers ko rarely pata hota hai ki unki problem kya hai — buildable form me. FDE ko use discover karna padta hai — ye Chapter 2 ka subject hai.</li>
+<li><strong>Sell the solution.</strong> Pitch karke nahi, balki customer ko ye yakeen dilakar ki cheez unki duniya me kaam karegi — matlab unki politics, unka budget aur failure ka unka darr samajhna.</li>
+<li><strong>Build it.</strong> Fast, customer ke environment me, unke data ke saath, unki constraints ke andar.</li>
+<li><strong>Stay responsible.</strong> Deployment ke baad, FDE adoption, reliability aur renewal conversation own karta hai. Yahan koi "throw it over the wall" nahi hai.</li>
+</ol>
+<p>Isi liye kitab kehti hai ki job "part engineer, part consultant, part product thinker, part founder" hai — aur ise wo person achhe se nahi kar sakta jo sirf code likhna chahta ho.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-flavors"><span class="pn-label">← Pichhla</span><span class="pn-title">Flavors of Deployment — FDE Kaam ke 3 Tarike</span></a><a class="pn-btn" href="#/ch1-surface-area"><span class="pn-label">Agla →</span><span class="pn-title">The Surface Area — 5 Areas Jo FDE ko Ek Saath Cover Karne Hote Hain</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-surface-area" data-title="The Surface Area — 5 Areas Jo FDE ko Ek Saath Cover Karne Hote Hain" hidden>
+  <div class="sec-meta"><span class="num-chip">1.6</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>The Surface Area — 5 Areas Jo FDE ko Ek Saath Cover Karne Hote Hain</h1>
+
+<p class="lead">Ek engagement me FDE ko ek saath paanch areas me competent hona padta hai:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Area</th><th>Kya cover karta hai</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Technical</td><td>Product, data, infrastructure, integration, model</td></tr>
+<tr><td>2</td><td>Business</td><td>Customer ka P&amp;L, deal size, return on investment, procurement process</td></tr>
+<tr><td>3</td><td>Organisational</td><td>Kaun decide karta hai, kaun block karta hai, kaun use karta hai, kaun threatened hai</td></tr>
+<tr><td>4</td><td>Human</td><td>Trust, credibility, listening, fear aur resistance ko manage karna</td></tr>
+<tr><td>5</td><td>Operational</td><td>Runbook, support model, on-call, handover</td></tr>
+</tbody>
+</table></div>
+<p>Koi bhi paanchon me expert nahi hota; skill ye hai ki har ek me itna jaano ki dangerous ho, aur ye jaano ki kab madad bulani hai. Chapter ki warning hai ki jo engineers non-technical chaar areas ko ignore karte hain, wo aisi cheezein banate hain jo kabhi deploy hi nahi hoti.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-founder-job"><span class="pn-label">← Pichhla</span><span class="pn-title">A Founder-Sized Job — 4 Founder Responsibilities</span></a><a class="pn-btn" href="#/ch1-engagement-arc"><span class="pn-label">Agla →</span><span class="pn-title">The Engagement Arc — Har Deployment ke 4 Phases</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-engagement-arc" data-title="The Engagement Arc — Har Deployment ke 4 Phases" hidden>
+  <div class="sec-meta"><span class="num-chip">1.7</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>The Engagement Arc — Har Deployment ke 4 Phases</h1>
+
+<p class="lead">Har deployment ek hi arc follow karta hai, aur FDE uska har hissa manage karta hai:</p>
+<figure class="fig"><svg viewBox="0 0 760 150" width="100%" role="img" aria-label="The Engagement Arc — Discover, Prototype, Deploy, Adopt &amp; Expand"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><rect x="0.0" y="40" width="170.5" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="85.25" y="77.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">1. Discover</text><line x1="173.5" y1="72.0" x2="193.5" y2="72.0" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><rect x="196.5" y="40" width="170.5" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="281.75" y="77.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">2. Prototype / Prove</text><line x1="370.0" y1="72.0" x2="390.0" y2="72.0" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><rect x="393.0" y="40" width="170.5" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="478.25" y="77.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">3. Deploy</text><line x1="566.5" y1="72.0" x2="586.5" y2="72.0" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><rect x="589.5" y="40" width="170.5" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="674.75" y="77.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">4. Adopt &amp; Expand</text></svg><figcaption>Figure 1-A — The Engagement Arc — Discover, Prototype, Deploy, Adopt & Expand</figcaption></figure>
+<ol>
+<li><strong>Discover:</strong> customer ki problem, data aur organisation seekhna (Chapter 2).</li>
+<li><strong>Prototype / prove:</strong> dinon me proof of value banana, hafton me nahi (planned Chapter 4).</li>
+<li><strong>Deploy:</strong> use unki duniya ke andar production me daalna, securely (planned Chapters 5–7).</li>
+<li><strong>Adopt and expand:</strong> logon se use karwana, phir agla use case dhoondhna aur renewal (planned Chapters 9–10).</li>
+</ol>
+<p>Practice me arc linear nahi hota — discovery deployment ke dauraan bhi chalti rehti hai, aur deployment nayi problems reveal karta hai — lekin FDE wo person hai jo arc ko hafton ya mahinon tak, aksar site par akele, ek saath pakde rehta hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-surface-area"><span class="pn-label">← Pichhla</span><span class="pn-title">The Surface Area — 5 Areas Jo FDE ko Ek Saath Cover Karne Hote Hain</span></a><a class="pn-btn" href="#/ch1-on-their-turf"><span class="pn-label">Agla →</span><span class="pn-title">On Their Turf + A Week in the Life — Thursday aur Friday</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-on-their-turf" data-title="On Their Turf + A Week in the Life — Thursday aur Friday" hidden>
+  <div class="sec-meta"><span class="num-chip">1.8</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>On Their Turf + A Week in the Life — Thursday aur Friday</h1>
+
+<p class="lead">Customer ki turf par kaam karna matlab hai: unke office me, unke network par, unke security rules ke under, unki meetings me, unke schedule par. Chapter iski cost ke baare me frank hai: travel, lambe ghante, room me eklauta vendor person hona, aur un cheezon ke liye accountable hona jo tum control nahi karte.</p>
+<p>Payoff ye hai ki tum aisi cheezein seekhte ho jo office se nahi seekh sakte: kaam asal me kaise hota hai, kaun asal me decide karta hai, data asal me kaisa dikhta hai, aur "value" ka matlab un logon ke liye kya hai jo uske liye pay karenge. Wahi knowledge FDE ki real asset hai — aur isi liye role hire karna mushkil hai: ise kisi course se nahi seekha ja sakta.</p>
+<h3>A Week in the Life — do din detail me</h3>
+<p>Chapter ek concrete week deta hai. Do din jo detail me narrate kiye gaye hain:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Din</th><th>Kya hota hai</th></tr></thead>
+<tbody>
+<tr><td><strong>Thursday</strong></td><td>Subah customer ki operations team ke saath back-to-back meetings — workflow map karne ke liye; dopahar unke real data ke sample par prototype banana; shaam ko headquarters ki product team se call — ek aisa feature maangne ke liye jo customer ko chahiye aur platform me nahi hai.</td></tr>
+<tr><td><strong>Friday</strong></td><td>Executive sponsor ko demo; scope par negotiation — pehli release me kya hoga aur kya baad me; customer ki IT team ke saath handover session; aur week ki learning likhna, taaki agla FDE us account par wahi galtiyan na dohraye.</td></tr>
+</tbody>
+</table></div>
+<p>Saath wali week-view table ka general point: FDE ka week customer meetings, building, unblocking, selling aur writing ka mix hota hai — bahut kam uninterrupted coding time. Chapter ka lesson: <strong>agar tum FDE ko lines of code se measure karte ho, to tum galat cheez measure kar rahe ho.</strong></p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-engagement-arc"><span class="pn-label">← Pichhla</span><span class="pn-title">The Engagement Arc — Har Deployment ke 4 Phases</span></a><a class="pn-btn" href="#/ch1-working-room"><span class="pn-label">Agla →</span><span class="pn-title">Working the Room — Organisational Maps</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-working-room" data-title="Working the Room — Organisational Maps" hidden>
+  <div class="sec-meta"><span class="num-chip">1.9</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>Working the Room — Organisational Maps</h1>
+
+<p class="lead">FDE ko customer ki organisation padhni aani chahiye. Chapter pehle din org map banane ki aadat introduce karta hai — aur use engagement ke saath update karte rehna chahiye, kyunki real decision-maker rarely wo person hota hai jiske paas senior title hai.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Org map me kaun</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Champion</td><td>Project ko succeed karwana chahta hai</td></tr>
+<tr><td>Sponsor</td><td>Pay karta hai</td></tr>
+<tr><td>Operator</td><td>System daily use karega</td></tr>
+<tr><td>Blocker</td><td>Status ya control khone par project ko rok sakta hai</td></tr>
+<tr><td>IT / security gatekeeper</td><td>Deployment rok sakta hai</td></tr>
+</tbody>
+</table></div>
+<p>Skill neutral sense me political hai: interests samajhna, games khelna nahi. Ek recurring example: ek executive meeting me haan kehta hai, aur uski team phir chupchaap data dene se mana kar deti hai — FDE ka kaam hai private me pata lagana ki kyun, aur underlying fear ya incentive ko fix karna.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-on-their-turf"><span class="pn-label">← Pichhla</span><span class="pn-title">On Their Turf + A Week in the Life — Thursday aur Friday</span></a><a class="pn-btn" href="#/ch1-why-it-pays"><span class="pn-label">Agla →</span><span class="pn-title">Why It Pays — Compensation, Numbers ke Saath (Table/Figure 1-2)</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-why-it-pays" data-title="Why It Pays — Compensation, Numbers ke Saath (Table/Figure 1-2)" hidden>
+  <div class="sec-meta"><span class="num-chip">1.10</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>Why It Pays — Compensation, Numbers ke Saath (Table/Figure 1-2)</h1>
+
+<p class="lead">Ye chapter ka sabse quantitative section hai. Figures kitab ke author ke reported market ranges hain, Table/Figure 1-2, "The pay gap", me diye gaye:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Compensation</th><th>Range (US market, kitab ke hisab se)</th></tr></thead>
+<tbody>
+<tr><td>Base salary</td><td>Lagbhag <strong>$150,000–$250,000 per year</strong>; senior aur lead FDE isse upar</td></tr>
+<tr><td>Total compensation (bonus + equity sahit)</td><td>Experienced FDE ke liye well-funded AI aur platform companies me lagbhag <strong>$200,000–$400,000+</strong></td></tr>
+<tr><td>Bonus</td><td>Aksar deployment success, customer expansion ya renewal se tied — code shipping se nahi; typical range <strong>base ka 10–30%</strong></td></tr>
+</tbody>
+</table></div>
+<p><strong>Comparison kitab me:</strong> ye same level of experience wale typical software engineer se zyada hai, aur product management ke comparable ya usse upar — kyunki role engineering ke saath commercial accountability combine karta hai aur hire karna mushkil hai.</p>
+<p><strong>Premium ki wajah (author ka argument):</strong> FDE ko risk aur revenue adjacency ke liye pay kiya jata hai — wo person vendor aur ek aisi deal ke beech khada hai jo kitab ke examples me tens ya hundreds of millions of dollars ki hai (opening $500 million deal; Chapter 2 me $50 million deal). Agar deployment fail hota hai, to deal fail hoti hai.</p>
+<figure class="fig"><svg viewBox="0 0 760 240" width="100%" role="img" aria-label="The pay gap — FDE total compensation vs software-engineer band"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><text x="60" y="30" font-size="12" fill="#8b947d" font-family="JetBrains Mono,monospace">Total compensation (illustrative)</text><text x="60" y="70" font-size="13" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Software engineer</text><rect x="220" y="52" width="220" height="26" rx="6" fill="#292a2d" stroke="#84cc16" stroke-width="1"/><text x="450" y="70" font-size="12" fill="#c1cab0" font-family="JetBrains Mono,monospace">baseline band</text><text x="60" y="120" font-size="13" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">FDE (mid-level)</text><rect x="220" y="102" width="330" height="26" rx="6" fill="#84cc16"/><text x="560" y="120" font-size="12" fill="#c1cab0" font-family="JetBrains Mono,monospace">$200k–$400k+</text><text x="60" y="170" font-size="13" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">FDE (senior / lead)</text><rect x="220" y="152" width="420" height="26" rx="6" fill="#9ee939"/><text x="650" y="170" font-size="12" fill="#c1cab0" font-family="JetBrains Mono,monospace">upar</text><text x="380" y="220" text-anchor="middle" font-size="12" fill="#8b947d" font-family="Inter,system-ui,sans-serif">Gap seniority ke saath badhta hai — premium commercial aur operational zimmedari ka hai, mushkil code ka nahi.</text></svg><figcaption>Figure 1-2 — The pay gap — FDE total compensation vs software-engineer band</figcaption></figure><div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-working-room"><span class="pn-label">← Pichhla</span><span class="pn-title">Working the Room — Organisational Maps</span></a><a class="pn-btn" href="#/ch1-hard-parts"><span class="pn-label">Agla →</span><span class="pn-title">The Hard Parts + Who This Role Is For — 5 Difficulties, 5 Traits</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-hard-parts" data-title="The Hard Parts + Who This Role Is For — 5 Difficulties, 5 Traits" hidden>
+  <div class="sec-meta"><span class="num-chip">1.11</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>The Hard Parts + Who This Role Is For — 5 Difficulties, 5 Traits</h1>
+
+<p class="lead">Chapter paanch hard parts list karta hai, Table 1-2 ("What you are actually being paid for") ke saath — har difficulty ke saath wo kya asal me maangti hai. Table ka underlying point: §1.10 ka salary premium in paanch cheezon ki payment hai, sirf technical difficulty ki nahi.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Hard part</th><th>Tumhe asal me kis cheez ke paise milte hain</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Ambiguity</td><td>Problem kabhi clearly stated nahi hoti; tumhe clarity create karne ke paise milte hain</td></tr>
+<tr><td>2</td><td>Politics</td><td>Har customer me factions hote hain; side liye bina navigate karne ke paise milte hain</td></tr>
+<tr><td>3</td><td>Messy data</td><td>Data kabhi demo jitna clean nahi hota; real data par system chalane ke paise milte hain</td></tr>
+<tr><td>4</td><td>Loneliness and pressure</td><td>Aksar site par akele, outcome ke liye accountable; pressure ko customer par pass kiye bina hold karne ke paise milte hain</td></tr>
+<tr><td>5</td><td>The 3 a.m. problem</td><td>Production systems raat me, customer ke environment me, unke rules ke under toot te hain; use fix karne wale person hone ke paise milte hain</td></tr>
+</tbody>
+</table></div>
+<h3>Figure 1-3 — "What the best FDEs have in common"</h3>
+<p>Best FDEs room ke best coders nahi hote; wo log hote hain jo technical ability ke saath ye paanch traits combine karte hain:</p>
+<figure class="fig"><svg viewBox="0 0 760 260" width="100%" role="img" aria-label="What the best FDEs have in common — five traits"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><g font-family="Inter,system-ui,sans-serif"><rect x="60" y="30" width="300" height="44" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="210" y="57" text-anchor="middle" font-size="14" font-weight="700" fill="#e3e2e6">1. Curiosity</text><rect x="400" y="30" width="300" height="44" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="550" y="57" text-anchor="middle" font-size="14" font-weight="700" fill="#e3e2e6">2. Empathy</text><rect x="60" y="94" width="300" height="44" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="210" y="121" text-anchor="middle" font-size="14" font-weight="700" fill="#e3e2e6">3. Ownership</text><rect x="400" y="94" width="300" height="44" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="550" y="121" text-anchor="middle" font-size="14" font-weight="700" fill="#e3e2e6">4. Communication</text><rect x="230" y="158" width="300" height="44" rx="10" fill="#1f3700" stroke="#9ee939" stroke-width="2"/><text x="380" y="185" text-anchor="middle" font-size="14" font-weight="700" fill="#9ee939">5. Resilience</text></g><text x="380" y="240" text-anchor="middle" font-size="12" fill="#8b947d" font-family="Inter,system-ui,sans-serif">Curiosity: doosron ke business me dilchaspi · Empathy: customer ka darr aur incentives samajhna · Ownership: problem wapas nahi dena · Communication: tech ko business terms me · Resilience: rejection aur delay ke baad bhi chalte rehna</text></svg><figcaption>Figure 1-3 — What the best FDEs have in common — five traits</figcaption></figure>
+<p>Chapter explicit hai: ye role us person ke liye <strong>NAHI</strong> hai jo clear spec, shaant office, ya code output se measure hona chahta hai. Ye us person ke liye <strong>HAI</strong> jo bina company found kiye founder-level zimmedari chahta hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-why-it-pays"><span class="pn-label">← Pichhla</span><span class="pn-title">Why It Pays — Compensation, Numbers ke Saath (Table/Figure 1-2)</span></a><a class="pn-btn" href="#/ch1-what-you-learn"><span class="pn-label">Agla →</span><span class="pn-title">What You Will Learn + Conclusion + Key Terms</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-what-you-learn" data-title="What You Will Learn + Conclusion + Key Terms" hidden>
+  <div class="sec-meta"><span class="num-chip">1.12</span><span class="sec-group">Chapter 1 — Founder Inside Someone Else's Company</span></div>
+  <h1>What You Will Learn + Conclusion + Key Terms</h1>
+
+<p class="lead">Chapter 1 planned 12 chapters ka ek-ek paragraph preview dekar close hota hai — lekin dhyaan do: discovery/scoping ke alawa, ye previews un chapters ke baare me hain jo abhi publish nahi hue, isliye unka detail summarise karne ke liye available nahi hai.</p>
+<h3>Preview (sirf titles — content abhi nahi hai)</h3>
+<p>Deployment stack (planned Ch 2); discovery aur scoping (planned Ch 3 — available, Chapter 2 me); prototype/proof of value (planned Ch 4); data reality (planned Ch 5); security aur infrastructure (planned Ch 6); production AI (planned Ch 7); integration aur build-vs-buy (planned Ch 8); adoption (planned Ch 9); pricing aur negotiation (planned Ch 10); failure aur recovery (planned Ch 11); aur role ka future (planned Ch 12).</p>
+<h3>Chapter 1 conclusion</h3>
+<p>Closing argument: FDE wo person hai jo enterprise software — aur ab enterprise AI — ko duniya me asal me kaam karwata hai. Product necessary hai lekin sufficient nahi; deployment wahi jagah hai jahan value create hoti hai ya kho jati hai. Agar tumhe ye job chahiye, to baaki kitab uski manual hai.</p>
+<h3>Key Terms — Chapter 1</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Term</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td>Forward Deployed Engineer (FDE)</td><td>Engineer jo customer organisation ke andar on-site kaam karke solution discover, build, deploy aur operate karta hai, aur customer ko value milne ke liye accountable hota hai</td></tr>
+<tr><td>Forward deployed</td><td>Customer ke paas / jahan kaam hota hai, wahan stationed — vendor ke headquarters par nahi</td></tr>
+<tr><td>Proof of value</td><td>Chhota, fast build jo dikhata hai ki solution customer ke real data aur problem par kaam karta hai — bade deployment ko justify karne ke liye</td></tr>
+<tr><td>Engagement</td><td>Ek customer ke saath ek deployment project — discovery se adoption/renewal tak</td></tr>
+<tr><td>Engagement arc</td><td>Engagement ki chaar-phase shape — discover, prototype/prove, deploy, adopt and expand</td></tr>
+<tr><td>Champion</td><td>Customer insider jo project ko succeed karwana chahta hai aur FDE ko organisation navigate karne me madad karta hai</td></tr>
+<tr><td>Sponsor</td><td>Customer executive jo project ko fund karta hai aur jiska support aage badhne ke liye chahiye</td></tr>
+<tr><td>Operator</td><td>Wo person jo system daily use karega aur jiska workflow badlega</td></tr>
+<tr><td>Blocker</td><td>Wo person jo project ko rok ya slow kar sakta hai — aksar kyunki use apna status, control ya workload khatre me lagta hai</td></tr>
+<tr><td>Surface area</td><td>FDE ko ek engagement me cover karni wali poori range — technical, business, organisational, human aur operational</td></tr>
+<tr><td>Org map</td><td>Customer ke logon, unke interests, unki power aur unke relationships ka working diagram — FDE banata aur update karta hai</td></tr>
+</tbody>
+</table></div>
+<p><strong>Chapter 1 me koi code nahi diya gaya hai.</strong></p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-hard-parts"><span class="pn-label">← Pichhla</span><span class="pn-title">The Hard Parts + Who This Role Is For — 5 Difficulties, 5 Traits</span></a><a class="pn-btn" href="#/ch2-opening"><span class="pn-label">Agla →</span><span class="pn-title">Opening Scene — 35 Minutes, $50 Million, aur Guessing ki Cost</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-opening" data-title="Opening Scene — 35 Minutes, $50 Million, aur Guessing ki Cost" hidden>
+  <div class="sec-meta"><span class="num-chip">2.1</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>Opening Scene — 35 Minutes, $50 Million, aur Guessing ki Cost</h1>
+
+<p class="lead">Chapter subah 9:03 baje khulta hai. FDE ke paas customer ke ek executive ke saath <strong>35 minute</strong> hain, aur deal <strong>$50 million</strong> ki hai. Executive ne sales team ko pehle se bata diya hai ki system ko kya karna chahiye; FDE ka kaam un 35 minute me ye pata lagana hai ki business ko asal me kya chahiye — kyunki bina samjhe requested feature banana poora engagement waste kar dega.</p>
+<p>Phir chapter ek striking arithmetic framing deta hai: agar engagement lagbhag <strong>$1 million</strong> ki hai, to 45-minute meeting ka har minute lagbhag <strong>$22,000</strong> ka hai (kitab ke apne figures: $1 million in 45 minutes — lagbhag $22,222 per minute, lagbhag $370 per second). Number ki precision point nahi hai — stakes point hain: <strong>discovery time project ka sabse expensive time hai, aur guessing sabse expensive galti hai.</strong> Galat spec koi chhoti error nahi hai; wo hafton tak galat cheez banana hai, ek failed demo hai, aur ek khoya hua renewal hai.</p>
+<div class="callout"><span class="callout-tag">Yaad rakho</span>Numbering: ye reader ka Chapter 2 hai, lekin planned numbering me ye Chapter 3 hai (planned Chapter 2 abhi publish nahi hua).</div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-what-you-learn"><span class="pn-label">← Pichhla</span><span class="pn-title">What You Will Learn + Conclusion + Key Terms</span></a><a class="pn-btn" href="#/ch2-discovery-problem"><span class="pn-label">Agla →</span><span class="pn-title">The Discovery Problem — 6 Questions, 2 Chhupi Hui</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-discovery-problem" data-title="The Discovery Problem — 6 Questions, 2 Chhupi Hui" hidden>
+  <div class="sec-meta"><span class="num-chip">2.2</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>The Discovery Problem — 6 Questions, 2 Chhupi Hui</h1>
+
+<p class="lead">Customer spec nahi likh sakta, kyunki wo buildable form me nahi janta ki use kya chahiye. Chapter kehta hai ki FDE ko kuch bhi banane se pehle <strong>6 questions</strong> ke jawab dene hote hain. Chaar explicit hain — seedha poochhe ja sakte hain; do hidden hain — behaviour, data aur organisation se infer karne hote hain.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Question</th><th>Type</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Problem kya hai — customer ke apne shabdon me?</td><td>Explicit</td></tr>
+<tr><td>2</td><td>Kisko problem hai, aur kitni baar?</td><td>Explicit</td></tr>
+<tr><td>3</td><td>Success kaisa dikhega — agar ye kaam kare to kya badlega?</td><td>Explicit</td></tr>
+<tr><td>4</td><td>Kaunsa data exist karta hai, aur kahan rehta hai?</td><td>Explicit</td></tr>
+<tr><td>5</td><td>Asal me kaun decide karta hai, aur kaun block kar sakta hai?</td><td>Hidden</td></tr>
+<tr><td>6</td><td>Customer ko kis baat ka darr hai — kaunsi failure politically ya operationally unacceptable hogi?</td><td>Hidden</td></tr>
+</tbody>
+</table></div>
+<p>Hidden questions hi deployments ko maarte hain, chapter ka argument hai, kyunki wo kabhi request for proposal me nahi hote aur pehli meeting me kabhi saamne nahi aate.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-opening"><span class="pn-label">← Pichhla</span><span class="pn-title">Opening Scene — 35 Minutes, $50 Million, aur Guessing ki Cost</span></a><a class="pn-btn" href="#/ch2-what-discovery-is"><span class="pn-label">Agla →</span><span class="pn-title">Discovery Kya Hai, Kya Nahi + 5 Ways Discovery Fails (Table 2-1)</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-what-discovery-is" data-title="Discovery Kya Hai, Kya Nahi + 5 Ways Discovery Fails (Table 2-1)" hidden>
+  <div class="sec-meta"><span class="num-chip">2.3</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>Discovery Kya Hai, Kya Nahi + 5 Ways Discovery Fails (Table 2-1)</h1>
+
+<p class="lead">Discovery ek structured tareeka hai vague customer request ko evidence ke saath buildable, testable specification me badalne ka. Uske chaar purposes hain: (1) real problem dhoondhna, (2) real user aur unka real workflow dhoondhna, (3) real data aur uski real quality dhoondhna, aur (4) real decision-maker aur real risk dhoondhna.</p>
+<p><strong>Discovery kya NAHI hai:</strong> ye sales pitch nahi hai, demo nahi hai, requirements-gathering form nahi hai, aur promise nahi hai. Chapter pehli meeting ko product dikhane ka mauka samajhne ki common failure ke against warn karta hai — usse customer ke baare me kuch nahi seekhne ko milta.</p>
+<h3>Table 2-1 — "Five ways discovery fails"</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Failure mode</th><th>Symptom</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Building the demo, not the problem</td><td>Polished demo meeting me impress karta hai aur real data par fail hota hai</td><td>Proof of value fail ho jata hai</td></tr>
+<tr><td>2</td><td>Listening to the loudest voice</td><td>Spec executive ki view reflect karti hai, operator ke workflow ki nahi</td><td>System koi use nahi karta</td></tr>
+<tr><td>3</td><td>Trusting the sample data</td><td>Sample clean aur complete hai</td><td>Production data system ko tod deta hai</td></tr>
+<tr><td>4</td><td>Missing the blocker</td><td>Meeting me sab agree karte hain aur baad me kuch nahi hota</td><td>Project chupchaap stall ho jata hai</td></tr>
+<tr><td>5</td><td>Writing a spec nobody reads</td><td>Lamba document file kar diya jata hai</td><td>Build customer ki need se drift kar jata hai</td></tr>
+</tbody>
+</table></div>
+<p>Har failure mode §2.4 ke system se avoidable bataya gaya hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-discovery-problem"><span class="pn-label">← Pichhla</span><span class="pn-title">The Discovery Problem — 6 Questions, 2 Chhupi Hui</span></a><a class="pn-btn" href="#/ch2-discovery-system"><span class="pn-label">Agla →</span><span class="pn-title">A Discovery System That Works — 3 Phases</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-discovery-system" data-title="A Discovery System That Works — 3 Phases" hidden>
+  <div class="sec-meta"><span class="num-chip">2.4</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>A Discovery System That Works — 3 Phases</h1>
+
+<p class="lead">Author ke method me discovery talent nahi hai — ye ek repeatable system hai, teen phases ke saath:</p>
+<figure class="fig"><svg viewBox="0 0 760 150" width="100%" role="img" aria-label="Discovery system — Interviews, System map, Workflow map"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><rect x="0.0" y="40" width="236.0" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="118.0" y="69.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Phase 1: Interviews</text><text x="118.0" y="86.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">(days 1–2)</text><line x1="239.0" y1="72.0" x2="259.0" y2="72.0" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><rect x="262.0" y="40" width="236.0" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="380.0" y="77.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Phase 2: System map</text><line x1="501.0" y1="72.0" x2="521.0" y2="72.0" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><rect x="524.0" y="40" width="236.0" height="64" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="642.0" y="69.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">Phase 3: Workflow</text><text x="642.0" y="86.0" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6" font-family="Inter,system-ui,sans-serif">map</text></svg><figcaption>Figure 2-A — Discovery system — Interviews, System map, Workflow map</figcaption></figure>
+<h3>Phase 1 — Interviews (discovery week ke days 1–2)</h3>
+<p>§2.5 ke teen logon ke saath structured conversations, interview guides use karke. Rule: kaam ke baare me poochho, product ke baare me nahi — kaam aaj kaise hota hai, kahan toot ta hai, achha din kaisa dikhta hai, jab kuch galat hota hai to kya hota hai.</p>
+<h3>Phase 2 — System map</h3>
+<p>Customer ke systems ka diagram: data kahan rehta hai, kaunse systems ek doosre se baat karte hain, data kahan dirty ya missing hai, aur har system ka owner kaun hai. Map customer ke <em>saath</em> banaya jata hai, unke <em>liye</em> nahi — taaki FDE ki samajh ki galtiyan jaldi saamne aayen.</p>
+<h3>Phase 3 — Workflow map</h3>
+<p>Operator ke actual kaam ka step-by-step map: wo kya karte hain, kis order me, kin tools ke saath, har step me kitna time lagta hai, aur dard kahan hai. Workflow map — executive ka description nahi — spec ka source hai.</p>
+<figure class="fig"><svg viewBox="0 0 760 300" width="100%" role="img" aria-label="The org map — people and relationships"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><g font-family="Inter,system-ui,sans-serif"><rect x="280" y="20" width="200" height="46" rx="10" fill="#1f3700" stroke="#9ee939" stroke-width="2"/><text x="380" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#9ee939">SPONSOR (pays)</text><rect x="60" y="110" width="180" height="46" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="150" y="138" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6">CHAMPION</text><rect x="300" y="110" width="160" height="46" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="380" y="138" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6">OPERATOR</text><rect x="520" y="110" width="180" height="46" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="610" y="138" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6">BLOCKER</text><rect x="280" y="196" width="200" height="46" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="380" y="224" text-anchor="middle" font-size="13" font-weight="600" fill="#e3e2e6">IT / SECURITY</text><line x1="380" y1="66" x2="150" y2="110" stroke="#9ee939" stroke-width="1.5"/><line x1="380" y1="66" x2="380" y2="110" stroke="#9ee939" stroke-width="1.5"/><line x1="380" y1="66" x2="610" y2="110" stroke="#9ee939" stroke-width="1.5"/><line x1="380" y1="156" x2="380" y2="196" stroke="#9ee939" stroke-width="1.5"/></g><text x="380" y="280" text-anchor="middle" font-size="12" fill="#8b947d" font-family="Inter,system-ui,sans-serif">Lesson: org chart aur real organisation alag cheezein hain — map ko real wali dikhani chahiye.</text></svg><figcaption>Figure 2-1 — The org map — people and relationships</figcaption></figure><figure class="fig"><svg viewBox="0 0 760 180" width="100%" role="img" aria-label="The workflow map — one operator workflow, pain steps marked"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><g font-family="Inter,system-ui,sans-serif"><rect x="30" y="60" width="120" height="50" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="90" y="89" text-anchor="middle" font-size="12" font-weight="600" fill="#e3e2e6">Step 1: Receive</text><rect x="180" y="60" width="120" height="50" rx="10" fill="#7f1d1d" stroke="#fca5a5" stroke-width="2"/><text x="240" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#fecaca">Step 2: Match</text><text x="240" y="98" text-anchor="middle" font-size="11" fill="#fecaca">PAIN — manual</text><rect x="330" y="60" width="120" height="50" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="390" y="89" text-anchor="middle" font-size="12" font-weight="600" fill="#e3e2e6">Step 3: Check</text><rect x="480" y="60" width="120" height="50" rx="10" fill="#7f1d1d" stroke="#fca5a5" stroke-width="2"/><text x="540" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#fecaca">Step 4: Resolve</text><text x="540" y="98" text-anchor="middle" font-size="11" fill="#fecaca">PAIN — slow</text><rect x="630" y="60" width="100" height="50" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="680" y="89" text-anchor="middle" font-size="12" font-weight="600" fill="#e3e2e6">Step 5: Done</text><line x1="150" y1="85" x2="176" y2="85" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><line x1="300" y1="85" x2="326" y2="85" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><line x1="450" y1="85" x2="476" y2="85" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/><line x1="600" y1="85" x2="626" y2="85" stroke="#9ee939" stroke-width="2" marker-end="url(#arr)"/></g><text x="380" y="160" text-anchor="middle" font-size="12" fill="#8b947d" font-family="Inter,system-ui,sans-serif">Lesson: value kuch steps me concentrated hoti hai — spec unhi ko target kare, poora workflow ek saath nahi.</text></svg><figcaption>Figure 2-2 — The workflow map — one operator workflow, pain steps marked</figcaption></figure><div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-what-discovery-is"><span class="pn-label">← Pichhla</span><span class="pn-title">Discovery Kya Hai, Kya Nahi + 5 Ways Discovery Fails (Table 2-1)</span></a><a class="pn-btn" href="#/ch2-three-people"><span class="pn-label">Agla →</span><span class="pn-title">The Three People You Need — Champion, Skeptic, Operator</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-three-people" data-title="The Three People You Need — Champion, Skeptic, Operator" hidden>
+  <div class="sec-meta"><span class="num-chip">2.5</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>The Three People You Need — Champion, Skeptic, Operator</h1>
+
+<p class="lead">Chapter ki central interviewing method: "the customer" se generally baat karne ke bajay teen specific logon se baat karo.</p>
+<h3>1. The champion — insider jo project ko succeed karwana chahta hai</h3>
+<p>Poochho: problem kya hai, unke shabdon me? Agar kuch na badle to kya hoga? Aur kaun involve hona chahiye? Pehle kya try kiya gaya tha, aur kyun fail hua? Champion ke jawab political map aur history dete hain.</p>
+<h3>2. The skeptic — jo project par doubt karta hai (aksar sabse valuable interview)</h3>
+<p>Poochho: kya galat hoga? Kaunsa data untrustworthy hai? Kaun resist karega, aur kyun? Iske kaam karne ke liye kya sach hona chahiye? Skeptic ke jawab risks aur real constraints dete hain; agar tum skeptic ko jawab nahi de sakte, to tumhara spec ready nahi hai.</p>
+<h3>3. The operator — jo kaam daily karta hai</h3>
+<p>Poochho: apna din walkthrough karo. Kahan toot ta hai? System down hone par tum kya karte ho? Tumhara time kya bachayega? Batao mat, dikhao — unhe kaam karte hue dekho. Operator ke jawab workflow aur success ki real definition dete hain.</p>
+<p>Har person ke liye chapter specific example questions deta hai — Phase 1 interview guide me total <strong>10 questions</strong> (chapter ki list se count kiye gaye) — aur stress karta hai ki notes customer ki bhasha me lo, vendor ki bhasha me nahi, kyunki spec ko customer ki bhasha me judge kiya jayega.</p>
+<h3>Figure 2-3 — "The 10-column discovery table"</h3>
+<p>Ek wide table jisme dus columns hain jo FDE discovery ke dauraan bharta hai: (1) Problem, (2) Who has it, (3) How often, (4) Current workaround, (5) Cost of the problem, (6) Data source, (7) Data quality, (8) Decision-maker, (9) Blocker / risk, (10) What success looks like. Figure ka point: discovery tab tak complete nahi hai jab tak har column me evidence-grounded entry na ho (ek conversation, ek document, ya apni aankhon se dekha data) — assumption me nahi. Ek khaali column ek aisa question hai jiska jawab wapas jaakar dena hai, guess karke bharne wala gap nahi.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
+<tbody><tr><td>Problem</td><td>Who has it</td><td>How often</td><td>Current workaround</td><td>Cost</td><td>Data source</td><td>Data quality</td><td>Decision-maker</td><td>Blocker / risk</td><td>Success looks like</td></tr></tbody>
+</table></div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-discovery-system"><span class="pn-label">← Pichhla</span><span class="pn-title">A Discovery System That Works — 3 Phases</span></a><a class="pn-btn" href="#/ch2-four-things"><span class="pn-label">Agla →</span><span class="pn-title">Four Things Every Discovery Must Establish + 5 Questions That Survive</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-four-things" data-title="Four Things Every Discovery Must Establish + 5 Questions That Survive" hidden>
+  <div class="sec-meta"><span class="num-chip">2.6</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>Four Things Every Discovery Must Establish + 5 Questions That Survive</h1>
+
+<p class="lead">Scoping se pehle, FDE ko chaar cheezein state karni aani chahiye. Agar koi ek bhi state nahi ho sakti, to engagement scope karne ke liye ready nahi hai.</p>
+<ol>
+<li><strong>Value:</strong> customer ko kya milega agar ye kaam kare — unki terms me (time saved, errors avoided, revenue protected), jahan possible ho number ke saath.</li>
+<li><strong>Cost:</strong> customer ko kya cost padegi — sirf price nahi, balki time, change, training, political cost bhi.</li>
+<li><strong>Risk:</strong> kya galat ho sakta hai, risk kaun bear karega, aur fallback kya hai.</li>
+<li><strong>Proof:</strong> tumhe kaise pata chalega ki kaam ho gaya — metric, baseline, aur judge kaun karega.</li>
+</ol>
+<p>Chapter ka rule: ek discovery jo proof ka naam nahi le sakti, wo demo produce karegi, deployment nahi.</p>
+<h3>Five Questions That Survive Every Discovery</h3>
+<p>Chapter discovery ko paanch questions me distil karta hai jo pehli meeting se final spec tak survive karne chahiye — har ek ke saath kaisa jawab achha mana jata hai:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Question</th><th>Achha jawab kaisa hota hai</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Problem kya hai?</td><td>Ek specific person, ek specific task, ek specific pain — koi category ("efficiency") nahi</td></tr>
+<tr><td>2</td><td>Kisko hai, aur kitni baar?</td><td>Logon ki sankhya aur frequency (daily, weekly, per transaction)</td></tr>
+<tr><td>3</td><td>Aaj kya hota hai?</td><td>Current workaround step-by-step, uski time aur error cost ke saath</td></tr>
+<tr><td>4</td><td>"Good" kaisa dikhega?</td><td>Measurable — ek time, ek error rate, ek throughput — aur operator se agreed, sirf executive se nahi</td></tr>
+<tr><td>5</td><td>Hamare paas kaunsa data hai?</td><td>System, owner, quality aur access path ka naam — sirf "hamare paas data hai" nahi</td></tr>
+</tbody>
+</table></div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-three-people"><span class="pn-label">← Pichhla</span><span class="pn-title">The Three People You Need — Champion, Skeptic, Operator</span></a><a class="pn-btn" href="#/ch2-scoping"><span class="pn-label">Agla →</span><span class="pn-title">Turning Discovery Into Scoping — 3 Principles + Build / Don't-Build Test (Table 2-2)</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-scoping" data-title="Turning Discovery Into Scoping — 3 Principles + Build / Don't-Build Test (Table 2-2)" hidden>
+  <div class="sec-meta"><span class="num-chip">2.7</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>Turning Discovery Into Scoping — 3 Principles + Build / Don't-Build Test (Table 2-2)</h1>
+
+<p class="lead">Discovery ko scoping me badalne ke teen principles hain: (1) Problem par scope karo, product par nahi — spec customer ke outcome ko describe kare, vendor ke features ko nahi. (2) Sabse chhoti cheez par scope karo jo value prove kare — ek workflow, ek user group, ek metric. (3) Data jitna allow kare, utna scope karo — agar data outcome support nahi kar sakta, to scope shrink hona chahiye, evidence ka standard nahi.</p>
+<h3>Table 2-2 — "Build or don&apos;t build" / the nine requirements</h3>
+<p>Table me nau requirements hain, har ek ke saath "build" condition aur "don't build" condition:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Requirement</th><th>Build karo agar…</th><th>Don&apos;t build agar…</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>A named problem</td><td>Ek specific person ko ek specific pain hai</td><td>Problem ek vague theme hai</td></tr>
+<tr><td>2</td><td>A named user</td><td>Tumne user ko kaam karte hue dekha hai</td><td>User ek persona hai</td></tr>
+<tr><td>3</td><td>A concrete workflow</td><td>Tum steps map kar sakte ho</td><td>Workflow "lagbhag" samajh me aata hai</td></tr>
+<tr><td>4</td><td>A defined input</td><td>Input data named, located aur accessible hai</td><td>Access baad me promise kiya gaya hai</td></tr>
+<tr><td>5</td><td>Measurable success</td><td>Success ka number aur baseline hai</td><td>Success "logon ko pasand aaya" hai</td></tr>
+<tr><td>6</td><td>A human check</td><td>Act karne se pehle human output review karta hai</td><td>System bina check ke khud act karta hai</td></tr>
+<tr><td>7</td><td>A defined failure</td><td>Tum jante ho failure kaisa dikhega aur tab kya hoga</td><td>Failure undefined hai</td></tr>
+<tr><td>8</td><td>A boundary</td><td>Tum jante ho system kya NAHI karega</td><td>Scope open-ended hai</td></tr>
+<tr><td>9</td><td>A clear deployment</td><td>Tum jante ho ye kahan chalega, kiski security rules ke under</td><td>Deployment "to be decided" hai</td></tr>
+</tbody>
+</table></div>
+<p>Chapter ka rule blunt hai: <strong>agar koi ek row fail hoti hai, to abhi mat banao — wapas discovery me jao.</strong></p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-four-things"><span class="pn-label">← Pichhla</span><span class="pn-title">Four Things Every Discovery Must Establish + 5 Questions That Survive</span></a><a class="pn-btn" href="#/ch2-five-line-spec"><span class="pn-label">Agla →</span><span class="pn-title">The Five-Line Spec — Chapter ka Central Artefact + 2 Worked Examples</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-five-line-spec" data-title="The Five-Line Spec — Chapter ka Central Artefact + 2 Worked Examples" hidden>
+  <div class="sec-meta"><span class="num-chip">2.8</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>The Five-Line Spec — Chapter ka Central Artefact + 2 Worked Examples</h1>
+
+<p class="lead">Author ke method me spec paanch lines hai — har ek ek sentence — lamba document nahi. Structure: (1) Problem, (2) User, (3) Workflow, (4) Data, (5) Success. Paaanch lines customer ke saath, unki bhasha me, meeting me agree honi chahiye — building shuru hone se pehle.</p>
+<figure class="fig"><svg viewBox="0 0 760 300" width="100%" role="img" aria-label="The five-line spec — five lines, one sentence each"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ee939"/></marker></defs><g font-family="Inter,system-ui,sans-serif"><rect x="60" y="24" width="640" height="42" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="90" y="51" font-size="14" font-weight="700" fill="#9ee939">1. Problem</text><text x="200" y="51" font-size="13" fill="#e3e2e6">— kis specific person ko kya specific pain hai</text><rect x="60" y="78" width="640" height="42" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="90" y="105" font-size="14" font-weight="700" fill="#9ee939">2. User</text><text x="200" y="105" font-size="13" fill="#e3e2e6">— kaun use karega, daily kaam karne wala</text><rect x="60" y="132" width="640" height="42" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="90" y="159" font-size="14" font-weight="700" fill="#9ee939">3. Workflow</text><text x="200" y="159" font-size="13" fill="#e3e2e6">— steps kya hain, human kahan check karta hai</text><rect x="60" y="186" width="640" height="42" rx="10" fill="#292a2d" stroke="#84cc16" stroke-width="1.5"/><text x="90" y="213" font-size="14" font-weight="700" fill="#9ee939">4. Data</text><text x="200" y="213" font-size="13" fill="#e3e2e6">— kaunsa system, kaunsa owner, kaisi quality</text><rect x="60" y="240" width="640" height="42" rx="10" fill="#1f3700" stroke="#9ee939" stroke-width="2"/><text x="90" y="267" font-size="14" font-weight="700" fill="#9ee939">5. Success</text><text x="200" y="267" font-size="13" fill="#e3e2e6">— measurable number + baseline</text></g></svg><figcaption>Figure 2-4 — The five-line spec — five lines, one sentence each</figcaption></figure>
+<h3>Worked example 1 — Fraud detection (kitab ke form me, illustrative)</h3>
+<p><strong>Problem</strong> — ek analyst flagged transactions review karta hai jo mostly false alarms hote hain; <strong>User</strong> — night shift par fraud analyst; <strong>Workflow</strong> — system flags rank karta hai aur analyst top wale review karta hai; <strong>Data</strong> — transaction log aur past decisions; <strong>Success</strong> — analyst kam false alarms review kare bina koi real fraud case miss kiye. (Kitab ke example me numbers illustrative hain, kisi real customer ke figures nahi — point form hai, numbers nahi.)</p>
+<h3>Worked example 2 — Invoice processing</h3>
+<p><strong>Problem</strong> — invoices unprocessed padi rehti hain kyunki unhe purchase orders se match karna manual hai; <strong>User</strong> — accounts-payable clerk; <strong>Workflow</strong> — system match karta hai, exceptions flag karta hai, clerk unhe resolve karta hai; <strong>Data</strong> — finance system se invoices aur purchase orders; <strong>Success</strong> — per-invoice processing time girta hai, current baseline ke against measure hokar.</p>
+<p>Chapter spec format ko ek short template ke roop me bhi deta hai (neeche §2.11 ke code artefacts me) aur stress karta hai ki paanch lines customer ke saath unki bhasha me, meeting me agree honi chahiye.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-scoping"><span class="pn-label">← Pichhla</span><span class="pn-title">Turning Discovery Into Scoping — 3 Principles + Build / Don't-Build Test (Table 2-2)</span></a><a class="pn-btn" href="#/ch2-discovery-week"><span class="pn-label">Agla →</span><span class="pn-title">How to Run the Discovery Week — Monday to Friday + 6 Traps (Table 2-3)</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-discovery-week" data-title="How to Run the Discovery Week — Monday to Friday + 6 Traps (Table 2-3)" hidden>
+  <div class="sec-meta"><span class="num-chip">2.9</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>How to Run the Discovery Week — Monday to Friday + 6 Traps (Table 2-3)</h1>
+
+<p class="lead">Ek naye engagement par discovery chalane ka day-by-day plan — ek week, Monday se Friday:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Din</th><th>Kya karna hai</th></tr></thead>
+<tbody>
+<tr><td><strong>Monday</strong></td><td>Champion aur sponsor se interviews; pehla org map banao; agree karo ki week kya produce karega</td></tr>
+<tr><td><strong>Tuesday</strong></td><td>Operator(s) se interview; kaam hote hue dekho; workflow map shuru karo</td></tr>
+<tr><td><strong>Wednesday</strong></td><td>Skeptic se interview; systems aur data map karo; data quality ek real sample par check karo — cleaned sample par nahi</td></tr>
+<tr><td><strong>Thursday</strong></td><td>Five-line spec draft karo; use Table 2-2 ke nau requirements se test karo; 10-column table (Figure 2-3) bharo</td></tr>
+<tr><td><strong>Friday</strong></td><td>Spec customer ko wapas present karo; use agree karo — ya agree karo ki kya abhi unknown hai aur use kaun answer karega; build / don&apos;t build yet decide karo</td></tr>
+</tbody>
+</table></div>
+<h3>Table 2-3 — "Six traps in the discovery week"</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>#</th><th>Trap</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>The demo trap (sunne ke bajay product dikhana)</td><td>Pehle do din koi demo nahi</td></tr>
+<tr><td>2</td><td>The executive trap (sirf senior logon se baat karna)</td><td>Day two tak operator se baat karo</td></tr>
+<tr><td>3</td><td>The clean-data trap (sample par bharosa karna)</td><td>Production data dekho, uski errors ke saath</td></tr>
+<tr><td>4</td><td>The agreement trap (politeness ko agreement samajhna)</td><td>Skeptic se poochho kya galat hoga</td></tr>
+<tr><td>5</td><td>The scope-creep trap (meeting me features add karna)</td><td>Boundary ko spec me likho</td></tr>
+<tr><td>6</td><td>The document trap (lamba spec likhna jo koi padhe nahi)</td><td>Paanch lines, room me agreed</td></tr>
+</tbody>
+</table></div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-five-line-spec"><span class="pn-label">← Pichhla</span><span class="pn-title">The Five-Line Spec — Chapter ka Central Artefact + 2 Worked Examples</span></a><a class="pn-btn" href="#/ch2-scoping-right-problem"><span class="pn-label">Agla →</span><span class="pn-title">Scoping the Right Problem — 4 Checks + Code Artefacts</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-scoping-right-problem" data-title="Scoping the Right Problem — 4 Checks + Code Artefacts" hidden>
+  <div class="sec-meta"><span class="num-chip">2.10</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>Scoping the Right Problem — 4 Checks + Code Artefacts</h1>
+
+<p class="lead">Banane se pehle, FDE chosen problem par chaar checks chalata hai: (1) Kya ye operator ki problem hai, sirf executive ki nahi? (2) Kya ye frequent aur costly enough hai solve karne layak? (3) Kya data solution support kar sakta hai? (4) Kya success available time me measure ho sakti hai? Agar kisi ek ka jawab na hai, to scope galat hai — bada system banane ke bajay chhoti problem chuno, ya koi doosri problem chuno.</p>
+<p>Chapter ka closing example ek discovery hai jo sahi tareeke se shrink hoti hai: executive ki broad AI assistant ki request, discovery ke baad, ek narrow tool ban jati hai jo ek team ke liye ek queue of work rank karta hai — kyunki wahi problem operator ko asal me hai, data asal me use support karta hai, aur success asal me measure ho sakti hai.</p>
+<h3>Code in Chapter 2 — teen short artefacts, step-by-step</h3>
+<p>Chapter 2 me teen short code artefacts hain. Har ek ko notes ne apne shabdon me describe kiya hai; neeche short key excerpts hain jo concept sikhate hain.</p>
+<h4>(a) Approval and audit-trail logic (Python-like pseudocode)</h4>
+<p>Snippet ek function define karta hai jo ek action aur ek approval decision leta hai. Step-by-step: ye ek audit-trail record banata hai jisme action, approval aur time hota hai; phir check karta hai ki approval di gayi ya nahi; agar approval missing hai to action execute kiye bina audit trail return karta hai; agar approval hai to action execute karta hai aur result + trail dono return karta hai. Teaching point: customer environment me system ko recorded human approval ke bina kabhi act nahi karna chahiye, aur record tab bhi exist karna chahiye jab action refuse ho — refusal khud audit ka hissa hai.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python-like pseudocode — key excerpt</span></div><pre><code>if not approval:
+    return audit_trail</code></pre></div>
+<h4>(b) Deployment contract (YAML)</h4>
+<p>Ek short YAML document jo deployment ka naam batata hai aur uski terms list karta hai: deployment name, wo environment jisme chalega, wo data sources jinhe touch kar sakta hai, human-approval rule, aur audit requirement. Teaching point: contract five-line spec ki boundary (Table 2-2, row 8) ka machine-readable version hai — system kya karega, kaunsa data use kar sakta hai, aur kya nahi karega.</p>
+<div class="codeblock"><div class="codeblock-head"><span>YAML — structural excerpt</span></div><pre><code>deployment_contract:
+  name: ...
+  environment: ...
+  data_sources: ...
+  human_approval: required
+  audit: required</code></pre></div>
+<p>Contract ko wo artefact bataya gaya hai jo five-line spec ko production me enforceable banata hai.</p>
+<h4>(c) Discovery-report command (CLI)</h4>
+<p><code>discovery_report.py</code> script ka command-line invocation — project name (kitab ka example project: 2026 ka ek finance audit) aur export flag ke saath, jaise <code>discovery_report.py --project finance-audit-2026 --export</code>. Teaching point: discovery ka output ek generated, shareable report hona chahiye — 10-column table, maps aur five-line spec — private notes ka set nahi, taaki customer aur product team use check kar sakein.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-discovery-week"><span class="pn-label">← Pichhla</span><span class="pn-title">How to Run the Discovery Week — Monday to Friday + 6 Traps (Table 2-3)</span></a><a class="pn-btn" href="#/ch2-conclusion"><span class="pn-label">Agla →</span><span class="pn-title">Chapter 2 Conclusion + Key Terms</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-conclusion" data-title="Chapter 2 Conclusion + Key Terms" hidden>
+  <div class="sec-meta"><span class="num-chip">2.11</span><span class="sec-group">Chapter 2 — Technical Discovery and Scoping</span></div>
+  <h1>Chapter 2 Conclusion + Key Terms</h1>
+
+<p class="lead">Chapter ka closing rule: <strong>discovery ek meeting nahi hai — ye ek system hai jo ek aisa spec produce karta hai jisse ek stranger build kar sake aur customer apni problem ke roop me pehchan sake.</strong></p>
+<h3>Repeatable version — 6 steps</h3>
+<ol>
+<li>Teen logon ka interview lo</li>
+<li>Org map banao</li>
+<li>Workflow map banao</li>
+<li>10-column table bharo</li>
+<li>Nau requirements test karo</li>
+<li>Five-line spec likho aur room me agree karwao</li>
+</ol>
+<h3>Har discovery ko close karne wale teen questions</h3>
+<p><strong>Problem kya hai? Kisko hai? Hamein kaise pata chalega ki kaam ho gaya?</strong></p>
+<h3>Key Terms — Chapter 2</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Term</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td>Discovery</td><td>Customer ki real problem, user, workflow, data, decision-maker aur risk ko banane se pehle seekhne ka structured process</td></tr>
+<tr><td>Scoping</td><td>Discovery ko ek bounded decision me badalna — kya banana hai, kiske liye, aur kya chhodna hai</td></tr>
+<tr><td>Five-line spec</td><td>Paanch one-sentence lines ki specification — problem, user, workflow, data, success — customer ke saath agreed</td></tr>
+<tr><td>Proof of value</td><td>Chhota build jo prove karta hai ki solution customer ki real problem aur data par kaam karta hai (planned Chapter 4 me aur develop hoga)</td></tr>
+<tr><td>System map</td><td>Customer ke systems, data locations, integrations aur owners ka diagram</td></tr>
+<tr><td>Workflow map</td><td>Operator aaj kaam kaise karta hai, uska step-by-step diagram</td></tr>
+<tr><td>Org map</td><td>Customer ke logon, influence aur decision-making ka diagram (Chapter 1 bhi dekho)</td></tr>
+<tr><td>Champion / skeptic / operator</td><td>Wo teen log jinke interviews par discovery depend karti hai — insider jo succeed karwana chahta hai, doubter jo risks reveal karta hai, aur daily user jiska workflow badlega</td></tr>
+<tr><td>Deployment contract</td><td>Ek likha hua (aur kitab ke example me YAML) statement — deployed system kya karega, kaunsa data use kar sakta hai, aur kya human approval aur audit chahiye</td></tr>
+<tr><td>Audit trail</td><td>System ne kya kiya, kis approval ke saath, aur kab — iska record; refused actions ke liye bhi rakha jata hai</td></tr>
+<tr><td>Human check / human approval</td><td>Ek step jisme person customer ki duniya me act karne se pehle system ke output ko review aur approve karta hai</td></tr>
+<tr><td>10-column table</td><td>Discovery worksheet (Figure 2-3) — ek problem ke liye problem, user, frequency, workaround, cost, data source, data quality, decision-maker, risk aur success record karti hai</td></tr>
+<tr><td>Baseline</td><td>Current performance ki measured value (jaise per-invoice time, false-alarm rate) jiske against success judge hoti hai</td></tr>
+<tr><td>Discovery week</td><td>Naye engagement par discovery chalane ka one-week, Monday-to-Friday plan</td></tr>
+</tbody>
+</table></div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-scoping-right-problem"><span class="pn-label">← Pichhla</span><span class="pn-title">Scoping the Right Problem — 4 Checks + Code Artefacts</span></a><a class="pn-btn" href="#/about-author"><span class="pn-label">Agla →</span><span class="pn-title">About the Author — Role ke Andar se Likhi Kitab</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-about-author" data-title="About the Author — Role ke Andar se Likhi Kitab" hidden>
+  <div class="sec-meta"><span class="num-chip">E1</span><span class="sec-group">End Matter</span></div>
+  <h1>About the Author — Role ke Andar se Likhi Kitab</h1>
+
+<p class="lead">Kitab ke author ek Forward Deployed AI Engineer hain, jo enterprise environments ke andar production AI systems build aur deploy karte hain. Wo is role me computer-science degree se nahi aaye.</p>
+<p>Unka route: ek bade performing-arts school se, business school se hote hue, ek badi consulting firm me technical architect ke roop me client delivery me, phir ek bade financial-data company aur ek bade search company me software engineering me — aur uske baad wo pehle engineers me se ek bane jo formally Forward Deployed AI Engineer role me gaye. Kitab ke author page me job ko part engineer, part consultant, part product thinker, part founder bataya gaya hai, aur kaha gaya hai ki route ke har stop ne inme se ek hissa diya — aur wo role ke baare me nahi, role ke <em>andar se</em> likhte hain.</p>
+<p>Ye bhi note kiya gaya hai ki ek professional network par 24,000 engineers unke kaam ko follow karte hain — jinme se kai wahi move kar rahe hain jo unhone kiya — aur wo kitab ke material par based ek live course bhi padhate hain.</p>
+<div class="callout"><span class="callout-tag">Note</span>Is section me koi personal naam nahi diya gaya hai — sirf role aur route ki baat hai.</div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab ka content — <a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-conclusion"><span class="pn-label">← Pichhla</span><span class="pn-title">Chapter 2 Conclusion + Key Terms</span></a><a class="pn-btn" href="#/lab-discovery-cost"><span class="pn-label">Agla →</span><span class="pn-title">Lab 1 — Discovery Cost Calculator</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-discovery-cost" data-title="Lab 1 — Discovery Cost Calculator" hidden>
+  <div class="sec-meta"><span class="num-chip">L1</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 1 — Discovery Cost Calculator</h1>
+  <p class="lead">Meeting ka har minute kitne ka hai? Engagement value aur meeting minutes daalo — kitab ka $1M / 45-minute wala hisaab live dekho.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Discovery time ki keemat nikalo</span></div>
+  <div class="lab-controls">
+    <label>Engagement value ($)
+      <input id="lab1-value" type="number" class="lab-input" value="1000000" min="10000" step="50000" oninput="lab1Run()">
+    </label>
+    <label>Meeting minutes
+      <input id="lab1-mins" type="range" class="lab-range" min="15" max="120" step="5" value="45" oninput="lab1Run()">
+      <span id="lab1-mins-v" class="mono">45</span>
+    </label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab1Run()">Hisab karo</button>
+  <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab1-out">—</pre></div>
+  <p class="lab-note">Kitab ka example: $1,000,000 engagement, 45-minute meeting — lagbhag $22,222 per minute, lagbhag $370 per second. Isiliye guessing sabse expensive galti hai.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/about-author"><span class="pn-label">← Pichhla</span><span class="pn-title">About the Author — Role ke Andar se Likhi Kitab</span></a><a class="pn-btn" href="#/lab-org-map"><span class="pn-label">Agla →</span><span class="pn-title">Lab 2 — Org Map Builder</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-org-map" data-title="Lab 2 — Org Map Builder" hidden>
+  <div class="sec-meta"><span class="num-chip">L2</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 2 — Org Map Builder</h1>
+  <p class="lead">Apne customer ka org map banao — champion, sponsor, operator, blocker aur gatekeeper me se kaun pehchan me aaya, tick karo aur map dekho.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Pehle din ka org map banao</span></div>
+  <div class="lab-controls">
+    <label class="lab-check"><input type="checkbox" id="lab2-champion" onchange="lab2Run()"> Champion — project succeed karwana chahta hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab2-sponsor" onchange="lab2Run()"> Sponsor — pay karta hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab2-operator" onchange="lab2Run()"> Operator — system daily use karega</label>
+    <label class="lab-check"><input type="checkbox" id="lab2-blocker" onchange="lab2Run()"> Blocker — status/control khone par rok sakta hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab2-gate" onchange="lab2Run()"> IT / security gatekeeper — deployment rok sakta hai</label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab2Run()">Map banao</button>
+  <div class="lab-out"><div class="lab-out-title">Tumhara org map</div><pre class="lab-css" id="lab2-out">—</pre></div>
+  <p class="lab-note">Rule: real decision-maker rarely wo hota hai jiske paas senior title hai — map ko engagement ke saath update karte raho.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-discovery-cost"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 1 — Discovery Cost Calculator</span></a><a class="pn-btn" href="#/lab-six-questions"><span class="pn-label">Agla →</span><span class="pn-title">Lab 3 — Six Discovery Questions Checker</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-six-questions" data-title="Lab 3 — Six Discovery Questions Checker" hidden>
+  <div class="sec-meta"><span class="num-chip">L3</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 3 — Six Discovery Questions Checker</h1>
+  <p class="lead">Banane se pehle 6 questions ke jawab hain ya nahi? Tick karo — khaas taur par 2 hidden questions, jo deployments ko maarte hain.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Discovery readiness check karo</span></div>
+  <div class="lab-controls">
+    <label class="lab-check"><input type="checkbox" id="lab3-q1" onchange="lab3Run()"> Q1 — Problem kya hai, customer ke apne shabdon me?</label>
+    <label class="lab-check"><input type="checkbox" id="lab3-q2" onchange="lab3Run()"> Q2 — Kisko problem hai, aur kitni baar?</label>
+    <label class="lab-check"><input type="checkbox" id="lab3-q3" onchange="lab3Run()"> Q3 — Success kaisa dikhega?</label>
+    <label class="lab-check"><input type="checkbox" id="lab3-q4" onchange="lab3Run()"> Q4 — Kaunsa data exist karta hai, aur kahan?</label>
+    <label class="lab-check"><input type="checkbox" id="lab3-q5" onchange="lab3Run()"> Q5 (HIDDEN) — Asal me kaun decide karta hai, kaun block kar sakta hai?</label>
+    <label class="lab-check"><input type="checkbox" id="lab3-q6" onchange="lab3Run()"> Q6 (HIDDEN) — Customer ko kis failure ka darr hai?</label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab3Run()">Readiness check karo</button>
+  <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab3-out">—</pre></div>
+  <p class="lab-note">Hidden questions kabhi RFP me nahi hote aur pehli meeting me kabhi saamne nahi aate — isiliye wo sabse khatarnak hain.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-org-map"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 2 — Org Map Builder</span></a><a class="pn-btn" href="#/lab-five-line-spec"><span class="pn-label">Agla →</span><span class="pn-title">Lab 4 — Five-Line Spec Builder</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-five-line-spec" data-title="Lab 4 — Five-Line Spec Builder" hidden>
+  <div class="sec-meta"><span class="num-chip">L4</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 4 — Five-Line Spec Builder</h1>
+  <p class="lead">Apni paanch-line spec likho — problem, user, workflow, data, success — aur dekho kya wo room me agree karne layak hai.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Apni five-line spec likho</span></div>
+  <div class="lab-controls">
+    <label>1. Problem (ek sentence)
+      <input id="lab4-problem" type="text" class="lab-input" placeholder="jaise: analyst flagged transactions review karta hai jo mostly false alarms hote hain" oninput="lab4Run()">
+    </label>
+    <label>2. User (ek sentence)
+      <input id="lab4-user" type="text" class="lab-input" placeholder="jaise: night shift par fraud analyst" oninput="lab4Run()">
+    </label>
+    <label>3. Workflow (ek sentence)
+      <input id="lab4-workflow" type="text" class="lab-input" placeholder="jaise: system flags rank karta hai, analyst top wale review karta hai" oninput="lab4Run()">
+    </label>
+    <label>4. Data (ek sentence)
+      <input id="lab4-data" type="text" class="lab-input" placeholder="jaise: transaction log aur past decisions" oninput="lab4Run()">
+    </label>
+    <label>5. Success (ek sentence, measurable)
+      <input id="lab4-success" type="text" class="lab-input" placeholder="jaise: analyst kam false alarms review kare, bina real fraud miss kiye" oninput="lab4Run()">
+    </label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab4Run()">Spec banao</button>
+  <div class="lab-out"><div class="lab-out-title">Tumhari five-line spec</div><pre class="lab-css" id="lab4-out">—</pre></div>
+  <p class="lab-note">Rule: paanch lines customer ke saath, unki bhasha me, meeting me agree honi chahiye — building shuru hone se pehle.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-six-questions"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 3 — Six Discovery Questions Checker</span></a><a class="pn-btn" href="#/lab-build-test"><span class="pn-label">Agla →</span><span class="pn-title">Lab 5 — Build / Don't-Build Test</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-build-test" data-title="Lab 5 — Build / Don't-Build Test" hidden>
+  <div class="sec-meta"><span class="num-chip">L5</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 5 — Build / Don't-Build Test</h1>
+  <p class="lead">Table 2-2 ke nau requirements par apna project test karo — ek bhi row fail ho to verdict clear hai: abhi mat banao.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Nau requirements check karo</span></div>
+  <div class="lab-controls">
+    <label class="lab-check"><input type="checkbox" id="lab5-r1" onchange="lab5Run()"> 1. Named problem — specific person, specific pain</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r2" onchange="lab5Run()"> 2. Named user — user ko kaam karte hue dekha hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r3" onchange="lab5Run()"> 3. Concrete workflow — steps map kar sakte ho</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r4" onchange="lab5Run()"> 4. Defined input — data named, located, accessible</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r5" onchange="lab5Run()"> 5. Measurable success — number + baseline hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r6" onchange="lab5Run()"> 6. Human check — act karne se pehle human review</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r7" onchange="lab5Run()"> 7. Defined failure — failure kaisa dikhega, pata hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r8" onchange="lab5Run()"> 8. Boundary — system kya NAHI karega, pata hai</label>
+    <label class="lab-check"><input type="checkbox" id="lab5-r9" onchange="lab5Run()"> 9. Clear deployment — kahan chalega, kiski security rules</label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab5Run()">Verdict nikalo</button>
+  <div class="lab-out"><div class="lab-out-title">Verdict</div><pre class="lab-css" id="lab5-out">—</pre></div>
+  <p class="lab-note">Chapter ka rule blunt hai: agar koi ek row fail hoti hai, to abhi mat banao — wapas discovery me jao.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-five-line-spec"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 4 — Five-Line Spec Builder</span></a><a class="pn-btn" href="#/lab-ten-column-table"><span class="pn-label">Agla →</span><span class="pn-title">Lab 6 — 10-Column Discovery Table Filler</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-ten-column-table" data-title="Lab 6 — 10-Column Discovery Table Filler" hidden>
+  <div class="sec-meta"><span class="num-chip">L6</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 6 — 10-Column Discovery Table Filler</h1>
+  <p class="lead">Figure 2-3 ki 10-column table bharo — har column me evidence-grounded entry chahiye, assumption nahi. Khaali column matlab wapas jaakar jawab do.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Discovery worksheet bharo</span></div>
+  <div class="lab-controls">
+    <label>1. Problem <input id="lab6-c1" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>2. Who has it <input id="lab6-c2" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>3. How often <input id="lab6-c3" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>4. Current workaround <input id="lab6-c4" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>5. Cost of the problem <input id="lab6-c5" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>6. Data source <input id="lab6-c6" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>7. Data quality <input id="lab6-c7" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>8. Decision-maker <input id="lab6-c8" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>9. Blocker / risk <input id="lab6-c9" type="text" class="lab-input" oninput="lab6Run()"></label>
+    <label>10. What success looks like <input id="lab6-c10" type="text" class="lab-input" oninput="lab6Run()"></label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab6Run()">Completeness check karo</button>
+  <div class="lab-out"><div class="lab-out-title">Completeness</div><pre class="lab-css" id="lab6-out">—</pre></div>
+  <p class="lab-note">Figure ka point: discovery tab tak complete nahi hai jab tak har column me evidence-grounded entry na ho — conversation, document, ya apni aankhon se dekha data.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-build-test"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 5 — Build / Don't-Build Test</span></a><a class="pn-btn" href="#/lab-discovery-week"><span class="pn-label">Agla →</span><span class="pn-title">Lab 7 — Discovery Week Planner</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-discovery-week" data-title="Lab 7 — Discovery Week Planner" hidden>
+  <div class="sec-meta"><span class="num-chip">L7</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 7 — Discovery Week Planner</h1>
+  <p class="lead">Monday se Friday ka discovery week plan karo — har din ka kaam aur us din ka trap, ek saath.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>Apna discovery week plan karo</span></div>
+  <div class="lab-controls">
+    <label>Din chuno
+      <select id="lab7-day" class="lab-select" onchange="lab7Run()">
+        <option value="mon">Monday</option>
+        <option value="tue">Tuesday</option>
+        <option value="wed">Wednesday</option>
+        <option value="thu">Thursday</option>
+        <option value="fri">Friday</option>
+      </select>
+    </label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab7Run()">Din ka plan dekho</button>
+  <div class="lab-out"><div class="lab-out-title">Us din ka kaam + trap</div><pre class="lab-css" id="lab7-out">—</pre></div>
+  <p class="lab-note">Week ka rule: pehle do din koi demo nahi, day two tak operator se baat, aur Friday ko spec room me agree karwana hai.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-ten-column-table"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 6 — 10-Column Discovery Table Filler</span></a><a class="pn-btn" href="#/lab-pay-gap"><span class="pn-label">Agla →</span><span class="pn-title">Lab 8 — Pay Gap Calculator</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-pay-gap" data-title="Lab 8 — Pay Gap Calculator" hidden>
+  <div class="sec-meta"><span class="num-chip">L8</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 8 — Pay Gap Calculator</h1>
+  <p class="lead">FDE ki compensation kitab ke ranges se nikalo — base salary daalo, bonus 10–30% dekho, aur total compensation ka hisaab lagao.</p>
+
+<div class="lab">
+  <div class="lab-head"><span class="lab-badge">TRY IT</span><span>FDE pay ka hisaab lagao</span></div>
+  <div class="lab-controls">
+    <label>Base salary ($ / year)
+      <input id="lab8-base" type="range" class="lab-range" min="150000" max="250000" step="10000" value="200000" oninput="lab8Run()">
+      <span id="lab8-base-v" class="mono">$200,000</span>
+    </label>
+    <label>Bonus (% of base)
+      <input id="lab8-bonus" type="range" class="lab-range" min="10" max="30" step="5" value="20" oninput="lab8Run()">
+      <span id="lab8-bonus-v" class="mono">20%</span>
+    </label>
+  </div>
+  <button type="button" class="chip-btn" onclick="lab8Run()">Hisab karo</button>
+  <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab8-out">—</pre></div>
+  <p class="lab-note">Kitab ke ranges: base lagbhag $150,000–$250,000; total compensation (bonus + equity) experienced FDE ke liye lagbhag $200,000–$400,000+. Bonus aksar deployment success, expansion ya renewal se tied hota hai.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-discovery-week"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 7 — Discovery Week Planner</span></a><a class="pn-btn" href="#/faqs"><span class="pn-label">Agla →</span><span class="pn-title">Interview FAQs</span></a></nav>
+</article>
+
+<article class="section" id="sec-faqs" data-title="Interview FAQs" hidden>
+  <div class="sec-meta"><span class="num-chip">F</span><span class="sec-group">Interview FAQs</span></div>
+  <h1>Interview FAQs — The Forward Deployed Engineer</h1>
+  <p class="lead">36 sawal-jawab jo aaj ke interviews me is kitab ke topics par poochhe jate hain. Har jawab kitab ke content par based hai.</p>
+  <div class="faq-list">
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q1</span>Forward Deployed Engineer (FDE) kya hota hai, simple shabdon me?</summary><div class="faq-a"><p>FDE ek aisa engineer hota hai jo customer ki organisation ke andar on-site kaam karke solution discover, build, deploy aur operate karta hai — aur customer ko value milne ke liye accountable hota hai. Kitab ki image ye hai: FDE kisi aur ki company ke andar ka founder hota hai — use problem dhoondhni hai, solution bechna hai, use banana hai, customer ke andar deploy karna hai, aur jab wo toote to zimmedari bhi usi ki hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q2</span>FDE aur software engineer me kya farq hai?</summary><div class="faq-a"><p>Software engineer office me product banata hai, spec se kaam karta hai, platform par code ship karta hai — success hai code quality aur velocity. FDE customer ke andar solution banata hai, customer ki problem se kaam karta hai, unke environment me working system ship karta hai — success hai customer ko value milna. Farak hierarchy ka nahi, accountability ka hai: FDE problem wapas nahi de sakta.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q3</span>FDE solutions architect se kaise alag hai?</summary><div class="faq-a"><p>Solutions architect solution design karta hai aur handover kar deta hai. FDE rukta hai aur use kaam karwata hai — deployment, adoption aur reliability tak. Architect ka kaam design par khatm hota hai; FDE ka kaam tab khatm hota hai jab customer ko value milne lage.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q4</span>FDE sales engineer aur consultant se kaise alag hai?</summary><div class="faq-a"><p>Sales engineer demonstrate aur sell karta hai; FDE build, deploy karta hai aur sale ke baad bhi accountable rehta hai. Consultant advise aur recommend karta hai; FDE build karta hai aur result own karta hai. Dono cases me farak ye hai ki FDE outcome ka malik hota hai, sirf advice ya demo ka nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q5</span>FDE product manager se kaise alag hai?</summary><div class="faq-a"><p>Product manager decide karta hai ki many customers ke liye kya banana hai. FDE decide karta hai ki is customer ke liye, abhi, kya banana hai. PM ka scope broad aur multi-customer hota hai; FDE ka scope ek customer, ek engagement, ek outcome hota hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q6</span>'Forward deployed' term kahan se aaya?</summary><div class="faq-a"><p>Ye term military se aaya hai, jahan forward-deployed units headquarters ke bajay action ke paas station ki jati hain. Ek bade platform vendor ne is term ko un engineers par apply kiya jo customers ke saath on-site kaam karte hain. Kaam purana hai — consultants aur field engineers dashakon se ye kar rahe hain — lekin job, ek naam wali deliberate career ke roop me, nayi hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q7</span>AI ne FDE role ko kyun important bana diya?</summary><div class="faq-a"><p>Teen forces: pehla, AI products banne par khatm nahi hote — model ko har customer ke data aur workflows me tune, ground aur prove karna padta hai. Doosra, enterprise customers apna data vendor ke cloud ko nahi denge aur roadmap ka wait nahi karenge. Teesra, demo aur deployment ke beech ka gap wahi jagah ban gaya hai jahan AI deals jeete ya haare jate hain — aur FDE usi gap me rehta hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q8</span>Deployment ke teen flavours kaunse hain?</summary><div class="faq-a"><p>Pehla, platform deployment — vendor ka platform customer ke andar deploy karna, configure karna, data integrate karna. Doosra, custom solution deployment — ek customer ke liye bespoke application banana, jaise workflow tool ya decision-support system. Teesra, AI deployment — copilots, agents aur retrieval systems enterprise me deploy karna, jahan data grounding, evaluation, guardrails, cost aur trust dominate karte hain. Teeno ka core ek hi hai: customer ke paas jao, unki duniya seekho, usi me banao, jab tak kaam na kare ruko.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q9</span>FDE ka kaam 'founder-sized' kyun kaha jata hai?</summary><div class="faq-a"><p>Chaar senses me: pehla, problem dhoondhna — customers ko buildable form me apni problem pata nahi hoti. Doosra, solution bechna — pitch karke nahi, customer ko yakeen dilakar ki cheez unki duniya me kaam karegi. Teesra, build karna — fast, customer ke environment me, unke data ke saath. Chautha, zimmedar rehna — deployment ke baad adoption, reliability aur renewal conversation own karna. Isiliye role part engineer, part consultant, part product thinker, part founder hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q10</span>FDE ko ek saath kin paanch areas ko cover karna padta hai?</summary><div class="faq-a"><p>Technical (product, data, infrastructure, integration, model), Business (customer ka P&L, deal size, ROI, procurement), Organisational (kaun decide karta hai, kaun block karta hai, kaun use karta hai), Human (trust, credibility, listening, fear aur resistance), aur Operational (runbook, support model, on-call, handover). Koi paanchon me expert nahi hota — skill ye hai ki har ek me itna jaano ki dangerous ho, aur kab madad bulani hai ye jaano.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q11</span>Engagement arc ke chaar phases kaunse hain?</summary><div class="faq-a"><p>Pehla, Discover — customer ki problem, data aur organisation seekhna. Doosra, Prototype/prove — dinon me proof of value banana. Teesra, Deploy — production me daalna, securely. Chautha, Adopt and expand — logon se use karwana, phir agla use case aur renewal. Practice me arc linear nahi hota — discovery deployment ke dauraan bhi chalti hai — lekin FDE arc ko hafton ya mahinon tak ek saath pakde rehta hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q12</span>Customer ki turf par kaam karne ki cost aur payoff kya hai?</summary><div class="faq-a"><p>Cost: travel, lambe ghante, room me eklauta vendor person hona, aur un cheezon ke liye accountable hona jo tum control nahi karte. Payoff: tum aisi cheezein seekhte ho jo office se nahi seekh sakte — kaam asal me kaise hota hai, kaun asal me decide karta hai, data asal me kaisa hai, aur value ka matlab pay karne walon ke liye kya hai. Wahi knowledge FDE ki real asset hai, aur isi liye role hire karna mushkil hai — ise course se nahi seekha ja sakta.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q13</span>FDE ke week me coding kitni hoti hai?</summary><div class="faq-a"><p>Bahut kam uninterrupted coding time. Chapter ka week-view dikhata hai ki FDE ka week customer meetings, building, unblocking, selling aur writing ka mix hota hai. Thursday ko operations team se meetings, prototype par kaam, aur product team se call; Friday ko sponsor ko demo, scope negotiation, IT handover aur learning likhna. Lesson: agar tum FDE ko lines of code se measure karte ho, to tum galat cheez measure kar rahe ho.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q14</span>Org map kya hota hai aur use kab banana chahiye?</summary><div class="faq-a"><p>Org map customer ke logon, unke interests, unki power aur unke relationships ka working diagram hota hai — pehle din banao aur engagement ke saath update karte raho. Isme paanch roles hote hain: champion (succeed karwana chahta hai), sponsor (pay karta hai), operator (daily use karega), blocker (status ya control khone par rok sakta hai), aur IT/security gatekeeper (deployment rok sakta hai). Real decision-maker rarely wo hota hai jiske paas senior title hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q15</span>FDE ki pay kitni hoti hai, kitab ke hisab se?</summary><div class="faq-a"><p>Base salary lagbhag $150,000–$250,000 per year (US market), senior aur lead FDE isse upar. Total compensation, bonus aur equity sahit, experienced FDE ke liye well-funded AI aur platform companies me lagbhag $200,000–$400,000+. Bonus typical range base ka 10–30% hoti hai, aur aksar deployment success, customer expansion ya renewal se tied hoti hai — sirf code shipping se nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q16</span>FDE ko software engineer se zyada pay kyun milta hai?</summary><div class="faq-a"><p>Kyunki role engineering ke saath commercial accountability combine karta hai aur hire karna mushkil hai. Author ka argument: FDE ko risk aur revenue adjacency ke liye pay kiya jata hai — wo vendor aur ek aisi deal ke beech khada hai jo tens ya hundreds of millions of dollars ki hoti hai. Agar deployment fail hota hai, to deal fail hoti hai. Premium mushkil code ka nahi, commercial aur operational zimmedari ka hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q17</span>FDE ki paanch hard parts kaunsi hain?</summary><div class="faq-a"><p>Ambiguity (problem kabhi clearly stated nahi hoti — clarity create karne ke paise milte hain), Politics (har customer me factions hain — side liye bina navigate karne ke paise), Messy data (data kabhi demo jitna clean nahi hota), Loneliness and pressure (site par akele, outcome ke liye accountable), aur The 3 a.m. problem (production systems raat me customer ke environment me toot te hain — use fix karne wale person hone ke paise). Salary premium in paanch cheezon ki payment hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q18</span>Best FDEs me kaunse paanch traits common hote hain?</summary><div class="faq-a"><p>Curiosity (doosron ke business me genuine dilchaspi), Empathy (customer ka darr, incentives aur constraints samajhna — khaas taur par operator ka), Ownership (problem wapas na dena — jo value ke raaste me hai, wo tumhara hai), Communication (technical system ko business terms me aur business problem ko technical terms me, ek hi meeting me samjhana), aur Resilience (rejection, delay, broken data aur political setbacks ke baad bhi chalte rehna). Best FDEs room ke best coders nahi hote.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q19</span>Discovery kya hai aur customer spec kyun nahi likh sakta?</summary><div class="faq-a"><p>Discovery ek structured process hai jisse customer ki real problem, user, workflow, data, decision-maker aur risk ko banane se pehle seekha jata hai. Customer spec nahi likh sakta kyunki wo buildable form me nahi janta ki use kya chahiye — uski problem vague hoti hai, data ka pata nahi hota, aur decision-maker aur risk chhupe hote hain. FDE ka kaam hai vague request ko evidence ke saath buildable, testable specification me badalna.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q20</span>Discovery se pehle kin 6 questions ke jawab chahiye?</summary><div class="faq-a"><p>Chaar explicit: problem kya hai (customer ke shabdon me), kisko hai aur kitni baar, success kaisa dikhega, kaunsa data exist karta hai aur kahan. Do hidden: asal me kaun decide karta hai aur kaun block kar sakta hai, aur customer ko kis failure ka darr hai. Hidden questions hi deployments ko maarte hain kyunki wo kabhi RFP me nahi hote aur pehli meeting me kabhi saamne nahi aate.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q21</span>Discovery kya NAHI hai?</summary><div class="faq-a"><p>Discovery sales pitch nahi hai, demo nahi hai, requirements-gathering form nahi hai, aur promise nahi hai. Pehli meeting ko product dikhane ka mauka samajhna common failure hai — usse customer ke baare me kuch nahi seekhne ko milta. Discovery ka kaam sunna aur samajhna hai, dikhana nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q22</span>Discovery fail hone ke paanch tareeke kaunse hain?</summary><div class="faq-a"><p>Pehla, demo banana problem ke bajay — polished demo meeting me impress karta hai, real data par fail hota hai. Doosra, sabse zor ki awaaz sunna — spec executive ki view ban jati hai, operator ki nahi, aur system koi use nahi karta. Teesra, sample data par bharosa — production data system tod deta hai. Chautha, blocker miss karna — meeting me sab agree karte hain, baad me kuch nahi hota. Paanchva, aisi spec likhna jo koi padhe nahi — build customer ki need se drift kar jata hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q23</span>Discovery system ke teen phases kaunse hain?</summary><div class="faq-a"><p>Phase 1 — Interviews (discovery week ke days 1–2): champion, skeptic aur operator se structured conversations; kaam ke baare me poochho, product ke baare me nahi. Phase 2 — System map: data kahan hai, systems kaise connected hain, data kahan dirty hai, owner kaun hai — customer ke saath banao. Phase 3 — Workflow map: operator ke actual kaam ka step-by-step map — wahi spec ka source hai, executive ka description nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q24</span>Discovery me teen logon se kyun baat karni hoti hai?</summary><div class="faq-a"><p>Champion se political map aur history milti hai — wo insider hai jo project succeed karwana chahta hai. Skeptic se risks aur real constraints milte hain — wo doubt karta hai, aur agar tum skeptic ko jawab nahi de sakte to spec ready nahi hai. Operator se workflow aur success ki real definition milti hai — wo kaam daily karta hai, use dekho, sirf suno mat. Teenon ke bina spec adhoori rehti hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q25</span>10-column discovery table kya hai?</summary><div class="faq-a"><p>Ye discovery worksheet hai jisme dus columns hote hain: Problem, Who has it, How often, Current workaround, Cost of the problem, Data source, Data quality, Decision-maker, Blocker/risk, aur What success looks like. Discovery tab tak complete nahi hai jab tak har column me evidence-grounded entry na ho — conversation, document, ya apni aankhon se dekha data — assumption me nahi. Khaali column ek question hai jiska jawab wapas jaakar dena hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q26</span>Discovery se pehle kin chaar cheezon ko state karna zaroori hai?</summary><div class="faq-a"><p>Value (customer ko kya milega, unki terms me, number ke saath jahan possible ho), Cost (sirf price nahi — time, change, training, political cost), Risk (kya galat ho sakta hai, risk kaun bear karega, fallback kya hai), aur Proof (kaise pata chalega ki kaam ho gaya — metric, baseline, judge kaun). Agar koi ek bhi state nahi ho sakti, to engagement scope karne ke liye ready nahi hai. Jo discovery proof ka naam nahi le sakti, wo demo produce karegi, deployment nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q27</span>Har discovery me bachne wale paanch questions kaunse hain?</summary><div class="faq-a"><p>Problem kya hai (specific person, task aur pain — category nahi), kisko hai aur kitni baar (number aur frequency), aaj kya hota hai (current workaround step-by-step, time aur error cost ke saath), good kaisa dikhega (measurable — time, error rate, throughput — operator se agreed), aur hamare paas kaunsa data hai (system, owner, quality aur access path ka naam — sirf 'hamare paas data hai' nahi).</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q28</span>Scoping ke teen principles kya hain?</summary><div class="faq-a"><p>Pehla, problem par scope karo, product par nahi — spec customer ke outcome ko describe kare. Doosra, sabse chhoti cheez par scope karo jo value prove kare — ek workflow, ek user group, ek metric. Teesra, data jitna allow kare utna scope karo — agar data outcome support nahi kar sakta to scope shrink hona chahiye, evidence ka standard nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q29</span>Build / don't-build test ke nau requirements kya hain?</summary><div class="faq-a"><p>Named problem, named user (jise kaam karte hue dekha ho), concrete workflow (steps map ho), defined input (data named, located, accessible), measurable success (number + baseline), human check (act karne se pehle human review), defined failure (failure kaisa dikhega, pata ho), boundary (system kya NAHI karega, pata ho), aur clear deployment (kahan chalega, kiski security rules). Rule blunt hai: ek bhi row fail ho to abhi mat banao — wapas discovery me jao.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q30</span>Five-line spec kya hai?</summary><div class="faq-a"><p>Paanch one-sentence lines ki specification: (1) Problem, (2) User, (3) Workflow, (4) Data, (5) Success. Ye lamba document nahi hai — paanch lines customer ke saath, unki bhasha me, meeting me agree honi chahiye, building shuru hone se pehle. Chapter do worked examples deta hai: fraud detection (analyst false alarms review karta hai) aur invoice processing (manual matching ki wajah se invoices atki rehti hain).</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q31</span>Discovery week Monday se Friday kaise chalti hai?</summary><div class="faq-a"><p>Monday: champion aur sponsor se interviews, pehla org map, week ka output agree karo. Tuesday: operator se interview, kaam hote hue dekho, workflow map shuru karo. Wednesday: skeptic se interview, systems aur data map karo, real sample par data quality check karo. Thursday: five-line spec draft karo, nau requirements se test karo, 10-column table bharo. Friday: spec customer ko present karo, agree karo ya unknown cheezein aur unke owners decide karo, aur build/don't-build decide karo.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q32</span>Discovery week ke chhe traps kaunse hain?</summary><div class="faq-a"><p>Demo trap (pehle do din koi demo nahi), executive trap (day two tak operator se baat karo), clean-data trap (production data dekho, uski errors ke saath), agreement trap (politeness ko agreement mat samjho — skeptic se poochho kya galat hoga), scope-creep trap (boundary ko spec me likho), aur document trap (lamba spec mat likho — paanch lines, room me agreed).</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q33</span>Problem ko scope karne se pehle kin chaar checks se guzarna chahiye?</summary><div class="faq-a"><p>Kya ye operator ki problem hai, sirf executive ki nahi? Kya ye frequent aur costly enough hai solve karne layak? Kya data solution support kar sakta hai? Kya success available time me measure ho sakti hai? Kisi ek ka jawab na ho to scope galat hai — chhoti problem chuno. Chapter ka example: executive ki broad AI assistant ki request discovery ke baad ek narrow tool ban jati hai jo ek team ke liye ek queue rank karta hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q34</span>Chapter 2 me kaunse code artefacts hain aur wo kya sikhate hain?</summary><div class="faq-a"><p>Teen artefacts: (a) approval aur audit-trail logic — system ko recorded human approval ke bina kabhi act nahi karna chahiye, aur refusal ka record bhi rakhna chahiye. (b) deployment contract (YAML) — five-line spec ki boundary ka machine-readable version: system kya karega, kaunsa data use kar sakta hai, kya nahi karega. (c) discovery-report command — discovery ka output generated, shareable report hona chahiye, private notes ka set nahi.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q35</span>Kitab me reader Chapter 2 aur planned Chapter 3 me kya farak hai?</summary><div class="faq-a"><p>Reader ka Contents panel available chapters ko sequentially number karta hai — isliye Technical Discovery reader me Chapter 2 dikhta hai. Lekin Brief Table of Contents me use Chapter 3 number diya gaya hai, kyunki planned Chapter 2 (The Deployment Stack) abhi publish nahi hua. Is SPA me reader ki numbering use ki gayi hai, aur jahan zaroorat padi planned number bhi bataya gaya hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q36</span>Kitab ke baaki chapters kab aayenge — is SPA me kyun nahi hain?</summary><div class="faq-a"><p>Kitab Early Release hai — sirf do chapters publish hue hain. Planned Chapters 2, 4, 5, 6, 7, 8, 9, 10, 11 aur 12 'Not available' mark kiye gaye hain aur unka koi reader content nahi hai — ch03.html blank viewer page load karta hai. Isliye is SPA me unka content nahi hai; unhe invent nahi kiya gaya. Unki titles Trust Check ke out-of-scope list me di gayi hain, aur jab wo publish honge to SPA update karna hoga.</p></div></details>
+  </div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-pay-gap"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 8 — Pay Gap Calculator</span></a><a class="pn-btn" href="#/sources"><span class="pn-label">Agla →</span><span class="pn-title">Sources</span></a></nav>
+</article>
+
+<article class="section" id="sec-sources" data-title="Sources" hidden>
+  <div class="sec-meta"><span class="num-chip">S</span><span class="sec-group">Sources</span></div>
+  <h1>Sources</h1>
+  <p class="lead">Is SPA ka saara content kitab se liya gaya hai. Har section ke ant me Source line me wahi link diya gaya hai.</p>
+  <div class="src-list">
+    <div class="src-num">1</div>
+    <div><b>The Forward Deployed Engineer (kitab)</b><br><a href="https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/the-forward-deployed/0642572416485/</a><br><span class="mono">O&apos;Reilly Media, December 2027 (planned), 350 pages planned, Early Release Raw &amp; Unedited — sirf Chapters 1–2 available; koi ISBN list nahi hua</span></div>
+  </div>
+  <div class="src-list">
+    <div class="src-num">2</div>
+    <div><b>Code artefacts (Chapter 2)</b><br><span class="mono">Kitab ka koi code repo nahi hai — Chapter 2 ke teen short artefacts (approval/audit logic, deployment contract YAML, discovery-report command) SPA me descriptions se reconstruct kiye gaye teaching excerpts hain</span></div>
+  </div>
+  <p class="note">Figures kitab ke descriptions se dobara banaye gaye diagrams hain; code artefacts descriptions se reconstruct kiye gaye teaching excerpts hain — verbatim listings nahi. Planned Chapters 2, 4–12 ka content abhi publish nahi hua, isliye SPA me nahi hai.</p>
+<nav class="pn-nav"><a class="pn-btn" href="#/faqs"><span class="pn-label">← Pichhla</span><span class="pn-title">Interview FAQs</span></a><a class="pn-btn" href="#/trust"><span class="pn-label">Agla →</span><span class="pn-title">Trust Check</span></a></nav>
+</article>
+
+<article class="section" id="sec-trust" data-title="Trust Check" hidden>
+  <div class="sec-meta"><span class="num-chip">✓</span><span class="sec-group">Trust Check</span></div>
+  <h1>Trust Check — sab kuch included hai?</h1>
+  <p class="lead">Ye page khud ko check karta hai. Neeche diye gaye counts live page se gine jate hain — kitab ke notes se cross-check karo.</p>
+  <div class="tc-cards">
+    <div class="tc-card"><span class="tc-num" id="tc-sections">—</span><span class="tc-lbl">Sections</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-sidebar">—</span><span class="tc-lbl">Sidebar entries</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-sources">—</span><span class="tc-lbl">Source boxes</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-faqs">—</span><span class="tc-lbl">FAQs</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-labs">—</span><span class="tc-lbl">Labs</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-figs">—</span><span class="tc-lbl">Figures</span></div>
+  </div>
+  <p><button type="button" class="chip-btn run-check" onclick="runTrustCheck()">Self-check chalao</button></p>
+  <div id="trust-result" class="check-result">Abhi check nahi chalaya gaya — button dabao.</div>
+  <div id="trust-detail" class="livecheck"></div>
+  <h3>Cross-check — kitab ka TOC vs SPA</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Kitab ka hissa</th><th>SPA me</th><th>Status</th></tr></thead>
+    <tbody>
+<tr><td>Shuruaat</td><td>2 sections</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Chapter 1 — Founder Inside Someone Else's Company</td><td>12 sections</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Chapter 2 — Technical Discovery and Scoping</td><td>11 sections</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>End Matter</td><td>1 sections</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Planned Ch 2 — The Deployment Stack</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 4 — The Prototype That Proves It</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 5 — Data Reality</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 6 — Deploying Inside Their World</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 7 — Production AI</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 8 — The Build-and-Buy Line</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 9 — Adoption</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 10 — The Business of Deployment</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 11 — When Deployment Goes Wrong</td><td>0 sections</td><td>Not yet published</td></tr>
+<tr><td>Planned Ch 12 — The Road Ahead</td><td>0 sections</td><td>Not yet published</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Honest out-of-scope list</h3>
+  <ul class="oos">
+    <li><strong>Planned Chapter 2 — The Deployment Stack:</strong> not yet published — koi content exist nahi karta, isliye SPA me nahi hai.</li>
+    <li><strong>Planned Chapter 4 — The Prototype That Proves It:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 5 — Data Reality:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 6 — Deploying Inside Their World:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 7 — Production AI:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 8 — The Build-and-Buy Line:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 9 — Adoption:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 10 — The Business of Deployment:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 11 — When Deployment Goes Wrong:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>Planned Chapter 12 — The Road Ahead:</strong> not yet published — koi content exist nahi karta.</li>
+    <li><strong>ISBN:</strong> kitab ke O&apos;Reilly page ya reader me koi ISBN list nahi hua — isliye SPA me bhi nahi diya gaya (invent nahi kiya gaya).</li>
+    <li><strong>Original figures:</strong> kitab ke figures ke descriptions se dobara banaye gaye diagrams hain — original pixels nahi.</li>
+    <li><strong>Verbatim code:</strong> Chapter 2 ke teen code artefacts descriptions se reconstruct kiye gaye teaching excerpts hain — verbatim listings nahi.</li>
+    <li><strong>Pay figures:</strong> compensation ranges kitab ke author ke reported market ranges hain (US market) — SPA ne wahi likha hai, apni taraf se koi number nahi joda.</li>
+  </ul>
+<nav class="pn-nav"><a class="pn-btn" href="#/sources"><span class="pn-label">← Pichhla</span><span class="pn-title">Sources</span></a></nav>
+</article>
+</div></main>
+<nav id="bottomnav" aria-label="Mobile navigation">
+  <a href="#/home" data-nav="home"><span class="bn-ic">⌂</span>Home</a>
+  <a href="#/lab-discovery-cost" data-nav="lab-discovery-cost"><span class="bn-ic">⚗</span>Labs</a>
+  <a href="#/faqs" data-nav="faqs"><span class="bn-ic">?</span>FAQs</a>
+  <a href="#/trust" data-nav="trust"><span class="bn-ic">✓</span>Trust</a>
+</nav>
+<script>
+
+var sections = Array.prototype.slice.call(document.querySelectorAll(".section"));
+var links = Array.prototype.slice.call(document.querySelectorAll(".sb-link"));
+var byId = {};
+sections.forEach(function(s){ byId[s.id.replace("sec-","")] = s; });
+var order = sections.map(function(s){ return s.id.replace("sec-",""); });
+var sidebar = document.getElementById("sidebar");
+var scrim = document.getElementById("scrim");
+function closeDrawer(){ sidebar.classList.remove("open"); scrim.classList.remove("on"); }
+document.getElementById("menu-btn").addEventListener("click", function(){
+  var open = sidebar.classList.toggle("open"); scrim.classList.toggle("on", open);
+});
+scrim.addEventListener("click", closeDrawer);
+function show(slug){
+  if(!byId[slug]) slug = "home";
+  sections.forEach(function(s){ s.hidden = s.id !== "sec-" + slug; });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  var act = document.querySelector('.sb-link[data-nav="' + slug + '"]');
+  if(act && window.innerWidth > 900){ act.scrollIntoView({block:"nearest"}); }
+  var idx = order.indexOf(slug);
+  document.getElementById("progress-bar").style.width = (order.length > 1 ? (idx/(order.length-1))*100 : 0) + "%";
+  var tb = document.getElementById("tb-current");
+  if(tb){ var sec = byId[slug]; tb.textContent = sec ? (sec.getAttribute("data-title") || "The Forward Deployed Engineer") : "The Forward Deployed Engineer"; }
+  var bn = document.querySelectorAll("#bottomnav a");
+  bn.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+function route(){
+  var h = location.hash.replace(/^#\/?/, "");
+  show(h || "home");
+}
+window.addEventListener("hashchange", route);
+var search = document.getElementById("sb-search-input");
+search.addEventListener("input", function(){
+  var q = search.value.trim().toLowerCase();
+  links.forEach(function(a){
+    var hay = a.getAttribute("data-search") || "";
+    a.classList.toggle("hidden", q !== "" && hay.indexOf(q) === -1);
+  });
+  document.querySelectorAll(".sb-group").forEach(function(g){
+    var any = g.querySelector(".sb-link:not(.hidden)");
+    g.style.display = any ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); search.focus(); if(window.innerWidth<=900){ sidebar.classList.add("open"); scrim.classList.add("on"); } }
+});
+route();
+
+</script>
+<script>
+
+function lab1Run() {
+  var value = parseFloat(document.getElementById('lab1-value').value) || 0;
+  var mins = parseInt(document.getElementById('lab1-mins').value, 10);
+  document.getElementById('lab1-mins-v').textContent = mins;
+  var perMin = value / mins;
+  var perSec = perMin / 60;
+  var lines = [];
+  lines.push('Engagement value: $' + value.toLocaleString('en-US'));
+  lines.push('Meeting: ' + mins + ' minutes');
+  lines.push('Har minute ki keemat: $' + Math.round(perMin).toLocaleString('en-US'));
+  lines.push('Har second ki keemat: $' + Math.round(perSec).toLocaleString('en-US'));
+  if (perMin >= 20000) {
+    lines.push('Verdict: bahut expensive meeting — guessing yahan barbaadi hai.');
+  } else if (perMin >= 5000) {
+    lines.push('Verdict: expensive meeting — har minute discovery par lagao, demo par nahi.');
+  } else {
+    lines.push('Verdict: chhota engagement — phir bhi galat spec hafton ka kaam waste kar deta hai.');
+  }
+  document.getElementById('lab1-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab1Run = lab1Run;
+
+
+function lab2Run() {
+  var roles = [
+    ['lab2-champion', 'CHAMPION — project succeed karwana chahta hai'],
+    ['lab2-sponsor', 'SPONSOR — pay karta hai'],
+    ['lab2-operator', 'OPERATOR — daily use karega'],
+    ['lab2-blocker', 'BLOCKER — rok sakta hai (status/control)'],
+    ['lab2-gate', 'IT / SECURITY GATEKEEPER — deployment rok sakta hai']
+  ];
+  var found = [];
+  var missing = [];
+  roles.forEach(function(r) {
+    if (document.getElementById(r[0]).checked) { found.push(r[1]); } else { missing.push(r[1]); }
+  });
+  var lines = [];
+  lines.push('Org map — ' + found.length + ' / 5 roles pehchane gaye');
+  lines.push('');
+  found.forEach(function(f) { lines.push('  [x] ' + f); });
+  missing.forEach(function(m) { lines.push('  [ ] ' + m + '  <-- abhi unknown'); });
+  lines.push('');
+  if (found.length === 5) {
+    lines.push('Map complete hai — lekin yaad rakho, map ko update karte raho, kyunki real power badalti rehti hai.');
+  } else {
+    if (!document.getElementById('lab2-blocker').checked) {
+      lines.push('Warning: blocker unknown hai — ye wahi trap hai jisme meeting me sab agree karte hain aur baad me kuch nahi hota.');
+    }
+    if (!document.getElementById('lab2-operator').checked) {
+      lines.push('Warning: operator unknown hai — spec executive ki view ban jayegi, workflow ki nahi.');
+    }
+    lines.push('Agla kadam: missing roles ke liye private conversations karo — pehle din ka kaam yahi hai.');
+  }
+  document.getElementById('lab2-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab2Run = lab2Run;
+
+
+function lab3Run() {
+  var explicit = ['lab3-q1', 'lab3-q2', 'lab3-q3', 'lab3-q4'];
+  var hidden = ['lab3-q5', 'lab3-q6'];
+  var e = explicit.filter(function(id) { return document.getElementById(id).checked; }).length;
+  var h = hidden.filter(function(id) { return document.getElementById(id).checked; }).length;
+  var total = e + h;
+  var lines = [];
+  lines.push('Explicit questions: ' + e + ' / 4 answered');
+  lines.push('Hidden questions: ' + h + ' / 2 answered');
+  lines.push('Total: ' + total + ' / 6');
+  lines.push('');
+  if (total === 6) {
+    lines.push('READY — chhe ke chhe jawab hain. Ab scoping ki taraf badho.');
+  } else if (h === 0) {
+    lines.push('NOT READY — hidden questions ke jawab nahi hain. Ye wahi questions hain jo deployments ko maarte hain.');
+    lines.push('Wapas jao: behaviour, data aur organisation se infer karo — seedha poochhne se jawab nahi milega.');
+  } else if (e < 4) {
+    lines.push('NOT READY — explicit questions bhi adhoore hain. Pehle unhe poora karo.');
+  } else {
+    lines.push('ALMOST — explicit poore hain, hidden me se ' + (2 - h) + ' baki hai. Wahi baki hai jo sabse zyada matter karta hai.');
+  }
+  document.getElementById('lab3-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab3Run = lab3Run;
+
+
+function lab4Run() {
+  var fields = [
+    ['lab4-problem', '1. Problem'],
+    ['lab4-user', '2. User'],
+    ['lab4-workflow', '3. Workflow'],
+    ['lab4-data', '4. Data'],
+    ['lab4-success', '5. Success']
+  ];
+  var filled = 0;
+  var lines = [];
+  fields.forEach(function(f) {
+    var v = document.getElementById(f[0]).value.trim();
+    if (v.length > 0) {
+      filled++;
+      lines.push(f[1] + ': ' + v);
+    } else {
+      lines.push(f[1] + ': [KHAALI]');
+    }
+  });
+  lines.push('');
+  if (filled === 5) {
+    lines.push('Spec complete hai — ab ise customer ke saath room me agree karwao, unki bhasha me.');
+    lines.push('Yaad rakho: lamba document nahi, paanch lines. Jo spec koi padhe nahi, wo spec nahi hai.');
+  } else {
+    lines.push('Spec adhoori hai — ' + (5 - filled) + ' line(s) khaali hain. Khaali line guess karke mat bharo; wapas discovery me jao.');
+  }
+  document.getElementById('lab4-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab4Run = lab4Run;
+
+
+function lab5Run() {
+  var reqs = [
+    ['lab5-r1', 'Named problem'],
+    ['lab5-r2', 'Named user'],
+    ['lab5-r3', 'Concrete workflow'],
+    ['lab5-r4', 'Defined input'],
+    ['lab5-r5', 'Measurable success'],
+    ['lab5-r6', 'Human check'],
+    ['lab5-r7', 'Defined failure'],
+    ['lab5-r8', 'Boundary'],
+    ['lab5-r9', 'Clear deployment']
+  ];
+  var passed = 0;
+  var failed = [];
+  reqs.forEach(function(r) {
+    if (document.getElementById(r[0]).checked) { passed++; } else { failed.push(r[1]); }
+  });
+  var lines = [];
+  lines.push('Passed: ' + passed + ' / 9 requirements');
+  lines.push('');
+  if (failed.length > 0) {
+    lines.push('Failing rows:');
+    failed.forEach(function(f) { lines.push('  [FAIL] ' + f); });
+    lines.push('');
+    lines.push("VERDICT: DON'T BUILD YET — wapas discovery me jao aur failing rows ko fix karo.");
+  } else {
+    lines.push('VERDICT: BUILD — nau ke nau requirements pass. Scope tight hai, ab banao.');
+  }
+  document.getElementById('lab5-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab5Run = lab5Run;
+
+
+function lab6Run() {
+  var cols = [
+    ['lab6-c1', 'Problem'], ['lab6-c2', 'Who has it'], ['lab6-c3', 'How often'],
+    ['lab6-c4', 'Current workaround'], ['lab6-c5', 'Cost of the problem'],
+    ['lab6-c6', 'Data source'], ['lab6-c7', 'Data quality'], ['lab6-c8', 'Decision-maker'],
+    ['lab6-c9', 'Blocker / risk'], ['lab6-c10', 'What success looks like']
+  ];
+  var filled = 0;
+  var empty = [];
+  cols.forEach(function(c) {
+    if (document.getElementById(c[0]).value.trim().length > 0) { filled++; } else { empty.push(c[1]); }
+  });
+  var pct = Math.round(filled / 10 * 100);
+  var lines = [];
+  lines.push('Table completeness: ' + filled + ' / 10 columns (' + pct + '%)');
+  var bar = '';
+  for (var i = 0; i < 10; i++) { bar += (i < filled) ? '#' : '-'; }
+  lines.push('[' + bar + ']');
+  lines.push('');
+  if (filled === 10) {
+    lines.push('COMPLETE — har column me entry hai. Ab nine requirements se test karo (Lab 5).');
+  } else {
+    lines.push('Khaali columns (ye guess karne ke gaps nahi hain — wapas jaakar jawab do):');
+    empty.forEach(function(e) { lines.push('  [ ] ' + e); });
+  }
+  document.getElementById('lab6-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab6Run = lab6Run;
+
+
+function lab7Run() {
+  var day = document.getElementById('lab7-day').value;
+  var plan = {
+    mon: ['Monday — Interviews shuru karo', 'Kaam: champion aur sponsor se interviews; pehla org map banao; agree karo ki week kya produce karega.', 'Trap: the demo trap — sunne ke bajay product mat dikhao. Fix: pehle do din koi demo nahi.'],
+    tue: ['Tuesday — Operator se milo', 'Kaam: operator(s) se interview; kaam hote hue dekho; workflow map shuru karo.', 'Trap: the executive trap — sirf senior logon se baat mat karo. Fix: day two tak operator se baat karo.'],
+    wed: ['Wednesday — Skeptic aur data', 'Kaam: skeptic se interview; systems aur data map karo; data quality ek real sample par check karo — cleaned sample par nahi.', 'Trap: the clean-data trap — sample par bharosa mat karo. Fix: production data dekho, uski errors ke saath.'],
+    thu: ['Thursday — Spec draft karo', 'Kaam: five-line spec draft karo; use Table 2-2 ke nau requirements se test karo; 10-column table bharo.', 'Trap: the agreement trap — politeness ko agreement mat samjho. Fix: skeptic se poochho kya galat hoga.'],
+    fri: ['Friday — Spec agree karwao', 'Kaam: spec customer ko wapas present karo; use agree karo — ya agree karo ki kya abhi unknown hai aur use kaun answer karega; build / do-not-build-yet decide karo.', 'Trap: the scope-creep trap aur the document trap — meeting me features mat add karo; boundary spec me likho; paanch lines, room me agreed.']
+  };
+  document.getElementById('lab7-out').textContent = plan[day].join(String.fromCharCode(10));
+}
+window.lab7Run = lab7Run;
+
+
+function lab8Run() {
+  var base = parseInt(document.getElementById('lab8-base').value, 10);
+  var bonusPct = parseInt(document.getElementById('lab8-bonus').value, 10);
+  document.getElementById('lab8-base-v').textContent = '$' + base.toLocaleString('en-US');
+  document.getElementById('lab8-bonus-v').textContent = bonusPct + '%';
+  var bonus = Math.round(base * bonusPct / 100);
+  var cash = base + bonus;
+  var lines = [];
+  lines.push('Base salary: $' + base.toLocaleString('en-US'));
+  lines.push('Bonus (' + bonusPct + '% of base): $' + bonus.toLocaleString('en-US'));
+  lines.push('Cash total (base + bonus): $' + cash.toLocaleString('en-US'));
+  lines.push('Kitab ka total-comp range (equity sahit): $200,000–$400,000+');
+  if (cash >= 200000 && cash <= 400000) {
+    lines.push('Cash total kitab ke total-comp range ke andar aata hai — equity iske upar hoga.');
+  } else if (cash < 200000) {
+    lines.push('Cash total range ke neeche hai — equity aur seniority ke saath total badhta hai.');
+  } else {
+    lines.push('Cash total range ke upar hai — senior/lead level ki taraf ishara hai.');
+  }
+  lines.push('Yaad rakho: premium risk aur revenue adjacency ka hai — deployment fail hui to deal fail hoti hai.');
+  document.getElementById('lab8-out').textContent = lines.join(String.fromCharCode(10));
+}
+window.lab8Run = lab8Run;
+
+</script>
+<script>
+
+function runTrustCheck() {
+  var res = [];
+  var ok = true;
+  function check(name, cond, detail) {
+    res.push((cond ? "PASS" : "FAIL") + " — " + name + (detail ? " (" + detail + ")" : ""));
+    if (!cond) ok = false;
+  }
+  var nSec = document.querySelectorAll("article.content-sec").length;
+  var nSecContent = document.querySelectorAll("article.content-sec .source-box").length;
+  var nFaq = document.querySelectorAll("details.faq").length;
+  var nLab = document.querySelectorAll("article.section .lab").length;
+  var nFig = document.querySelectorAll(".fig").length;
+  var nSb = document.querySelectorAll(".sb-link").length;
+  document.getElementById("tc-sections").textContent = nSec;
+  document.getElementById("tc-sidebar").textContent = nSb;
+  document.getElementById("tc-sources").textContent = nSecContent;
+  document.getElementById("tc-faqs").textContent = nFaq;
+  document.getElementById("tc-labs").textContent = nLab;
+  document.getElementById("tc-figs").textContent = nFig;
+  check("Sections present", nSec >= 20, nSec + " sections");
+  check("Har section me Source box", nSecContent >= nSec, nSecContent + " source boxes");
+  check("FAQs exactly 36", nFaq === 36, nFaq + " FAQs");
+  check("Labs exactly 8", nLab === 8, nLab + " labs");
+  check("Figures present", nFig >= 6, nFig + " figures");
+  check("No loading=lazy", document.querySelectorAll("[loading='lazy']").length === 0, "0 lazy");
+  var badFaq = 0;
+  document.querySelectorAll("details.faq").forEach(function(d) {
+    var q = (d.querySelector(".faq-q") || {}).textContent || "";
+    var a = (d.querySelector(".faq-a") || {}).textContent || "";
+    var qt = q.trim();
+    var at = a.trim();
+    if (/^q$/i.test(qt) || /^a$/i.test(qt) || /^(placeholder|lorem|todo)/i.test(qt)) badFaq++;
+    if (/^q$/i.test(at) || /^a$/i.test(at) || /^(placeholder|lorem|todo)/i.test(at)) badFaq++;
+    if (qt.length < 20 || at.length < 80) badFaq++;
+  });
+  check("FAQs real content (no placeholders)", badFaq === 0, badFaq + " problem FAQs");
+  var missingSrc = 0;
+  document.querySelectorAll("article.content-sec").forEach(function(a) {
+    if (!a.querySelector(".source-box")) missingSrc++;
+  });
+  check("Content sections me Source line", missingSrc === 0, missingSrc + " missing");
+  var out = document.getElementById("trust-result");
+  out.textContent = ok ? "TRUST CHECK: PASS — sab kuch included hai." : "TRUST CHECK: FAIL — neeche dekho kya gadbad hai.";
+  out.className = "check-result " + (ok ? "pass" : "fail");
+  document.getElementById("trust-detail").innerHTML = res.map(function(r) { return "<div class=\"livecheck-tag\">" + r + "</div>"; }).join("");
+}
+window.runTrustCheck = runTrustCheck;
+
+</script>
+</body>
+</html>
