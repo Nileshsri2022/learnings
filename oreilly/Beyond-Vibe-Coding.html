@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Beyond Vibe Coding — Hinglish Notes (O'Reilly Top 100 #30)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+/* ---------- layout ---------- */
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 70px}
+/* ---------- sections ---------- */
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+/* ---------- labs ---------- */
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-controls label.lab-check{flex-direction:row;align-items:center;gap:8px;font-family:var(--font-body);font-size:13.5px;min-height:36px}
+.lab-check input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-color{width:56px;height:38px;border:1px solid var(--surface-highest);border-radius:8px;background:var(--surface);padding:3px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-css{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#d9e7c8;white-space:pre-wrap;word-break:break-word}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.demo-box{background:var(--lime-strong);color:var(--on-lime);font-family:var(--font-mono);font-weight:700;border-radius:8px;display:flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:10px}
+.demo-box.tall{min-height:84px}
+.fx-stage{display:flex;min-height:150px;background:var(--surface);border-radius:8px;padding:10px}
+.gr-stage{display:grid;background:var(--surface);border-radius:8px;padding:10px}
+.sp-stage{display:flex;justify-content:center}
+#sp-box{background:rgba(132,204,22,.22);border:1px solid var(--lime-dim);border-radius:6px;transition:padding .15s}
+.sp-inner{background:var(--surface-high);border-radius:6px;padding:16px 20px;text-align:center}
+.rp-box{border-radius:10px;padding:26px;text-align:center;font-family:var(--font-mono);font-weight:700;color:#12100a;transition:background .2s}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.st-cell{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.st-cell code{align-self:flex-start}
+.st-btn-hover{background:#0369a1;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-hover:hover{background:#075985}
+.st-input{width:100%;background:var(--bg);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.st-input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.55)}
+.st-btn-active{background:#65a30d;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-active:active{background:#3f6212}
+.st-btn-disabled{background:#525252;color:#d4d4d4;border:none;border-radius:8px;padding:10px 16px;opacity:.5;cursor:not-allowed;font-size:14px}
+.st-group{cursor:pointer}
+.st-group-inner{border:1px solid var(--surface-highest);border-radius:8px;padding:12px;width:100%}
+.st-group:hover .st-group-inner{color:var(--lime);border-color:var(--lime-dim)}
+.st-peer-label{display:flex;gap:8px;align-items:center;min-height:36px;cursor:pointer}
+.st-peer-label input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.st-peer-msg{visibility:hidden;background:#450a0a;color:#fca5a5;border-radius:6px;padding:8px 10px;font-size:13px}
+.st-peer-msg.show{visibility:visible}
+.dk-card{background:#fff;color:#374151;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.35);transition:background .25s,color .25s}
+.dk-card .dk-title{font-family:var(--font-head);font-weight:700;font-size:18px;color:#111827;margin-bottom:6px}
+.dk-card.dark{background:#1f2937;color:#9ca3af}
+.dk-card.dark .dk-title{color:#f9fafb}
+.mo-stage{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.mo-box{width:92px;height:92px;background:var(--blue);color:#00354a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;cursor:pointer}
+.mo-box:hover{transform:scale(1.18) rotate(8deg)}
+.mo-anim{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mo-dot{width:34px;height:34px;border-radius:99px;background:var(--lime-strong);display:block}
+.mo-anim-label{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.mo-spin{animation:mspin 1.4s linear infinite;border-radius:8px}
+@keyframes mspin{to{transform:rotate(360deg)}}
+.mo-pulse{animation:mpulse 1.6s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mo-bounce{animation:mbounce 1.2s ease-in-out infinite}
+@keyframes mbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.mo-ping{animation:mping 1.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes mping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.9);opacity:0}}
+.gd-box{height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:rgba(0,0,0,.55)}
+.th-swatches{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.th-swatch{border-radius:10px;padding:18px 14px;font-family:var(--font-mono);font-size:12.5px;flex:1;min-width:140px;text-align:center;background:var(--surface);border:1px solid var(--surface-high)}
+/* ---------- faq / sources / trust ---------- */
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-n{font-family:var(--font-mono)}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+/* ---------- home ---------- */
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 60px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .mo-spin,.mo-pulse,.mo-bounce,.mo-ping,.sb-dot{animation:none}
+}
+
+/* ---------- figures (book diagrams, recreated as SVG/CSS) ---------- */
+.fig{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;margin:18px 0;max-width:100%}
+.fig-body{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;justify-content:center}
+.fig-box{background:var(--surface-high);border:1px solid var(--surface-highest);border-radius:8px;padding:10px 12px;font-size:13px;text-align:center;color:var(--text);flex:1;min-width:110px}
+.fig-box b{color:var(--lime);display:block;font-family:var(--font-mono);font-size:11.5px;margin-bottom:4px}
+.fig-box.blue{background:rgba(123,208,255,.09);border-color:#1d4e63}
+.fig-box.blue b{color:var(--blue)}
+.fig-box.red{background:rgba(244,114,182,.08);border-color:#5b2144}
+.fig-box.red b{color:#f9a8d4}
+.fig-arrow{align-self:center;color:var(--lime);font-weight:700;font-size:18px;flex:none}
+.fig-arrow.down{transform:rotate(90deg)}
+.fig-cap{margin:12px 0 0;font-size:12.5px;color:var(--muted);text-align:center}
+.fig-cap b{color:var(--text-var);font-family:var(--font-mono)}
+.fig-v{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.fig-plot{width:100%;max-width:620px;display:block;margin:0 auto}
+.fig-note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:8px}
+.fig-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%}
+.fig-tag{display:inline-block;font-family:var(--font-mono);font-size:11px;background:var(--surface-highest);border-radius:99px;padding:2px 9px;color:var(--text-var);margin:2px}
+.callout{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:12px 15px;margin:14px 0;font-size:14px}
+.callout b{color:var(--lime)}
+.warn{background:#2a1a10;border:1px solid #7c4a12;border-radius:10px;padding:12px 15px;margin:14px 0;font-size:14px}
+.warn b{color:#fbbf24}
+.kpi-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.kpi{flex:1;min-width:120px;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px;text-align:center}
+.kpi b{font-family:var(--font-head);font-size:22px;color:var(--lime);display:block}
+.kpi span{font-size:11.5px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+
+</style>
+</head>
+<body>
+<div id="topbar"><button id="menu-btn" aria-label="Menu">&#9776;</button><div><div class="tb-title">Beyond Vibe Coding</div><div class="tb-sub" id="tb-current">Beyond Vibe Coding</div></div></div>
+<div id="scrim"></div>
+<aside id="sidebar"><div class="sb-top"><a href="#/home" style="text-decoration:none;color:inherit"><div class="sb-brand"><span class="sb-logo">B30</span><h2>Beyond Vibe Coding<small>O'Reilly Top 100 · #30</small></h2></div></a><div class="sb-search"><span>&#128269;</span><input id="sb-search-input" type="search" placeholder="Search — Ctrl+K" aria-label="Search"></div></div><nav class="sb-nav"><div class="sb-group"><div class="sb-group-head"><span>Shuruaat</span><span class="sb-count">1</span></div><a class="sb-link" href="#/preface" data-nav="preface" data-search="preface — ye kitab kis liye hai shuruaat"><span class="sb-num">00</span><span class="sb-title">Preface — Ye kitab kis liye hai</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Part I · Foundations</span><span class="sb-count">2</span></div><a class="sb-link" href="#/ch1" data-nav="ch1" data-search="ch 1 — vibe coding kya hai? part i · foundations"><span class="sb-num">01</span><span class="sb-title">Ch 1 — Vibe Coding kya hai?</span></a><a class="sb-link" href="#/ch2" data-nav="ch2" data-search="ch 2 — prompt ki kala part i · foundations"><span class="sb-num">02</span><span class="sb-title">Ch 2 — Prompt ki kala</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Part II · AI Coding in Practice</span><span class="sb-count">5</span></div><a class="sb-link" href="#/ch3" data-nav="ch3" data-search="ch 3 — the 70% problem part ii · ai coding in practice"><span class="sb-num">03</span><span class="sb-title">Ch 3 — The 70% Problem</span></a><a class="sb-link" href="#/ch4" data-nav="ch4" data-search="ch 4 — human contribution part ii · ai coding in practice"><span class="sb-num">04</span><span class="sb-title">Ch 4 — Human Contribution</span></a><a class="sb-link" href="#/ch5" data-nav="ch5" data-search="ch 5 — generated code ko samjho part ii · ai coding in practice"><span class="sb-num">05</span><span class="sb-title">Ch 5 — Generated Code ko samjho</span></a><a class="sb-link" href="#/ch6" data-nav="ch6" data-search="ch 6 — ai-driven prototyping part ii · ai coding in practice"><span class="sb-num">06</span><span class="sb-title">Ch 6 — AI-Driven Prototyping</span></a><a class="sb-link" href="#/ch7" data-nav="ch7" data-search="ch 7 — web apps ai se banana part ii · ai coding in practice"><span class="sb-num">07</span><span class="sb-title">Ch 7 — Web Apps AI se banana</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Part III · Trust and Autonomy</span><span class="sb-count">4</span></div><a class="sb-link" href="#/ch8" data-nav="ch8" data-search="ch 8 — security aur reliability part iii · trust and autonomy"><span class="sb-num">08</span><span class="sb-title">Ch 8 — Security aur Reliability</span></a><a class="sb-link" href="#/ch9" data-nav="ch9" data-search="ch 9 — ethics of vibe coding part iii · trust and autonomy"><span class="sb-num">09</span><span class="sb-title">Ch 9 — Ethics of Vibe Coding</span></a><a class="sb-link" href="#/ch10" data-nav="ch10" data-search="ch 10 — autonomous coding agents part iii · trust and autonomy"><span class="sb-num">10</span><span class="sb-title">Ch 10 — Autonomous Coding Agents</span></a><a class="sb-link" href="#/ch11" data-nav="ch11" data-search="ch 11 — ai-augmented development ka future part iii · trust and autonomy"><span class="sb-num">11</span><span class="sb-title">Ch 11 — AI-Augmented Development ka future</span></a></div><div class="sb-group"><div class="sb-group-head"><span>Labs — Try It Yourself</span><span class="sb-count">8</span></div><a class="sb-link" href="#/lab1" data-nav="lab1" data-search="lab 1 — prompt scorer (5 principles) labs — try it yourself"><span class="sb-num">12</span><span class="sb-title">Lab 1 — Prompt Scorer (5 Principles)</span></a><a class="sb-link" href="#/lab2" data-nav="lab2" data-search="lab 2 — off-by-one bug hunt labs — try it yourself"><span class="sb-num">13</span><span class="sb-title">Lab 2 — Off-by-One Bug Hunt</span></a><a class="sb-link" href="#/lab3" data-nav="lab3" data-search="lab 3 — vibe vs engineering chooser labs — try it yourself"><span class="sb-num">14</span><span class="sb-title">Lab 3 — Vibe vs Engineering Chooser</span></a><a class="sb-link" href="#/lab4" data-nav="lab4" data-search="lab 4 — 70% problem planner labs — try it yourself"><span class="sb-num">15</span><span class="sb-title">Lab 4 — 70% Problem Planner</span></a><a class="sb-link" href="#/lab5" data-nav="lab5" data-search="lab 5 — code review checklist labs — try it yourself"><span class="sb-num">16</span><span class="sb-title">Lab 5 — Code Review Checklist</span></a><a class="sb-link" href="#/lab6" data-nav="lab6" data-search="lab 6 — security scanner labs — try it yourself"><span class="sb-num">17</span><span class="sb-title">Lab 6 — Security Scanner</span></a><a class="sb-link" href="#/lab7" data-nav="lab7" data-search="lab 7 — review bottleneck calculator labs — try it yourself"><span class="sb-num">18</span><span class="sb-title">Lab 7 — Review Bottleneck Calculator</span></a><a class="sb-link" href="#/lab8" data-nav="lab8" data-search="lab 8 — prompt technique mixer labs — try it yourself"><span class="sb-num">19</span><span class="sb-title">Lab 8 — Prompt Technique Mixer</span></a></div><div class="sb-group"><div class="sb-group-head"><span>End Matter</span><span class="sb-count">2</span></div><a class="sb-link" href="#/faqs" data-nav="faqs" data-search="faqs — interview sawal-jawab end matter"><span class="sb-num">20</span><span class="sb-title">FAQs — Interview Sawal-Jawab</span></a><a class="sb-link" href="#/trust" data-nav="trust" data-search="trust check — sab kuch cover hai? end matter"><span class="sb-num">21</span><span class="sb-title">Trust Check — Sab kuch cover hai?</span></a></div></nav><div class="sb-foot"><span><span class="sb-dot"></span>Obsidian Terminal UI</span><span>12 chapters</span></div></aside>
+<div id="progress"><div id="progress-bar"></div></div>
+<main id="main"><div class="wrap">
+<section class="section" id="sec-home" data-title="Beyond Vibe Coding">
+<div class="home-hero">
+<div class="sec-meta"><span class="num-chip">O'REILLY TOP 100 · #30</span><span class="sec-group">Fresh Rebuild — Real Book Content</span></div>
+<h1>Beyond Vibe Coding</h1>
+<p class="lead"><strong>From Coder to AI-Era Developer</strong> — AI se code likhwana aasan hai, lekin <strong>achha software banana</strong> abhi bhi ek skill hai. Ye kitab sikhati hai ki model ko ek capable assistant ki tarah kaise use karein — uski speed lo, lekin architecture, security aur review apne haath me rakho. Vibe coding se aage badho, AI-assisted engineering seekho.</p>
+<div class="home-stats">
+<div class="home-stat"><b>254</b><span>pages</span></div>
+<div class="home-stat"><b>Aug 2025</b><span>published · O'Reilly</span></div>
+<div class="home-stat"><b>11</b><span>chapters + Preface</span></div>
+<div class="home-stat"><b>7h 51m</b><span>padhne ka samay</span></div>
+<div class="home-stat"><b>3.1 / 5</b><span>rating · 15 reviews</span></div>
+<div class="home-stat"><b>3 parts</b><span>Foundations · Practice · Trust</span></div>
+</div>
+<p><strong>Kis ke liye hai:</strong> developers aur engineering leads — bade projects par ho ya side projects par — jo AI-assisted coding se zyada paana chahte hain. Level: intermediate se advanced. Kitab technical depth aur accessibility ka balance rakhti hai: prompting, workflows, code quality, security aur ethics — sab cover hai.</p>
+<p><strong>Is SPA me kya milega:</strong> Preface aur saare 11 chapters ki poori Hinglish notes — har section heading, har worked example apne numbers ke saath, har figure ek diagram ke roop me — plus 8 interactive labs, 36 interview FAQs, aur ek Trust Check jo gin kar batata hai ki sab kuch cover hua ya nahi.</p>
+<div class="callout"><b>Kaise padhein:</b> Sidebar se chapter chuno, ya neeche diye gaye hisson se shuru karo. Har chapter ke end me Source line hai. Labs me haath aazmao — apna prompt score karo, off-by-one bug pakdo, security scan chalao. Ye notes kitab ko dobaara khole bina poora samajhne ke liye banaye gaye hain.</div>
+<div class="home-groups">
+<a class="home-group" href="#/ch1"><span class="cnt">Ch 1</span><h3>Vibe Coding kya hai</h3><p>Vibe coding vs AI-assisted engineering — aur "programming with intent".</p></a>
+<a class="home-group" href="#/ch2"><span class="cnt">Ch 2</span><h3>Prompt ki kala</h3><p>Paanch principles, toolbox techniques, aur chhe antipatterns.</p></a>
+<a class="home-group" href="#/ch3"><span class="cnt">Ch 3</span><h3>The 70% Problem</h3><p>AI 70% tak le jata hai — aakhri 30% mehnat tumhari hai. 12 golden rules.</p></a>
+<a class="home-group" href="#/ch6"><span class="cnt">Ch 6</span><h3>Prototyping</h3><p>v0, Lovable, Bolt, Replit — prototype se production tak ka rasta.</p></a>
+<a class="home-group" href="#/ch8"><span class="cnt">Ch 8</span><h3>Security</h3><p>25–33% generated code me kamzori — audits, testing, deployment.</p></a>
+<a class="home-group" href="#/ch10"><span class="cnt">Ch 10</span><h3>Autonomous Agents</h3><p>Background agents, review bottleneck, aur best practices.</p></a>
+</div>
+</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div>
+</section>
+<section class="section" id="sec-preface" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Preface — Ye kitab kis liye hai"><div class="sec-meta"><span class="num-chip">00</span><span class="sec-group">Shuruaat</span></div><h1>Preface — Ye kitab kis liye hai</h1><p class="lead">AI ki speed lo, lekin architect tum hi raho — model code deta hai, samajh nahi.</p>
+<h3>Kis ke liye hai ye kitab</h3>
+<p>Ye kitab un developers ke liye hai jo AI-assisted coding se <strong>zyada paana</strong> chahte hain. AI ko achhi tarah use karna "vibe coding" nahi hai — model se kaam karwana aur use bina soche accept kar lena — balki uske saath <strong>collaborate karna</strong> seekhna hai: model ko ek capable assistant maano, poori team nahi, aur uski speed ko human oversight ke saath jodo.</p>
+<h3>Kitab kya cover karti hai</h3>
+<p>Ye ek practical guide hai jo <strong>technical depth aur accessibility ka balance</strong> rakhti hai: prompting, workflows, code quality, security aur ethics. Target readers hain developers aur engineering leads — bade projects par ho ya side projects par — aur woh log jo apni AI-assisted skills ko behtar banana chahte hain.</p>
+<h3>Kaise organise hai — teen parts</h3>
+<ul>
+<li><strong>Part I — Foundations (Ch 1–2):</strong> vibe coding kya hai, aur prompting ki kala.</li>
+<li><strong>Part II — AI Coding in Practice (Ch 3–7):</strong> practical workflows, review, prototyping aur web apps.</li>
+<li><strong>Part III — Trust and Autonomy (Ch 8–11):</strong> security, ethics, autonomous agents aur future.</li>
+</ul>
+<h3>Conventions — kitab me code kaise likha hai</h3>
+<ul>
+<li><em>Italic</em> — naye terms, aur URLs/emails ke liye.</li>
+<li><code>Monospace</code> — code, file paths aur names ke liye.</li>
+<li><strong>Monospace bold</strong> — commands ya options jo type karne hain, unke liye.</li>
+<li><em>Italic monospace</em> — woh text jo aapko apni values se replace karna hai.</li>
+<li><strong>Tip / Note / Warning</strong> callouts — important baaton ko highlight karne ke liye.</li>
+</ul>
+<h3>Code examples kaise use karein</h3>
+<p>Examples chhote extracts ke roop me diye gaye hain — padhne, samajhne aur extend karne ke liye; lambi listings reproduce karne ke liye nahi. O'Reilly Online Learning platform par ebooks, live training, videos, case studies, sandboxes aur quizzes milte hain.</p>
+<h3>Acknowledgments</h3>
+<p>Reviewers, early readers, family, O'Reilly editorial team aur colleagues ka shukriya — aur ek halki-si baat: kitab likhne me AI ka bhi istemal hua, lekin team ki <strong>"human touch"</strong> hi aakhir me zaroori rahi.</p>
+<div class="callout"><b>Preface ka ek line me saar:</b> AI ki speed lo, lekin <strong>architect tum hi raho</strong> — model code deta hai, samajh nahi.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><span class="pn-spacer"></span><a class="pn-btn" href="#/ch1"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 1 — Vibe Coding kya hai?</span></a></nav></section><section class="section" id="sec-ch1" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 1 — Vibe Coding kya hai?"><div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Part I · Foundations</span></div><h1>Ch 1 — Vibe Coding kya hai?</h1><p class="lead">Vibe coding vs AI-assisted engineering — aur 'programming with intent' ka matlab.</p>
+<h3>The AI Coding Spectrum</h3>
+<p><strong>Vibe coding</strong> ka matlab hai: model ko prompt do, woh code generate kare, aur aap use bina padhe ya poori tarah samjhe accept kar lo — bas ye test karo ki kaam karta hai ya nahi. Is term ko ek mashhoor AI researcher ne popular banaya, jinhone is practice ko <strong>"code ko black box maanna"</strong> kaha tha. Ye traditional, plan-first coding se bilkul alag hai — jahan developer pehle design karta hai, phir likhta hai, debug karta hai aur test karta hai.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-grid"><div class="fig-box red"><b>VIBE CODING</b>Vague prompts · weak testing · slow iteration · zyada risk</div><div class="fig-box blue"><b>AI-ASSISTED ENGINEERING</b>Clear prompts · testing · human review · kam risk</div></div></div><figcaption class="fig-cap">Vibe coding vs AI-assisted engineering — trade-off diagram (notes me di gayi description se banaya gaya).</figcaption></figure>
+<h4>The Vibe-Coding Approach</h4>
+<p>Tez, low-ceremony prototyping — chhota personal tool ya prototype banane ke liye efficient hai. Model se code lo, chalao, dekho kaam karta hai ya nahi.</p>
+<h4>The AI-Assisted Engineering Approach</h4>
+<p>Developer <strong>architecture, security aur review ka zimmedar</strong> rehta hai, aur AI ko mainly speed ke liye use karta hai. Production code ke liye yehi sahi approach hai.</p>
+<h4>Different Mindsets, Different Expectations</h4>
+<p>Dono modes valid ho sakte hain — lekin developer ko <strong>deliberately choose karna hai</strong>. Kaunsa mode fit hai, ye stakes par depend karta hai: chhote personal tool ke liye vibe coding efficient hai; production code ke liye AI-assisted engineering behtar hai.</p>
+<h3>Beyond Lines of Code: Programming with Intent</h3>
+<p>Kitab ka core idea hai <strong>"programming with intent"</strong>: developer ek clear prompt likhta hai — kya banana hai aur kyun — model ek draft generate karta hai, aur developer use review karta hai, test karta hai aur refine karta hai. Loop hai: <strong>prompt → generate → review → test → iterate</strong>. Prompt kaam ki nayi unit ban gaya hai, lekin human hi architect rehta hai: <strong>model code deta hai, samajh nahi.</strong></p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>INTENT</b>Developer clear prompt likhta hai — kya aur kyun</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>AI</b>Model draft generate karta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>CODE</b>Developer review, test aur refine karta hai</div></div><figcaption class="fig-cap"><b>Fig. 1-1</b> — Intent → AI → code — prompt se code tak ka flow.</figcaption></figure><figure class="fig"><div class="fig-body"><div class="fig-box "><b>SPECIFY</b>Kya banana hai, likh kar tay karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>GENERATE</b>Model se draft lo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>REVIEW</b>Har line padho aur samjho</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>TEST</b>Chalakar verify karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>ITERATE</b>Feedback se refine karo</div></div><figcaption class="fig-cap"><b>Fig. 1-2</b> — Plan-first workflow — specify, generate, review, test, iterate.</figcaption></figure>
+<h3>Productivity, Accessibility, and Changing Nature</h3>
+<p>AI-tool marketing me aksar <strong>10–100× faster development</strong> ke daave sunne ko milte hain, aur ek Windsurf user ne to "100× engineer" hone ka daava kiya tha — kitab in daavon ko <strong>skeptically</strong> dekhti hai. Asli numbers jo kitab cite karti hai:</p>
+<div class="tbl-wrap"><table><thead><tr><th>Source</th><th>Finding</th></tr></thead><tbody><tr><td><strong>Jan 2025 blog post</strong></td><td>Lagbhag <strong>75%</strong> developers ne AI tools ko apne daily workflow me integrate kar liya tha</td></tr><tr><td><strong>GitHub 2024 study</strong></td><td>Copilot development time <strong>55% tak</strong> kam kar sakta hai</td></tr></tbody></table></div>
+<p>AI ne coding ko accessible bhi banaya hai: jo log pehle code nahi likhte the, woh bhi ab tools bana sakte hain. Worked examples: ek podcast word-count app jo <strong>10 minute se kam</strong> me Replit se bani; ek laid-off marketer jisne <strong>100 se zyada AI tools</strong> banaye, jinme se kuch Product Hunt par top par pahunche.</p>
+<h3>A Glimpse of Tools: Emerging Ecosystem</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Tool</th><th>Kya hai</th></tr></thead><tbody><tr><td><strong>VS Code + GitHub Copilot</strong></td><td>Inline completions, chat, code suggestions — common languages ke liye tuned</td></tr><tr><td><strong>VS Code + Cline</strong></td><td>Agentic, file-aware — files padh/likh sakta hai aur terminal commands chala sakta hai; Claude aur doosre models ke saath kaam karta hai</td></tr><tr><td><strong>Cursor</strong></td><td>VS Code par bana AI-first editor — chat, Composer aur codebase awareness, aur 'tab' autocomplete</td></tr><tr><td><strong>Windsurf</strong></td><td>Codeium ka agentic editor — Cascade, ek multi-file agent jo plan, edit aur commands chala sakta hai</td></tr></tbody></table></div>
+<h3>AI Models: The Landscape</h3>
+<ul>
+<li><strong>Gemini (Google)</strong> — multimodal aur long-context kaam me strong.</li>
+<li><strong>Claude (Anthropic)</strong> — lambe, careful reasoning aur code me strong.</li>
+<li><strong>ChatGPT / GPT models (OpenAI)</strong> — broad, general coding aur chat me strong.</li>
+</ul>
+<p><strong>Model kaise chunein:</strong> model ko task se match karo — routine completions ke liye fast/cheap model, architecture aur debugging ke liye stronger reasoning model. Context window, cost, latency aur privacy bhi dekho. Jab context matter karta hai to prompts ek hi conversation me rakho, aur jab ek model atak jaye to model switch karo.</p>
+<h3>Benefits and Limitations: A Nuanced View</h3>
+<p><strong>Benefits:</strong> speed, lower barrier to entry, tez prototyping, unfamiliar languages aur boilerplate me madad.</p>
+<p><strong>Limitations:</strong> hallucinated APIs aur libraries, bade codebases ko weak handle karna, poor security judgment, intent ki asal samajh nahi, aur "vibe" code jo maintain karna mushkil hai.</p>
+<p><strong>Worked examples:</strong> ek loan-payment function jo prompts se refine hua — jisme <strong>0% interest rate</strong> ka edge case tha, jise pehla draft divide-by-zero karke mishandle kar gaya tha; ek CSV-to-email app; ek prime-number function; React app ke roop me specify kiya gaya dashboard; React aur Node.js par to-do app, authentication aur real-time updates ke saath; aur ek AI-generated login system jo plausible lagta tha lekin <strong>vulnerable</strong> tha — ye dikhane ke liye ki "working" code ka matlab secure code nahi hota.</p>
+<h4>Ideal Use Cases / When AI-Assisted Engineering Should Take Precedence</h4>
+<p>Jab stakes kam hon — prototype, personal tool — vibe coding theek hai. Jab stakes zyada hon — production, user data, payments — AI-assisted engineering chahiye. <strong>Transition points</strong> pehchano: jab code review me samajh na aaye, jab security ka sawal aaye, jab codebase bada ho jaye — wahan mode badlo.</p>
+<div class="callout"><b>Chapter 1 ka saar:</b> Dono modes valid hain, lekin <strong>choose deliberately karo</strong> — aur yaad rakho, model code deta hai, samajh nahi. Aage kitab me: prompting, the "70% problem", review, prototyping, web apps, security/ethics, agents aur future.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/preface"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Preface — Ye kitab kis liye hai</span></a><a class="pn-btn" href="#/ch2"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 2 — Prompt ki kala</span></a></nav></section><section class="section" id="sec-ch2" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 2 — Prompt ki kala"><div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Part I · Foundations</span></div><h1>Ch 2 — Prompt ki kala</h1><p class="lead">Prompt ek interface hai — paanch principles, toolbox techniques, aur chhe antipatterns.</p>
+<h3>Prompt Engineering Fundamentals</h3>
+<p>Prompt developer ke intent aur model ke output ke beech ka <strong>interface</strong> hai. Achhe prompts specific, structured aur testable hote hain: woh goal, language/framework, constraints, edge cases, expected input/output, aur result ko verify karne ka tareeka batate hain. <strong>Vague prompts se vague, aksar plausible-looking lekin galat code milta hai.</strong></p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>USER PROMPT</b>Goal, constraints, examples</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>MODEL OUTPUT</b>Draft code</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>USER FEEDBACK</b>Review, test, refine</div></div><figcaption class="fig-cap"><b>Fig. 2-1</b> — Prompt ek dialogue loop hai — user prompt → model output → user feedback.</figcaption></figure><figure class="fig"><div class="fig-body"><div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>DRAFT PROMPT</b>Pehla attempt likho</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>OUTPUT</b>Model ka jawab dekho</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>EVALUATE</b>Test karo — sahi hai ya nahi?</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>REFINE</b>Prompt ko behtar karo aur dobaara chalao</div></div></div><figcaption class="fig-cap"><b>Fig. 2-2</b> — Iterative refinement loop — draft prompt → output → evaluate → refine.</figcaption></figure>
+<h3>Specificity and Clarity</h3>
+<p>Specific bano: language batao, data shapes batao, edge cases batao, tests batao. Vague prompt — <em>"Write a function to sort numbers"</em> — se generic, untested sort milta hai. Detailed prompt — <em>"Write a TypeScript function that sorts an array of numbers in ascending order, handles empty arrays, and includes unit tests"</em> — se typed, tested code milta hai.</p>
+<h3>Iterative Refinement</h3>
+<p>Prompt ek hi baar me perfect nahi banta. Draft likho, output dekho, evaluate karo, refine karo — aur ye loop chalate raho jab tak output verify na ho jaye.</p>
+<h3>Comparing Two Prompts</h3>
+<p>Kitab vague aur detailed prompt ka comparison dikhati hai: vague prompt se generic code, detailed prompt se typed, tested code. Lesson: <strong>language, data shapes, edge cases aur tests ka naam lo.</strong></p>
+<h3>Worked example — the bug</h3>
+<p>Kitab ek chhoti JavaScript function <code>mapUsersById</code> deti hai jo users array par loop chalati hai, lekin condition hai <code>i &lt;= users.length</code> — <strong>off by one</strong>. Chalane par <code>TypeError</code> aata hai, kyunki <code>users[users.length]</code> undefined hota hai. Fix hai <code>i &lt; users.length</code>. Input <code>[{id: 1, name: 'user_1'}]</code> dene par sahi mapping milti hai: <code>{'1': {id: 1, name: 'user_1'}}</code>. Point ye hai: ek precise prompt — <em>"write a function that maps users by id, handle empty arrays, return an object keyed by id"</em> — plus ek test case, is error ko pakad leta.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Bug — mapUsersById (notes se banaya gaya)</span><span>JavaScript — notes se banaya gaya, verbatim nahi</span></div><pre>function mapUsersById(users) {
+  const result = {};
+  // BUG: i &lt;= users.length — aakhri iteration par
+  // users[users.length] undefined hota hai -&gt; TypeError
+  for (let i = 0; i &lt;= users.length; i++) {
+    result[users[i].id] = users[i];
+  }
+  return result;
+}
+
+// FIX: i &lt; users.length
+function mapUsersByIdFixed(users) {
+  const result = {};
+  for (let i = 0; i &lt; users.length; i++) {
+    result[users[i].id] = users[i];
+  }
+  return result;
+}
+
+mapUsersByIdFixed([{id: 1, name: &#x27;user_1&#x27;}]);
+// -&gt; {&#x27;1&#x27;: {id: 1, name: &#x27;user_1&#x27;}}
+</pre></div>
+<h3>Prompting Techniques: Your Toolbox</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Technique</th><th>Kya hai</th><th>Example</th></tr></thead><tbody><tr><td><strong>Zero-shot</strong></td><td>Bina kisi example ke seedha poochho</td><td><em>"Write a function that checks if a number is prime"</em></td></tr><tr><td><strong>One-shot / Few-shot</strong></td><td>Pehle ek ya kuch input/output examples do</td><td>Pseudocode me factorial function, ya SQL examples — pehle <em>select all users</em>, phir <em>users over 18</em> maango</td></tr><tr><td><strong>Chain-of-thought</strong></td><td>Model se step by step reason karne ko kaho</td><td><em>"12 choose 4"</em> = 495 — 12!/(4!·8!) = 495; ya do sorted lists ko two-pointer walk se merge karna</td></tr><tr><td><strong>Role prompting</strong></td><td>Ek role assign karo — tone aur depth set hoti hai</td><td><em>"You are a senior Node.js developer…"</em> — phir Node.js me id/name/email wali User class</td></tr><tr><td><strong>Contextual prompting</strong></td><td>Relevant code, schema ya error message do</td><td>Model guess nahi karta, context se kaam karta hai</td></tr><tr><td><strong>Metaprompting</strong></td><td>Model se apna prompt improve karwao</td><td>Model se kaho ki is task ke liye behtar prompt likhe</td></tr><tr><td><strong>Self-consistency</strong></td><td>Kai answers generate karo, sabse consistent chuno</td><td>Ek hi sawal ke kai outputs compare karo</td></tr><tr><td><strong>ReAct</strong></td><td>Reasoning aur actions ko interleave karo</td><td>Paris ka weather check karo, phir jawab do</td></tr></tbody></table></div>
+<h3>Advanced Prompting: Combining Techniques for Maximum Impact</h3>
+<p>Techniques ko <strong>combine karo</strong> — jaise role + few-shot + chain-of-thought + constraints — aur iterate karo: pehle broad shuru karo, phir tests aur feedback se narrow karo. Prompting ek skill hai jise practice karni hoti hai, jaise debugging: <strong>prompt jitna behtar, rework utna kam.</strong></p>
+<h3>Six Antipatterns — ye galtiyan mat karo</h3>
+<ol>
+<li><strong>Vague prompts</strong> — goal, language, edge cases kuch nahi bataya.</li>
+<li><strong>Over-specification</strong> — itna zyada detail ki model ki flexibility hi khatm ho jaye.</li>
+<li><strong>Ignoring context</strong> — relevant code ya schema diye bina sawal poochna.</li>
+<li><strong>Accepting the first answer</strong> — pehla output bina check kiye le lena.</li>
+<li><strong>Not testing</strong> — generated code ko chalakar verify na karna.</li>
+<li><strong>Prompt injection / blindly pasting untrusted text</strong> — bina soche kisi aur ka text prompt me chipka dena.</li>
+</ol>
+<div class="callout"><b>Chapter 2 ka saar:</b> Prompt ek interface hai — specific, structured aur testable likho. Language, data shapes, edge cases aur tests ka naam lo, aur pehla answer kabhi bina check kiye mat lo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch1"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 1 — Vibe Coding kya hai?</span></a><a class="pn-btn" href="#/ch3"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 3 — The 70% Problem</span></a></nav></section><section class="section" id="sec-ch3" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 3 — The 70% Problem"><div class="sec-meta"><span class="num-chip">03</span><span class="sec-group">Part II · AI Coding in Practice</span></div><h1>Ch 3 — The 70% Problem</h1><p class="lead">AI 70% tak le jata hai — aakhri 30% hi asal kaam hai. 12 golden rules.</p>
+<h3>The 70% Problem</h3>
+<p><strong>"70% problem"</strong> kitab ka naam hai us pattern ke liye jisme AI kisi task ko <strong>lagbhag 70% tak tez</strong> pahuncha deta hai, aur aakhri 30% — edge cases fix karna, integrate karna, secure karna aur maintain karna — me zyada mehnat lagti hai. Do failure modes ke naam hain:</p>
+<ul>
+<li><strong>Bootstrappers</strong> — AI se shuru karte hain, phir atak jate hain jab generated code ko asal me integrate karna padta hai.</li>
+<li><strong>Iterators</strong> — prompt ko endlessly refine karte rehte hain, kabhi ship hi nahi karte.</li>
+</ul>
+<p><strong>"House of cards"</strong> image us code ke liye hai jo complete dikhta hai lekin ek asli requirement badalte hi collapse kar jata hai. <strong>"Demo-quality trap"</strong> wahi idea hai: ek demo jo ek baar chal gaya, use production-ready samajh lena.</p>
+<figure class="fig"><div class="fig-body"><svg class="fig-plot" viewBox="0 0 620 200" role="img" aria-label="Two steps forward one step back"><rect width="620" height="200" fill="#1b1b1f" rx="8"/><line x1="60" y1="160" x2="590" y2="160" stroke="#343538" stroke-width="2"/><polyline points="80,150 180,110 260,130 360,85 440,105 540,55" fill="none" stroke="#9ee939" stroke-width="3"/><circle cx="180" cy="110" r="5" fill="#9ee939"/><circle cx="260" cy="130" r="5" fill="#f9a8d4"/><circle cx="360" cy="85" r="5" fill="#9ee939"/><circle cx="440" cy="105" r="5" fill="#f9a8d4"/><circle cx="540" cy="55" r="5" fill="#9ee939"/><text x="70" y="40" fill="#e3e2e6" font-size="13">Do kadam aage, ek kadam peeche — phir bhi aage badhte hue</text></svg></div><figcaption class="fig-cap"><b>Fig. 3-1</b> — Two steps forward, one step back — AI-assisted kaam ka pattern.</figcaption></figure><figure class="fig"><div class="fig-body"><div class="fig-v"><div class="fig-box " style="width:100%;max-width:420px"><b>PROMPT</b>Clear spec ke saath prompt likho</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>GENERATE</b>Model se draft lo</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>REVIEW</b>Har line padho</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>TEST</b>Chalakar verify karo</div><span class="fig-arrow down">&rarr;</span><div class="fig-box blue" style="width:100%;max-width:420px"><b>INTEGRATE</b>Codebase me jodo</div><span class="fig-arrow down">&rarr;</span><div class="fig-box " style="width:100%;max-width:420px"><b>REPEAT</b>Agla chhota increment</div></div></div><figcaption class="fig-cap"><b>Fig. 3-2</b> — Validation workflow — prompt → generate → review → test → integrate → repeat.</figcaption></figure>
+<h3>Worked material — weekend prototype, weeks of hardening</h3>
+<p>Ek real-world example: ek developer ne ek weekend me working prototype bana liya, phir use harden karne me <strong>weeks</strong> lag gaye. Lesson: <strong>aakhri 30% ke liye pehle se plan karo</strong> — codebase chhota rakho, jaldi test karo, aur AI se utna hi code generate karwao jitna aap review kar sakte ho.</p>
+<h3>The Golden Rules of AI-Assisted Coding</h3>
+<p>Chapter ki numbering me doosre section ka number <strong>"0."</strong> dikhaya gaya hai — kitab ke text me ek numbering quirk hai. 12 golden rules (paraphrased):</p>
+<ol>
+<li>Prompt karne se pehle ek <strong>clear, likha hua plan/spec</strong> banao.</li>
+<li><strong>Chhote, testable increments</strong> me kaam karo.</li>
+<li>Jo bhi generated code rakhte ho, uski <strong>har line review karo</strong>.</li>
+<li>End par nahi, <strong>jaate-jaate test karo</strong>.</li>
+<li>Model ka context focused rakho — <strong>poora codebase paste mat karo</strong>.</li>
+<li><strong>Version control</strong> use karo aur often commit karo, taaki kharab AI change revert ho sake.</li>
+<li>Model ka pehla draft <strong>starting point</strong> hai, finished product nahi.</li>
+<li>Jo code samajh na aaye, model se <strong>explain karwao</strong>.</li>
+<li><strong>Architectural decisions</strong> model ko mat lene do.</li>
+<li>Security aur data handling <strong>human ke haath me</strong> rakho.</li>
+<li><strong>Document karo</strong> ki AI ne kya generate kiya aur kyun.</li>
+<li>Jaano <strong>kab prompting rokni hai</strong> aur khud code likhna hai.</li>
+</ol>
+<p>Chapter ka source note 70% problem par <strong>4 December 2024 ke ek Substack post</strong> ko cite karta hai.</p>
+<div class="callout"><b>Chapter 3 ka saar:</b> AI 70% tak tez le jata hai — aakhri 30% hi asal kaam hai. Uske liye pehle se plan karo, chhote increments me kaam karo, aur har line review karo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch2"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 2 — Prompt ki kala</span></a><a class="pn-btn" href="#/ch4"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 4 — Human Contribution</span></a></nav></section><section class="section" id="sec-ch4" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 4 — Human Contribution"><div class="sec-meta"><span class="num-chip">04</span><span class="sec-group">Part II · AI Coding in Practice</span></div><h1>Ch 4 — Human Contribution</h1><p class="lead">AI floor ko upar uthata hai — lekin judgment, architecture aur communication tumhare hain.</p>
+<h3>The Senior Developer's Edge</h3>
+<p>Jaise AI routine code generation sambhalta hai, human value upar shift hoti hai — <strong>judgment, architecture, domain knowledge aur communication</strong> ki taraf. Senior developers AI output ke <strong>architect aur "editor-in-chief"</strong> ban jate hain: system design tay karo, boundaries aur interfaces define karo, aur correctness, security aur maintainability ke liye review karo.</p>
+<p>Unki edge hai trade-offs me — jaise simple design aur scalable design ke beech chunna — mentoring me, business/domain ko samajhne me, aur ye jaanne me ki ek plausible-looking AI suggestion ko <strong>kab na kehna hai</strong>. Chapter <strong>"CHOP"</strong> introduce karta hai — har line khud likhne ke bajay AI-generated pieces ko compose aur orchestrate karne ka idea — aur soft skills par zor deta hai: communication, stakeholder management aur technical leadership.</p>
+<h3>The Midlevel Developer's Opportunity</h3>
+<p>Midlevel developers ka focus hai <strong>integration aur boundaries</strong> par: services, APIs aur data models kaise fit hote hain; domain knowledge; performance aur DevOps; code review aur QA; systems thinking (systems thinking ke classic lekhakon par based); system design; AI ko effectively use karna; UI/UX; aur cross-functional collaboration. Advice: AI se tez badho, lekin woh parts <strong>khud own karo jo AI own nahi kar sakta</strong> — components ke beech ke seams, data model, aur user experience.</p>
+<h3>The Junior Developer's Path</h3>
+<p>Junior developers pehle <strong>fundamentals</strong> seekhein — data structures, algorithms, debugging, testing aur code asal me kaise chalta hai — AI ko saari thinking karne dene ke bajay. Practical advice:</p>
+<ul>
+<li>Kabhi-kabhi <strong>solo debug karo</strong> — skill banane ke liye ek "AI-free day" bhi rakho.</li>
+<li>Tests likho.</li>
+<li>Functions ko <strong>chhota aur maintainable</strong> rakho — example: ek 50-line function ko focused helpers me todna.</li>
+<li>Prompt wisely karo, mentorship maango, clearly communicate karo.</li>
+<li>AI output consume karne se aage badho — code <strong>create aur own karo</strong>.</li>
+</ul>
+<p>Chapter ke sources me <strong>13 March 2025 aur 23 December 2024 ke Substack posts</strong>, aur December 2024 me ek social media post shamil hain.</p>
+<div class="callout"><b>Chapter 4 ka saar:</b> AI floor ko upar uthata hai, lekin jo skills developer ko valuable banati hain — judgment, architecture, domain samajh, communication — woh replace nahi hoti. Har level par wahi message hai: <strong>AI se tez badho, lekin own karo.</strong></div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch3"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 3 — The 70% Problem</span></a><a class="pn-btn" href="#/ch5"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 5 — Generated Code ko samjho</span></a></nav></section><section class="section" id="sec-ch5" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 5 — Generated Code ko samjho"><div class="sec-meta"><span class="num-chip">05</span><span class="sec-group">Part II · AI Coding in Practice</span></div><h1>Ch 5 — Generated Code ko samjho</h1><p class="lead">Model sabse common solution deta hai, sabse sahi nahi — review, debug, refactor, test.</p>
+<h3>From Intent to Implementation: Understanding AI's Interpretation</h3>
+<p>AI prompt ko code me translate karta hai apne training data par <strong>pattern-matching</strong> karke — isliye woh intent ko misread kar sakta hai. Example: "sort the list" ka matlab model simple sort samajh le, jabki user ko <strong>stable, locale-aware sort</strong> chahiye tha.</p>
+<h3>The "Majority" Problem: Most Common Doesn't Mean Most Appropriate</h3>
+<p>Model sabse <strong>common</strong> solution deta hai, aapke case ke liye sabse achha nahi. Worked example: sorted list me search karna — model linear scan de sakta hai, jabki <strong>binary search</strong> sahi choice hai. Developer ko farak pata hona chahiye aur wahi maangna chahiye.</p>
+<h3>Code Readability and Structure: Patterns and Potential Issues</h3>
+<p>Generated code aksar verbose hota hai, naming inconsistent hoti hai, over-commented ya under-commented hota hai, aur reader ki convenience ke bajay model ki convenience ke liye structure hota hai. Checklist:</p>
+<ul>
+<li>Naming check karo — kya naam matlab batate hain?</li>
+<li>Har function <strong>ek hi kaam</strong> karta hai ya nahi?</li>
+<li>Dead code aur duplicated logic to nahi hai?</li>
+<li>Code project ke <strong>existing patterns</strong> ko follow karta hai ya nahi?</li>
+</ul>
+<h3>Debugging Strategies: Finding and Fixing Errors</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>REPRODUCE</b>Bug ko reliably dobaara paida karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>ISOLATE</b>Sabse chhota failing case nikalo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>HYPOTHESISE</b>Andaza lagao aur test karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>FIX</b>Symptom nahi, cause fix karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>VERIFY</b>Test se confirm karo ki wapas na aaye</div></div><figcaption class="fig-cap"><b>Fig. 5-1</b> — Debugging cycle — reproduce → isolate → hypothesise → fix → verify.</figcaption></figure>
+<p>Chhe-step strategy: bug ko reliably reproduce karo; error message aur stack trace padho; sabse chhota failing case isolate karo; hypothesis banao aur test karo; <strong>cause fix karo, symptom nahi</strong>; aur ek test se verify karo taaki bug wapas na aaye.</p>
+<p><strong>Worked example:</strong> ek prime-checking function jo 1, 0, negative numbers aur bade inputs par fail hota hai — fix hai in edge cases ko explicitly handle karna.</p>
+<h3>Refactoring for Maintainability: Making AI Code Your Code</h3>
+<p>Chhe-step approach: pehle code ko <strong>samjho</strong>, phir bade functions ko todo, clarity ke liye rename karo, duplication hatao, behaviour badalne se pehle tests jodo, aur chhote steps me commit karo. Goal: code ko <strong>apna banao</strong> — agar tum use explain nahi kar sakte, to tum use own nahi karte.</p>
+<h3>The Importance of Testing: Unit, Integration, and End to End</h3>
+<ul>
+<li><strong>Unit tests</strong> — ek function isolation me: jaise prime function ko 2, 3, 5, 7 par, aur 1, 0 aur negatives par test karna.</li>
+<li><strong>Integration tests</strong> — components ek saath: jaise test database ke against login flow.</li>
+<li><strong>End-to-end tests</strong> — browser me poora user journey.</li>
+</ul>
+<p>Chapter ek practical check bhi batata hai copied code ke liye: snippet ki ek <strong>distinctive string</strong> ko search karo — example lagbhag 20 lines ka quicksort implementation hai — ye dekhne ke liye ki woh verbatim kahin aur dikhta hai ya nahi, aur reuse karne se pehle <strong>licensing check karo</strong>.</p>
+<div class="callout"><b>Chapter 5 ka saar:</b> Model sabse common solution deta hai, sabse sahi nahi. Code ko padho, samjho, refactor karo — <strong>agar explain nahi kar sakte, to own nahi karte.</strong></div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch4"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 4 — Human Contribution</span></a><a class="pn-btn" href="#/ch6"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 6 — AI-Driven Prototyping</span></a></nav></section><section class="section" id="sec-ch6" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 6 — AI-Driven Prototyping"><div class="sec-meta"><span class="num-chip">06</span><span class="sec-group">Part II · AI Coding in Practice</span></div><h1>Ch 6 — AI-Driven Prototyping</h1><p class="lead">Prototype seekhne ke liye hai — production serve karne ke liye. Dono ko confuse mat karo.</p>
+<h3>Rapid Prototyping with AI</h3>
+<p>Prototyping wahi jagah hai jahan vibe coding <strong>chamakta</strong> hai: ek rough idea ghanton me clickable, testable product ban sakta hai. Chapter <strong>prototype</strong> (idea ko learn aur test karne ke liye) aur <strong>production system</strong> (real users ko reliably serve karne ke liye) ke beech farak karta hai — aur warn karta hai ki dono aksar confuse kar diye jate hain.</p>
+<h3>AI Prototyping Tools</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Tool</th><th>Kis me best hai</th></tr></thead><tbody><tr><td><strong>v0 (Vercel)</strong></td><td>Prompt se UI generate karna — polished UI ke liye</td></tr><tr><td><strong>Lovable</strong></td><td>Full-stack starter apps ke liye</td></tr><tr><td><strong>Bolt</strong></td><td>Full-stack starter apps ke liye</td></tr><tr><td><strong>Replit Agent</strong></td><td>Hosted, runnable app ke liye</td></tr><tr><td><strong>Cursor</strong></td><td>Code-level iteration ke liye</td></tr><tr><td><strong>Figma AI / Figma Make</strong></td><td>Design-to-code ke liye</td></tr></tbody></table></div>
+<h3>From Concept to Prototype: Iterative Refinement</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>PROMPT</b>Idea ko prompt me likho</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>PROTOTYPE</b>Clickable version banao</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>FEEDBACK</b>Use karke dekho, kya kami hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>REFINE</b>Prompt badlo, dobaara banao</div></div><figcaption class="fig-cap"><b>Fig. 6-1</b> — Iterative refinement loop — prompt → prototype → feedback → refine.</figcaption></figure>
+<p><strong>Worked examples / code:</strong></p>
+<ul>
+<li><strong>Sign-up form (HTML/CSS)</strong> — centred card (<code>max-width: 400px</code>), username/email/password fields aur green submit button (<code>#4CAF50</code>).</li>
+<li><strong>To-do app (React)</strong> — add/toggle/delete (CRUD) behaviour.</li>
+<li><strong>Expense tracker</strong> — iteratively bana: pehle list aur form, phir categories, phir persistence.</li>
+<li><strong>Case study — ek developer ki CSV-to-charts tool</strong> — ek weekend me prototype bani, phir kuch hafton me harden karke production tool bani.</li>
+</ul>
+<div class="codeblock"><div class="codeblock-head"><span>Sign-up form — HTML/CSS (notes se banaya gaya)</span><span>HTML/CSS — notes se banaya gaya, verbatim nahi</span></div><pre>&lt;!-- Centred card, max-width 400px, green submit button #4CAF50 --&gt;
+&lt;div class=&quot;card&quot;&gt;
+  &lt;h2&gt;Sign Up&lt;/h2&gt;
+  &lt;form&gt;
+    &lt;input type=&quot;text&quot; placeholder=&quot;Username&quot;&gt;
+    &lt;input type=&quot;email&quot; placeholder=&quot;Email&quot;&gt;
+    &lt;input type=&quot;password&quot; placeholder=&quot;Password&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;Sign Up&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  .card { max-width: 400px; margin: 0 auto; padding: 24px; }
+  button { background: #4CAF50; color: #fff; }
+&lt;/style&gt;
+</pre></div>
+<h3>Evolving a Prototype Toward Production</h3>
+<p>Rule of thumb: prototype lagbhag <strong>80% kaam</strong> hai, aur hardening baaki <strong>20%</strong> — lekin woh 20% hi mushkil hissa hai: authentication, validation, error handling, database design, testing, deployment aur monitoring. Chapter ka "TODO" example hai generated code me chhoda gaya note — <code>// TODO: send email notification</code> — jise developer ko as-is ship <strong>nahi</strong> karna chahiye.</p>
+<h3>Addressing Challenges in AI Prototyping</h3>
+<ul>
+<li><strong>Scope creep</strong> — prototype badhta hi rehta hai.</li>
+<li><strong>Security</strong> — 2021 ke ek adhyayan ke anusaar us study me lagbhag <strong>40% AI-generated code vulnerable</strong> tha.</li>
+<li><strong>Over-reliance on the model</strong> — har cheez model par chhod dena.</li>
+<li><strong>Demo ko finished samajh kar ship karna</strong> — sabse bada risk.</li>
+</ul>
+<p>Fix: prototype ko <strong>disposable</strong> maano, production ke liye ek clear "definition of done" tay karo, aur launch se pehle tests, auth aur error handling jodo.</p>
+<div class="callout"><b>Chapter 6 ka saar:</b> Prototype seekhne ke liye hai, production serve karne ke liye. Prototype ko disposable maano — aur <strong>TODO comments ko kabhi ship mat karo.</strong></div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch5"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 5 — Generated Code ko samjho</span></a><a class="pn-btn" href="#/ch7"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 7 — Web Apps AI se banana</span></a></nav></section><section class="section" id="sec-ch7" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 7 — Web Apps AI se banana"><div class="sec-meta"><span class="num-chip">07</span><span class="sec-group">Part II · AI Coding in Practice</span></div><h1>Ch 7 — Web Apps AI se banana</h1><p class="lead">Scaffolding se deployment tak — API contract, validation, aur real case studies.</p>
+<h3>Scaffolding and Project Setup</h3>
+<p>Poora starter prompt se maango — example hai <strong>React + Vite frontend aur Express backend</strong>, jisme <code>/api/to-dos</code> endpoint ho.</p>
+<h3>Frontend Development with AI</h3>
+<p><code>TodoList</code> component generate karo, Vue login form banao, aur styling karo. Data load hone par fetch karne ke liye <code>useEffect</code> use karo, aur item delete hone par lagbhag <strong>1 second</strong> ka fade-out animation jodo.</p>
+<h3>Backend Development with AI</h3>
+<p>CRUD routes generate karo, validation ke saath — jaise empty title reject karo, ya <strong>100 characters se zyada</strong> lamba title reject karo, <strong>400 response</strong> ke saath. Money-transfer example me MongoDB session/transaction use hota hai taaki debit aur credit <strong>dono hon ya dono na hon</strong>, aur transfer se pehle insufficient funds check kiya jata hai.</p>
+<div class="codeblock"><div class="codeblock-head"><span>CRUD route — validation (notes se banaya gaya)</span><span>JavaScript (Express) — notes se banaya gaya, verbatim nahi</span></div><pre>// POST /api/to-dos — title ki validation ke saath
+app.post(&#x27;/api/to-dos&#x27;, (req, res) =&gt; {
+  const title = (req.body.title || &#x27;&#x27;).trim();
+
+  if (!title) {
+    return res.status(400).json({ error: &#x27;Title khaali nahi ho sakta&#x27; });
+  }
+  if (title.length &gt; 100) {
+    return res.status(400).json({ error: &#x27;Title 100 characters se zyada nahi&#x27; });
+  }
+
+  const todo = { id: Date.now(), title, done: false };
+  todos.push(todo);
+  res.status(201).json(todo);
+});
+</pre></div>
+<h3>API Design and Documentation</h3>
+<p>Contract consistent rakho. Chapter classic mismatch dikhata hai: frontend ko <strong>plain array</strong> chahiye, lekin backend <code>{success: true, data: [...]}</code> bhejta hai — ya ek taraf field ka naam <code>tasks</code> hai aur doosri taraf <code>taskList</code>. Dono taraf ko agree karne ke liye API ko document karo (OpenAPI/Swagger-style docs).</p>
+<h3>Database Design and Management</h3>
+<p>User/Project/Task schemas design karo, Sequelize associations use karo (jaise ek user ke many projects), aur tay karo ki parent delete hone par children ko <strong>cascade-delete</strong> karna hai ya deletion ko rokna hai.</p>
+<h3>Real-Time Features and WebSockets</h3>
+<p>Live updates ke liye <strong>Socket.io</strong> use karo — jaise shared to-do list me ek user ka change doosre ko turant dikhe.</p>
+<h3>Collaboration and Teamwork in AI-Assisted Development</h3>
+<p>Paanch strategies: prompts aur context share karo, AI output ko saath me review karo, ek shared style guide rakho, model ke saath pair programming karo, aur decisions document karo.</p>
+<h3>Testing and Quality Assurance</h3>
+<p>Unit tests, integration tests aur <strong>Cypress</strong> end-to-end tests. Deployment: CI/CD, environment variables aur monitoring.</p>
+<p>2024 ke ek GitHub survey ke anusaar <strong>97% developers ne kaam par AI coding tools use kiye the</strong>.</p>
+<h3>Case Studies: Real-World AI-Built Web Applications</h3>
+<ul>
+<li><strong>Solo developer ki e-commerce site</strong> — do hafton ki shaamein, lagbhag <strong>70% code AI-generated</strong>, payments ke liye Stripe.</li>
+<li><strong>Project-management dashboard</strong> — Flask + Vue, kuch hafton me bana.</li>
+<li><strong>Startup MVP</strong> — Next.js, kuch mahinon me bana, jabki bina AI ke ek chhoti team ko <strong>4–6 mahine</strong> lagne ka estimate tha.</li>
+</ul>
+<div class="callout"><b>Chapter 7 ka saar:</b> AI se poora web app scaffold karo — lekin <strong>API contract dono taraf ek jaisa</strong> rakho, validation aur transactions mat bhoolo, aur tests + CI/CD ke bina ship mat karo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch6"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 6 — AI-Driven Prototyping</span></a><a class="pn-btn" href="#/ch8"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 8 — Security aur Reliability</span></a></nav></section><section class="section" id="sec-ch8" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 8 — Security aur Reliability"><div class="sec-meta"><span class="num-chip">08</span><span class="sec-group">Part III · Trust and Autonomy</span></div><h1>Ch 8 — Security aur Reliability</h1><p class="lead">25–33% generated code me kamzori ho sakti hai — line by line review karo.</p>
+<h3>Common Security Vulnerabilities in AI-Generated Code</h3>
+<p>2023 ke ek analysis ke anusaar <strong>25–33% Copilot-generated code me potential security weaknesses</strong> thi. Common vulnerabilities:</p>
+<div class="tbl-wrap"><table><thead><tr><th>Vulnerability</th><th>Kya hota hai</th><th>Sahi tareeka</th></tr></thead><tbody><tr><td><strong>SQL injection</strong></td><td>String se bani queries me user input chipak jata hai</td><td>Parameterized queries use karo</td></tr><tr><td><strong>Cross-site scripting (XSS)</strong></td><td>Unescaped user input page me render ho jata hai</td><td>Output ko escape karo</td></tr><tr><td><strong>Insecure authentication</strong></td><td>Passwords plain text me ya weak hash se store hote hain</td><td><code>bcrypt</code> jaisa strong hash use karo</td></tr><tr><td><strong>User enumeration</strong></td><td><em>"user not found"</em> vs <em>"wrong password"</em> — alag error messages se pata chal jata hai kaunse accounts hain</td><td>Dono cases me ek jaisa generic message do</td></tr><tr><td><strong>Package hallucination</strong></td><td>Model ek library ka naam invent karta hai, jise attacker register kar sakta hai</td><td>Har dependency ko verify karo</td></tr></tbody></table></div>
+<h3>Security Audits and Code Reviews</h3>
+<p>Static analysis use karo — <strong>ESLint, Bandit, CodeQL, Semgrep</strong>; dynamic testing — <strong>OWASP ZAP</strong>; aur fuzzing — <strong>OSS-Fuzz</strong>. Generated code ko <strong>line by line review karo</strong>, khaas taur par auth, payments aur data handling. Aur confident-sounding model par bharosa mat karo — 2022 ke ek adhyayan ke anusaar developers AI output par <strong>over-trust</strong> karte the.</p>
+<h3>Building Effective Testing Frameworks</h3>
+<p><strong>Property-based testing</strong> (Hypothesis, fast-check) — properties assert karo, sirf examples nahi:</p>
+<ul>
+<li>List ko sort karne par hamesha <strong>sorted list, wahi length</strong> milni chahiye.</li>
+<li>Email validator ko valid addresses accept aur invalid reject karne chahiye.</li>
+<li>Operation <strong>idempotent</strong> honi chahiye — do baar chalane par wahi result.</li>
+</ul>
+<h3>Performance Optimization in AI-Generated Code</h3>
+<p>Pehle <strong>profile karo, phir fix karo</strong>. Examples:</p>
+<ul>
+<li><strong>O(n²)</strong> nested loop ke bajay <strong>O(n)</strong> hash-map lookup.</li>
+<li>Naive sort <strong>O(n log n)</strong> ke bajay do sorted lists ka linear merge <strong>O(n)</strong>.</li>
+<li><strong>N+1 query problem</strong> — har row ke liye ek query, ek joined query ke bajay.</li>
+</ul>
+<h3>Ensuring Maintainability</h3>
+<p><strong>"Big ball of mud"</strong> se bacho — aisa codebase jiska koi structure hi nahi hai. Established patterns use karo — Gang of Four design patterns, clean architecture, domain-driven design — aur modules ko chhota aur testable rakho.</p>
+<h3>Code Review Strategies for AI-Generated Code</h3>
+<ul>
+<li>Chhote chunks me review karo.</li>
+<li>Sirf final file nahi, <strong>diff</strong> check karo.</li>
+<li>Model se uske choices <strong>explain karwao</strong>.</li>
+<li>Checklist use karo — security, correctness, performance, style.</li>
+</ul>
+<h3>Best Practices for Reliable Deployment</h3>
+<p>CI/CD pipelines, canary releases (jaise pehle <strong>5% traffic</strong>), blue-green aur shadow deployments, feature flags, monitoring aur rollback plans. Chapter ek prasiddh science-fiction upanyaas (1981) ki ek pankti ke saath band hota hai — us tool par bharosa karne ke khatre ke baare me jise tum samajhte nahi ho.</p>
+<div class="callout"><b>Chapter 8 ka saar:</b> 25–33% generated code me kamzori ho sakti hai — <strong>line by line review karo, tests likho, aur canary se deploy karo.</strong> Confident-sounding model par bharosa mat karo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch7"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 7 — Web Apps AI se banana</span></a><a class="pn-btn" href="#/ch9"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 9 — Ethics of Vibe Coding</span></a></nav></section><section class="section" id="sec-ch9" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 9 — Ethics of Vibe Coding"><div class="sec-meta"><span class="num-chip">09</span><span class="sec-group">Part III · Trust and Autonomy</span></div><h1>Ch 9 — Ethics of Vibe Coding</h1><p class="lead">'AI ne likha tha' excuse nahi hai — IP, bias, privacy aur accountability.</p>
+<h3>Intellectual Property and Code Ownership</h3>
+<p>AI models bade paimane par public code par train hote hain, isliye generated code <strong>copyrighted work jaisa</strong> dikh sakta hai. Chapter fair use samjhata hai — chaar factors: <strong>purpose, nature of the work, amount used, aur market effect</strong> — aur do cases: <strong>Google v. Oracle</strong> aur Copilot ke training data par <strong>Doe v. GitHub</strong> mukadma. US Copyright Office ki position: <strong>purely AI-generated work, bina human authorship ke, copyrightable nahi hai</strong> — isliye ownership ke liye human contribution matter karta hai.</p>
+<p><strong>Practical advice:</strong> licences check karo, proprietary code ko bina permission ke model me paste mat karo, aur record rakho ki kya generate hua.</p>
+<h3>Transparency and Accountability</h3>
+<p>Disclose karo jab AI use hua ho — khaas taur par us code me jo users ko affect karta hai. Prompts aur outputs ka <strong>audit trail</strong> rakho. Aur yaad rakho: <strong>"AI ne likha tha" koi excuse nahi hai</strong> — bug ke liye woh human accountable hai jisne use ship kiya.</p>
+<h3>Bias and Fairness in AI-Generated Code</h3>
+<p>Models apne training data se bias reproduce kar sakte hain. Examples:</p>
+<ul>
+<li><strong>Ek bade tech company ka chatbot (2016)</strong> — launch ke turant baad offensive output dene laga.</li>
+<li><strong>Apple Health (2014)</strong> — health-tracking me kai mahilaon ke liye relevant features missing theen.</li>
+<li><strong>Credit-scoring models</strong> — zip code ko race ka proxy banakar historical redlining ko reproduce kiya (ek prasiddh itihaas ki kitab, 2017, ke anusaar).</li>
+</ul>
+<p><strong>Mitigations:</strong> diverse data se test karo, outputs audit karo, model cards use karo, aur logon ko affect karne wale decisions par human review rakho.</p>
+<h3>Privacy and Data Security</h3>
+<p>Personal data, secrets ya proprietary code model ko <strong>mat bhejo</strong>, jab tak ye na pata ho ki use kaise store aur use kiya jata hai. Jahan zaroorat ho, local ya enterprise models use karo.</p>
+<h3>The Future of Work and Developer Skills</h3>
+<p>AI badal dega ki kaunsi skills valued hain — routine coding sasti ho jayegi, jabki <strong>judgment, design aur communication</strong> zyada valuable ho jayenge. Chapter developers se kehta hai ki seekhte raho.</p>
+<h3>Responsible AI Development Practices</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-grid"><div class="fig-box"><b>PROMPTING</b>"Kya prompt me sensitive data check kiya?"</div><div class="fig-box blue"><b>CODE REVIEW</b>"Kya edge cases test kiye aur bias check kiya?"</div><div class="fig-box"><b>GOVERNANCE</b>"Kya AI use document kiya aur team policy follow ki?"</div></div></div><figcaption class="fig-cap"><b>Fig. 9-1</b> — Responsible AI Checklist — teen sections: Prompting, Code Review, Governance.</figcaption></figure>
+<div class="callout"><b>Chapter 9 ka saar:</b> "AI ne likha tha" excuse nahi hai. Licences check karo, bias test karo, data mat bhejo — aur <strong>jo ship karte ho, uske liye tum accountable ho.</strong></div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch8"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 8 — Security aur Reliability</span></a><a class="pn-btn" href="#/ch10"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 10 — Autonomous Coding Agents</span></a></nav></section><section class="section" id="sec-ch10" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 10 — Autonomous Coding Agents"><div class="sec-meta"><span class="num-chip">10</span><span class="sec-group">Part III · Trust and Autonomy</span></div><h1>Ch 10 — Autonomous Coding Agents</h1><p class="lead">Background agents: plan → execute → verify → report. Review bottleneck se bacho.</p>
+<h3>What Are Autonomous Background Coding Agents?</h3>
+<p>Ek autonomous background agent ek AI system hai jo <strong>bina human ke dekhe</strong> kisi task par kaam karta hai — jaise cloud sandbox me — aur result wapas deta hai, aksar ek pull request ke roop me. Workflow hai <strong>plan → execute → verify → report</strong>: agent change plan karta hai, code edit karta hai, tests chalata hai, aur report karta hai.</p>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>PLAN</b>Change ka plan banao</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>EXECUTE</b>Sandbox me code edit karo</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>VERIFY</b>Tests chalao</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>REPORT</b>Pull request ke roop me result do</div></div><figcaption class="fig-cap"><b>Fig. 10-1</b> — Autonomous agent loop — plan → execute → verify → report.</figcaption></figure>
+<h3>Popular Tools for Autonomous Coding Agents</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Tool</th><th>Kya karta hai</th></tr></thead><tbody><tr><td><strong>OpenAI Codex</strong></td><td>Background me tasks chalata hai, sandbox me</td></tr><tr><td><strong>Google Jules</strong></td><td>Background tasks, developer free rehta hai</td></tr><tr><td><strong>Cursor Background Agents</strong></td><td>Sandbox me kaam, PR ke roop me result</td></tr><tr><td><strong>Devin (Cognition)</strong></td><td>Autonomous coding agent, background me kaam karta hai</td></tr></tbody></table></div>
+<h3>Multi-Model and Multi-Agent Orchestration</h3>
+<p>Alag-alag kaam ke liye alag models/agents use karo — <strong>CodeGen</strong> code likhne ke liye, <strong>TestGen</strong> tests ke liye, <strong>Doc</strong> documentation ke liye, <strong>Design</strong> UI ke liye, aur ek <strong>Optimisation agent</strong> performance ke liye — jinhe ek human orchestrator ya meta-agent coordinate kare.</p>
+<h3>Challenges and Limitations of Autonomous Agents</h3>
+<ul>
+<li><strong>Coherent incorrectness</strong> — output sahi dikhta hai aur quick check pass kar leta hai, lekin subtle tareeke se galat hota hai.</li>
+<li><strong>Environmental drift</strong> — agent ka sandbox production se alag hota hai, isliye wahan pass hone wala code production me fail ho jata hai.</li>
+<li><strong>Async coordination paradox</strong> — agents tez hain, lekin humans bottleneck ban jate hain jab unhe sab kuch review karna padta hai.</li>
+<li><strong>Review bottleneck</strong> — worked example: paanch agents, har ek ne Monday subah <strong>500 lines</strong> banayi — human ke saamne <strong>2,500 lines</strong> review karne ke liye.</li>
+<li><strong>Sunk cost</strong> — agent ke kaam ka <strong>10–20%</strong> unusable hota hai, jise teams discard karne ke bajay salvage karne ki koshish karti rehti hain.</li>
+</ul>
+<h3>Best Practices for Working with Autonomous Agents</h3>
+<ul>
+<li>Agent ko <strong>clear, scoped task</strong> do, acceptance criteria ke saath.</li>
+<li>Tests require karo — chapter agent-generated code par lagbhag <strong>80% test coverage</strong> ka target suggest karta hai.</li>
+<li>Agent ko <strong>sandbox me, limited permissions</strong> ke saath chalao.</li>
+<li>Har pull request ko aise review karo jaise ek junior developer ne likha ho.</li>
+<li>Bade tasks ke bajay <strong>chhote, frequent tasks</strong> do.</li>
+<li>Security, architecture aur user-facing decisions ke liye <strong>human in the loop</strong> rakho.</li>
+</ul>
+<div class="callout"><b>Chapter 10 ka saar:</b> Agents ek force multiplier hain, replacement nahi — <strong>jo ship hota hai, uske liye human hi zimmedar hai.</strong> 2,500 lines ka review bottleneck yaad rakho.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch9"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 9 — Ethics of Vibe Coding</span></a><a class="pn-btn" href="#/ch11"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Ch 11 — AI-Augmented Development ka future</span></a></nav></section><section class="section" id="sec-ch11" data-chapter="1" data-url="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/" data-title="Ch 11 — AI-Augmented Development ka future"><div class="sec-meta"><span class="num-chip">11</span><span class="sec-group">Part III · Trust and Autonomy</span></div><h1>Ch 11 — AI-Augmented Development ka future</h1><p class="lead">Testing, design, PM, agents aur languages — aur aage ke saat actions.</p>
+<h3>AI in Testing, Debugging, and Maintenance</h3>
+<p>Models spec se tests generate kar sakte hain, error se fix suggest kar sakte hain — jaise null <code>userProfiles</code> object, ya <code>y = 0</code> hone par DivisionByZero — code ko smells ke liye review karke refactor kar sakte hain, aur system ko monitor karke fixes suggest kar sakte hain (self-healing) — jaise flag karna ki <strong>Module X ek performance bottleneck</strong> hai, ya dependency update karne ke liye pull request kholna.</p>
+<h4>Automated Test Generation · Advanced Debugging Assistance · Automated Code Review and Refactoring · Self-Healing Systems · Continuous Maintenance and Monitoring</h4>
+<h3>AI-Driven Design and User Experience Personalization</h3>
+<ul>
+<li><strong>Generative design</strong> — prompt se sign-up screen, logo, ya code aur music bhi generate karna.</li>
+<li><strong>Personalised UX</strong> — behaviour ke basis par ek user ko search aur doosre ko menus dikhana.</li>
+<li><strong>Adaptive interfaces</strong> — jaise touch users ke liye hover icon badal dena.</li>
+<li><strong>Accessibility by default</strong> — screen-reader labels, high contrast.</li>
+<li><strong>Design tools</strong> — jo interfaces sirf draw nahi karte, generate karte hain.</li>
+</ul>
+<h3>The Evolution of Project Management with AI</h3>
+<p>AI-assisted estimation aur scheduling — jaise ek developer ko database task dena, Task B ko Task A ke khatm hone ke baad schedule karna, ya flag karna ki Feature X se Feature Y <strong>do hafte delay</strong> hogi. Risk tracking — jaise ek stack change ke <strong>30% chance</strong> se schedule over hone ka, ya ek integration jo pichhle teen projects me slip hui hai. Resource allocation, auto-generated documentation aur status updates — jaise <em>"payment integration 70% complete hai, currency conversion blocker hai, due Friday"</em> — aur decision support — jaise module Z ke do-hafte ke refactor ko future maintenance me <strong>20% saving</strong> ke against taulna, ya ye dekhna ki tasks usual rate se aadhi speed par close ho rahe hain to koi problem hai.</p>
+<h3>How Autonomous Agents Could Change Software Engineering</h3>
+<figure class="fig"><div class="fig-body"><div class="fig-box "><b>MULTI-AGENT TEAM</b>Alag agents, alag kaam</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>SHARED BOARD</b>Sabka kaam ek jagah dikhta hai</div><span class="fig-arrow">&rarr;</span><div class="fig-box "><b>CHECKPOINTING</b>Failed agent wahi se resume kare jahan ruka tha</div><span class="fig-arrow">&rarr;</span><div class="fig-box blue"><b>AGENT INBOX</b>Human review ke liye queue</div></div><figcaption class="fig-cap"><b>Fig. 11-1</b> — Multi-agent development team — shared board, checkpointing, aur human review ke liye agent inbox.</figcaption></figure>
+<p>Multi-agent team me shared board hoti hai, checkpointing hota hai — taaki failed agent wahi se resume kar sake jahan ruka tha — aur human review ke liye ek <strong>agent inbox</strong> hota hai. Chapter Linear, CodeGen, Dependabot "supercharged" aur BugBot jaise tools ka naam leta hai, aur estimate deta hai ki agents ke behtar hone par ek achhe aur ek great developer ke beech ka gap lagbhag <strong>30% se 5–10%</strong> tak simat sakta hai.</p>
+<h3>The Future of Programming Languages: Natural-Language-Driven Development?</h3>
+<p>Natural language primary interface ban sakti hai — jaise <em>"90 din se inactive users ko template X se email karo, bounced addresses aur invalid emails skip karo"</em>. Traditional languages evolve hongi, disappear nahi — hybrid example: customers ki list lo, map karo, deduplicate karo, sort karo aur print karo. Nayi languages AI collaboration ke liye design ho sakti hain — lekin <strong>code persist karega</strong>, intent ka precise, testable roop hone ke nate. Chapter ek mashhoor AI researcher ke view ko quote karta hai ki natural language hi naya programming interface hai.</p>
+<h3>How Vibe Coding Is Reshaping the Industry</h3>
+<ul>
+<li><strong>Democratization of Software Development</strong> — jo log pehle code nahi likhte the, woh bhi bana sakte hain.</li>
+<li><strong>Changing Skill Requirements</strong> — routine coding sasti, judgment aur design valuable.</li>
+<li><strong>New Business Models and Opportunities</strong> — naye tools aur workflows.</li>
+<li><strong>The Evolving Role of the Developer</strong> — coder se orchestrator aur reviewer ki taraf.</li>
+<li><strong>Ethical and Societal Considerations</strong> — ownership, bias, accountability.</li>
+<li><strong>Preparing for the Future</strong> — seekhte raho, norms shape karo.</li>
+</ul>
+<h3>Summary and Next Steps — saat actions</h3>
+<ol>
+<li>Prompt achhi tarah karna seekho.</li>
+<li>Fundamentals strong rakho.</li>
+<li>Architecture khud own karo.</li>
+<li>Sab kuch test aur review karo.</li>
+<li>Curious raho.</li>
+<li>Doosron ko mentor karo.</li>
+<li>AI-assisted development ke norms ko shape karne me madad karo.</li>
+</ol>
+<div class="callout"><b>Chapter 11 ka saar:</b> Code persist karega — natural language interface ban sakta hai, lekin <strong>precise, testable intent</strong> hamesha code me hi rahega. Prompt seekho, fundamentals rakho, architecture own karo.</div>
+<div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch10"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 10 — Autonomous Coding Agents</span></a><a class="pn-btn" href="#/lab1"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 1 — Prompt Scorer (5 Principles)</span></a></nav></section><section class="section" id="sec-lab1" data-lab="1" data-title="Lab 1 — Prompt Scorer (5 Principles)"><div class="sec-meta"><span class="num-chip lab-chip">LAB 1</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 1 — Prompt Scorer (5 Principles)</h1><p class="lead">Chapter 2 ke paanch principles par apna prompt score karo — direction, format, examples, evaluation, divide labor. Har principle ke liye 0–2 points.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Apna prompt likho, phir paanch principles par khud ko score karo</span></div>
+    <label class="lab-label">Apna prompt yahan likho</label>
+    <textarea class="lab-input mono" id="ps-prompt" rows="4" style="resize:vertical">Write a function to sort numbers</textarea>
+    <div class="lab-controls" style="margin-top:12px">
+    <label class="lab-check"><input type="checkbox" id="ps-dir"> Direction — role, goal aur rules saaf hain</label>
+    <label class="lab-check"><input type="checkbox" id="ps-fmt"> Format — output ka format bataya hai (table, list, code…)</label>
+    <label class="lab-check"><input type="checkbox" id="ps-ex"> Examples — ek ya zyada input/output examples diye hain</label>
+    <label class="lab-check"><input type="checkbox" id="ps-ev"> Evaluation — verify karne ka tareeka bataya hai (test, expected output)</label>
+    <label class="lab-check"><input type="checkbox" id="ps-div"> Divide labor — kaam chhote steps me baanta hai</label>
+    </div>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab1Score()">Prompt score karo</button>
+    <button class="chip-btn" onclick="lab1Preset()">Kitab wala detailed prompt bharo</button></div>
+    <div class="lab-out"><div class="lab-out-title">Score (10 me se)</div><pre class="lab-css" id="ps-out">Button dabao — score yahan dikhega.</pre></div>
+    <p class="lab-note">Kitab ka rule: <strong>language, data shapes, edge cases aur tests ka naam lo.</strong> Vague prompt se generic, untested code milta hai — detailed prompt se typed, tested code.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/ch11"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Ch 11 — AI-Augmented Development ka future</span></a><a class="pn-btn" href="#/lab2"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 2 — Off-by-One Bug Hunt</span></a></nav></section><section class="section" id="sec-lab2" data-lab="1" data-title="Lab 2 — Off-by-One Bug Hunt"><div class="sec-meta"><span class="num-chip lab-chip">LAB 2</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 2 — Off-by-One Bug Hunt</h1><p class="lead">Chapter 2 ka mapUsersById bug khud chalao — galat condition se TypeError aata hai, sahi condition se sahi mapping milti hai.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Loop condition chuno, code chalao, output dekho</span></div>
+    <div class="lab-controls">
+    <label>Loop condition<select class="lab-select" id="ob-cond"><option value="le">i &lt;= users.length (kitab wala bug)</option><option value="lt" selected>i &lt; users.length (fix)</option></select></label>
+    <label>Input array<select class="lab-select" id="ob-input"><option value="one" selected>[{id: 1, name: 'user_1'}]</option><option value="three">[{id: 1}, {id: 2}, {id: 3}]</option><option value="empty">[] (empty array)</option></select></label>
+    </div>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab2Run()">Code chalao</button></div>
+    <div class="lab-out"><div class="lab-out-title">Output</div><pre class="lab-css" id="ob-out">Button dabao — output yahan dikhega.</pre></div>
+    <p class="lab-note">Bug: <code>i &lt;= users.length</code> par aakhri iteration me <code>users[users.length]</code> undefined hota hai — <code>TypeError</code>. Fix: <code>i &lt; users.length</code>. Precise prompt + test case is error ko pakad leta.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab1"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 1 — Prompt Scorer (5 Principles)</span></a><a class="pn-btn" href="#/lab3"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 3 — Vibe vs Engineering Chooser</span></a></nav></section><section class="section" id="sec-lab3" data-lab="1" data-title="Lab 3 — Vibe vs Engineering Chooser"><div class="sec-meta"><span class="num-chip lab-chip">LAB 3</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 3 — Vibe vs Engineering Chooser</h1><p class="lead">Chapter 1: task aur stakes chuno — lab batayega ki vibe coding chalegi ya AI-assisted engineering chahiye.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Task type aur stakes chuno — mode ka suggestion dekho</span></div>
+    <div class="lab-controls">
+    <label>Task kya hai?<select class="lab-select" id="vc-task"><option value="proto">Chhota personal tool / prototype</option><option value="feature">Production feature</option><option value="auth">Login / payments / auth system</option><option value="learn">Nayi language seekhna</option><option value="refactor">Bade codebase me refactor</option></select></label>
+    <label>Stakes kitne hain?<select class="lab-select" id="vc-stakes"><option value="low">Low — sirf main use karunga</option><option value="med">Medium — team use karegi</option><option value="high">High — real users, real data, payments</option></select></label>
+    <label class="lab-check"><input type="checkbox" id="vc-review"> Main har line review karunga</label>
+    <label class="lab-check"><input type="checkbox" id="vc-test"> Main tests likhunga</label>
+    </div>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab3Pick()">Mode chuno</button></div>
+    <div class="lab-out"><div class="lab-out-title">Recommendation</div><pre class="lab-css" id="vc-out">Button dabao — recommendation yahan dikhega.</pre></div>
+    <p class="lab-note">Dono modes valid hain — lekin <strong>deliberately choose karo</strong>. Stakes zyada hon to AI-assisted engineering; review aur tests ke bina vibe coding production me mat le jao.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab2"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 2 — Off-by-One Bug Hunt</span></a><a class="pn-btn" href="#/lab4"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 4 — 70% Problem Planner</span></a></nav></section><section class="section" id="sec-lab4" data-lab="1" data-title="Lab 4 — 70% Problem Planner"><div class="sec-meta"><span class="num-chip lab-chip">LAB 4</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 4 — 70% Problem Planner</h1><p class="lead">Chapter 3 ke 12 golden rules par apna plan check karo — AI 70% tak le jayega, aakhri 30% ke liye kitne ready ho?</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>12 golden rules par tick karo — aakhri 30% ki readiness dekho</span></div>
+    <div id="tp-rules"></div>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab4Score()">Readiness gin lo</button></div>
+    <div class="lab-out"><div class="lab-out-title">Aakhri 30% readiness</div><pre class="lab-css" id="tp-out">Pehle rules par tick karo, phir button dabao.</pre></div>
+    <p class="lab-note">Kitab ki advice: <strong>aakhri 30% ke liye pehle se plan karo</strong> — codebase chhota rakho, jaldi test karo, aur AI se utna hi code generate karwao jitna review kar sakte ho.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab3"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 3 — Vibe vs Engineering Chooser</span></a><a class="pn-btn" href="#/lab5"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 5 — Code Review Checklist</span></a></nav></section><section class="section" id="sec-lab5" data-lab="1" data-title="Lab 5 — Code Review Checklist"><div class="sec-meta"><span class="num-chip lab-chip">LAB 5</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 5 — Code Review Checklist</h1><p class="lead">Chapter 5: generated code ko checklist se review karo — naming, ek kaam, dead code, patterns. Agar explain nahi kar sakte, to own nahi karte.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Code paste karo, checklist se review karo</span></div>
+    <label class="lab-label">Generated code yahan paste karo</label>
+    <textarea class="lab-input mono" id="cr-code" rows="6" style="resize:vertical">function processData(data) {
+  // TODO: fix this later
+  var x = data;
+  var y = data;
+  return x;
+}</textarea>
+    <div class="lab-controls" style="margin-top:12px">
+    <label class="lab-check"><input type="checkbox" id="cr-naming"> Naming saaf hai — naam matlab batate hain</label>
+    <label class="lab-check"><input type="checkbox" id="cr-one"> Har function ek hi kaam karta hai</label>
+    <label class="lab-check"><input type="checkbox" id="cr-dead"> Koi dead code ya duplicated logic nahi</label>
+    <label class="lab-check"><input type="checkbox" id="cr-pattern"> Code project ke existing patterns follow karta hai</label>
+    <label class="lab-check"><input type="checkbox" id="cr-explain"> Main is code ko kisi ko explain kar sakta hoon</label>
+    </div>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab5Review()">Review karo</button></div>
+    <div class="lab-out"><div class="lab-out-title">Review verdict</div><pre class="lab-css" id="cr-out">Button dabao — verdict yahan dikhega.</pre></div>
+    <p class="lab-note">Auto-checks: TODO comment, <code>var</code> ka istemal, duplicate assignment, aur ek hi naam ki dobaara declaration bhi pakdi jati hai. Chapter 5: generated code aksar verbose, inconsistent naming wala aur over/under-commented hota hai.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab4"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 4 — 70% Problem Planner</span></a><a class="pn-btn" href="#/lab6"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 6 — Security Scanner</span></a></nav></section><section class="section" id="sec-lab6" data-lab="1" data-title="Lab 6 — Security Scanner"><div class="sec-meta"><span class="num-chip lab-chip">LAB 6</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 6 — Security Scanner</h1><p class="lead">Chapter 8: apne code me paanch common vulnerabilities dhoondo — SQL injection, XSS, plain-text password, user enumeration, package hallucination.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Code paste karo ya sample chuno — scanner paanch vulnerabilities check karega</span></div>
+    <label class="lab-label">Code yahan paste karo</label>
+    <textarea class="lab-input mono" id="ss-code" rows="6" style="resize:vertical">query = "SELECT * FROM users WHERE id = '" + userId + "'";
+password = "hunter2"
+db.execute(query)</textarea>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab6Scan()">Scan karo</button>
+    <button class="chip-btn" onclick="lab6Preset('safe')">Safe sample bharo</button>
+    <button class="chip-btn" onclick="lab6Preset('xss')">XSS sample bharo</button></div>
+    <div class="lab-out"><div class="lab-out-title">Scan result</div><pre class="lab-css" id="ss-out">Button dabao — result yahan dikhega.</pre></div>
+    <p class="lab-note">2023 ke analysis ke anusaar <strong>25–33% Copilot-generated code me potential security weaknesses</strong> thi. Scanner sirf pattern dikhata hai — asli audit ke liye ESLint, Bandit, CodeQL, Semgrep aur OWASP ZAP use karo, aur generated code ko line by line review karo.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab5"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 5 — Code Review Checklist</span></a><a class="pn-btn" href="#/lab7"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 7 — Review Bottleneck Calculator</span></a></nav></section><section class="section" id="sec-lab7" data-lab="1" data-title="Lab 7 — Review Bottleneck Calculator"><div class="sec-meta"><span class="num-chip lab-chip">LAB 7</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 7 — Review Bottleneck Calculator</h1><p class="lead">Chapter 10: paanch agents ne Monday subah 500-500 lines banayi — human ke saamne kitni review hai? Apne numbers daalo aur bottleneck gin lo.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Agents aur lines daalo — review load aur time gin lo</span></div>
+    <div class="lab-controls">
+    <label>Agents ki sankhya<input class="lab-input" id="rb-agents" type="number" min="1" max="50" step="1" value="5" style="width:110px"></label>
+    <label>Har agent ki lines<input class="lab-input" id="rb-lines" type="number" min="10" max="5000" step="10" value="500" style="width:110px"></label>
+    <label>Review speed (lines/hour)<input class="lab-input" id="rb-speed" type="number" min="50" max="1000" step="50" value="200" style="width:110px"></label>
+    <label>Unusable % (sunk cost)<input class="lab-input" id="rb-waste" type="number" min="0" max="50" step="5" value="15" style="width:110px"></label>
+    <label>Target test coverage %<input class="lab-input" id="rb-cov" type="number" min="0" max="100" step="5" value="80" style="width:110px"></label>
+    </div>
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab7Calc()">Bottleneck gin lo</button>
+    <button class="chip-btn" onclick="lab7Preset()">Kitab wala example — 5 agents × 500 lines</button></div>
+    <div class="lab-out"><div class="lab-out-title">Review load</div><pre class="lab-css" id="rb-out">Button dabao — load yahan dikhega.</pre></div>
+    <p class="lab-note">Chapter ki advice: agent ko <strong>clear, scoped task</strong> do, tests require karo (lagbhag 80% coverage target), har PR ko aise review karo jaise junior developer ne likha ho, aur bade tasks ke bajay <strong>chhote, frequent tasks</strong> do.</p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab6"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 6 — Security Scanner</span></a><a class="pn-btn" href="#/lab8"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Lab 8 — Prompt Technique Mixer</span></a></nav></section><section class="section" id="sec-lab8" data-lab="1" data-title="Lab 8 — Prompt Technique Mixer"><div class="sec-meta"><span class="num-chip lab-chip">LAB 8</span><span class="sec-group">Labs — Try It Yourself</span></div><h1>Lab 8 — Prompt Technique Mixer</h1><p class="lead">Chapter 2: techniques ko combine karo — role + few-shot + chain-of-thought + constraints — aur ek behtar prompt banao.</p><div class="lab"><div class="lab-head"><span class="lab-badge">TRY IT</span><span>Techniques on karo — combined prompt banega</span></div>
+    <div class="lab-controls">
+    <label>Role<select class="lab-select" id="mx-role"><option value="">(koi role nahi)</option><option value="senior">Senior Node.js developer</option><option value="reviewer">Security reviewer</option><option value="teacher">Patient teacher</option></select></label>
+    <label class="lab-check"><input type="checkbox" id="mx-few"> Few-shot — ek example do</label>
+    <label class="lab-check"><input type="checkbox" id="mx-cot"> Chain-of-thought — step by step reason karo</label>
+    <label class="lab-check"><input type="checkbox" id="mx-ctx"> Context — schema/error message do</label>
+    <label class="lab-check"><input type="checkbox" id="mx-test"> Tests maango — unit tests ke saath</label>
+    </div>
+    <label class="lab-label">Task (kya banana hai?)</label>
+    <input class="lab-input" id="mx-task" type="text" value="Write a function that checks if a number is prime">
+    <div class="lab-presets"><button class="chip-btn on" onclick="lab8Mix()">Combined prompt banao</button></div>
+    <div class="lab-out"><div class="lab-out-title">Aapka combined prompt</div><pre class="lab-css" id="mx-out">Button dabao — prompt yahan dikhega.</pre></div>
+    <p class="lab-note">Kitab ka rule: techniques ko combine karo aur iterate karo — pehle broad shuru karo, phir tests aur feedback se narrow karo. <strong>Prompt jitna behtar, rework utna kam.</strong></p></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab7"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 7 — Review Bottleneck Calculator</span></a><a class="pn-btn" href="#/faqs"><span class="pn-label">Agla &rarr;</span><span class="pn-title">FAQs — Interview Sawal-Jawab</span></a></nav></section><section class="section" id="sec-faqs" data-title="FAQs — Interview Sawal-Jawab"><div class="sec-meta"><span class="num-chip">20</span><span class="sec-group">End Matter</span></div><h1>FAQs — Interview Sawal-Jawab</h1><p class="lead">Current-era interviews ke liye <strong>36 sawal-jawab</strong> — har chapter se, kitab ke concepts, numbers aur examples par based. Har jawab khud me poora hai.</p><div class="faq-list"><details class="faq" data-faq="1"><summary><span class="faq-num">Q1</span><span class="faq-q">Vibe coding kya hai, aur ye normal coding se kaise alag hai?</span></summary><div class="faq-a">Vibe coding ka matlab hai model ko prompt dena aur uska code bina padhe ya samjhe accept kar lena — bas ye test karna ki kaam karta hai ya nahi. Normal, plan-first coding me developer pehle design karta hai, phir likhta hai, debug karta hai aur test karta hai. Ek mashhoor AI researcher ne vibe coding ko 'code ko black box maanna' kaha tha. Vibe coding chhote prototypes ke liye theek hai, production ke liye nahi.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q2</span><span class="faq-q">Vibe coding aur AI-assisted engineering me kya farak hai?</span></summary><div class="faq-a">Vibe coding tez, low-ceremony prototyping hai — model se code lo, chalao, dekho. AI-assisted engineering me developer architecture, security aur review ka zimmedar rehta hai aur AI ko mainly speed ke liye use karta hai. Dono valid hain, lekin choose deliberately karo: stakes kam hon to vibe coding, stakes zyada hon to AI-assisted engineering.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q3</span><span class="faq-q">Programming with intent ka matlab kya hai?</span></summary><div class="faq-a">Developer ek clear prompt likhta hai — kya banana hai aur kyun — model ek draft generate karta hai, aur developer use review karta hai, test karta hai aur refine karta hai. Loop hai: prompt → generate → review → test → iterate. Prompt kaam ki nayi unit ban gaya hai, lekin human hi architect rehta hai — model code deta hai, samajh nahi.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q4</span><span class="faq-q">AI tools kitne tez hain — 10–100× aur 55% wale numbers ka kya matlab hai?</span></summary><div class="faq-a">Marketing me 10–100× faster development ke daave aam hain, aur ek user ne '100× engineer' hone ka daava bhi kiya tha — kitab inhe skeptically dekhti hai. Cite kiye gaye asli numbers: January 2025 ke ek blog post ke anusaar lagbhag 75% developers ne AI tools ko daily workflow me integrate kar liya tha, aur GitHub ke 2024 study ke anusaar Copilot development time 55% tak kam kar sakta hai. Ye averages hain, guarantee nahi.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q5</span><span class="faq-q">Model kaise chunein — Gemini, Claude ya ChatGPT?</span></summary><div class="faq-a">Model ko task se match karo: routine completions ke liye fast/cheap model, architecture aur debugging ke liye stronger reasoning model. Gemini multimodal aur long-context me strong hai, Claude lambe careful reasoning aur code me, ChatGPT/GPT models broad general coding aur chat me. Context window, cost, latency aur privacy bhi dekho. Jab ek model atak jaye to switch karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q6</span><span class="faq-q">VS Code + Copilot, Cline, Cursor aur Windsurf me kya farak hai?</span></summary><div class="faq-a">Copilot inline completions, chat aur suggestions deta hai. Cline agentic aur file-aware hai — files padh/likh sakta hai aur terminal commands chala sakta hai. Cursor VS Code par bana AI-first editor hai — chat, Composer aur codebase awareness ke saath. Windsurf ka Cascade ek multi-file agent hai jo plan, edit aur commands chala sakta hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q7</span><span class="faq-q">Achha prompt kya hota hai?</span></summary><div class="faq-a">Achha prompt specific, structured aur testable hota hai: goal, language/framework, constraints, edge cases, expected input/output, aur result verify karne ka tareeka — sab batata hai. Vague prompt se vague, aksar plausible-looking lekin galat code milta hai. Kitab ka rule: language, data shapes, edge cases aur tests ka naam lo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q8</span><span class="faq-q">Prompt engineering ke paanch principles kaunse hain?</span></summary><div class="faq-a">Kitab ke paanch principles: (1) Give Direction — role, goal aur rules saaf batao; (2) Specify Format — output ka format batao (table, list, code); (3) Provide Examples — input/output examples do; (4) Evaluate Quality — verify karne ka tareeka batao; (5) Divide Labor — kaam ko chhote steps me baanto. Inhe loop me revisit karo jab tak prompt iterate ho raha hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q9</span><span class="faq-q">Zero-shot, few-shot aur chain-of-thought me kya farak hai?</span></summary><div class="faq-a">Zero-shot: bina example ke seedha poochho. Few-shot: pehle ek ya kuch input/output examples do, phir sawal poochho. Chain-of-thought: model se step by step reason karne ko kaho — jaise '12 choose 4' = 495, jo 12!/(4!·8!) se nikalta hai. Advanced prompting me in techniques ko combine karte hain — role + few-shot + chain-of-thought + constraints.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q10</span><span class="faq-q">Role prompting aur metaprompting kya hain?</span></summary><div class="faq-a">Role prompting: model ko ek role assign karo — jaise 'You are a senior Node.js developer…' — isse tone aur depth set hoti hai. Metaprompting: model se apna prompt improve karwao, ya is task ke liye behtar prompt likhwao. Dono hi output ki quality ko behtar karte hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q11</span><span class="faq-q">Self-consistency aur ReAct kya hain?</span></summary><div class="faq-a">Self-consistency: ek hi sawal ke kai answers generate karo aur sabse consistent wala chuno. ReAct: reasoning aur actions ko interleave karo — jaise pehle Paris ka weather check karo, phir jawab do. Dono techniques output ko zyada reliable banati hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q12</span><span class="faq-q">Prompting ke chhe antipatterns kaunse hain?</span></summary><div class="faq-a">Vague prompts, over-specification, ignoring context, accepting the first answer, not testing, aur prompt injection / blindly pasting untrusted text. Sabse common galti pehla answer bina check kiye accept kar lena hai — aur generated code ko test na karna.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q13</span><span class="faq-q">Off-by-one bug kya hai? mapUsersById example samjhao.</span></summary><div class="faq-a">mapUsersById function me loop condition thi i <= users.length — off by one. Aakhri iteration par users[users.length] undefined hota hai, isliye TypeError aata hai. Fix hai i < users.length. Input [{id: 1, name: 'user_1'}] dene par sahi mapping milti hai: {'1': {id: 1, name: 'user_1'}}. Precise prompt plus test case is error ko pakad leta.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q14</span><span class="faq-q">The 70% Problem kya hai?</span></summary><div class="faq-a">AI kisi task ko lagbhag 70% tak tez pahuncha deta hai, aur aakhri 30% — edge cases fix karna, integrate karna, secure karna aur maintain karna — me zyada mehnat lagti hai. Do failure modes hain: bootstrappers (AI se shuru karte hain, integration par atak jate hain) aur iterators (prompt refine karte rehte hain, kabhi ship nahi karte). 'House of cards' aur 'demo-quality trap' wahi idea hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q15</span><span class="faq-q">70% Problem ke 12 golden rules kya hain?</span></summary><div class="faq-a">Plan likh kar banao; chhote testable increments me kaam karo; har line review karo; jaate-jaate test karo; context focused rakho; version control use karo aur often commit karo; pehla draft starting point hai; jo samajh na aaye explain karwao; architectural decisions model ko mat do; security human ke haath me rakho; document karo; aur jaano kab prompting rokni hai aur khud code likhna hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q16</span><span class="faq-q">CHOP kya hai?</span></summary><div class="faq-a">CHOP ka matlab hai AI-generated pieces ko compose aur orchestrate karna — har line khud likhne ke bajay. Senior developer ka kaam ban jata hai architect aur 'editor-in-chief' hona: system design tay karo, boundaries aur interfaces define karo, aur correctness, security aur maintainability ke liye review karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q17</span><span class="faq-q">Junior developer ko AI ke zamane me kya seekhna chahiye?</span></summary><div class="faq-a">Pehle fundamentals — data structures, algorithms, debugging, testing aur code asal me kaise chalta hai — AI ko saari thinking karne dene ke bajay. Kabhi-kabhi solo debug karo, 'AI-free day' rakho, tests likho, functions chhote rakho (jaise 50-line function ko focused helpers me todna), prompt wisely karo, mentorship maango, aur AI output consume karne se aage badhkar code create aur own karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q18</span><span class="faq-q">Majority problem kya hai? Binary search wala example samjhao.</span></summary><div class="faq-a">Model sabse common solution deta hai, aapke case ke liye sabse achha nahi. Example: sorted list me search karne par model linear scan de sakta hai, jabki binary search sahi choice hai. Developer ko farak pata hona chahiye aur wahi maangna chahiye. Prompt me requirement saaf likho — 'stable, locale-aware sort chahiye' jaise.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q19</span><span class="faq-q">AI-generated code ko review kaise karein?</span></summary><div class="faq-a">Checklist: naming saaf hai ya nahi, har function ek hi kaam karta hai ya nahi, dead code ya duplicated logic to nahi, aur code project ke existing patterns follow karta hai ya nahi. Generated code aksar verbose, inconsistent naming wala aur over/under-commented hota hai. Lab 5 me ye checklist live try karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q20</span><span class="faq-q">Debugging ka chhe-step strategy kya hai?</span></summary><div class="faq-a">Bug ko reliably reproduce karo; error message aur stack trace padho; sabse chhota failing case isolate karo; hypothesis banao aur test karo; cause fix karo, symptom nahi; aur ek test se verify karo taaki bug wapas na aaye. Example: prime-checking function jo 1, 0, negatives aur bade inputs par fail hota hai — in edge cases ko explicitly handle karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q21</span><span class="faq-q">Refactoring kaise karein — AI code ko apna kaise banayein?</span></summary><div class="faq-a">Pehle code ko samjho, phir bade functions ko todo, clarity ke liye rename karo, duplication hatao, behaviour badalne se pehle tests jodo, aur chhote steps me commit karo. Rule: agar tum code ko explain nahi kar sakte, to tum use own nahi karte.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q22</span><span class="faq-q">Unit, integration aur end-to-end tests me kya farak hai?</span></summary><div class="faq-a">Unit test ek function ko isolation me check karta hai — jaise prime function ko 2, 3, 5, 7 aur 1, 0, negatives par. Integration test components ko ek saath check karta hai — jaise test database ke against login flow. End-to-end test browser me poora user journey check karta hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q23</span><span class="faq-q">Prototype aur production system me kya farak hai?</span></summary><div class="faq-a">Prototype idea ko learn aur test karne ke liye hota hai; production system real users ko reliably serve karne ke liye. Dono aksar confuse kar diye jate hain. Rule of thumb: prototype lagbhag 80% kaam hai, hardening baaki 20% — lekin woh 20% hi mushkil hai: auth, validation, error handling, database design, testing, deployment aur monitoring.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q24</span><span class="faq-q">Prototyping ke liye kaunse tools hain?</span></summary><div class="faq-a">v0 (Vercel) polished UI ke liye, Lovable aur Bolt full-stack starter apps ke liye, Replit Agent hosted runnable app ke liye, Cursor code-level iteration ke liye, aur Figma AI / Figma Make design-to-code ke liye. Har tool ki apni strength hai — ek ko sab ke liye mat chuno.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q25</span><span class="faq-q">AI-generated code me kitni security weaknesses hoti hain?</span></summary><div class="faq-a">2023 ke ek analysis ke anusaar 25–33% Copilot-generated code me potential security weaknesses thi. 2021 ke ek adhyayan me lagbhag 40% AI-generated code vulnerable tha. Isliye generated code ko line by line review karo, static analysis (ESLint, Bandit, CodeQL, Semgrep), dynamic testing (OWASP ZAP) aur fuzzing (OSS-Fuzz) use karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q26</span><span class="faq-q">SQL injection, XSS aur package hallucination kya hain?</span></summary><div class="faq-a">SQL injection: string se bani queries me user input chipak jata hai — fix: parameterized queries. XSS: unescaped user input page me render ho jata hai — fix: output escape karo. Package hallucination: model ek library ka naam invent karta hai jise attacker register kar sakta hai — fix: har dependency ko verify karo. Lab 6 me inhe scan karke dekho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q27</span><span class="faq-q">User enumeration kya hai aur isse kaise bachein?</span></summary><div class="faq-a">Jab 'user not found' aur 'wrong password' ke liye alag error messages aate hain, to attacker ko pata chal jata hai kaunse accounts exist karte hain. Fix: dono cases me ek jaisa generic message do — jaise 'Invalid username or password'.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q28</span><span class="faq-q">Property-based testing kya hai?</span></summary><div class="faq-a">Examples ke bajay properties assert karte hain — jaise sort karne par hamesha sorted list wahi length me milni chahiye, email validator ko valid accept aur invalid reject karne chahiye, aur operation idempotent honi chahiye. Tools: Hypothesis (Python) aur fast-check (JavaScript).</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q29</span><span class="faq-q">N+1 query problem kya hai?</span></summary><div class="faq-a">Jab har row ke liye ek alag query chalti hai, ek joined query ke bajay. Ye database performance ka classic issue hai — AI-generated code me aksar aata hai. Fix: pehle profile karo, phir query ko join ya batch karo. Performance ke liye hamesha pehle measure karo, phir optimize karo.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q30</span><span class="faq-q">Canary release aur blue-green deployment kya hain?</span></summary><div class="faq-a">Canary release: naya version pehle chhote traffic hisse par deploy karo — jaise 5% — aur monitor karo. Blue-green: do environments rakho, ek live aur ek naya; switch karo aur rollback aasan rakho. Dono me feature flags, monitoring aur rollback plan zaroori hain.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q31</span><span class="faq-q">AI-generated code ka copyright kiska hota hai?</span></summary><div class="faq-a">US Copyright Office ki position: purely AI-generated work, bina human authorship ke, copyrightable nahi hai — isliye ownership ke liye human contribution matter karta hai. Models public code par train hote hain, isliye generated code copyrighted work jaisa dikh sakta hai. Fair use ke chaar factors hain: purpose, nature of the work, amount used, aur market effect. Practical advice: licences check karo aur record rakho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q32</span><span class="faq-q">AI me bias kaise aata hai? Tay, Apple Health aur credit scoring wale examples samjhao.</span></summary><div class="faq-a">Models apne training data se bias reproduce karte hain. 2016 me ek bade tech company ka chatbot launch ke turant baad offensive output dene laga. Apple Health (2014) me kai mahilaon ke liye relevant features missing theen. Credit-scoring models ne zip code ko race ka proxy banakar historical redlining reproduce ki. Mitigations: diverse data se test karo, outputs audit karo, model cards use karo, aur logon ko affect karne wale decisions par human review rakho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q33</span><span class="faq-q">Autonomous background agent kya hai? Codex, Jules, Devin kya karte hain?</span></summary><div class="faq-a">Autonomous background agent bina human ke dekhe task par kaam karta hai — jaise cloud sandbox me — aur result pull request ke roop me deta hai. Workflow: plan → execute → verify → report. OpenAI Codex, Google Jules, Cursor Background Agents aur Devin (Cognition) — sab background me sandbox me kaam karte hain, developer free rehta hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q34</span><span class="faq-q">Review bottleneck kya hai? 2,500 lines wala example samjhao.</span></summary><div class="faq-a">Agents tez hain, lekin humans bottleneck ban jate hain jab unhe sab kuch review karna padta hai. Example: paanch agents, har ek ne Monday subah 500 lines banayi — human ke saamne 2,500 lines review karne ke liye. Isiliye agent ko chhote, frequent tasks do, tests require karo (lagbhag 80% coverage target), aur har PR ko aise review karo jaise junior developer ne likha ho.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q35</span><span class="faq-q">Coherent incorrectness aur environmental drift kya hain?</span></summary><div class="faq-a">Coherent incorrectness: output sahi dikhta hai aur quick check pass kar leta hai, lekin subtle tareeke se galat hota hai. Environmental drift: agent ka sandbox production se alag hota hai, isliye wahan pass hone wala code production me fail ho jata hai. Dono se bachne ke liye tests, sandbox me limited permissions, aur production-jaisi environment me verification zaroori hai.</div></details><details class="faq" data-faq="1"><summary><span class="faq-num">Q36</span><span class="faq-q">Vibe coding se developer ki job khatm ho jayegi?</span></summary><div class="faq-a">Nahi — role badlega. Routine coding sasti ho jayegi, jabki judgment, design aur communication zyada valuable ho jayenge. Agents ke behtar hone par achhe aur great developer ke beech ka gap lagbhag 30% se 5–10% tak simat sakta hai, lekin human hi architecture own karega, review karega aur ship karega. Kitab ke saat actions: prompt seekho, fundamentals rakho, architecture own karo, test aur review karo, curious raho, mentor karo, aur norms shape karo.</div></details></div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/lab8"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">Lab 8 — Prompt Technique Mixer</span></a><a class="pn-btn" href="#/trust"><span class="pn-label">Agla &rarr;</span><span class="pn-title">Trust Check — Sab kuch cover hai?</span></a></nav></section><section class="section" id="sec-trust" data-title="Trust Check — Sab kuch cover hai?"><div class="sec-meta"><span class="num-chip">21</span><span class="sec-group">End Matter</span></div><h1>Trust Check — Sab kuch cover hai?</h1><p class="lead">Ye section live gin kar batata hai ki is SPA me kitab ka kitna content hai. <strong>Self-check button</strong> dabao — ye page ko scan karke PASS ya FAIL deta hai, placeholder FAQs aur personal names bhi check karta hai.</p><div class="tc-cards"><div class="tc-card"><div class="tc-num" id="tc-sections">–</div><div class="tc-lbl">Chapter sections</div></div><div class="tc-card"><div class="tc-num" id="tc-sidebar">–</div><div class="tc-lbl">Sidebar entries</div></div><div class="tc-card"><div class="tc-num" id="tc-sources">–</div><div class="tc-lbl">Source boxes</div></div><div class="tc-card"><div class="tc-num" id="tc-figures">–</div><div class="tc-lbl">Figures</div></div><div class="tc-card"><div class="tc-num" id="tc-labs">–</div><div class="tc-lbl">Labs</div></div><div class="tc-card"><div class="tc-num" id="tc-faqs">–</div><div class="tc-lbl">FAQs</div></div></div><button class="run-check" id="run-check" onclick="runTrustCheck()">Self-check chalao</button><div class="check-result" id="check-result" hidden></div><h3>Cross-check — kitab ki Table of Contents se</h3><div class="tbl-wrap"><table><thead><tr><th>Kitab ka hissa</th><th>Is SPA me</th><th>Kahan</th></tr></thead><tbody><tr><td>Preface</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 00 — saare Preface headings</td></tr><tr><td>Ch 1 — Introduction: What Is Vibe Coding?</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 01 — spectrum, intent, tools, models, numbers</td></tr><tr><td>Ch 2 — The Art of the Prompt</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 02 — paanch principles, toolbox, bug example</td></tr><tr><td>Ch 3 — The 70% Problem</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 03 — failure modes, 12 golden rules</td></tr><tr><td>Ch 4 — Beyond the 70%</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 04 — senior, midlevel, junior</td></tr><tr><td>Ch 5 — Understanding Generated Code</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 05 — majority problem, debugging, testing</td></tr><tr><td>Ch 6 — AI-Driven Prototyping</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 06 — tools, sign-up form, case study</td></tr><tr><td>Ch 7 — Building Web Applications with AI</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 07 — scaffolding, API, DB, case studies</td></tr><tr><td>Ch 8 — Security, Maintainability, Reliability</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 08 — vulnerabilities, audits, deployment</td></tr><tr><td>Ch 9 — Ethical Implications of Vibe Coding</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 09 — IP, transparency, bias, privacy</td></tr><tr><td>Ch 10 — Autonomous Background Coding Agents</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 10 — workflow, tools, bottleneck</td></tr><tr><td>Ch 11 — Beyond Code Generation</td><td><span class="tc-ok">✓ Cover</span></td><td>Section 11 — testing, design, PM, agents, languages</td></tr><tr><td>Index</td><td>— Reference list</td><td>Out of scope (neeche dekho)</td></tr><tr><td>About the Author</td><td>— Background</td><td>Out of scope (neeche dekho)</td></tr></tbody></table></div><h3>Honest out-of-scope list — jo is SPA me nahi hai</h3><ul class="oos"><li><strong>Index</strong> — ye ek alphabetical lookup reference hai (A–Z entries, koi page numbers nahi) — chapter nahi; iska detail content SPA me cover nahi kiya gaya.</li><li><strong>About the Author ka alag section</strong> — ye background hai, teaching chapter nahi; kitab ke baare me facts (254 pages, 7h 51m, 3.1/5 rating) Home page par hain.</li><li><strong>Kitab ka ISBN</strong> — reader me koi ISBN dikhaya hi nahi gaya tha; isliye SPA me koi ISBN invent nahi kiya gaya. O'Reilly URL identifier (9798341634749) sirf book-page link me hai, ISBN ke roop me nahi.</li><li><strong>Numbered data tables</strong> — is kitab me koi numbered data tables nahi hain (notes me saaf likha hai); isliye SPA me koi "Table X-Y" nahi hai — comparisons ko tables ke roop me dikhaya gaya hai, lekin woh kitab ki numbered tables nahi hain.</li><li><strong>Kitab ka verbatim text</strong> — ye notes apne shabdon me hain; code snippets descriptions se banaye gaye hain, verbatim claim nahi karte.</li><li><strong>Figures ke original pixels</strong> — saare figures notes ke descriptions se SVG/CSS diagrams ke roop me banaye gaye hain, kitab ki original images nahi.</li></ul><div class="callout"><b>Self-sufficiency:</b> Is SPA me kitab ke notes ka har number, har worked example aur har figure ka diagram hai — kitab ko dobaara khole bina samajhne ke liye kaafi hai.</div><div class="source-box"><span class="source-tag">Source:</span><a href="https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/">https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/</a></div><nav class="pn-nav"><a class="pn-btn" href="#/faqs"><span class="pn-label">&larr; Pichhla</span><span class="pn-title">FAQs — Interview Sawal-Jawab</span></a><span class="pn-spacer"></span></nav></section></div></main>
+<script>
+/* ---------- routing + sidebar (top-level, no IIFE) ---------- */
+var sections = Array.prototype.slice.call(document.querySelectorAll(".section"));
+var links = Array.prototype.slice.call(document.querySelectorAll(".sb-link"));
+var byId = {};
+sections.forEach(function(s){ byId[s.id.replace("sec-","")] = s; });
+var order = sections.map(function(s){ return s.id.replace("sec-",""); });
+var sidebarEl = document.getElementById("sidebar");
+var scrimEl = document.getElementById("scrim");
+function closeDrawer(){ sidebarEl.classList.remove("open"); scrimEl.classList.remove("on"); }
+document.getElementById("menu-btn").addEventListener("click", function(){
+  var open = sidebarEl.classList.toggle("open"); scrimEl.classList.toggle("on", open);
+});
+scrimEl.addEventListener("click", closeDrawer);
+function show(slug){
+  if(!byId[slug]) slug = "home";
+  sections.forEach(function(s){ s.hidden = s.id !== "sec-" + slug; });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  var act = document.querySelector('.sb-link[data-nav="' + slug + '"]');
+  if(act && window.innerWidth > 900){ act.scrollIntoView({block:"nearest"}); }
+  var idx = order.indexOf(slug);
+  document.getElementById("progress-bar").style.width = (order.length > 1 ? (idx/(order.length-1))*100 : 0) + "%";
+  var tb = document.getElementById("tb-current");
+  if(tb){ var sec = byId[slug]; tb.textContent = sec ? (sec.getAttribute("data-title") || "Beyond Vibe Coding") : "Beyond Vibe Coding"; }
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+function route(){
+  var h = location.hash.replace(/^#\/?/, "");
+  show(h || "home");
+}
+window.addEventListener("hashchange", route);
+var searchEl = document.getElementById("sb-search-input");
+searchEl.addEventListener("input", function(){
+  var q = searchEl.value.trim().toLowerCase();
+  links.forEach(function(a){
+    var hay = a.getAttribute("data-search") || "";
+    a.classList.toggle("hidden", q !== "" && hay.indexOf(q) === -1);
+  });
+  document.querySelectorAll(".sb-group").forEach(function(g){
+    var any = g.querySelector(".sb-link:not(.hidden)");
+    g.style.display = any ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); searchEl.focus(); if(window.innerWidth<=900){ sidebarEl.classList.add("open"); scrimEl.classList.add("on"); } }
+});
+route();
+
+/* ---------- helpers ---------- */
+function el(id){ return document.getElementById(id); }
+function chk(id){ var e = el(id); return e ? e.checked : false; }
+
+/* ---------- Lab 1: prompt scorer ---------- */
+function lab1Score(){
+  var p = el("ps-prompt").value || "";
+  var items = [
+    ["Direction", chk("ps-dir"), "Role, goal aur rules saaf batao — jaise 'You are a senior Node.js developer, build a login form that…'"],
+    ["Format", chk("ps-fmt"), "Output ka format batao — table, bullet list, code, email, HTML…"],
+    ["Examples", chk("ps-ex"), "Ek ya do input/output examples do — few-shot se output predictable hota hai"],
+    ["Evaluation", chk("ps-ev"), "Verify karne ka tareeka batao — test case ya expected output"],
+    ["Divide labor", chk("ps-div"), "Kaam ko chhote steps me baanto — ek prompt me sab kuch mat maango"]
+  ];
+  var score = 0, lines = [];
+  items.forEach(function(it){
+    if(it[1]){ score += 2; lines.push("  ✓ " + it[0] + ": +2"); }
+    else { lines.push("  ✗ " + it[0] + ": 0 — " + it[2]); }
+  });
+  var verdict = score >= 8 ? "STRONG PROMPT — ye prompt typed, tested code dega." :
+    score >= 6 ? "THEEK HAI — 1-2 principles aur jodo." :
+    score >= 4 ? "KAMZOR — vague prompt se generic, untested code milega." :
+    "BAHUT VAGUE — pehle direction aur format jodo.";
+  el("ps-out").textContent = "Prompt (" + p.length + " characters): \"" + p.slice(0, 80) + (p.length > 80 ? "…" : "") + "\"\n" +
+    lines.join("\n") + "\nScore: " + score + " / 10\n" + verdict;
+}
+function lab1Preset(){
+  el("ps-prompt").value = "You are a senior Node.js developer. Write a TypeScript function that sorts an array of numbers in ascending order, handles empty arrays, and includes unit tests. Output format: code block + 3 test cases.";
+  ["ps-dir","ps-fmt","ps-ex","ps-ev","ps-div"].forEach(function(id){ el(id).checked = true; });
+  lab1Score();
+}
+
+/* ---------- Lab 2: off-by-one bug hunt ---------- */
+function lab2Run(){
+  var cond = el("ob-cond").value, inp = el("ob-input").value;
+  var users = inp === "one" ? [{id: 1, name: "user_1"}] : inp === "three" ? [{id: 1}, {id: 2}, {id: 3}] : [];
+  var out = el("ob-out");
+  var result = {}, err = null;
+  try {
+    for (var i = 0; cond === "le" ? i <= users.length : i < users.length; i++) {
+      result[users[i].id] = users[i];
+    }
+  } catch (e) { err = e; }
+  if (err) {
+    out.textContent = "TypeError: Cannot read properties of undefined (reading 'id')\n" +
+      "Kyun: i <= users.length par aakhri iteration me users[" + users.length + "] undefined hota hai.\n" +
+      "Fix: condition badlo — i < users.length. Phir dobaara chalao.";
+  } else {
+    out.textContent = "Koi error nahi — sahi mapping mili:\n" + JSON.stringify(result) +
+      "\nInput tha: " + JSON.stringify(users) +
+      "\nLesson: precise prompt ('handle empty arrays, return an object keyed by id') + test case is bug ko pakad leta.";
+  }
+}
+
+/* ---------- Lab 3: vibe vs engineering chooser ---------- */
+function lab3Pick(){
+  var task = el("vc-task").value, stakes = el("vc-stakes").value;
+  var review = chk("vc-review"), test = chk("vc-test");
+  var out = el("vc-out");
+  var mode, why;
+  if (task === "auth" || stakes === "high") {
+    mode = "AI-ASSISTED ENGINEERING (zaroori)";
+    why = "Auth/payments ya high stakes par vibe coding kabhi nahi — security aur review tumhare haath me hone chahiye. Ch 1 ka login-system example yaad rakho: plausible dikha, lekin vulnerable tha.";
+  } else if (task === "proto" && stakes === "low") {
+    mode = "VIBE CODING (theek hai)";
+    why = "Chhota personal tool / prototype — yahi vibe coding ki strength hai. Phir bhi output ko ek baar padh lo.";
+  } else if (task === "refactor") {
+    mode = "AI-ASSISTED ENGINEERING";
+    why = "Bade codebase me refactor — model ko poora context nahi pata. Chhote increments, review aur tests zaroori hain (70% problem).";
+  } else {
+    mode = "AI-ASSISTED ENGINEERING (recommended)";
+    why = "Feature ya learning ke liye bhi review + tests ke saath kaam karo — model code deta hai, samajh nahi.";
+  }
+  var warn = "";
+  if (!review) warn += "\nWARNING: Tumne 'har line review karunga' tick nahi kiya — Chapter 3 ka rule 3: jo code rakhte ho, uski har line review karo.";
+  if (!test) warn += "\nWARNING: Tests ke bina generated code par bharosa mat karo — jaate-jaate test karo, end par nahi.";
+  out.textContent = "Task: " + el("vc-task").options[el("vc-task").selectedIndex].text +
+    "\nStakes: " + el("vc-stakes").options[el("vc-stakes").selectedIndex].text +
+    "\nMode: " + mode + "\n" + why + warn;
+}
+
+/* ---------- Lab 4: 70% problem planner ---------- */
+var TP_RULES = [
+  "Clear, likha hua plan/spec pehle se banaya",
+  "Chhote, testable increments me kaam karunga",
+  "Har line review karunga jo code rakhunga",
+  "Jaate-jaate test karunga, end par nahi",
+  "Model ka context focused rakhunga (poora codebase paste nahi)",
+  "Version control + often commit karunga",
+  "Pehla draft starting point hai, finished product nahi",
+  "Jo samajh na aaye, model se explain karwaunga",
+  "Architectural decisions model ko nahi lene dunga",
+  "Security aur data handling human ke haath me rakhunga",
+  "Document karunga ki AI ne kya generate kiya aur kyun",
+  "Jaanta hoon kab prompting rokni hai aur khud code likhna hai"
+];
+function lab4Render(){
+  var host = el("tp-rules"); if(!host) return;
+  var h = "";
+  TP_RULES.forEach(function(r, i){
+    h += '<label class="lab-check" style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13.5px"><input type="checkbox" id="tp-' + i + '"> ' + (i+1) + ". " + r + "</label>";
+  });
+  host.innerHTML = h;
+}
+lab4Render();
+function lab4Score(){
+  var done = 0;
+  for (var i = 0; i < TP_RULES.length; i++){ if (chk("tp-" + i)) done++; }
+  var pct = Math.round(done / TP_RULES.length * 100);
+  var verdict = done === 12 ? "READY — aakhri 30% ke liye poori tarah taiyaar. Ab AI se 70% karwao, baaki tum sambhalo." :
+    done >= 8 ? "LAGBHAG READY — " + (12 - done) + " rules aur follow karo, khaas taur par review aur testing wale." :
+    done >= 5 ? "ADHOORA PLAN — aakhri 30% tumhe weeks lagwa sakta hai. Pehle plan aur tests tay karo." :
+    "RISK — bina plan ke AI se shuru karna bootstrapper failure mode hai. Pehle plan likho, phir prompt karo.";
+  el("tp-out").textContent = "Golden rules follow kiye: " + done + " / 12 (" + pct + "%)\n" + verdict +
+    "\nYaad rakho: weekend me prototype banta hai, hardening me weeks lagte hain — plan pehle se banao.";
+}
+
+/* ---------- Lab 5: code review checklist ---------- */
+function lab5Review(){
+  var code = el("cr-code").value || "";
+  var auto = [];
+  if (/TODO/i.test(code)) auto.push("AUTO-FLAG: TODO comment mila — ye kaam adhoora hai, ship se pehle poora karo (Ch 6).");
+  if (/\bvar\s+\w+/.test(code)) auto.push("AUTO-FLAG: 'var' mila — modern code me let/const prefer karo.");
+  if (/(\w+)\s*=\s*data;\s*\n\s*\w+\s*=\s*data;/.test(code)) auto.push("AUTO-FLAG: Duplicate assignment dikha — wahi value do variables me.");
+  if (/console\.log\(/.test(code)) auto.push("AUTO-FLAG: console.log mila — debug code production me mat chhodo.");
+  if (code.length < 20) auto.push("AUTO-FLAG: Code bahut chhota hai — review ke liye kuch khaas nahi.");
+  var checks = [
+    ["Naming saaf hai", chk("cr-naming")],
+    ["Har function ek hi kaam karta hai", chk("cr-one")],
+    ["Koi dead code / duplication nahi", chk("cr-dead")],
+    ["Project patterns follow karta hai", chk("cr-pattern")],
+    ["Main ise explain kar sakta hoon", chk("cr-explain")]
+  ];
+  var passed = 0, lines = [];
+  checks.forEach(function(c){ if (c[1]){ passed++; lines.push("  ✓ " + c[0]); } else { lines.push("  ✗ " + c[0] + " — check karo"); } });
+  var verdict = passed === 5 && auto.length === 0 ? "SHIP KE LAYAK — code review pass, auto-checks bhi clean." :
+    passed >= 4 ? "LAGBHAG THEEK — auto-flags aur bache hue checks theek karo." :
+    "REVIEW FAIL — code ko refactor karo. Agar explain nahi kar sakte, to own nahi karte (Ch 5).";
+  el("cr-out").textContent = "Checklist: " + passed + " / 5 pass\n" + lines.join("\n") +
+    (auto.length ? "\n" + auto.join("\n") : "\nAuto-checks: koi flag nahi.") + "\n" + verdict;
+}
+
+/* ---------- Lab 6: security scanner ---------- */
+function lab6Scan(){
+  var code = el("ss-code").value || "";
+  var findings = [];
+  if (/SELECT|INSERT|UPDATE|DELETE/i.test(code) && /["']\s*\+/.test(code)) findings.push("SQL INJECTION — string se bani query me user input chipak raha hai. Fix: parameterized queries.");
+  if (/innerHTML|document\.write/.test(code)) findings.push("XSS — innerHTML / document.write se unescaped user input render ho raha hai. Fix: output escape karo ya textContent use karo.");
+  if (/password\s*=\s*["'][^"']+["']/i.test(code)) findings.push("PLAIN-TEXT PASSWORD — password seedha code me likha hai. Fix: bcrypt jaisa strong hash use karo, secrets ko code me mat rakho.");
+  if (/user not found|wrong password/i.test(code)) findings.push("USER ENUMERATION — alag error messages se pata chal jata hai kaunse accounts hain. Fix: dono cases me ek jaisa generic message do.");
+  var reqs = code.match(/require\(["']([^"']+)["']\)|from\s+["']([^"']+)["']/g) || [];
+  var known = ["react", "express", "lodash", "axios", "fs", "path", "os", "crypto"];
+  reqs.forEach(function(r){
+    var name = r.replace(/.*["']([^"']+)["'].*/, "$1");
+    if (known.indexOf(name) === -1) findings.push("PACKAGE HALLUCINATION RISK — '" + name + "' verify karo: kya ye package asal me exist karta hai? Model ne naam invent kiya ho sakta hai.");
+  });
+  if (!findings.length) findings.push("Koi obvious pattern nahi mila — lekin ye guarantee nahi hai. Line-by-line review, ESLint/Bandit/CodeQL/Semgrep aur OWASP ZAP se audit karo.");
+  el("ss-out").textContent = "Scan kiya: " + code.split("\n").length + " lines\n" +
+    findings.map(function(f, i){ return (i+1) + ". " + f; }).join("\n") +
+    "\nYaad rakho: 2023 ke analysis ke anusaar 25–33% Copilot-generated code me potential security weaknesses thi.";
+}
+function lab6Preset(kind){
+  if (kind === "safe") el("ss-code").value = "const query = 'SELECT * FROM users WHERE id = $1';\nconst result = await db.query(query, [userId]);\nconst hash = await bcrypt.hash(password, 10);";
+  else el("ss-code").value = "document.getElementById('out').innerHTML = userInput;\nif (!user) return 'user not found';\nif (pw !== stored) return 'wrong password';";
+  lab6Scan();
+}
+
+/* ---------- Lab 7: review bottleneck calculator ---------- */
+function lab7Calc(){
+  var agents = parseFloat(el("rb-agents").value) || 0;
+  var lines = parseFloat(el("rb-lines").value) || 0;
+  var speed = parseFloat(el("rb-speed").value) || 200;
+  var waste = parseFloat(el("rb-waste").value) || 0;
+  var cov = parseFloat(el("rb-cov").value) || 0;
+  var total = agents * lines;
+  var usable = total * (1 - waste / 100);
+  var hours = total / speed;
+  var days = hours / 8;
+  var verdict = days > 2 ? "BOTTLENECK — " + days.toFixed(1) + " din sirf review me jayenge. Agents ko chhote, frequent tasks do." :
+    days > 1 ? "HEAVY — ek din se zyada review. Tasks chhote karo ya reviewers badhao." :
+    "MANAGEABLE — review ek din ke andar ho jayega, lekin har PR ko junior developer ke code jaisa review karo.";
+  var covNote = cov >= 80 ? "Coverage target 80%+ — kitab ki advice ke anusaar theek hai." :
+    "Coverage target " + cov + "% hai — kitab agent-generated code par lagbhag 80% coverage suggest karti hai.";
+  el("rb-out").textContent = "Agents: " + agents + " × " + lines + " lines = " + total + " lines total\n" +
+    "Unusable (sunk cost " + waste + "%): " + Math.round(total * waste / 100) + " lines discard karne layak\n" +
+    "Usable lines: " + Math.round(usable) + "\n" +
+    "Review time: " + hours.toFixed(1) + " hours = " + days.toFixed(1) + " working days (" + speed + " lines/hour)\n" +
+    covNote + "\n" + verdict;
+}
+function lab7Preset(){
+  el("rb-agents").value = "5"; el("rb-lines").value = "500"; el("rb-speed").value = "200";
+  el("rb-waste").value = "15"; el("rb-cov").value = "80";
+  lab7Calc();
+}
+
+/* ---------- Lab 8: prompt technique mixer ---------- */
+function lab8Mix(){
+  var role = el("mx-role").value;
+  var task = (el("mx-task").value || "").trim() || "Write a function that checks if a number is prime";
+  var parts = [];
+  if (role === "senior") parts.push("You are a senior Node.js developer.");
+  if (role === "reviewer") parts.push("You are a security reviewer. Focus on vulnerabilities, not just correctness.");
+  if (role === "teacher") parts.push("You are a patient teacher. Explain every step simply.");
+  parts.push("Task: " + task + ".");
+  if (chk("mx-few")) parts.push("Example: Input [2, 3, 5] -> Output: all prime. Input [1, 4] -> Output: not prime.");
+  if (chk("mx-cot")) parts.push("Think step by step before answering: pehle approach socho, phir code likho.");
+  if (chk("mx-ctx")) parts.push("Context: ye code ek existing Node.js project me jayega; ES modules use karo.");
+  if (chk("mx-test")) parts.push("Include unit tests: 2, 3, 5, 7 par pass hone chahiye; 1, 0 aur negatives par bhi handle karo. Output format: code block + test cases.");
+  var count = 1 + (chk("mx-few") ? 1 : 0) + (chk("mx-cot") ? 1 : 0) + (chk("mx-ctx") ? 1 : 0) + (chk("mx-test") ? 1 : 0);
+  el("mx-out").textContent = parts.join("\n") + "\n\nTechniques combined: " + count + " (role + few-shot + chain-of-thought + context + tests)\n" +
+    "Kitab ka rule: pehle broad shuru karo, phir tests aur feedback se narrow karo. Prompt jitna behtar, rework utna kam.";
+}
+
+/* ---------- Trust Check ---------- */
+function count(sel){ return document.querySelectorAll(sel).length; }
+function refreshCounts(){
+  var set = function(id, v){ var e = document.getElementById(id); if(e) e.textContent = v; };
+  set("tc-sections", count("[data-chapter]"));
+  set("tc-sidebar", count(".sb-link"));
+  set("tc-sources", count(".source-box"));
+  set("tc-figures", count(".fig"));
+  set("tc-labs", count("[data-lab]"));
+  set("tc-faqs", count("[data-faq]"));
+}
+refreshCounts();
+var BOOK_URL_TC = "https://learning.oreilly.com/library/view/beyond-vibe-coding/9798341634749/";
+function runTrustCheck(){
+  refreshCounts();
+  var checks = [];
+  var chaps = document.querySelectorAll("[data-chapter]");
+  checks.push([chaps.length === 12, "Chapter sections = 12 (Preface + Ch 1-11; mile: " + chaps.length + ")"]);
+  checks.push([count(".sb-link") === 22, "Sidebar entries = 22 (12 chapters + 8 labs + FAQ + Trust Check; mile: " + count(".sb-link") + ")"]);
+  var boxes = document.querySelectorAll(".source-box a");
+  var badSrc = 0;
+  boxes.forEach(function(a){ if(a.getAttribute("href") !== BOOK_URL_TC) badSrc++; });
+  checks.push([boxes.length === 23 && badSrc === 0, "Source boxes = 23 (har section me ek), sabhi ka URL kitab ka page hai (mile: " + boxes.length + ", galat URL: " + badSrc + ")"]);
+  var chapsWithSrc = 0;
+  chaps.forEach(function(s){ if(s.querySelector(".source-box")) chapsWithSrc++; });
+  checks.push([chapsWithSrc === 12, "Har chapter section me Source box hai (mile: " + chapsWithSrc + "/12)"]);
+  checks.push([count(".fig") === 12, "Figures = 12 (Fig. 1-1 se 11-1 tak + trade-off diagram; mile: " + count(".fig") + ")"]);
+  checks.push([count("[data-lab]") === 8, "Interactive labs = 8 (mile: " + count("[data-lab]") + ")"]);
+  var faqs = document.querySelectorAll("[data-faq]");
+  var badFaq = 0;
+  faqs.forEach(function(f){
+    var q = (f.querySelector(".faq-q") || {}).textContent || "";
+    var a = (f.querySelector(".faq-a") || {}).textContent || "";
+    if(/^\s*(q|a)\s*$/i.test(q) || /^\s*(q|a)\s*$/i.test(a) || /^\s*(placeholder|lorem|todo)/i.test(q) || /^\s*(placeholder|lorem|todo)/i.test(a)) badFaq++;
+  });
+  checks.push([faqs.length === 36 && badFaq === 0, "Interview FAQs = 36, koi placeholder nahi (mile: " + faqs.length + ", placeholder: " + badFaq + ")"]);
+  checks.push([document.querySelectorAll("[loading]").length === 0, "Koi lazy-loading attribute nahi (figures fresh load par ginne layak hain; mile: " + document.querySelectorAll("[loading]").length + ")"]);
+  var secText = "";
+  document.querySelectorAll(".section").forEach(function(s){ secText += " " + (s.textContent || ""); });
+  var names = ["Addy","Osmani","Karpathy","Hoestje","Schulhoff","Meadows","Senge","Richards","Ford","Chollet","Tan","Rothstein","Herbert","Jane","Alice"];
+  var found = [];
+  names.forEach(function(n){ if(new RegExp("\\b" + n + "\\b").test(secText)) found.push(n); });
+  checks.push([found.length === 0, "Visible text me koi personal name nahi (mile: " + (found.length ? found.join(", ") : "koi nahi") + ")"]);
+  var HING = [" hai "," ka "," ki "," ke "," me "," se "," aur "," ye "," woh "," karo "," matlab "," jaise "," lekin "," isliye "," pehle "," baad "," sahi "," galat "," dekho "," samajh "," chahiye "," karna "," hota "," hoti "];
+  var low = secText.toLowerCase();
+  var hits = 0;
+  HING.forEach(function(w){ var i = -1; while((i = low.indexOf(w, i + 1)) !== -1) hits++; });
+  checks.push([hits > 800, "Hinglish likha hai — Hinglish markers mile: " + hits + " (target 800+)"]);
+  var pass = checks.every(function(c){ return c[0]; });
+  var res = document.getElementById("check-result");
+  res.hidden = false; res.className = "check-result " + (pass ? "pass" : "fail");
+  res.innerHTML = "<strong>" + (pass ? "PASS — saare 12 chapters, 12 figures, 8 labs aur 36 FAQs is SPA me maujood hain." : "FAIL — neeche wali jaanch dekho.") + "</strong><ul>" +
+    checks.map(function(c){ return "<li>" + (c[0] ? "✓ " : "✗ ") + c[1] + "</li>"; }).join("") + "</ul>";
+  res.scrollIntoView({behavior:"smooth", block:"center"});
+}
+</script>
+</body>
+</html>
