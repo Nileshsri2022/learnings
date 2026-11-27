@@ -1,0 +1,1277 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Generative AI on Kubernetes — Hinglish Notes (O'Reilly Top 100 #36)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 70px}
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-css{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#d9e7c8;white-space:pre-wrap;word-break:break-word}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-n{font-family:var(--font-mono)}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- figures (recreated diagrams) ---------- */
+.fig{margin:18px 0;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;overflow-x:auto}
+.fig svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.fig img{max-width:100%;height:auto;display:block;margin:0 auto}
+figure.fig{margin:18px 0}
+.fig-cap{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 60px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .sb-dot{animation:none}
+}
+
+</style>
+</head>
+<body>
+<div id="topbar"><button id="menu-btn" aria-label="Menu">☰</button><div><div class="tb-title">Generative AI on Kubernetes</div><div class="tb-sub" id="tb-current">Home</div></div></div>
+<div id="scrim"></div>
+<aside id="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand"><div class="sb-logo">GK</div><div><h2>Generative AI on Kubernetes</h2><small>Poori kitab · Hinglish</small></div></div>
+    <div class="sb-search"><span>⌕</span><input id="sb-search-input" type="text" placeholder="Search karo… (Ctrl+K)" aria-label="Search"></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-group"><div class="sb-group-head"><span>Shuruaat</span><span class="sb-count">3</span></div>
+      <a class="sb-link" href="#/home" data-nav="home" data-search="home shuruaat"><span class="sb-num">00</span><span class="sb-title">Home</span></a>
+      <a class="sb-link" href="#/preface" data-nav="preface" data-search="preface prastavna shuruaat"><span class="sb-num">01</span><span class="sb-title">Preface — Production Mushkil Hai</span></a>
+      <a class="sb-link" href="#/intro" data-nav="intro" data-search="introduction llm inference prefill decode kv cache"><span class="sb-num">02</span><span class="sb-title">Introduction — LLM aur Inference</span></a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head"><span>Part I · Inference</span><span class="sb-count">2</span></div>
+      <a class="sb-link" href="#/ch01" data-nav="ch01" data-search="chapter 1 deploying models vllm kind llama curl"><span class="sb-num">03</span><span class="sb-title">Ch 1 · Deploying Models</span></a>
+      <a class="sb-link" href="#/ch02" data-nav="ch02" data-search="chapter 2 model data modelcar oci volumes quantization"><span class="sb-num">04</span><span class="sb-title">Ch 2 · Model Data</span></a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head"><span>Part II · Production Readiness</span><span class="sb-count">3</span></div>
+      <a class="sb-link" href="#/ch03" data-nav="ch03" data-search="chapter 3 kubernetes gpu operator dra mig mps time-slicing"><span class="sb-num">05</span><span class="sb-title">Ch 3 · Kubernetes and GPUs</span></a>
+      <a class="sb-link" href="#/ch04" data-nav="ch04" data-search="chapter 4 production rollout autoscaling keda routing llm-d"><span class="sb-num">06</span><span class="sb-title">Ch 4 · Running in Production</span></a>
+      <a class="sb-link" href="#/ch05" data-nav="ch05" data-search="chapter 5 observability metrics logs traces ttft tpot guarding"><span class="sb-num">07</span><span class="sb-title">Ch 5 · Model Observability</span></a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head"><span>Part III · Tuning</span><span class="sb-count">2</span></div>
+      <a class="sb-link" href="#/ch06" data-nav="ch06" data-search="chapter 6 customization fine-tuning rag lora kubeflow"><span class="sb-num">08</span><span class="sb-title">Ch 6 · Model Customization</span></a>
+      <a class="sb-link" href="#/ch07" data-nav="ch07" data-search="chapter 7 scheduling gang kueue topology volcano"><span class="sb-num">09</span><span class="sb-title">Ch 7 · Job Scheduling Optimization</span></a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head"><span>Part IV · AI-Driven Apps</span><span class="sb-count">3</span></div>
+      <a class="sb-link" href="#/ch08" data-nav="ch08" data-search="chapter 8 applications agents client mcp tool call"><span class="sb-num">10</span><span class="sb-title">Ch 8 · AI-Driven Applications</span></a>
+      <a class="sb-link" href="#/ch09" data-nav="ch09" data-search="chapter 9 agentic production mcp a2a spiffe token exchange state"><span class="sb-num">11</span><span class="sb-title">Ch 9 · Agentic Apps in Production</span></a>
+      <a class="sb-link" href="#/afterword" data-nav="afterword" data-search="afterword prompt injection"><span class="sb-num">12</span><span class="sb-title">Afterword — Platform Controls</span></a>
+    </div>
+    <div class="sb-group"><div class="sb-group-head"><span>End Matter</span><span class="sb-count">4</span></div>
+      <a class="sb-link" href="#/labs" data-nav="labs" data-search="labs interactive practice"><span class="sb-num">13</span><span class="sb-title">Labs — Haath se Seekho</span></a>
+      <a class="sb-link" href="#/faqs" data-nav="faqs" data-search="faqs interview questions"><span class="sb-num">14</span><span class="sb-title">FAQs — Interview Sawal</span></a>
+      <a class="sb-link" href="#/sources" data-nav="sources" data-search="sources"><span class="sb-num">15</span><span class="sb-title">Sources</span></a>
+      <a class="sb-link" href="#/trust" data-nav="trust" data-search="trust check coverage"><span class="sb-num">16</span><span class="sb-title">Trust Check</span></a>
+    </div>
+  </nav>
+  <div class="sb-foot"><span><span class="sb-dot"></span>12 sections · 36 FAQs</span><span>GK-AI</span></div>
+</aside>
+<main id="main">
+<div id="progress"><div id="progress-bar"></div></div>
+<div class="wrap">
+
+<section class="section" id="sec-home" data-title="Home">
+  <div class="home-hero">
+    <div class="sec-meta"><span class="num-chip">00</span><span class="sec-group">Rank #36 · O'Reilly Top 100 · Hinglish Notes</span></div>
+    <h1>Generative AI on Kubernetes — Poori Kitab, Hinglish me</h1>
+
+  <p class="lead">Model train karna ya API call karna ab mushkil kaam nahi raha — mushkil kaam hai <strong>generative AI ko production me reliably, economically aur safely chalana</strong>, jahan asli users, asli data, asli budget aur asli failure modes milte hain. Ye kitab generative AI ko ek <strong>platform concern</strong> maanti hai, demo concern nahi — aur Kubernetes ko usko chalane ki natural jagah, kyunki woh scheduling, scaling, storage, networking, observability aur multi-tenancy pehle se jaanta hai. Ye page kitab ka <strong>poora content</strong> Hinglish me deta hai, taaki original kitab dobara kholni hi na pade.</p>
+  <div class="home-stats">
+    <div class="home-stat"><b>12</b><span>Content sections</span></div>
+    <div class="home-stat"><b>9</b><span>Chapters</span></div>
+    <div class="home-stat"><b>8</b><span>Interactive labs</span></div>
+    <div class="home-stat"><b>36</b><span>Interview FAQs</span></div>
+    <div class="home-stat"><b>34</b><span>Recreated figures</span></div>
+    <div class="home-stat"><b>406</b><span>Print pages</span></div>
+  </div>
+  <h3>Running example — poori kitab me ek hi kahani</h3>
+  <p>Poori kitab me ek hi example chalta hai: <strong>Meta Llama 3.2, 3-billion parameters, instruct-tuned</strong> model, jo <strong>vLLM</strong> serving engine se <strong>Kind</strong> (Kubernetes in Docker) par banaye gaye local cluster me serve kiya jata hai. Model itna chhota hai ki modest GPU par chal jata hai, aur itna bada hai ki ek asli instruction model hai. Har chapter isi example par ek layer aur jodta hai — pehle ek pod me pehla request, phir model data delivery, phir GPU, phir production, phir observability, phir tuning, aur aakhir me agents.</p>
+  <h3>Kitab ka safar — kis order me padhein</h3>
+  <p><strong>Part I (Inference)</strong> — pehla model serve karna: Ch 1 deployment, Ch 2 model data. <strong>Part II (Production Readiness)</strong> — use production-ready banana: Ch 3 GPUs, Ch 4 production stack, Ch 5 observability. <strong>Part III (Tuning)</strong> — cost, throughput aur behaviour tune karna: Ch 6 customization (fine-tuning vs RAG), Ch 7 scheduling. <strong>Part IV (AI-Driven Apps)</strong> — ek model se application aur agents tak: Ch 8 client aur agents, Ch 9 agents ko production me chalana. Kitab sequential hai, lekin aap sidebar se seedha us chapter par bhi ja sakte hain jo aapki problem se match karta hai.</p>
+  <h3>Is page me kya-kya hai</h3>
+  <div class="home-groups">
+    <a class="home-group" href="#/preface"><span class="cnt">01</span><h3>Preface</h3><p>Kyun likhi gayi, kiske liye hai, kya seekhoge — aur kitab ki structure.</p></a>
+    <a class="home-group" href="#/intro"><span class="cnt">02</span><h3>Introduction</h3><p>LLM kya hai, inference kaise kaam karta hai, prefill/decode aur KV cache.</p></a>
+    <a class="home-group" href="#/ch01"><span class="cnt">03</span><h3>Ch 1 · Deploying Models</h3><p>Llama 3.2 3B + vLLM ko Kind cluster par chalana, pehla request.</p></a>
+    <a class="home-group" href="#/ch02"><span class="cnt">04</span><h3>Ch 2 · Model Data</h3><p>Model artifacts, quantization, ModelCars aur OCI volumes.</p></a>
+    <a class="home-group" href="#/ch03"><span class="cnt">05</span><h3>Ch 3 · Kubernetes and GPUs</h3><p>GPU stack, sharing (time-slicing, MPS, MIG) aur DRA.</p></a>
+    <a class="home-group" href="#/ch04"><span class="cnt">06</span><h3>Ch 4 · Running in Production</h3><p>Evaluation, rollout, autoscaling aur LLM-aware routing.</p></a>
+    <a class="home-group" href="#/ch05"><span class="cnt">07</span><h3>Ch 5 · Model Observability</h3><p>Metrics, logs, traces — TTFT, TPOT, KV cache aur guarding.</p></a>
+    <a class="home-group" href="#/ch06"><span class="cnt">08</span><h3>Ch 6 · Model Customization</h3><p>Fine-tuning vs RAG, LoRA, Kubeflow Trainer aur FT API.</p></a>
+    <a class="home-group" href="#/ch07"><span class="cnt">09</span><h3>Ch 7 · Job Scheduling</h3><p>Gang scheduling, Kueue, topology aur fairness.</p></a>
+    <a class="home-group" href="#/ch08"><span class="cnt">10</span><h3>Ch 8 · AI-Driven Applications</h3><p>Client apps, tool calls aur agentic workflows.</p></a>
+    <a class="home-group" href="#/ch09"><span class="cnt">11</span><h3>Ch 9 · Agentic Apps in Production</h3><p>MCP, A2A, identity, state aur agent observability.</p></a>
+    <a class="home-group" href="#/afterword"><span class="cnt">12</span><h3>Afterword</h3><p>Platform controls, prompt injection aur aage ka rasta.</p></a>
+  </div>
+  <div class="livecheck"><div class="livecheck-tag">Yaad rakhne wali baat</div><p>Kitab Kubernetes zero se nahi sikhati — clusters, pods, deployments, services aur namespaces ka working knowledge assume karti hai. AI-specific extensions us base ke upar samjhaye gaye hain.</p></div>
+  <div class="pn-nav"><a class="pn-btn" href="#/preface"><span class="pn-label">Next →</span><span class="pn-title">Preface</span></a></div>
+
+</section>
+
+<section class="section" id="sec-preface" data-title="Preface — Production Mushkil Hai" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Shuruaat</span></div>
+  <h1>Preface — Production Mushkil Hai</h1>
+
+  <p class="lead">Kitab ka daava seedha hai: <strong>training mushkil nahi, production mushkil hai</strong>. Generative AI tab asli problem banta hai jab woh real users, real data, real budgets aur real failure modes se milta hai — aur wahi jagah hai jahan Kubernetes kaam aata hai.</p>
+  <h3>Why We Wrote This Book — kitab kyun likhi gayi</h3>
+  <p>Kitab ke hisaab se ab mushkil kaam model train karna ya API call karna nahi raha. Mushkil kaam hai generative AI ko <strong>reliably, economically aur safely production me chalana</strong>. Generative AI ko ek <strong>platform concern</strong> ke roop me dekha gaya hai, demo concern ke roop me nahi. Kubernetes isliye natural jagah hai kyunki woh pehle se scheduling, scaling, storage, networking, observability aur multi-tenancy sambhalta hai — AI workloads ko bas usi platform par theek se chalana seekhna hai.</p>
+  <h3>Kubernetes — kya assume kiya gaya hai</h3>
+  <p>Kitab assume karti hai ki reader ko clusters, pods, deployments, services aur namespaces ka <strong>working knowledge</strong> hai. Ye Kubernetes zero se nahi sikhati. AI-specific extensions — jaise GPU management, bade model files, lambi start-up times aur batch jobs — us base ke upar samjhaye gaye hain.</p>
+  <h3>Generative AI — chhota itihaas</h3>
+  <p>Ek chhota history diya gaya hai: <strong>2014 me generative adversarial networks (GANs)</strong>, <strong>2017 me attention-based transformer</strong>, aur phir woh step-change jab large language models widely usable hue. Transformer ne ek general text engine possible banaya — aur uske baad engineering problem shift ho gayi: serving, data, cost aur control ki taraf.</p>
+  <h3>How This Book Is Structured — chaar hisse</h3>
+  <ul>
+    <li><strong>Part I (Inference):</strong> pehla model serve karna — Ch 1 deployment, Ch 2 model data.</li>
+    <li><strong>Part II (Production Readiness):</strong> use production-ready banana — Ch 3 GPUs, Ch 4 production, Ch 5 observability.</li>
+    <li><strong>Part III (Tuning):</strong> cost, throughput aur behaviour tune karna — Ch 6 customization, Ch 7 scheduling.</li>
+    <li><strong>Part IV (AI-Driven Apps):</strong> ek model se applications aur agents tak — Ch 8 clients aur agents, Ch 9 agents in production.</li>
+  </ul>
+  <h3>Who This Book Is For — kiske liye hai</h3>
+  <p>Platform engineers, Kubernetes operators, ML engineers aur application developers — khaas taur par woh log jinhe models ko <strong>self-hosted ya hybrid infrastructure</strong> par production me dalna hai, sirf hosted API se nahi.</p>
+  <h3>What You Will Learn — kya seekhoge</h3>
+  <ul>
+    <li>Open models ko chunna aur serve karna (vLLM ke saath).</li>
+    <li>Model weights ko pods tak pahunchana — ModelCars aur OCI volumes.</li>
+    <li>GPUs ka sahi istemal — sharing, DRA, scheduling.</li>
+    <li>Scaling, evaluating aur models ko rollout karna.</li>
+    <li>Inference ko observe karna — metrics, logs, traces.</li>
+    <li>Fine-tuning aur RAG — kab kya, aur Kubernetes par training.</li>
+    <li>Batch work schedule karna aur agentic applications chalana.</li>
+  </ul>
+  <h3>Conventions Used in This Book</h3>
+  <p>Code, commands aur configuration <strong>listings</strong> ke roop me dikhaye gaye hain. Important terms text me <strong>bold/italics</strong> me introduce kiye gaye hain. Kitab chhote, practical examples istemal karti hai, lambi listings nahi — poora code kitab ke online repository me hai.</p>
+  <h3>O'Reilly Online Learning</h3>
+  <p>Platform ke baare me standard note — live training, playlists aur wider catalogue ka zikr hai.</p>
+  <h3>How to Contact Us</h3>
+  <p>Readers ko publisher ko comments aur corrections bhejne ke liye invite kiya gaya hai. Errors par aur real production experience par feedback manga gaya hai.</p>
+  <h3>Acknowledgments</h3>
+  <p>Reviewers, editors, Red Hat colleagues aur un open-source communities ko dhanyavad, jinke tools istemal hue hain — jinme vLLM, KServe, Kubernetes aur related projects shaamil hain.</p>
+  <div class="note">Kitab ke baare me: Generative AI on Kubernetes — O'Reilly Media, Inc., February 2026, 406 pages, reading time 11h 42m, level Intermediate to Advanced. Is copy me <strong>koi ISBN display nahi hota</strong> — isliye yahan koi ISBN nahi diya gaya hai. URL me dikhne wala number (9781098171919) sirf book page ka identifier hai, ISBN nahi.</div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/home"><span class="pn-label">← Prev</span><span class="pn-title">Home</span></a><a class="pn-btn" href="#/intro"><span class="pn-label">Next →</span><span class="pn-title">Introduction</span></a></div>
+</section>
+
+<section class="section" id="sec-intro" data-title="Introduction — LLM aur Inference" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Shuruaat</span></div>
+  <h1>Introduction — LLM aur Inference</h1>
+
+  <p class="lead">ChatGPT ke public release se pehle bhi generative models the — lekin <strong>November 2022</strong> ko phase transition mana gaya hai. Uske baad sawal badal gaya: "kya ye generate kar sakta hai?" se "hum ise sabke liye, hamesha, acceptable cost par kaise chalaye?" tak.</p>
+  <h3>From GANs to ChatGPT</h3>
+  <p>Generative models 2022 se pehle bhi maujood the, lekin ChatGPT ke public release ke baad ek general-purpose text model non-specialists ke liye usable ho gaya. Demand explode ho gayi — aur question badal gaya: generate karna nahi, balki use <strong>har kisi ke liye, har waqt, acceptable cost</strong> par chalana.</p>
+  <h3>What Is a Large Language Model?</h3>
+  <p>LLM ek bada neural network hai jo bahut bade text corpora par train karke <strong>next token predict</strong> karta hai, transformer par bana hua. Inference ke waqt woh human sense me "jaanta" nahi hai — woh prompt aur apne weights ke hisaab se <strong>sabse plausible continuation</strong> produce karta hai. Size, training data aur architecture sab matter karte hain, lekin serving behaviour kuch concrete quantities se govern hota hai: <strong>parameters, context length aur memory</strong>.</p>
+  <h3>Inference — do phases</h3>
+  <p>Poori kitab me do phases alag rakhi gayi hain:</p>
+  <ul>
+    <li><strong>Prefill:</strong> poora prompt ek saath process hota hai, compute-heavy hai, aur pehla token plus <strong>KV cache</strong> produce karta hai.</li>
+    <li><strong>Decode:</strong> ek-ek token generate hota hai, memory-bandwidth-bound hai, aur KV cache ko reuse karta hai.</li>
+  </ul>
+  <p>Ye split samjhata hai ki <strong>time-to-first-token (TTFT)</strong> aur <strong>inter-token latency</strong> alag behave kyun karte hain — aur batching aur caching itne important kyun hain.</p>
+  <h3>KV Cache aur PagedAttention</h3>
+  <p>KV cache pehle dekhe gaye tokens ke attention keys aur values store karta hai, taaki decode unhe dobara compute na kare. Ye <strong>context length aur batch size ke saath badhta</strong> hai aur GPU memory par haavi ho sakta hai. <strong>PagedAttention</strong> (vLLM se) ise fixed-size blocks me manage karta hai — operating-system pages ki tarah — taaki memory fragmentation par waste na ho aur bahut zyada concurrent sequences fit ho sakein.</p>
+  <h3>A Short Overview of the GenAI Ecosystem</h3>
+  <p>Field ko divisions me baanta gaya hai: model providers aur open models, serving engines, Kubernetes operators aur platforms, vector stores, observability tools aur agent frameworks. Kitab ka focus <strong>self-hosted, open-model path</strong> hai, ye note karte hue ki kab hosted API simpler choice hoti hai.</p>
+  <h3>The Model Serving Landscape</h3>
+  <p>Engines throughput, latency, features (jaise structured output, prefix caching, disaggregated serving) aur hardware support me alag hote hain. Kitab zyada tar examples ke liye <strong>vLLM</strong> ko standardise karti hai — kyunki ye widely used, fast aur OpenAI-compatible hai — aur alternatives jaise <strong>TensorRT-LLM, TGI, llama.cpp</strong> aur doosron ka naam passing me liya gaya hai.</p>
+  <h3>Kubernetes for AI</h3>
+  <p>Kubernetes ko AI workloads ka <strong>control plane</strong> kaha gaya hai — woh pehle se jaanta hai kaam ko place karna, restart karna, expose karna, scale karna aur tenants ko isolate karna. Naya kaam hai use GPUs, bade model files, lambi start-up times aur batch jobs ke baare me sikhana, jo ordinary web services nahi hain.</p>
+  <h3>Kubernetes-Based Serving Solutions</h3>
+  <ul>
+    <li><strong>KServe:</strong> model ka higher-level abstraction deta hai.</li>
+    <li><strong>KServe LLM inference extension (llm-d):</strong> disaggregated prefill/decode aur smarter routing jodta hai.</li>
+    <li><strong>Knative Serving:</strong> scale-to-zero deta hai.</li>
+    <li><strong>Plain Deployment:</strong> full control deta hai — aur kitab ka Ch 1 ka starting point yahi hai.</li>
+  </ul>
+  <h3>Beyond Inference: Agentic Applications</h3>
+  <p>Ek single completion sirf shuruaat hai. Asli applications calls ko chain karte hain, documents retrieve karte hain, tools call karte hain aur state rakhte hain — Ch 8–9 ki agentic applications.</p>
+  <h3>Table I-1 — Models come in different sizes</h3>
+  <p>Kitab ki table poori, usi order aur values ke saath:</p>
+<div class="tbl-wrap"><table><tr><th>Size</th><th>Example</th><th>Weights (approx.)</th><th>Context</th><th>Use case</th><th>Hardware</th></tr><tr><td>Tiny</td><td>0.5B model</td><td>≈ 1 GB</td><td>8K</td><td>Personal assistant</td><td>Laptop</td></tr><tr><td>Small</td><td>7B</td><td>≈ 14 GB</td><td>32K</td><td>Coding</td><td>1 GPU (24 GB)</td></tr><tr><td>Medium</td><td>32B</td><td>≈ 64 GB</td><td>128K</td><td>—</td><td>1–2 GPUs (80 GB)</td></tr><tr><td>Large</td><td>70B</td><td>≈ 140 GB</td><td>128K</td><td>Enterprise assistant</td><td>2–8 GPUs (80 GB)</td></tr><tr><td>Huge</td><td>405B</td><td>≈ 810 GB</td><td>128K</td><td>Frontier model</td><td>8+ GPUs</td></tr></table></div>
+  <p>Table ka lesson, kitab ke shabdon me: <strong>16-bit precision me weights ka size gigabytes me lagbhag parameter count (billions) ka double hota hai</strong> — to 7B model ko sirf weights ke liye hi lagbhag 14 GB chahiye, KV cache ya overhead se pehle. Aur small se huge tak ka jump ek consumer card se poora datacentre rack tak ka jump hai.</p>
+  <h3>Summary</h3>
+  <p>Introduction ka takeaway: <strong>inference central production problem hai</strong>, iski prefill/decode structure hai, iski memory weights + KV cache se dominate hoti hai, aur Kubernetes plus modern serving engine hi woh tareeka hai jisse kitab ise tame karegi.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/preface"><span class="pn-label">← Prev</span><span class="pn-title">Preface</span></a><a class="pn-btn" href="#/ch01"><span class="pn-label">Next →</span><span class="pn-title">Ch 1 · Deploying Models</span></a></div>
+</section>
+
+<section class="section" id="sec-ch01" data-title="Ch 1 · Deploying Models" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">03</span><span class="sec-group">Part I · Inference</span></div>
+  <h1>Ch 1 · Deploying Models</h1>
+
+  <p class="lead">Chapter ka goal jaan-boojh kar narrow hai: <strong>ek model, ek engine, ek pod, ek successful request</strong> — production hardening se pehle ek working baseline.</p>
+  <h3>Setting the Stage: The Model and the Serving Engine</h3>
+  <p>Example model hai <strong>Meta Llama 3.2, 3-billion parameters, instruct-tuned</strong>, Hugging Face repository <code>meta-llama/Llama-3.2-3B-Instruct</code> me. Ye itna chhota hai ki modest GPU par chal jata hai, aur itna bada hai ki ek asli instruction model hai. Serving engine hai <strong>vLLM</strong> — speed, continuous batching, PagedAttention aur OpenAI-compatible API ke liye chuna gaya.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">API layer — OpenAI-compatible requests</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Scheduler — waiting + running sequences ko batch karta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Execution engine — model ko GPU par chalata hai</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">KV cache — paged blocks me manage</text></svg><div class="fig-cap">Figure 1-1 — vLLM high-level architecture · Front-end, scheduler aur execution engine — vLLM ek monolithic call nahi, ek pipeline hai jo continuously re-batch karta hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>The Cluster Environment</h3>
+  <p>Poori kitab me ek <strong>local Kubernetes cluster</strong> istemal hota hai, jo <strong>Kind (Kubernetes in Docker)</strong> se banaya gaya hai, plus GPU support jahan GPU available ho — ya GPU chapters ke liye cloud cluster. CPU-only inference sabse chhote models ke liye possible hai, lekin kitab ka target nahi hai. Real inference ke liye GPU node chahiye.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Laptop (user)</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Port-forward</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Kind cluster — control plane + worker nodes</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Model server pod (vLLM + Llama 3.2 3B)</text></svg><div class="fig-cap">Figure 1-2 — Local cluster setup · Kind control plane aur worker nodes, model server pod andar, user laptop se forwarded port ke through access karta hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Building the Model Server Image</h3>
+  <p>Image <strong>official vLLM image</strong> par based hai, jisme model add kiya jata hai ya start-up par download hota hai. vLLM image me pehle se CUDA libraries aur Python dependencies hain. Ek <code>Dockerfile</code>/<code>Containerfile</code> configuration layer kar sakta hai. Key point: image ko <strong>reproducible</strong> rakho, aur bade weights ko har image layer me bake karne se bacho agar woh aksar change hote hain — ye theme Ch 2 me wapas aati hai.</p>
+  <h3>Deploying the Model Server on Kubernetes</h3>
+  <p>Ek <strong>Deployment</strong> banta hai — ek replica, GPU resource request, container port, aur model name aur serving options ke liye environment variables. Ek <strong>Service</strong> use cluster ke andar expose karta hai aur <strong>port-forward</strong> laptop tak. Har field samjhaya gaya hai: image, vLLM start karne wala command, GPU reserve karne wale resource limits, aur readiness/liveness considerations — jo Ch 4 me dobara aayenge, kyunki model server tab tak ready nahi hota jab tak model load na ho jaye, jisme minutes lag sakte hain.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Deployment — model server (reconstructed, notes se)</span><span>reconstructed</span></div><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-3b
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        env:
+        - name: MODEL
+          value: meta-llama/Llama-3.2-3B-Instruct</code></pre></div>
+  <h3>The First Inference Request</h3>
+  <p>Request <code>curl</code> se ki jati hai, OpenAI-compatible completions endpoint par, JSON body ke saath — model name, prompt aur generation parameters jaise <strong>maximum tokens aur temperature</strong>. Response <strong>token by token stream</strong> hoti hai.</p>
+<div class="fig"><svg viewBox="0 0 620 72" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="10" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="101" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Laptop — curl</text><text x="101" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">JSON body</text><line x1="195" y1="36" x2="213" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="211,30 211,30 219,36 211,42 219,42" fill="#9ee939"/><rect x="218" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="309" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Port-forward</text><text x="309" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">:8000</text><line x1="403" y1="36" x2="421" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="419,30 419,30 427,36 419,42 427,42" fill="#9ee939"/><rect x="426" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="517" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">vLLM pod</text><text x="517" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">streaming tokens</text></svg><div class="fig-cap">Figure 1-3 — curl request aur streaming response · Request laptop se forwarded port ke through pod tak jati hai, aur streamed tokens wapas aate hain. (notes ke description se dobara banaya gaya diagram)</div></div><div class="codeblock"><div class="codeblock-head"><span>Pehla inference request (reconstructed, notes se)</span><span>reconstructed</span></div><pre><code>curl http://localhost:8000/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.2-3B-Instruct",
+    "prompt": "Kubernetes kya hai?",
+    "max_tokens": 100,
+    "temperature": 0.7,
+    "stream": true
+  }'</code></pre></div>
+  <h3>Example numbers / results</h3>
+  <p>Llama-3.2-3B model poore example me istemal hota hai. Pehla request ek coherent completion return karta hai — ye dikhata hai ki poori chain kaam karti hai. Is chapter me <strong>koi benchmark number claim nahi kiya gaya</strong> — chapter ka result ek working deployment hai, performance figure nahi.</p>
+  <h3>Summary</h3>
+  <p>End tak reader ke paas Kubernetes me chal raha ek model hai, jise OpenAI API ki tarah call kiya ja sakta hai.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li><strong>Start small</strong> — 3B model pipeline prove karta hai, usse pehle ki 70B model budget kha jaye.</li>
+    <li><strong>Serving engine utna hi matter karta hai jitna model</strong> — vLLM ka scheduler aur PagedAttention hi throughput banate hain.</li>
+    <li><strong>Model loading slow hai</strong> — probes aur start-up handling ko iska respect karna chahiye.</li>
+    <li><strong>Model aur image ko alag rakho jahan possible ho</strong> — weights code se zyada baar change hote hain.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/intro"><span class="pn-label">← Prev</span><span class="pn-title">Introduction</span></a><a class="pn-btn" href="#/ch02"><span class="pn-label">Next →</span><span class="pn-title">Ch 2 · Model Data</span></a></div>
+</section>
+
+<section class="section" id="sec-ch02" data-title="Ch 2 · Model Data" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">04</span><span class="sec-group">Part I · Inference</span></div>
+  <h1>Ch 2 · Model Data</h1>
+
+  <p class="lead">Model ek file nahi hai — woh <strong>versioned artifacts ka set</strong> hai. Aur un artifacts ko pods tak pahunchana ek first-class deployment concern hai.</p>
+  <h3>From Training to Inference</h3>
+  <p>Training weights produce karta hai; inference unhe consume karta hai. Dono phases ki storage needs alag hain — training ko datasets aur checkpoints tak fast, shared access chahiye; inference ko final weights har node par chahiye jo model serve karta hai, <strong>jaldi aur reliably</strong>.</p>
+  <h3>Understanding Model Artifacts</h3>
+  <p>Model ek file nahi hai. Ye weight shards ka set hai (<code>safetensors</code> format kitab ke examples me), ek <strong>tokenizer</strong>, ek configuration file (<code>config.json</code>) aur instruction models ke liye ek <strong>chat template</strong>. Har artifact ka role samjhaya gaya hai — aur tokenizer ko model se <strong>exactly match</strong> karna chahiye, warna outputs galat honge.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">config.json — model configuration</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Tokenizer files — vocab + merges</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Weight shards — safetensors files</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Chat template — instruction format</text></svg><div class="fig-cap">Figure 2-2 — Hugging Face model repository layout · Ek model repository ke chaar hisse — sabka role alag hai, sab zaroori hain. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Quantisation and size</h3>
+  <p>Wahi 3B model precision ke hisaab se disk aur GPU memory me bahut alag jagah leta hai — <strong>16-bit me lagbhag 6 GB, 8-bit me lagbhag 3 GB, aur 4-bit me lagbhag 1.5–2 GB</strong> — aur uske saath output quality ka trade-off hota hai. Exact saving quantisation method par depend karti hai, aur kitab warn karti hai ki chhota model hamesha "wahi model" hai ye assume mat karo.</p>
+<div class="fig"><svg viewBox="0 0 620 132" xmlns="http://www.w3.org/2000/svg" role="img"><text x="10" y="25" fill="#e3e2e6" font-size="13" font-family="Inter,system-ui,sans-serif">16-bit (FP16)</text><rect x="150" y="10" width="400" height="18" rx="4" fill="#84cc16"/><text x="560" y="24" fill="#9ee939" font-size="12.5" font-family="JetBrains Mono,monospace">≈ 6 GB</text><text x="10" y="59" fill="#e3e2e6" font-size="13" font-family="Inter,system-ui,sans-serif">8-bit (INT8)</text><rect x="150" y="44" width="200" height="18" rx="4" fill="#84cc16"/><text x="360" y="58" fill="#9ee939" font-size="12.5" font-family="JetBrains Mono,monospace">≈ 3 GB</text><text x="10" y="93" fill="#e3e2e6" font-size="13" font-family="Inter,system-ui,sans-serif">4-bit (INT4)</text><rect x="150" y="78" width="120" height="18" rx="4" fill="#84cc16"/><text x="280" y="92" fill="#9ee939" font-size="12.5" font-family="JetBrains Mono,monospace">≈ 1.5–2 GB</text></svg><div class="fig-cap">Figure 2-1 — Model file size by quantisation (3B model) · Precision ghatne par size lagbhag aadha-aadha hota jata hai — quality ka trade-off saath me hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Model Storage and the Model Registry</h3>
+  <p><strong>Hugging Face Hub</strong> example registry hai — public aur gated models ke saath, aur gated models jaise Llama ke liye <strong>access token</strong> chahiye. Registry source of truth hai; cluster ek cache hai, source nahi.</p>
+  <h3>Model Data Delivery to Kubernetes</h3>
+  <p>Naive approaches compare kiye gaye hain:</p>
+  <ul>
+    <li><strong>Weights ko container image me bake karna:</strong> simple hai, lekin image tens of gigabytes ki ho jati hai aur har model change par rebuild hoti hai.</li>
+    <li><strong>Pod start-up par Hub se download:</strong> simple hai, lekin slow aur fragile hai — aur har replica alag se download karta hai.</li>
+    <li><strong>PersistentVolume:</strong> shared hai, lekin storage class aur pre-population chahiye.</li>
+    <li>Aur neeche do purpose-built approaches.</li>
+  </ul>
+<div class="fig"><svg viewBox="0 0 620 72" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="10" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="101" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Local disk</text><text x="101" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">fastest, 1 node</text><line x1="195" y1="36" x2="213" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="211,30 211,30 219,36 211,42 219,42" fill="#9ee939"/><rect x="218" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="309" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Shared storage</text><text x="309" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">flexible, slower</text><line x1="403" y1="36" x2="421" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="419,30 419,30 427,36 419,42 427,42" fill="#9ee939"/><rect x="426" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="517" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Object storage</text><text x="517" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">scales best</text></svg><div class="fig-cap">Figure 2-3 — Storage trade-off: local vs shared vs object · Local disk fastest hai lekin ek node se bandha hai; shared flexible lekin slower aur mehenga; object storage sabse achha scale karta hai lekin download step chahiye. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Deploying with ModelCars</h3>
+  <p><strong>ModelCar</strong> ek container image hai jisme sirf model files hoti hain, jo KServe ModelCar tooling se banti hai. Model server pod ek <strong>init container ya sidecar</strong> chalata hai jo model ko ModelCar image se shared <code>emptyDir</code> volume me copy karta hai, taaki serving container files ko locally dekh sake. Chapter ka example Llama-3.2-3B ke liye ModelCar banata hai aur phir use Deployment me mount karta hai. Fayda: model images kisi bhi container image ki tarah <strong>versioned aur cached</strong> hoti hain, aur koi alag storage system nahi chahiye.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">ModelCar image — sirf model files</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Init container — files ko shared volume me copy karta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Shared emptyDir volume</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">vLLM container — local files se serve karta hai</text></svg><div class="fig-cap">Figure 2-4 — ModelCar architecture · ModelCar image, init container, shared volume aur vLLM container ka flow. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Deploying with OCI Volumes</h3>
+  <p>Kubernetes <strong>1.31+</strong> (kitab me versions alag-alag jagah alag diye gaye hain — neeche note dekhein) OCI image ko seedha volume ke roop me mount karna support karta hai, bina init container ke. Pod spec me <code>image</code> volume source ModelCar/OCI image ki taraf point karta hai, aur kubelet use model path par <strong>read-only</strong> mount karta hai. Ye cleanest current approach mana gaya hai jahan cluster support karta ho.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">OCI image (ModelCar) — registry me</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Kubelet — image pull karta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Volume mount — read-only, model path par</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">vLLM container — seedha serve karta hai</text></svg><div class="fig-cap">Figure 2-5 — OCI volume flow · Kubelet OCI image ko pull karke seedha serving container me mount karta hai — koi copy step nahi. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <div class="note"><strong>Imaandaar note — kitab me version numbers inconsistent hain:</strong> OCI volumes ke liye Kubernetes version ek jagah <strong>1.35</strong> diya gaya hai, Lessons Learned me <strong>1.33</strong>, aur OCI section me <strong>1.31</strong>. Teeno numbers yahan waise hi rakhe gaye hain — ek ko silently chunna galat hota. Feature recent aur version-gated hai; apne cluster ka version check karo.</div>
+  <h3>Summary</h3>
+  <p>Model data ek first-class deployment concern hai — registry, delivery mechanism aur pod spec ko model path, format aur version par <strong>agree</strong> karna chahiye.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>Models ko <strong>versioned artifacts</strong> ki tarah treat karo, haath se copy ki gayi files ki tarah nahi.</li>
+    <li>Bade weights ko serving image me bake mat karo agar avoid kar sakte ho.</li>
+    <li><strong>ModelCars</strong> portable, image-based delivery dete hain jo kisi bhi cluster par kaam karta hai.</li>
+    <li><strong>OCI volumes</strong> jahan supported ho wahan simpler future hain — lekin pehle Kubernetes version check karo.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch01"><span class="pn-label">← Prev</span><span class="pn-title">Ch 1 · Deploying Models</span></a><a class="pn-btn" href="#/ch03"><span class="pn-label">Next →</span><span class="pn-title">Ch 3 · Kubernetes and GPUs</span></a></div>
+</section>
+
+<section class="section" id="sec-ch03" data-title="Ch 3 · Kubernetes and GPUs" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">05</span><span class="sec-group">Part II · Production Readiness</span></div>
+  <h1>Ch 3 · Kubernetes and GPUs</h1>
+
+  <p class="lead">GPUs expensive, scarce aur naive model me indivisible hain — <strong>ek GPU per pod</strong>. Unhe achhe se share aur schedule karna cost problem hai, sirf performance problem nahi.</p>
+  <h3>Why Kubernetes Needs GPUs</h3>
+  <p>CPUs transformer inference ke liye chahiye parallel floating-point throughput acceptable latency par nahi de sakte. GPUs hazaaron chhote cores aur <strong>high-bandwidth memory (HBM)</strong> dete hain — lekin woh expensive, scarce aur naive model me indivisible hain, isliye unhe share aur schedule karna cost problem hai, sirf performance problem nahi.</p>
+  <h3>The GPU Stack on Kubernetes</h3>
+  <p>Neeche se upar tak ka stack:</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Hardware — NVIDIA GPUs</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Drivers + container runtime (GPU support)</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">NVIDIA GPU Operator — drivers, device plugin, monitoring</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Scheduler — GPUs ko extended resource ke roop me dekhta hai</text></svg><div class="fig-cap">Figure 3-1 — GPU anatomy / hardware stack · GPU Operator drivers, device plugin aur monitoring ko Kubernetes resources ke roop me install karta hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>Kitab <strong>NVIDIA GPU Operator</strong> ko Helm se install karna, nodes par GPU capacity check karna, aur ek simple CUDA pod se verify karna walkthrough karti hai. Scheduler GPUs ko tabhi dekhta hai jab device plugin unhe extended resource (<code>nvidia.com/gpu</code>) ke roop me advertise karta hai.</p>
+  <h3>How a GPU Request Flows</h3>
+<div class="fig"><svg viewBox="0 0 620 340" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Pod requests nvidia.com/gpu: 1</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Scheduler — sirf free GPU wale node par place karta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Kubelet + device plugin — device allocate karte hain</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Container runtime — container ke andar expose karta hai</text><line x1="310" y1="264" x2="310" y2="280" stroke="#9ee939" stroke-width="2"/><polygon points="304,278 316,278 310,287" fill="#9ee939"/><rect x="40" y="288" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="315" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Serving engine — CUDA ke through GPU dekhta hai</text></svg><div class="fig-cap">Figure 3-2 — GPU request ka flow — pod se node tak · Pod se lekar serving engine tak GPU request ka rasta. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Sharing GPU Capacity</h3>
+  <p>Teen mechanisms compare kiye gaye hain:</p>
+  <ul>
+    <li><strong>Time-slicing:</strong> GPU time-multiplexing se share hota hai — kai pods ek device share karte hain, har ek ko time ka slice milta hai. Simple hai, chhote bursty workloads ke liye kaam karta hai, lekin <strong>koi memory isolation nahi</strong> aur koi performance guarantee nahi.</li>
+    <li><strong>Multi-Process Service (MPS):</strong> NVIDIA ka MPS multiple processes ko GPU zyada efficiently share karne deta hai — kuch workloads ke liye time-slicing se better utilisation, lekin memory abhi bhi shared hai.</li>
+    <li><strong>Multi-Instance GPU (MIG):</strong> GPU physically isolated instances me partition ho jata hai, har ek ki apni memory aur compute. <strong>Hard isolation aur predictable performance</strong>, lekin partition sizes fixed hain aur GPU ko support karna chahiye.</li>
+  </ul>
+<div class="fig"><svg viewBox="0 0 620 72" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="10" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="101" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Time-slicing</text><text x="101" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">no isolation</text><line x1="195" y1="36" x2="213" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="211,30 211,30 219,36 211,42 219,42" fill="#9ee939"/><rect x="218" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="309" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">MPS</text><text x="309" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">shared memory</text><line x1="403" y1="36" x2="421" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="419,30 419,30 427,36 419,42 427,42" fill="#9ee939"/><rect x="426" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="517" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">MIG</text><text x="517" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">hard isolation</text></svg><div class="fig-cap">Figure 3-3 — Time-slicing vs MPS vs MIG · Teen sharing mechanisms ka core difference — isolation ka level. (notes ke description se dobara banaya gaya diagram)</div></div><div class="tbl-wrap"><table><tr><th>Mechanism</th><th>Isolation</th><th>Flexibility</th><th>Kab istemal karein</th></tr><tr><td>Time-slicing</td><td>Koi nahi</td><td>Flexible</td><td>Chhote, bursty workloads</td></tr><tr><td>MPS</td><td>Shared memory</td><td>Medium</td><td>Better sharing chahiye ho to</td></tr><tr><td>MIG</td><td>Strong (fixed slices)</td><td>Fixed partitions</td><td>Predictable performance chahiye ho to</td></tr></table></div>
+  <p>Kitab ki guidance: bade production models ke liye <strong>whole GPUs</strong> istemal karo; sharing sirf chhote models, development ya multi-tenant cost saving ke liye.</p>
+  <h3>Sharing GPUs with Dynamic Resource Allocation (DRA)</h3>
+  <p>DRA accelerators ko fixed count ke bajay <strong>attributes</strong> (jaise memory ya compute capability) se request karne ka newer Kubernetes API hai. Ek <code>ResourceClaim</code> batata hai kya chahiye; ek driver (jaise NVIDIA DRA driver) use real device se match karta hai — MIG slice ya GPU ka fraction bhi. DRA fine-grained GPU sharing ka future mana gaya hai, lekin likhte waqt simple count-based request se <strong>newer aur kam universally supported</strong> tha.</p>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">ResourceClaim — kya chahiye, attributes se</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Scheduler + driver — device match karte hain</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Node allocation — MIG slice ya GPU fraction</text></svg><div class="fig-cap">Figure 3-4 — Dynamic Resource Allocation flow · Claim, scheduler, driver aur node allocation ka flow. (notes ke description se dobara banaya gaya diagram)</div></div><div class="tbl-wrap"><table><tr><th>DRA Concept</th><th>Matlab</th></tr><tr><td>ResourceClaim</td><td>Kya chahiye — attributes ke saath request</td></tr><tr><td>ResourceClaimTemplate</td><td>Claim banane ka template</td></tr><tr><td>ResourceSlice</td><td>Available devices ki jankari</td></tr><tr><td>Driver</td><td>Claim ko real device se match karta hai</td></tr></table></div>
+  <h3>Other GPU Details</h3>
+  <p>Chapter GPU memory types samjhata hai, kyun <strong>HBM bandwidth decode ke liye matter</strong> karta hai, datacentre cards (jaise A100/H100, 80 GB) aur consumer cards me farak, aur kyun GPU ki sankhya aksar binding constraint hoti hai ki kaun se size ka model serve ho sakta hai.</p>
+  <h3>Summary</h3>
+  <p>GPUs scarce, expensive resource hain; Kubernetes unhe manage kar sakta hai — lekin sirf tab jab operator, device plugin aur pod requests sab sahi set up hon.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>Model server debug karne se pehle <strong>node par GPU capacity verify karo</strong>.</li>
+    <li>Whole-GPU allocation sabse simple aur predictable hai.</li>
+    <li>Sharing mechanisms <strong>isolation ke badle utilisation</strong> trade karte hain.</li>
+    <li>DRA fractional GPUs ke liye promising hai — lekin driver aur Kubernetes version support check karo.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch02"><span class="pn-label">← Prev</span><span class="pn-title">Ch 2 · Model Data</span></a><a class="pn-btn" href="#/ch04"><span class="pn-label">Next →</span><span class="pn-title">Ch 4 · Running in Production</span></a></div>
+</section>
+
+<section class="section" id="sec-ch04" data-title="Ch 4 · Running in Production" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">06</span><span class="sec-group">Part II · Production Readiness</span></div>
+  <h1>Ch 4 · Running in Production</h1>
+
+  <p class="lead">Production ek bada Deployment nahi hai — woh hai <strong>evaluation, progressive rollout, sahi autoscaler, aur routing jo model ko samajhta ho</strong>.</p>
+  <h3>A Production Stack for Generative AI</h3>
+  <p>Stack layered hai — model server (vLLM), Kubernetes Deployment/Service, ingress/gateway, evaluation harness, metrics pipeline, aur rollout mechanism.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">User</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Gateway / ingress</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Model pods (vLLM) — Deployment + Service</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Observability — metrics, logs, traces (side me)</text></svg><div class="fig-cap">Figure 4-1 — Production stack diagram · Request ka rasta user se gateway ke through model pods tak, observability side me. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>The Inference Server in Production</h3>
+  <p>Ch 1 ke Deployment se hardened Deployment tak ka safar:</p>
+  <ul>
+    <li><strong>Resource requests aur limits</strong> — CPU, memory aur GPU ke liye.</li>
+    <li><strong>Startup probe</strong> jo model loading ke liye minutes allow karta hai — example me lamba failure threshold hai (ek example me 60 seconds initial delay, aur period jo kai minutes ki loading tolerate karta hai).</li>
+    <li><strong>Readiness</strong> tabhi pass hoti hai jab model load ho jaye.</li>
+    <li><strong>Graceful shutdown</strong> — taaki in-flight requests drop na hon.</li>
+  </ul>
+  <p>vLLM ke production flags jo matter karte hain:</p>
+  <ul>
+    <li><code>--max-model-len</code> — context length cap karta hai (aur isliye KV-cache size bhi). Example: <code>--max-model-len 4096</code>.</li>
+    <li><code>--gpu-memory-utilization</code> — GPU memory ka kitna fraction vLLM istemal kar sakta hai. Example: <strong>0.9</strong>.</li>
+    <li><code>--max-num-seqs</code> — concurrent sequences cap karta hai.</li>
+    <li><code>--enforce-eager</code> / compilation trade-offs.</li>
+  </ul>
+  <h3>Model Evaluation and Rollout</h3>
+  <p>Naye model version ko sab users tak pahunchane se pehle benchmark set par evaluate kiya jata hai. Chapter ka example ek chhota evaluation harness istemal karta hai jo prompts ka set purane aur naye model dono ko bhejta hai aur outputs compare karta hai.</p>
+<div class="tbl-wrap"><table><tr><th>Metric</th><th>Kya measure karta hai</th></tr><tr><td>Task accuracy / quality</td><td>Jawab kitne sahi aur achhe hain</td></tr><tr><td>Time-to-first-token (TTFT)</td><td>Pehla token kitni der me aaya</td></tr><tr><td>Inter-token latency (TPOT)</td><td>Tokens ke beech ka gap</td></tr><tr><td>Throughput</td><td>Tokens/second aur requests/second</td></tr><tr><td>Error rate</td><td>Kitne requests fail hue</td></tr><tr><td>Cost per request</td><td>Ek request ki keemat</td></tr></table></div>
+  <p>Rollout <strong>progressively</strong> hota hai — canary (traffic ka chhota percentage naye model ko), phir bada share, phir full — gateway ya service mesh se traffic split karke, aur rollback path ke saath agar quality ya latency regress kare.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Evaluate — purana vs naya model</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Canary — chhota traffic share</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Observe — metrics aur quality dekho</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Promote ya Roll back</text></svg><div class="fig-cap">Figure 4-2 — Evaluation / rollout pipeline · Evaluate → canary → observe → promote ya roll back. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Autoscaling</h3>
+  <p>CPU-based <strong>Horizontal Pod Autoscaler (HPA) GPU inference ke liye poor fit</strong> hai — kyunki GPU utilisation aur queue length matter karte hain, CPU nahi. Kitab <strong>KEDA</strong> (Kubernetes Event-Driven Autoscaling) introduce karti hai Prometheus metric ke saath — jaise waiting requests ki sankhya ya GPU utilisation par scale karna — taaki replicas tab badhein jab queue badhe. Example me KEDA vLLM Deployment ko minimum se maximum replica count tak scale karta hai, Prometheus query ke basis par.</p>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Load badhta hai — queue bharne lagti hai</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">KEDA — Prometheus metric dekhta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Replicas badhte hain — load ke peeche, phir catch up</text></svg><div class="fig-cap">Figure 4-3 — Autoscaling behaviour — replicas vs load · Replicas load se peeche rehte hain, phir catch up karte hain. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p><strong>Scale-to-zero warning:</strong> models ke liye cold start minutes leta hai, kyunki model download aur load karna padta hai — isliye bade models ke liye scale-to-zero usually worth nahi hai, jab tak cost saving latency se zyada important na ho.</p>
+  <h3>Routing</h3>
+  <p>Gateway model name, user, ya prompt characteristics ke hisaab se route kar sakta hai. Kitab <strong>LLM-aware routing</strong> introduce karti hai:</p>
+  <ul>
+    <li><strong>Prefix-aware routing:</strong> prompt prefix share karne wale requests same replica par bheje jate hain, taaki prefix caching ka fayda mile.</li>
+    <li><strong>Load-aware routing:</strong> router har replica ki queue depth aur KV-cache usage jaanta hai aur kaam sabse kam loaded replica ko bhejta hai jo use serve kar sakta hai.</li>
+  </ul>
+<div class="fig"><svg viewBox="0 0 620 72" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="10" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="101" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Gateway</text><text x="101" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">router</text><line x1="195" y1="36" x2="213" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="211,30 211,30 219,36 211,42 219,42" fill="#9ee939"/><rect x="218" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="309" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Replica A</text><text x="309" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">prefix cache hit</text><line x1="403" y1="36" x2="421" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="419,30 419,30 427,36 419,42 427,42" fill="#9ee939"/><rect x="426" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="517" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Replica B</text><text x="517" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">least loaded</text></svg><div class="fig-cap">Figure 4-4 — Routing by model / prefix-aware routing · Gateway signals ke basis par replicas ke beech traffic split karta hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>KServe ka <strong>llm-d</strong> extension Kubernetes ecosystem me isi idea ka implementation mana gaya hai.</p>
+  <h3>vLLM Tuning (Table 4-2)</h3>
+<div class="tbl-wrap"><table><tr><th>Knob</th><th>Trade-off</th></tr><tr><td>Context length (--max-model-len)</td><td>Lambi context = lambi conversations, lekin zyada KV cache</td></tr><tr><td>GPU memory utilisation</td><td>Zyada utilisation = zyada capacity, lekin headroom kam</td></tr><tr><td>Max concurrent sequences (--max-num-seqs)</td><td>Zyada limit = zyada throughput, lekin per-request latency badhti hai</td></tr><tr><td>Chunked prefill size</td><td>Lamba prompt chunks me split — latency smooth hoti hai</td></tr><tr><td>Attention backend</td><td>Backend choice se speed aur features badalte hain</td></tr></table></div>
+  <h3>Example numbers / results</h3>
+  <p>Chapter ke examples 3B model istemal karte hain — capped context (ek example me <code>--max-model-len 4096</code>), GPU utilisation <strong>0.9</strong>, aur KEDA scaler jo queue badhne par replicas badhata hai. Koi single benchmark number universal result ke roop me present nahi kiya gaya — point method hai: <strong>measure, phir tune, phir re-measure</strong>.</p>
+  <h3>Summary</h3>
+  <p>Production ek bada Deployment nahi hai — evaluation, progressive rollout, sahi autoscaler, aur routing jo model ko samajhta ho.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>GPU kaam ke liye <strong>CPU-based autoscaling par bharosa mat karo</strong>.</li>
+    <li>Rollout se pehle evaluate karo, aur <strong>gradually rollout</strong> karo.</li>
+    <li>Probes ko model loading time ka respect karna chahiye.</li>
+    <li>Routing ek <strong>performance feature</strong> ho sakti hai, sirf traffic feature nahi.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch03"><span class="pn-label">← Prev</span><span class="pn-title">Ch 3 · Kubernetes and GPUs</span></a><a class="pn-btn" href="#/ch05"><span class="pn-label">Next →</span><span class="pn-title">Ch 5 · Model Observability</span></a></div>
+</section>
+
+<section class="section" id="sec-ch05" data-title="Ch 5 · Model Observability" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">07</span><span class="sec-group">Part II · Production Readiness</span></div>
+  <h1>Ch 5 · Model Observability</h1>
+
+  <p class="lead">Pod ko observe karna kaafi nahi — <strong>model ko observe karo</strong>. TTFT, TPOT, KV-cache use aur queue length hi vital signs hain.</p>
+  <h3>Observability Basics: Metrics, Logs, and Traces</h3>
+  <p>Teen pillars:</p>
+  <ul>
+    <li><strong>Metrics</strong> — samay ke saath numbers.</li>
+    <li><strong>Logs</strong> — discrete events.</li>
+    <li><strong>Traces</strong> — ek single request ko components ke across follow karna.</li>
+  </ul>
+  <p>LLM serving ke liye teeno chahiye, kyunki ek slow request lambi prompt, bhara hua KV cache, slow decode, ya downstream tool call — kisi bhi wajah se slow ho sakta hai — aur har wajah alag pillar me dikhti hai.</p>
+<div class="fig"><svg viewBox="0 0 620 72" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="10" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="101" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Metrics</text><text x="101" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">numbers over time</text><line x1="195" y1="36" x2="213" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="211,30 211,30 219,36 211,42 219,42" fill="#9ee939"/><rect x="218" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="309" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Logs</text><text x="309" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">discrete events</text><line x1="403" y1="36" x2="421" y2="36" stroke="#9ee939" stroke-width="2"/><polygon points="419,30 419,30 427,36 419,42 427,42" fill="#9ee939"/><rect x="426" y="8" width="182" height="56" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="517" y="30" fill="#e3e2e6" font-size="12.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Traces</text><text x="517" y="48" fill="#9ee939" font-size="12" font-family="JetBrains Mono,monospace" text-anchor="middle">one request</text></svg><div class="fig-cap">Figure 5-1 — Teen pillars — metrics, logs, traces · Metrics, logs aur traces — teeno milkar poori picture dete hain. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Metrics and Logs for LLM Serving</h3>
+  <p>Table 5-1 — jo metrics matter karte hain, poori:</p>
+<div class="tbl-wrap"><table><tr><th>Metric</th><th>Kya batata hai</th></tr><tr><td>Request count aur error rate</td><td>Kitne requests, kitne fail hue</td></tr><tr><td>Time to first token (TTFT)</td><td>Pehla token stream hone me kitna time; prefill aur queueing se dominate</td></tr><tr><td>Inter-token latency / TPOT</td><td>Decode ke dauraan tokens ke beech ka gap</td></tr><tr><td>End-to-end latency</td><td>Request se last token tak total time</td></tr><tr><td>Throughput</td><td>Tokens per second, aur requests per second</td></tr><tr><td>KV-cache utilisation</td><td>Paged KV cache ka kitna fraction use ho raha hai; high matlab concurrency limit ke paas</td></tr><tr><td>Queue length / waiting requests</td><td>Kitne requests scheduler ka wait kar rahe hain</td></tr><tr><td>GPU utilisation aur GPU memory utilisation</td><td>Device kitna busy hai, memory kitni use ho rahi hai</td></tr><tr><td>Prompt aur completion token counts</td><td>Input aur output sizes — cost aur latency drive karte hain</td></tr></table></div>
+  <p>Logs me <strong>request ID, model name, prompt length aur latency breakdown</strong> hona chahiye — lekin production me <strong>full prompt ya completion text kabhi log mat karo</strong>, kyunki prompts me personal ya sensitive data ho sakta hai.</p>
+  <h3>Model Observability with a Deep Dive on vLLM</h3>
+  <p>vLLM ek Prometheus <code>/metrics</code> endpoint expose karta hai. Table 5-2 — chapter jin metrics ko call out karta hai:</p>
+<div class="tbl-wrap"><table><tr><th>vLLM Prometheus Metric</th><th>Kya dikhata hai</th></tr><tr><td>Running aur waiting requests</td><td>Kitne requests chal rahe hain, kitne wait kar rahe hain</td></tr><tr><td>Tokens processed</td><td>Kitne tokens process hue</td></tr><tr><td>KV-cache usage</td><td>KV cache kitna bhara hai</td></tr><tr><td>TTFT aur TPOT histograms</td><td>First-token aur per-token time ka distribution</td></tr><tr><td>GPU cache usage</td><td>GPU cache kitna use ho raha hai</td></tr></table></div>
+  <p>Chapter Prometheus se in metrics ko scrape karna aur Grafana me visualise karna walkthrough karta hai — ek dashboard jo request rate, latency percentiles, KV-cache utilisation aur GPU memory ek saath dikhata hai.</p>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Prometheus — /metrics scrape karta hai</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Grafana dashboard — request rate + latency percentiles</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">KV-cache utilisation + GPU memory — ek saath</text></svg><div class="fig-cap">Figure 5-2 — vLLM metrics dashboard · Request rate, latency percentiles, KV-cache utilisation aur GPU memory — ek dashboard me. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Observability Stack</h3>
+  <ul>
+    <li><strong>Prometheus</strong> — metrics ke liye.</li>
+    <li><strong>Grafana</strong> — dashboards ke liye.</li>
+    <li><strong>Loki</strong> (ya similar tool) — logs ke liye.</li>
+    <li><strong>OpenTelemetry + Jaeger/Tempo</strong> — traces ke liye.</li>
+  </ul>
+  <p>Kitab samjhati hai ki har ek ko Kubernetes me kaise deploy karein, vLLM ko OpenTelemetry traces emit karne ke liye kaise configure karein, aur trace ID ko log line aur metrics spike se kaise correlate karein.</p>
+  <h3>Tracing LLM Inference Requests</h3>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Gateway span</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Prefill span — prompt process</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Decode spans — har token batch ke liye</text></svg><div class="fig-cap">Figure 5-3 — Ek inference request ka trace · Trace se pata chalta hai slow request queueing me slow thi, prefill me, ya decode me — aur cost kis model ya tenant ki thi. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>Tracing se pata chalta hai ki slow request queueing me slow thi, prefill me, ya decode me — aur cost kis model ya tenant ko attribute karni hai.</p>
+  <h3>Beyond Metrics and Traces: Guarding Outputs</h3>
+  <p>Metrics aur traces ke aage, chapter <strong>output guarding</strong> cover karta hai — generated text ko return karne se pehle policy violations, hallucinated ya unsafe content, aur personally identifiable information ke liye check karna. <strong>Guard models</strong> aur <strong>TrustyAI project</strong> ka naam liya gaya hai. Point ye hai: observability bina guarding ke bata sakti hai ki ek bura output hua, lekin use <strong>rok</strong> nahi sakti.</p>
+  <h3>Summary</h3>
+  <p>Model ko observe karo, sirf pod ko nahi — TTFT, TPOT, KV-cache use aur queue length vital signs hain.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>Engine ke apne metrics instrument karo, sirf CPU/memory nahi.</li>
+    <li><strong>Prompts log mat karo.</strong></li>
+    <li>Metrics, logs aur traces ko <strong>request ID</strong> se correlate karo.</li>
+    <li>Guarding output user tak pahunchne se <strong>pehle</strong> lagao, incident ke baad nahi.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch04"><span class="pn-label">← Prev</span><span class="pn-title">Ch 4 · Running in Production</span></a><a class="pn-btn" href="#/ch06"><span class="pn-label">Next →</span><span class="pn-title">Ch 6 · Model Customization</span></a></div>
+</section>
+
+<section class="section" id="sec-ch06" data-title="Ch 6 · Model Customization" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">08</span><span class="sec-group">Part III · Tuning</span></div>
+  <h1>Ch 6 · Model Customization</h1>
+
+  <p class="lead">Customization ek spectrum hai — <strong>prompt, RAG, LoRA, full fine-tuning</strong> — aur sahi choice is par depend karti hai ki kya badal raha hai: facts, behaviour, ya dono.</p>
+  <h3>Fine-Tuning versus RAG</h3>
+  <p>Fine-tuning model ke <strong>weights badalta</strong> hai taaki woh alag behave kare; RAG weights ko chhoota nahi hai aur inference ke waqt model ko <strong>relevant documents</strong> deta hai.</p>
+<div class="tbl-wrap"><table><tr><th>Aspect</th><th>Fine-Tuning</th><th>RAG</th></tr><tr><td>Kya badalta hai</td><td>Model ke weights</td><td>Kuch nahi — documents inference par diye jate hain</td></tr><tr><td>Data needs</td><td>Training dataset (labeled examples)</td><td>Document corpus + embeddings</td></tr><tr><td>Cost</td><td>Training cost zyada</td><td>Retrieval cost, training nahi</td></tr><tr><td>Update speed</td><td>Slow — dobara train karna padta hai</td><td>Fast — document add karo, ho gaya</td></tr><tr><td>Kis me achha</td><td>Style, format, naya task</td><td>Badalte facts, grounding, auditability</td></tr></table></div>
+  <h3>When to Fine-Tune and When to Use RAG</h3>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Knowledge baar-baar badalta hai? → RAG</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Model ko naya skill ya tone seekhna hai? → Fine-tuning</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Dono chahiye? → Dono — RAG facts ke liye, fine-tuning behaviour ke liye</text></svg><div class="fig-cap">Figure 6-1 — Fine-tuning vs RAG decision diagram · Decision flow — facts ke liye RAG, behaviour ke liye fine-tuning, dono ke liye dono. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>Kitab warn karti hai: <strong>facts sikhane ke liye fine-tune mat karo</strong> — model unhe hallucinate kar sakta hai. Aur RAG wahan istemal mat karo jahan model ko fundamentally nayi capability chahiye.</p>
+  <h3>Retrieval-Augmented Generation: Architecture and Data Pipeline</h3>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">User query</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Retriever — vector store se top-k chunks</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Prompt — chunks ke saath augment</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">LLM — grounded answer</text></svg><div class="fig-cap">Figure 6-2 — RAG architecture · Query → retriever → vector store → top-k chunks → augmented prompt → grounded answer. (notes ke description se dobara banaya gaya diagram)</div></div><div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Documents — chunks me split karo</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Embeddings — har chunk ek vector</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Vector database — vectors store karo</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Query time — query embed karo, nearest chunks retrieve karo</text></svg><div class="fig-cap">Figure 6-3 — Data pipeline: chunk, embed, store, retrieve · Documents chunk hote hain, embed hote hain, store hote hain — query time par nearest chunks retrieve hote hain. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Vector Store and Embeddings</h3>
+  <p>Embeddings dense vectors hote hain jo meaning capture karte hain. <strong>Chunk size aur overlap</strong> ka role samjhaya gaya hai — chunk bahut bada ho to unfocused, bahut chhota ho to context kho jata hai. Retrieval precision aur recall ka trade-off bhi hai. Example me ek chhota open embedding model aur Kubernetes me chal raha vector store istemal hota hai.</p>
+  <h3>The Customization Playground</h3>
+  <p>Ek practical, hands-on section jahan reader chhote example par dono approaches try karta hai — pehle chhote document set par <strong>RAG query</strong>, phir ek <strong>fine-tuning run</strong> — aur answers compare karta hai. Point difference ko feel karna hai, sirf padhna nahi.</p>
+  <h3>Training on Kubernetes with Kubeflow Trainer</h3>
+  <p>Fine-tuning job Kubernetes Job ke roop me <strong>Kubeflow Trainer</strong> se chalaya jata hai, jo training pod, GPU allocation aur checkpoint output manage karta hai. Example me ek <strong>LoRA</strong> (low-rank adaptation) run chhote model par hai — JSONL format me training dataset, configuration jo base model, adapter rank, learning rate aur epochs set karti hai, aur checkpoints ke liye ek <strong>PersistentVolumeClaim</strong>.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Kubeflow Trainer controller</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Kubernetes Job create karta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Training pod — GPU par train karta hai</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Checkpoints — storage par likhe jate hain</text></svg><div class="fig-cap">Figure 6-4 — Kubeflow Trainer job flow · Trainer controller → Job → training pod → checkpoints. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Fine-Tuning Methods (Table 6-2)</h3>
+<div class="tbl-wrap"><table><tr><th>Method</th><th>Kya hota hai</th><th>Cost / Memory</th></tr><tr><td>Full fine-tuning</td><td>Saare weights update hote hain</td><td>Sabse capable, sabse mehenga, sabse zyada GPU memory</td></tr><tr><td>LoRA</td><td>Frozen weights ke upar chhota low-rank adapter update hota hai</td><td>Bahut sasta — adapter chhoti file hai, swap ki ja sakti hai</td></tr><tr><td>QLoRA</td><td>LoRA + quantised base model</td><td>Aur sasta, thodi quality cost ke saath</td></tr></table></div>
+  <p>Kitab <strong>LoRA ko default recommend</strong> karti hai zyada tar teams ke liye.</p>
+  <h3>Customization with the Fine-Tuning API</h3>
+  <p>Training khud chalane ke alternative ke roop me, chapter <strong>OpenAI-compatible fine-tuning API</strong> dikhata hai (jaisa kuch serving platforms implement karte hain) — dataset upload karo, job start karo, status poll karo, phir resulting fine-tuned model name ko inference calls me istemal karo. Trade-off: convenience vs control aur data ka cluster se bahar jana.</p>
+  <h3>Example numbers / results</h3>
+  <p>LoRA example chhote model par hai, chhote dataset ke saath — result ek aisa model hai jo desired format ko base model se <strong>zyada reliably follow</strong> karta hai. Koi benchmark score general result ke roop me claim nahi kiya gaya.</p>
+  <h3>Summary</h3>
+  <p>Customization ek spectrum hai — prompt, RAG, LoRA, full fine-tuning — aur sahi choice is par depend karti hai ki kya badal raha hai: facts, behaviour, ya dono.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li><strong>Badalte facts ke liye fine-tune mat karo.</strong></li>
+    <li><strong>RAG se start karo</strong> — reversible aur auditable hai.</li>
+    <li>LoRA fine-tuning ka zyada tar benefit <strong>fraction of cost</strong> par deta hai.</li>
+    <li>Training data ko kisi bhi aur artifact ki tarah <strong>versioned aur evaluated</strong> rakho.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch05"><span class="pn-label">← Prev</span><span class="pn-title">Ch 5 · Model Observability</span></a><a class="pn-btn" href="#/ch07"><span class="pn-label">Next →</span><span class="pn-title">Ch 7 · Job Scheduling</span></a></div>
+</section>
+
+<section class="section" id="sec-ch07" data-title="Ch 7 · Job Scheduling Optimization" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">09</span><span class="sec-group">Part III · Tuning</span></div>
+  <h1>Ch 7 · Job Scheduling Optimization</h1>
+
+  <p class="lead">Scheduling GPU cost ka lever hai — <strong>achhi placement kam GPUs waste karti hai aur jobs jaldi khatm karti hai</strong>.</p>
+  <h3>Scheduling Primer</h3>
+  <p>Kubernetes scheduler har pod ko us node par place karta hai jo uske resource requests, node selectors, affinity/anti-affinity, taints aur tolerations ko satisfy karta hai — phir feasible nodes ko score karta hai. AI kaam ke liye interesting constraints hain: <strong>GPU count, GPU type, memory aur locality</strong> — do GPUs chahiye wale pod ko dono same node par chahiye, aur preferably same NUMA node par ya fast interconnect ke saath.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Pod — resource requests + constraints</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Feasible nodes filter karo</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Score karo — locality, GPU type, bin-packing</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Best node par place karo</text></svg><div class="fig-cap">Figure 7-1 — Scheduler ki placement decision · Filter → score → place — scheduler ka basic flow. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Batch Jobs with the Job Controller</h3>
+  <p>Ek <strong>Job</strong> pod ko completion tak chalata hai aur failure par retry karta hai. Chapter <code>completions</code>, <code>parallelism</code>, <code>backoffLimit</code> aur <code>ttlSecondsAfterFinished</code> samjhata hai — aur Job (ek baar chalao) aur CronJob (schedule par chalao) ka farak. <strong>Fine-tuning ek Job hai; inference ek Deployment hai</strong> — inhe mix karna common mistake hai.</p>
+  <h3>Scheduling Fine-Tuning Jobs</h3>
+  <p>Fine-tuning ek batch job hai jise GPUs hours ke liye chahiye, seconds ke liye nahi. Use queue, priority aur guarantee chahiye ki woh inference ko starve na kare. Chapter <strong>gang scheduling</strong> introduce karta hai — job ke saare pods ek saath start hone chahiye ya koi nahi, taaki distributed training job kuch GPUs occupy karke baaki ka wait na kare.</p>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">4-pod training job</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Saare pods ek saath place hone chahiye</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Nahi to koi bhi start nahi hota</text></svg><div class="fig-cap">Figure 7-2 — Gang scheduling — all-or-nothing · 4-pod job atomically place hota hai — warna kuch GPUs occupy hokar wait karte rehte. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Scheduling Inference Jobs</h3>
+  <p>Inference pods long-lived hote hain, fast start-up chahiye, aur failure domains me spread hone chahiye taaki ek node failure saare replicas ko na le doobe. Isi liye <strong>pod topology spread constraints aur anti-affinity</strong> samjhaye gaye hain.</p>
+  <h3>Topology-Aware Scheduling</h3>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">GPU — sabse fast, NVLink ke andar</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">NUMA node — fast</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Host — medium</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Rack / datacentre — sabse slow</text></svg><div class="fig-cap">Figure 7-3 — Topology: nodes, racks, NUMA, GPU interconnect · NUMA node ke andar ya NVLink par communication fast hai; nodes ke across Ethernet par slower; racks ke across aur slow. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>Scheduler ko communicating pods (jaise distributed training job ke workers) ko <strong>paas me place</strong> karna chahiye — aur kitab topology-aware scheduling plugins samjhati hai jo ye karte hain.</p>
+  <h3>Resource Sharing and Fairness</h3>
+  <p>Jab kai teams ek cluster share karti hain, fairness matter karta hai. Chapter cover karta hai: <strong>ResourceQuotas</strong> (namespace ke liye hard limits), <strong>LimitRanges</strong>, <strong>PriorityClasses</strong>, aur <strong>Kueue</strong> queueing system — ClusterQueues, LocalQueues aur Cohort/queue hierarchies — jo idle queue se capacity borrow karne dete hain aur higher-priority job ko GPUs chahiye hon to lower-priority kaam ko preempt karte hain.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Cohort — queues ka group</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">ClusterQueue — shared capacity pool</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">LocalQueue — namespace ki queue</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Workload — job, priority ke saath</text></svg><div class="fig-cap">Figure 7-4 — Kueue queue hierarchy · Kueue hierarchy — borrow jab idle ho, preempt jab priority zyada ho. (notes ke description se dobara banaya gaya diagram)</div></div><div class="tbl-wrap"><table><tr><th>Mechanism</th><th>Kya karta hai</th></tr><tr><td>ResourceQuota</td><td>Namespace ke liye hard limits</td></tr><tr><td>LimitRange</td><td>Pod/container ke liye min-max limits</td></tr><tr><td>PriorityClass</td><td>Kaam ki priority tay karta hai</td></tr><tr><td>Kueue queues</td><td>Borrow + preempt — fair sharing</td></tr></table></div>
+  <h3>Storage and Networking for Batch Jobs</h3>
+  <p>Training ko datasets aur checkpoints ke liye <strong>fast shared storage</strong> chahiye (PVCs, ReadWriteMany volumes aur object storage discuss kiye gaye hain) aur distributed training ke liye <strong>fast networking</strong> (InfiniBand, RoCE aur high-bandwidth Ethernet). Bade models ke liye network bottleneck ban sakta hai — isliye chapter samjhata hai ki interconnect kyun matter karta hai aur use kaise check karein.</p>
+  <h3>Scheduling on Large-Scale GPU Clusters</h3>
+  <p>Scale par naive scheduler kaafi nahi hota. Chapter ecosystem survey karta hai — built-in scheduler GPU-aware plugins ke saath, <strong>Volcano</strong> (gang scheduling aur queueing batch ke liye), <strong>KAI Scheduler</strong> (Kubernetes AI community se), <strong>YuniKorn</strong>, aur Ch 3 ka newer DRA kaam. Guidance: built-in scheduler plus Kueue se start karo, aur specialised scheduler tabhi jodo jab workload ko genuinely gang scheduling ya topology awareness scale par chahiye ho.</p>
+<div class="tbl-wrap"><table><tr><th>Scheduler / Plugin</th><th>Role</th></tr><tr><td>Built-in scheduler + GPU plugins</td><td>Default placement, GPU-aware</td></tr><tr><td>Kueue</td><td>Queues, borrowing, preemption</td></tr><tr><td>Volcano</td><td>Gang scheduling aur batch queueing</td></tr><tr><td>KAI Scheduler</td><td>AI workloads ke liye scheduling</td></tr><tr><td>YuniKorn</td><td>Batch aur queueing</td></tr><tr><td>DRA</td><td>Fine-grained accelerator requests</td></tr></table></div>
+  <h3>Other Concepts</h3>
+  <ul>
+    <li><strong>Descheduler:</strong> badly placed pods ko evict karna — jaise node drain ke baad.</li>
+    <li><strong>Bin-packing:</strong> pods ko tightly fit karna taaki bade jobs ke liye poore nodes free rahein.</li>
+    <li><strong>Bin-packing vs spreading ka trade-off:</strong> tight packing availability se takrata hai.</li>
+  </ul>
+  <h3>Summary</h3>
+  <p>Scheduling GPU cost ka lever hai — achhi placement kam GPUs waste karti hai aur jobs jaldi khatm karti hai.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>Batch aur serving ki <strong>scheduling needs alag</strong> hain.</li>
+    <li>Distributed training ke liye <strong>gang scheduling</strong> istemal karo.</li>
+    <li>Fair share ke liye <strong>queues aur priorities</strong> istemal karo.</li>
+    <li><strong>Topology matters</strong> — GPU sirf GPU nahi hota, uske neighbours matter karte hain.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch06"><span class="pn-label">← Prev</span><span class="pn-title">Ch 6 · Model Customization</span></a><a class="pn-btn" href="#/ch08"><span class="pn-label">Next →</span><span class="pn-title">Ch 8 · AI-Driven Applications</span></a></div>
+</section>
+
+<section class="section" id="sec-ch08" data-title="Ch 8 · AI-Driven Applications" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">10</span><span class="sec-group">Part IV · AI-Driven Apps</span></div>
+  <h1>Ch 8 · AI-Driven Applications</h1>
+
+  <p class="lead">Model sirf aadha system hai — doosra aadha hai <strong>client</strong> jo use prompt karta hai, output parse karta hai, errors handle karta hai aur results dikhata hai.</p>
+  <h3>The Client Side of GenAI</h3>
+  <p>Model sirf aadha system hai; doosra aadha client hai jo prompt karta hai, output parse karta hai, errors handle karta hai aur results present karta hai. Chapter reader ko <code>curl</code> (Ch 1) se ek <strong>asli application</strong> tak le jata hai.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">User interface</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Client app — prompt, parse, retry, stream</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">vLLM service (in-cluster)</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Model — Llama 3.2 3B</text></svg><div class="fig-cap">Figure 8-1 — Client application architecture · Client model aur user ke beech me baithta hai — prompt karta hai, parse karta hai, stream karta hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <h3>Applications and Agents</h3>
+  <p>Ek simple application ek prompt bhejta hai aur ek jawab dikhata hai. Ek <strong>agent</strong> prompt bhejta hai, model ke tool call karne ke decision ko padhta hai, tool execute karta hai, result wapas feed karta hai, aur task poora hone tak repeat karta hai. Farak model nahi hai — <strong>uske aas-paas ka loop</strong> hai.</p>
+  <h3>Implementing the Client Application</h3>
+  <p>Example ek Python application hai jo OpenAI-compatible client library istemal karta hai — chat endpoint, streaming responses, aur rate limits aur time-outs ke liye error handling. Code step by step describe kiya gaya hai:</p>
+  <ol>
+    <li>Client banao jo in-cluster vLLM service URL ki taraf point kare.</li>
+    <li>Messages list banao — system prompt aur user prompt ke saath.</li>
+    <li>Chat completions endpoint call karo, streaming enabled.</li>
+    <li>Streamed chunks par iterate karo aur aate hi print karo.</li>
+    <li>Errors handle karo aur client close karo.</li>
+  </ol>
+  <p>Doosra example <strong>structured output</strong> dikhata hai — model se JSON return karwana jo schema follow kare, taaki application free text parse karne ke bajay reliably parse kar sake.</p>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">User types message</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Client — chat completions call (streaming)</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Chunks aate hi print hote hain</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Error? → retry / time-out handle karo</text></svg><div class="fig-cap">Figure 8-2 — Chat application flow · Streaming flow — user ko progress turant dikhti hai. (notes ke description se dobara banaya gaya diagram)</div></div><div class="tbl-wrap"><table><tr><th>Client Pattern</th><th>Kab istemal karein</th></tr><tr><td>Chat</td><td>Conversations — messages list ke saath</td></tr><tr><td>Completion</td><td>Single prompt → single answer</td></tr><tr><td>Structured output</td><td>Application ko result parse karna ho — JSON schema</td></tr><tr><td>Streaming</td><td>User ko progress turant dikhani ho</td></tr></table></div>
+  <h3>Agentic Workflows</h3>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Plan — model agla step decide karta hai</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Act — tool choose karta hai</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Observe — tool result dekhta hai</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Repeat — task poora hone tak</text></svg><div class="fig-cap">Figure 8-3 — Agentic workflow — plan, act, observe, repeat · Plan → act → observe → repeat — agent ka loop. (notes ke description se dobara banaya gaya diagram)</div></div><div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Model returns tool call</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Client — local function dispatch karta hai (search, calculator)</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Function result — conversation me append hota hai</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Model — agla step decide karta hai</text></svg><div class="fig-cap">Figure 8-4 — Tool-call loop · Tool definitions (name, description, parameters as JSON Schema) se model decide karta hai kaun sa tool call kare. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>Chapter tool definitions samjhata hai — name, description, parameters as JSON Schema — aur kaise model decide karta hai kaun sa tool call kare.</p>
+  <h3>Agent Patterns</h3>
+  <ul>
+    <li><strong>Single-agent:</strong> ek model, kai tools.</li>
+    <li><strong>Multi-agent:</strong> kai specialised agents jo ek doosre ko handoff karte hain.</li>
+    <li><strong>Human-in-the-loop:</strong> agent consequential action se pehle approval ke liye rukta hai.</li>
+  </ul>
+  <p>Kitab warn karti hai ki multi-agent systems debug aur observe karna mushkil hota hai — <strong>single agent se start</strong> karo.</p>
+  <h3>The Model Context Protocol (MCP) and Agent-to-Agent Protocol (A2A)</h3>
+  <p>Ye standard ways ke roop me introduce kiye gaye hain jinse agents tools se aur ek doosre se baat karte hain — <strong>MCP</strong> tools aur context ko model tak expose karne ke liye, <strong>A2A</strong> ek agent ke doosre agent ko delegate karne ke liye — aur Ch 9 me inke production implications depth me discuss kiye gaye hain.</p>
+  <h3>Summary</h3>
+  <p>Application wahi jagah hai jahan value banti hai; model ek loop ke andar ka component hai jisme tools, state aur user interface bhi hain.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>Model ko <strong>unreliable</strong> mano — uska output validate karo.</li>
+    <li><strong>Stream karo</strong> — taaki user ko progress dikhe.</li>
+    <li>Jahan application ko result parse karna ho, <strong>structured output</strong> istemal karo.</li>
+    <li>Ek agent se start karo — aur tabhi badhao jab task genuinely split hota ho.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch07"><span class="pn-label">← Prev</span><span class="pn-title">Ch 7 · Job Scheduling</span></a><a class="pn-btn" href="#/ch09"><span class="pn-label">Next →</span><span class="pn-title">Ch 9 · Agentic Apps in Production</span></a></div>
+</section>
+
+<section class="section" id="sec-ch09" data-title="Ch 9 · Running Agentic Applications in Production" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">11</span><span class="sec-group">Part IV · AI-Driven Apps</span></div>
+  <h1>Ch 9 · Running Agentic Applications in Production</h1>
+
+  <p class="lead">Agentic applications production systems hain, demos nahi — unhe <strong>identity, state, observability aur failure ke baad resume</strong> karne ka tareeka chahiye.</p>
+  <h3>Introduction to Agent Communication</h3>
+  <p>Agents isolation me kaam nahi karte — unhe tools call karne aur doosre agents se baat karne ki zaroorat hoti hai. Do protocols depth me samjhaye gaye hain.</p>
+  <h3>MCP (Model Context Protocol)</h3>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">MCP client — agent application ke andar</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">MCP servers — tools, resources, prompts expose karte hain</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Tools execute hote hain — results wapas client ko</text></svg><div class="fig-cap">Figure 9-1 — MCP architecture — client, server, tools · MCP client servers se connect karta hai; har server tools, resources aur prompts expose karta hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>MCP concepts samjhaye gaye hain — server, tool, resource, prompt — aur Kubernetes deployment me MCP server ko pod ya sidecar ke roop me kaise chalaya jata hai, agent HTTP/SSE ya stdio par connect karta hai. Fayda standardisation hai: <strong>koi bhi MCP-compatible tool kisi bhi MCP-compatible agent ke saath</strong> istemal ho sakta hai.</p>
+  <h3>A2A (Agent-to-Agent Protocol)</h3>
+<div class="fig"><svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Agent A — agent card expose karta hai</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Messages aur tasks — Agent B ko</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Artifacts — result wapas aata hai</text></svg><div class="fig-cap">Figure 9-2 — A2A architecture — agents, cards, messages · Agents agent card (capabilities ka JSON description) expose karte hain, messages aur tasks bhejte hain, aur artifacts return karte hain. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p>A2A agent-to-agent delegation ke liye hai, jabki MCP agent-to-tool ke liye hai.</p>
+<div class="tbl-wrap"><table><tr><th>Aspect</th><th>MCP</th><th>A2A</th></tr><tr><td>Purpose</td><td>Agent → tool</td><td>Agent → agent</td></tr><tr><td>Discovery</td><td>Tools discover karta hai</td><td>Agents discover karta hai</td></tr><tr><td>Transport</td><td>HTTP/SSE ya stdio</td><td>Messages aur tasks (HTTP)</td></tr><tr><td>Kya expose hota hai</td><td>Tools, resources, prompts</td><td>Agent card, tasks, artifacts</td></tr></table></div>
+  <h3>Security for Agents</h3>
+  <p>Chapter ka central production concern <strong>identity aur authorisation</strong> hai. User ki taraf se kaam karne wale agent ko user se zyada privilege inherit nahi karna chahiye. Kitab samjhati hai:</p>
+  <ul>
+    <li><strong>Token exchange (OAuth 2.0 Token Exchange):</strong> agent user ka token exchange karke ek scoped-down token leta hai jo sirf specific downstream service aur action ke liye valid hota hai.</li>
+    <li><strong>SPIFFE/SPIRE workload identity:</strong> har pod ko ek cryptographic identity (SPIFFE ID) milti hai jise doosri services verify kar sakti hain, bina long-lived secrets ke.</li>
+  </ul>
+  <p>Example flow: user → agent (user token ke saath) → token exchange → downstream tool (scoped token ke saath); aur alag se pod → SPIRE → SPIFFE ID → downstream service.</p>
+  <h3>State and Persistence</h3>
+<div class="fig"><svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="40" y="8" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="35" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Conversation history</text><line x1="310" y1="54" x2="310" y2="70" stroke="#9ee939" stroke-width="2"/><polygon points="304,68 316,68 310,77" fill="#9ee939"/><rect x="40" y="78" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="105" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Tool-call results</text><line x1="310" y1="124" x2="310" y2="140" stroke="#9ee939" stroke-width="2"/><polygon points="304,138 316,138 310,147" fill="#9ee939"/><rect x="40" y="148" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="175" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Plan — agla step kya hai</text><line x1="310" y1="194" x2="310" y2="210" stroke="#9ee939" stroke-width="2"/><polygon points="304,208 316,208 310,217" fill="#9ee939"/><rect x="40" y="218" width="540" height="44" rx="9" fill="#1b1b1f" stroke="#84cc16" stroke-width="1.5"/><text x="310" y="245" fill="#e3e2e6" font-size="13.5" font-family="Inter,system-ui,sans-serif" text-anchor="middle">Checkpoints — har step ke baad save</text></svg><div class="fig-cap">Figure 9-3 — Agent state model — conversation, tool state, checkpoints · Agent ka run minutes ya hours chal sakta hai aur kai model calls span kar sakta hai — state persist karni padti hai. (notes ke description se dobara banaya gaya diagram)</div></div>
+  <p><strong>Checkpointing</strong> — har step ke baad agent ki state save karna, taaki crash ya pod restart ke baad last checkpoint se resume ho sake, shuru se nahi. Storage ka choice: demo ke liye in-memory, production ke liye database ya persistent volume. <strong>Idempotency</strong> tool calls ke liye bhi samjhayi gayi hai — taaki retried step side effect ko dobara execute na kare.</p>
+  <h3>Observability for Agents</h3>
+<div class="tbl-wrap"><table><tr><th>Signal</th><th>Kya measure karta hai</th></tr><tr><td>Per-step latency</td><td>Har step me kitna time laga</td></tr><tr><td>Per-tool latency</td><td>Har tool call me kitna time laga</td></tr><tr><td>Token usage per step aur per run</td><td>Har step aur poore run me kitne tokens</td></tr><tr><td>Tool-call success / failure</td><td>Tool calls kitni baar fail hui</td></tr><tr><td>Steps per task</td><td>Ek task me kitne steps lage</td></tr><tr><td>Cost per task</td><td>Ek task ki kul keemat</td></tr></table></div>
+  <p>Ek single agent run ek trace hai jisme kai spans hote hain (har model call aur tool call ke liye ek) — aur chapter Ch 5 ke tracing approach se dikhata hai ki slow ya expensive run ne apna time aur tokens kahan kharch kiye.</p>
+  <h3>Choosing a Pattern</h3>
+  <p>Chapter end me advise karta hai ki <strong>simplest deployment chuno jo fit ho</strong> — ek single agent Deployment me, state ke liye database ke saath, MCP servers sidecars ya services ke roop me, A2A tabhi jab doosra agent genuinely chahiye ho, aur token exchange plus SPIFFE jab agent asli user data ya asli systems ko chhoota ho.</p>
+  <h3>Summary</h3>
+  <p>Agentic applications production systems hain, demos nahi — unhe identity, state, observability aur failure ke baad resume karne ka tareeka chahiye.</p>
+  <h3>Lessons Learned</h3>
+  <ol>
+    <li>Agent ko <strong>least privilege</strong> do jo use chahiye.</li>
+    <li>State persist karo aur <strong>aksar checkpoint</strong> karo.</li>
+    <li>Har step ko trace karo, sirf final answer ko nahi.</li>
+    <li>Standard protocols (<strong>MCP/A2A</strong>) early adopt karna worth hai — kyunki woh tools aur agents ko interchangeable banate hain.</li>
+  </ol>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch08"><span class="pn-label">← Prev</span><span class="pn-title">Ch 8 · AI-Driven Applications</span></a><a class="pn-btn" href="#/afterword"><span class="pn-label">Next →</span><span class="pn-title">Afterword</span></a></div>
+</section>
+
+<section class="section" id="sec-afterword" data-title="Afterword — Platform Controls" data-doc="1" data-url="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">
+  <div class="sec-meta"><span class="num-chip">12</span><span class="sec-group">Part IV · AI-Driven Apps</span></div>
+  <h1>Afterword — Platform Controls</h1>
+
+  <p class="lead">Pehle model se lekar agents tak ka safar khatm hota hai — lekin kitab ka argument hai ki <strong>platform ka kaam tab aur important ho jata hai jab agents zyada autonomous hote hain</strong>.</p>
+  <h3>Kitab ka arc — recap</h3>
+  <p>Afterword ek short closing essay hai, koi numbered subsections nahi. Ye kitab ke arc ko recap karta hai — pehle model ko Kubernetes par chalana, phir production hardening, phir tuning, aur aakhir me applications aur agents. Aur ye argue karta hai ki platform work tab aur matter karta hai jab agents zyada autonomous bante hain, kyunki <strong>agent ki freedom ko platform ke controls se bound</strong> karna padta hai.</p>
+  <h3>Prompt injection — production risk</h3>
+  <p>Afterword <strong>prompt injection</strong> ko production risk ke roop me discuss karta hai — ek prompt jo model ko uski instructions ignore karne par majboor karne ki koshish karta hai. Model output ko <strong>untrusted data</strong> ki tarah treat karna chahiye, commands ki tarah nahi. (Afterword me ek short humorous aside bhi hai jisme instruction-override example par joke hai — uski wording yahan reproduce nahi ki gayi hai.)</p>
+  <h3>Aage ka rasta</h3>
+  <p>End me reader ko encourage kiya gaya hai: <strong>build karo, measure karo, aur jo seekha woh share karo</strong> — aur kitab ke examples ko starting point mano, finished system nahi.</p>
+  <div class="note">Index (A–Y) ek alphabetical finding aid hai — agents, autoscaling, attention se lekar YuniKorn tak — entry-by-entry summary nahi hai. About the Authors biographical page hai, chapter nahi. Dono Trust Check me out-of-scope list me hain.</div>
+<div class="source-box"><span class="source-tag">Source:</span><span>Kitab: Generative AI on Kubernetes — O'Reilly Learning reader. <a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></span></div><div class="pn-nav"><a class="pn-btn" href="#/ch09"><span class="pn-label">← Prev</span><span class="pn-title">Ch 9 · Agentic Apps in Production</span></a><a class="pn-btn" href="#/labs"><span class="pn-label">Next →</span><span class="pn-title">Labs</span></a></div>
+</section>
+
+<section class="section" id="sec-labs" data-title="Labs — Haath se Seekho">
+  <div class="sec-meta"><span class="num-chip">13</span><span class="sec-group">Labs · Interactive</span></div>
+  <h1>Labs — Haath se Seekho</h1>
+
+  <p class="lead">8 interactive labs. Har lab kitab ke numbers se khelta hai — values badlo, result dekho, aur concept haath se samjho.</p>
+
+  <div class="lab" data-lab="1">
+    <div class="lab-head"><span class="lab-badge">LAB 1</span><span>Model Size Calculator — Introduction / Ch 1</span></div>
+    <p>Model size aur precision chuno — weights kitne GB honge aur kaun sa hardware chahiye, Table I-1 ke hisaab se.</p>
+    <div class="lab-controls">
+      <label>Model
+        <select id="ms-model" class="lab-select">
+          <option value="0.5|1|8K|laptop">Tiny — 0.5B</option>
+          <option value="3|6|8K|1 GPU (24 GB)" selected>Small — 3B (Llama 3.2 3B)</option>
+          <option value="7|14|32K|1 GPU (24 GB)">Small — 7B</option>
+          <option value="32|64|128K|1–2 GPUs (80 GB)">Medium — 32B</option>
+          <option value="70|140|128K|2–8 GPUs (80 GB)">Large — 70B</option>
+          <option value="405|810|128K|8+ GPUs">Huge — 405B</option>
+        </select>
+      </label>
+      <label>Precision
+        <select id="ms-prec" class="lab-select">
+          <option value="16">16-bit (FP16) — full size</option>
+          <option value="8">8-bit — aadha size</option>
+          <option value="4">4-bit — lagbhag quarter size</option>
+        </select>
+      </label>
+    </div>
+    <button class="run-check" onclick="window.labModelSize()">Calculate karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="ms-out-text">Button dabao — weights size, context aur hardware dikhega.</pre></div>
+    <p class="lab-note">Rule: 16-bit me weights GB ≈ parameters (billions) × 2. 3B model 16-bit me ≈ 6 GB, 8-bit me ≈ 3 GB, 4-bit me ≈ 1.5–2 GB — Ch 2 dekhein.</p>
+  </div>
+
+  <div class="lab" data-lab="2">
+    <div class="lab-head"><span class="lab-badge">LAB 2</span><span>KV Cache Calculator — Introduction / Ch 5</span></div>
+    <p>KV cache kitna GPU memory khayega? Formula: 2 × layers × heads × head-dim × seq-len × batch × bytes-per-value.</p>
+    <div class="lab-controls">
+      <label>Layers <input id="kv-layers" class="lab-input mono" type="number" value="32" min="1" style="width:90px"></label>
+      <label>Heads <input id="kv-heads" class="lab-input mono" type="number" value="32" min="1" style="width:90px"></label>
+      <label>Head dim <input id="kv-dim" class="lab-input mono" type="number" value="128" min="1" style="width:90px"></label>
+      <label>Seq len <input id="kv-seq" class="lab-input mono" type="number" value="4096" min="1" style="width:100px"></label>
+      <label>Batch <input id="kv-batch" class="lab-input mono" type="number" value="16" min="1" style="width:90px"></label>
+      <label>Bytes / value
+        <select id="kv-bytes" class="lab-select"><option value="2" selected>2 (FP16)</option><option value="1">1 (INT8)</option></select>
+      </label>
+    </div>
+    <button class="run-check" onclick="window.labKv()">Calculate karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="kv-out-text">Button dabao — KV cache GB me dikhega.</pre></div>
+    <p class="lab-note">KV cache context length aur batch size ke saath badhta hai aur GPU memory dominate kar sakta hai — isiliye PagedAttention blocks me manage karta hai (Introduction dekhein).</p>
+  </div>
+
+  <div class="lab" data-lab="3">
+    <div class="lab-head"><span class="lab-badge">LAB 3</span><span>vLLM Config Tuner — Ch 4</span></div>
+    <p>vLLM ke production flags badlo aur dekho KV cache aur concurrency par kya asar padta hai.</p>
+    <div class="lab-controls">
+      <label>Max model len <input id="vc-len" class="lab-input mono" type="number" value="4096" min="512" step="512" style="width:110px"></label>
+      <label>GPU memory utilisation <input id="vc-util" class="lab-input mono" type="number" value="0.9" min="0.1" max="1" step="0.05" style="width:90px"></label>
+      <label>Max num seqs <input id="vc-seqs" class="lab-input mono" type="number" value="256" min="1" style="width:90px"></label>
+      <label>GPU memory (GB) <input id="vc-gpu" class="lab-input mono" type="number" value="24" min="8" style="width:90px"></label>
+    </div>
+    <button class="run-check" onclick="window.labVllm()">Tune karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="vc-out-text">Button dabao — KV budget aur verdict dikhega.</pre></div>
+    <p class="lab-note">Trade-off: lambi context = zyada KV cache; zyada seqs = zyada throughput lekin per-request latency badhti hai (Table 4-2).</p>
+  </div>
+
+  <div class="lab" data-lab="4">
+    <div class="lab-head"><span class="lab-badge">LAB 4</span><span>KEDA Autoscaler Simulator — Ch 4</span></div>
+    <p>Queue bharne par replicas kaise badhte hain? Waiting requests badlo — KEDA kitne replicas chalayega, aur CPU-based HPA kyun galat hota.</p>
+    <div class="lab-controls">
+      <label>Waiting requests <input id="kd-queue" class="lab-range" type="range" min="0" max="200" value="40" step="5" style="width:200px"></label>
+      <span class="mono" id="kd-queue-val">40</span>
+      <label>Min replicas <input id="kd-min" class="lab-input mono" type="number" value="1" min="0" style="width:80px"></label>
+      <label>Max replicas <input id="kd-max" class="lab-input mono" type="number" value="10" min="1" style="width:80px"></label>
+    </div>
+    <button class="run-check" onclick="window.labKeda()">Scale karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="kd-out-text">Button dabao — replicas aur warning dikhegi.</pre></div>
+    <p class="lab-note">Rule of thumb is lab me: 1 replica ≈ 8 waiting requests handle karta hai. CPU-based HPA GPU inference ke liye poor fit hai — queue length aur GPU utilisation matter karte hain.</p>
+  </div>
+
+  <div class="lab" data-lab="5">
+    <div class="lab-head"><span class="lab-badge">LAB 5</span><span>Fine-Tuning vs RAG Chooser — Ch 6</span></div>
+    <p>Apni situation batao — lab batayega fine-tuning karein, RAG karein, ya dono.</p>
+    <div class="lab-controls">
+      <label>Knowledge baar-baar badalta hai?
+        <select id="fr-change" class="lab-select"><option value="yes">Haan — facts update hote rehte hain</option><option value="no">Nahi — knowledge stable hai</option></select>
+      </label>
+      <label>Model ko naya skill / tone seekhna hai?
+        <select id="fr-skill" class="lab-select"><option value="yes">Haan — behaviour badalna hai</option><option value="no">Nahi — bas facts chahiye</option></select>
+      </label>
+      <label>Answers auditable / cite karne hain?
+        <select id="fr-audit" class="lab-select"><option value="yes">Haan — source dikhana hai</option><option value="no">Nahi — zaroori nahi</option></select>
+      </label>
+    </div>
+    <button class="run-check" onclick="window.labFtRag()">Decide karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="fr-out-text">Button dabao — recommendation dikhegi.</pre></div>
+    <p class="lab-note">Decision flow Fig 6-1 se: facts ke liye RAG, behaviour ke liye fine-tuning, dono ke liye dono. Facts sikhane ke liye fine-tune mat karo — model hallucinate kar sakta hai.</p>
+  </div>
+
+  <div class="lab" data-lab="6">
+    <div class="lab-head"><span class="lab-badge">LAB 6</span><span>GPU Sharing Chooser — Ch 3</span></div>
+    <p>Apna workload chuno — lab batayega time-slicing, MPS, MIG ya DRA me se kya fit hai.</p>
+    <div class="lab-controls">
+      <label>Workload
+        <select id="gs-work" class="lab-select">
+          <option value="prod">Bada production model — predictable performance chahiye</option>
+          <option value="dev">Chhota dev / bursty workload</option>
+          <option value="multi">Multi-tenant — cost bachana hai</option>
+          <option value="frac">GPU ka fraction chahiye — attributes se request</option>
+        </select>
+      </label>
+    </div>
+    <button class="run-check" onclick="window.labGpuShare()">Choose karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="gs-out-text">Button dabao — recommendation dikhegi.</pre></div>
+    <p class="lab-note">Guidance: bade production models ke liye whole GPUs; sharing sirf chhote models, development ya multi-tenant cost saving ke liye (Table 3-1).</p>
+  </div>
+
+  <div class="lab" data-lab="7">
+    <div class="lab-head"><span class="lab-badge">LAB 7</span><span>TTFT / TPOT Latency Simulator — Introduction / Ch 5</span></div>
+    <p>Prefill aur decode alag behave karte hain — prompt aur output tokens badlo aur dekho TTFT, TPOT aur end-to-end latency kaise badalti hai.</p>
+    <div class="lab-controls">
+      <label>Prompt tokens <input id="lt-prompt" class="lab-input mono" type="number" value="1000" min="1" style="width:100px"></label>
+      <label>Output tokens <input id="lt-out" class="lab-input mono" type="number" value="200" min="1" style="width:100px"></label>
+      <label>Prefill speed (ms/token) <input id="lt-prefill" class="lab-input mono" type="number" value="0.5" min="0.01" step="0.1" style="width:90px"></label>
+      <label>Decode speed (ms/token) <input id="lt-decode" class="lab-input mono" type="number" value="20" min="1" step="1" style="width:90px"></label>
+      <label>Queue wait (ms) <input id="lt-queue" class="lab-input mono" type="number" value="100" min="0" step="10" style="width:90px"></label>
+    </div>
+    <button class="run-check" onclick="window.labLatency()">Simulate karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lt-out-text">Button dabao — latency breakdown dikhega.</pre></div>
+    <p class="lab-note">TTFT queueing + prefill se dominate hota hai; TPOT decode ka gap hai. Isi liye batching aur caching matter karte hain (Introduction aur Table 5-1).</p>
+  </div>
+
+  <div class="lab" data-lab="8">
+    <div class="lab-head"><span class="lab-badge">LAB 8</span><span>Agent Run Cost Calculator — Ch 9</span></div>
+    <p>Ek agent run kitna mehenga hai? Steps, tool calls aur tokens se cost per task nikalo — aur trace spans dekho.</p>
+    <div class="lab-controls">
+      <label>Steps per task <input id="ac-steps" class="lab-input mono" type="number" value="8" min="1" style="width:90px"></label>
+      <label>Tool calls per step <input id="ac-tools" class="lab-input mono" type="number" value="1" min="0" style="width:90px"></label>
+      <label>Tokens per step <input id="ac-tokens" class="lab-input mono" type="number" value="1500" min="1" style="width:110px"></label>
+      <label>Price ($ / 1M tokens) <input id="ac-price" class="lab-input mono" type="number" value="3" min="0" step="0.5" style="width:100px"></label>
+      <label>Tool latency (ms/call) <input id="ac-lat" class="lab-input mono" type="number" value="300" min="0" step="50" style="width:110px"></label>
+    </div>
+    <button class="run-check" onclick="window.labAgentCost()">Calculate karo</button>
+    <div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="ac-out-text">Button dabao — cost per task aur trace spans dikhenge.</pre></div>
+    <p class="lab-note">Agent observability signals Table 9-2 se: per-step latency, per-tool latency, token usage per step/run, tool-call success/failure, steps per task, cost per task.</p>
+  </div>
+  <div class="pn-nav"><a class="pn-btn" href="#/afterword"><span class="pn-label">← Prev</span><span class="pn-title">Afterword</span></a><a class="pn-btn" href="#/faqs"><span class="pn-label">Next →</span><span class="pn-title">FAQs</span></a></div>
+
+</section>
+
+<section class="section" id="sec-faqs" data-title="FAQs — Interview Sawal-Jawab">
+  <div class="sec-meta"><span class="num-chip">14</span><span class="sec-group">FAQs · Interview</span></div>
+  <h1>FAQs — Interview Sawal-Jawab</h1>
+
+  <p class="lead">36 interview-style sawal, kitab ke content par based. Har jawab Hinglish me, concept ke saath.</p>
+<div class="faq-list"><details class="faq" data-faq="1"><summary><span class="faq-num">Q01</span><span class="faq-q">LLM inference me prefill aur decode me kya farak hai?</span></summary><div class="faq-a">Prefill poora prompt ek saath process karta hai, compute-heavy hai, aur pehla token plus KV cache produce karta hai. Decode ek-ek token generate karta hai, memory-bandwidth-bound hai, aur KV cache reuse karta hai. Isi liye TTFT aur inter-token latency alag behave karte hain.</div></details><details class="faq" data-faq="2"><summary><span class="faq-num">Q02</span><span class="faq-q">KV cache kya hai aur ye GPU memory kyun khata hai?</span></summary><div class="faq-a">KV cache pehle dekhe gaye tokens ke attention keys aur values store karta hai taaki decode dobara compute na kare. Ye context length aur batch size ke saath badhta hai aur GPU memory dominate kar sakta hai. PagedAttention ise fixed-size blocks me manage karta hai, OS pages ki tarah.</div></details><details class="faq" data-faq="3"><summary><span class="faq-num">Q03</span><span class="faq-q">PagedAttention kya karta hai?</span></summary><div class="faq-a">PagedAttention (vLLM se) KV cache ko fixed-size blocks me manage karta hai, taaki memory fragmentation par waste na ho aur bahut zyada concurrent sequences fit ho sakein.</div></details><details class="faq" data-faq="4"><summary><span class="faq-num">Q04</span><span class="faq-q">vLLM ko serving engine kyun chuna gaya hai kitab me?</span></summary><div class="faq-a">Speed, continuous batching, PagedAttention aur OpenAI-compatible API ke liye. Alternatives TensorRT-LLM, TGI aur llama.cpp bhi naam liye gaye hain, lekin zyada tar examples vLLM par hain.</div></details><details class="faq" data-faq="5"><summary><span class="faq-num">Q05</span><span class="faq-q">Llama 3.2 3B model kyun chuna gaya running example ke liye?</span></summary><div class="faq-a">Ye modest GPU par chal jata hai, phir bhi ek asli instruction model hai — 3B parameters, instruct-tuned, Hugging Face repo meta-llama/Llama-3.2-3B-Instruct me. Chhota model pipeline prove karta hai, usse pehle ki 70B budget kha jaye.</div></details><details class="faq" data-faq="6"><summary><span class="faq-num">Q06</span><span class="faq-q">Kind cluster kya hai?</span></summary><div class="faq-a">Kind matlab Kubernetes in Docker — local Kubernetes cluster jo Docker containers me chalta hai. Kitab poori me isi local cluster ka istemal karti hai, GPU chapters ke liye cloud cluster ke saath.</div></details><details class="faq" data-faq="7"><summary><span class="faq-num">Q07</span><span class="faq-q">Model server ka image kaise banaya jata hai?</span></summary><div class="faq-a">Official vLLM image par based image banti hai, jisme model add kiya jata hai ya start-up par download hota hai. vLLM image me pehle se CUDA libraries aur Python dependencies hain. Weights ko image layer me bake karne se bacho agar woh aksar change hote hain.</div></details><details class="faq" data-faq="8"><summary><span class="faq-num">Q08</span><span class="faq-q">Model artifacts me kya-kya hota hai?</span></summary><div class="faq-a">Weight shards (safetensors format), tokenizer, config.json aur instruction models ke liye chat template. Tokenizer ko model se exactly match karna chahiye.</div></details><details class="faq" data-faq="9"><summary><span class="faq-num">Q09</span><span class="faq-q">Quantization se model size kaise badalta hai?</span></summary><div class="faq-a">3B model 16-bit me lagbhag 6 GB, 8-bit me lagbhag 3 GB, aur 4-bit me lagbhag 1.5–2 GB leta hai — quality ke trade-off ke saath. Exact saving method par depend karti hai.</div></details><details class="faq" data-faq="10"><summary><span class="faq-num">Q10</span><span class="faq-q">ModelCar kya hai?</span></summary><div class="faq-a">ModelCar ek container image hai jisme sirf model files hoti hain. Pod ek init container ya sidecar chalata hai jo model ko ModelCar image se shared emptyDir volume me copy karta hai, taaki serving container files ko locally dekh sake. Model images versioned aur cached hoti hain, jaise koi bhi container image.</div></details><details class="faq" data-faq="11"><summary><span class="faq-num">Q11</span><span class="faq-q">OCI volumes ModelCars se kaise alag hain?</span></summary><div class="faq-a">OCI volumes me kubelet OCI image ko seedha volume ke roop me mount karta hai, bina init container ke — pod spec me image volume source point karta hai aur kubelet use read-only mount karta hai. Ye cleanest approach mana gaya hai jahan cluster support karta ho (Kubernetes 1.31+; kitab me 1.35, 1.33 aur 1.31 — teeno numbers alag jagah diye gaye hain).</div></details><details class="faq" data-faq="12"><summary><span class="faq-num">Q12</span><span class="faq-q">Kubernetes me GPU kaise request karte hain?</span></summary><div class="faq-a">Pod spec me extended resource request karte hain — nvidia.com/gpu: 1. Scheduler tabhi place karta hai jab node par free GPU ho; device plugin GPU advertise karta hai; kubelet aur container runtime use container ke andar expose karte hain.</div></details><details class="faq" data-faq="13"><summary><span class="faq-num">Q13</span><span class="faq-q">NVIDIA GPU Operator kya karta hai?</span></summary><div class="faq-a">Ye drivers, device plugin aur monitoring ko Kubernetes resources ke roop me install karta hai — Helm se install hota hai. Uske baad nodes GPU capacity report karte hain.</div></details><details class="faq" data-faq="14"><summary><span class="faq-num">Q14</span><span class="faq-q">Time-slicing, MPS aur MIG me kya farak hai?</span></summary><div class="faq-a">Time-slicing GPU ko time-multiplexing se share karta hai — koi memory isolation nahi. MPS multiple processes ko zyada efficiently share karne deta hai, lekin memory shared rehti hai. MIG GPU ko physically isolated instances me partition karta hai — hard isolation aur predictable performance, lekin fixed slice sizes.</div></details><details class="faq" data-faq="15"><summary><span class="faq-num">Q15</span><span class="faq-q">Dynamic Resource Allocation (DRA) kya hai?</span></summary><div class="faq-a">DRA accelerators ko fixed count ke bajay attributes (jaise memory ya compute capability) se request karne ka newer Kubernetes API hai. ResourceClaim batata hai kya chahiye; driver use real device — MIG slice ya GPU fraction — se match karta hai.</div></details><details class="faq" data-faq="16"><summary><span class="faq-num">Q16</span><span class="faq-q">GPU sharing kab istemal karna chahiye aur kab nahi?</span></summary><div class="faq-a">Bade production models ke liye whole GPUs istemal karo. Sharing sirf chhote models, development ya multi-tenant cost saving ke liye hai.</div></details><details class="faq" data-faq="17"><summary><span class="faq-num">Q17</span><span class="faq-q">Production me model server ke probes kaise set karte hain?</span></summary><div class="faq-a">Startup probe lamba failure threshold rakhta hai kyunki model loading me minutes lag sakte hain (example me 60 seconds initial delay). Readiness tabhi pass hoti hai jab model load ho jaye. Graceful shutdown in-flight requests ko drop hone se bachata hai.</div></details><details class="faq" data-faq="18"><summary><span class="faq-num">Q18</span><span class="faq-q">vLLM ke kaun se flags production me matter karte hain?</span></summary><div class="faq-a">--max-model-len context aur KV cache cap karta hai, --gpu-memory-utilization GPU memory ka fraction cap karta hai (example 0.9), --max-num-seqs concurrent sequences cap karta hai, aur --enforce-eager/compilation trade-offs hote hain.</div></details><details class="faq" data-faq="19"><summary><span class="faq-num">Q19</span><span class="faq-q">Model ko rollout karne se pehle kaise evaluate karte hain?</span></summary><div class="faq-a">Benchmark set par purane aur naye model ko same prompts bhejkar compare karte hain — accuracy/quality, TTFT, inter-token latency, throughput, error rate aur cost per request. Phir canary rollout: chhota traffic share, phir bada, phir full — rollback path ke saath.</div></details><details class="faq" data-faq="20"><summary><span class="faq-num">Q20</span><span class="faq-q">CPU-based HPA GPU inference ke liye kyun galat hai?</span></summary><div class="faq-a">Kyunki GPU utilisation aur queue length matter karte hain, CPU nahi. KEDA Prometheus metric (waiting requests ya GPU utilisation) par scale karta hai, taaki replicas tab badhein jab queue badhe.</div></details><details class="faq" data-faq="21"><summary><span class="faq-num">Q21</span><span class="faq-q">Prefix-aware routing kya hai?</span></summary><div class="faq-a">Prompt prefix share karne wale requests same replica par bheje jate hain, taaki prefix caching ka fayda mile. Load-aware routing me router har replica ki queue depth aur KV-cache usage jaanta hai aur kaam sabse kam loaded replica ko bhejta hai.</div></details><details class="faq" data-faq="22"><summary><span class="faq-num">Q22</span><span class="faq-q">TTFT aur TPOT kya hain?</span></summary><div class="faq-a">TTFT (time to first token) pehla token stream hone tak ka time hai — prefill aur queueing se dominate hota hai. TPOT (time per output token) decode ke dauraan tokens ke beech ka gap hai.</div></details><details class="faq" data-faq="23"><summary><span class="faq-num">Q23</span><span class="faq-q">vLLM ke kaun se Prometheus metrics dekhne chahiye?</span></summary><div class="faq-a">Running aur waiting requests, tokens processed, KV-cache usage, TTFT aur TPOT histograms, aur GPU cache usage. Inhe Prometheus scrape karta hai aur Grafana dashboard dikhata hai.</div></details><details class="faq" data-faq="24"><summary><span class="faq-num">Q24</span><span class="faq-q">Production me prompts log kyun nahi karne chahiye?</span></summary><div class="faq-a">Kyunki prompts me personal ya sensitive data ho sakta hai. Logs me request ID, model name, prompt length aur latency breakdown rakho — full prompt ya completion text nahi.</div></details><details class="faq" data-faq="25"><summary><span class="faq-num">Q25</span><span class="faq-q">Output guarding kya hai?</span></summary><div class="faq-a">Generated text ko return karne se pehle policy violations, hallucinated ya unsafe content aur PII ke liye check karna. Guard models aur TrustyAI project iske examples hain. Observability bina guarding ke bata sakti hai ki bura output hua, lekin use rok nahi sakti.</div></details><details class="faq" data-faq="26"><summary><span class="faq-num">Q26</span><span class="faq-q">Fine-tuning aur RAG me se kab kya chunna chahiye?</span></summary><div class="faq-a">Knowledge baar-baar badalta ho ya cite karna ho to RAG; model ko naya skill, style ya task format sikhana ho to fine-tuning; dono chahiye hon to dono — RAG facts ke liye, fine-tuning behaviour ke liye.</div></details><details class="faq" data-faq="27"><summary><span class="faq-num">Q27</span><span class="faq-q">LoRA aur QLoRA me kya farak hai?</span></summary><div class="faq-a">LoRA frozen weights ke upar chhota low-rank adapter update karta hai — far cheaper, adapter chhoti file hai jo swap ho sakti hai. QLoRA LoRA hai quantised base model ke saath — aur sasta, thodi quality cost ke saath. Kitab LoRA ko default recommend karti hai.</div></details><details class="faq" data-faq="28"><summary><span class="faq-num">Q28</span><span class="faq-q">Kubeflow Trainer kya karta hai?</span></summary><div class="faq-a">Fine-tuning job ko Kubernetes Job ke roop me chalata hai — training pod, GPU allocation aur checkpoint output manage karta hai. Example me LoRA run hai, JSONL dataset aur checkpoints ke liye PersistentVolumeClaim ke saath.</div></details><details class="faq" data-faq="29"><summary><span class="faq-num">Q29</span><span class="faq-q">Gang scheduling kya hai aur kyun chahiye?</span></summary><div class="faq-a">Job ke saare pods ek saath start hone chahiye ya koi nahi — taaki distributed training job kuch GPUs occupy karke baaki ka wait na kare. 4-pod job ka example Fig 7-2 me hai.</div></details><details class="faq" data-faq="30"><summary><span class="faq-num">Q30</span><span class="faq-q">Kueue kya hai?</span></summary><div class="faq-a">Kubernetes ka queueing system — ClusterQueues, LocalQueues aur Cohort hierarchies. Idle queue se capacity borrow kar sakte hain, aur higher-priority job aane par lower-priority kaam preempt hota hai.</div></details><details class="faq" data-faq="31"><summary><span class="faq-num">Q31</span><span class="faq-q">Topology-aware scheduling kyun matter karta hai?</span></summary><div class="faq-a">NUMA node ke andar ya NVLink par communication fast hai; nodes ke across Ethernet par slower; racks ke across aur slow. Distributed training ke workers ko paas me place karna chahiye — GPU sirf GPU nahi hota, uske neighbours matter karte hain.</div></details><details class="faq" data-faq="32"><summary><span class="faq-num">Q32</span><span class="faq-q">Agent aur simple application me kya farak hai?</span></summary><div class="faq-a">Simple application ek prompt bhejta hai aur ek jawab dikhata hai. Agent prompt bhejta hai, tool call ka decision padhta hai, tool execute karta hai, result wapas feed karta hai, aur task poora hone tak repeat karta hai. Farak model nahi, uske aas-paas ka loop hai.</div></details><details class="faq" data-faq="33"><summary><span class="faq-num">Q33</span><span class="faq-q">MCP aur A2A me kya farak hai?</span></summary><div class="faq-a">MCP agent-to-tool ke liye hai — tools, resources aur prompts discover aur expose karta hai. A2A agent-to-agent ke liye hai — agents agent card expose karte hain aur messages/tasks ke through delegate karte hain.</div></details><details class="faq" data-faq="34"><summary><span class="faq-num">Q34</span><span class="faq-q">Agents ke liye token exchange aur SPIFFE kya hain?</span></summary><div class="faq-a">Token exchange (OAuth 2.0) me agent user ka token exchange karke scoped-down token leta hai jo sirf specific downstream service/action ke liye valid hota hai. SPIFFE/SPIRE me har pod ko cryptographic identity (SPIFFE ID) milti hai, bina long-lived secrets ke.</div></details><details class="faq" data-faq="35"><summary><span class="faq-num">Q35</span><span class="faq-q">Agent state ko persist kyun karna chahiye?</span></summary><div class="faq-a">Agent ka run minutes ya hours chal sakta hai aur kai model calls span kar sakta hai. Har step ke baad checkpoint save karo — conversation history, tool results, plan — taaki crash ya pod restart ke baad last checkpoint se resume ho sake. Tool calls idempotent hone chahiye taaki retry par side effect dobara na ho.</div></details><details class="faq" data-faq="36"><summary><span class="faq-num">Q36</span><span class="faq-q">Prompt injection kya hai?</span></summary><div class="faq-a">Ek prompt jo model ko uski instructions ignore karne par majboor karne ki koshish karta hai. Model output ko untrusted data ki tarah treat karna chahiye, commands ki tarah nahi — ye Afterword me production risk ke roop me discuss kiya gaya hai.</div></details></div>
+  <div class="pn-nav"><a class="pn-btn" href="#/labs"><span class="pn-label">← Prev</span><span class="pn-title">Labs</span></a><a class="pn-btn" href="#/sources"><span class="pn-label">Next →</span><span class="pn-title">Sources</span></a></div>
+
+</section>
+
+<section class="section" id="sec-sources" data-title="Sources">
+  <div class="sec-meta"><span class="num-chip">15</span><span class="sec-group">Sources</span></div>
+  <h1>Sources</h1>
+
+  <p class="lead">Is SPA ka content ek hi source par based hai — kitab ke O'Reilly Learning page par. Har section ke end me wahi Source line di gayi hai.</p>
+  <ul class="src-list">
+    <li><span class="src-num">01</span><a href="https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/">https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/</a></li>
+  </ul>
+  <h3>Source ke baare me</h3>
+  <ul>
+    <li>Kitab: Generative AI on Kubernetes — Operationalizing Large Language Models, 406 print pages, February 2026, O'Reilly Media, Inc.</li>
+    <li>Reading time: 11 hours 42 minutes · Level: Intermediate to Advanced.</li>
+    <li>Is copy me koi ISBN display nahi hota — isliye yahan koi ISBN nahi diya gaya hai. URL me dikhne wala number (9781098171919) sirf book page ka identifier hai.</li>
+    <li>Coverage: Preface + Introduction + Chapters 1–9 (chaar parts me) + Afterword, O'Reilly reader me full read kiya gaya. Index ek alphabetical A–Y index hai — cross-reference ke liye hai, entry-by-entry summary nahi hai. About the Authors biographical page hai, chapter nahi.</li>
+    <li>Running example: Meta Llama 3.2 3B Instruct, vLLM se, Kind local cluster par. Code kitab ke online repository me hai.</li>
+    <li>Ye SPA notes par based hai — apne shabdon me likha gaya detailed summary, kitab ka verbatim text nahi. Code listings teaching ke liye dobara banayi gayi hain; diagrams notes ke descriptions se SVG me dobara banaye gaye hain.</li>
+  </ul>
+  <div class="pn-nav"><a class="pn-btn" href="#/faqs"><span class="pn-label">← Prev</span><span class="pn-title">FAQs</span></a><a class="pn-btn" href="#/trust"><span class="pn-label">Next →</span><span class="pn-title">Trust Check</span></a></div>
+
+</section>
+
+<section class="section" id="sec-trust" data-title="Trust Check — Sab Kuch Included Hai?">
+  <div class="sec-meta"><span class="num-chip">16</span><span class="sec-group">Trust Check</span></div>
+  <h1>Trust Check — Sab Kuch Included Hai?</h1>
+
+  <p class="lead">Ye section khud check karta hai ki SPA me sab kuch hai ya nahi. Counts live page se gine jate hain — neeche button dabakar self-check chalao.</p>
+  <div class="tc-cards">
+    <div class="tc-card"><div class="tc-num" id="tc-sections">–</div><div class="tc-lbl">Content sections</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-sidebar">–</div><div class="tc-lbl">Sidebar entries</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-sources">–</div><div class="tc-lbl">Source boxes</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-urls">–</div><div class="tc-lbl">Distinct URLs</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-figs">–</div><div class="tc-lbl">Figures</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-labs">–</div><div class="tc-lbl">Labs</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-faqs">–</div><div class="tc-lbl">FAQs</div></div>
+    <div class="tc-card"><div class="tc-num" id="tc-hinglish">–</div><div class="tc-lbl">Hinglish markers</div></div>
+  </div>
+  <button class="run-check" id="run-check">Self-Check Chalao</button>
+  <div class="check-result" id="check-result" hidden></div>
+  <h3>Cross-check — kitab ki Table of Contents vs is SPA</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Kitab ka TOC</th><th>Is SPA me</th><th>Status</th></tr>
+    <tr><td>Preface</td><td>Section 01</td><td>✓ Covered</td></tr>
+    <tr><td>Introduction</td><td>Section 02</td><td>✓ Covered</td></tr>
+    <tr><td>Part I · 1. Deploying Models</td><td>Section 03</td><td>✓ Covered</td></tr>
+    <tr><td>Part I · 2. Model Data</td><td>Section 04</td><td>✓ Covered</td></tr>
+    <tr><td>Part II · 3. Kubernetes and GPUs</td><td>Section 05</td><td>✓ Covered</td></tr>
+    <tr><td>Part II · 4. Running in Production</td><td>Section 06</td><td>✓ Covered</td></tr>
+    <tr><td>Part II · 5. Model Observability</td><td>Section 07</td><td>✓ Covered</td></tr>
+    <tr><td>Part III · 6. Model Customization</td><td>Section 08</td><td>✓ Covered</td></tr>
+    <tr><td>Part III · 7. Job Scheduling Optimization</td><td>Section 09</td><td>✓ Covered</td></tr>
+    <tr><td>Part IV · 8. AI-Driven Applications</td><td>Section 10</td><td>✓ Covered</td></tr>
+    <tr><td>Part IV · 9. Running Agentic Applications in Production</td><td>Section 11</td><td>✓ Covered</td></tr>
+    <tr><td>Afterword</td><td>Section 12</td><td>✓ Covered</td></tr>
+    <tr><td>Index (A–Y)</td><td>—</td><td>Out of scope (neeche dekhein)</td></tr>
+    <tr><td>About the Authors</td><td>—</td><td>Out of scope — personal details nahi</td></tr>
+  </table></div>
+  <h3>Honest out-of-scope list — jo is SPA me nahi hai</h3>
+  <ul class="oos">
+    <li><strong>Index (A–Y):</strong> alphabetical lookup index hai — entry-by-entry summary nahi hai. Topics cross-reference ke liye chapters me cover hain.</li>
+    <li><strong>About the Authors — personal details:</strong> lekhakon ke naam, career history aur personal bio is SPA me nahi hain (share-safety rule). Kitab ki pehchan sirf title, publisher aur date se di gayi hai.</li>
+    <li><strong>Code verbatim nahi hai:</strong> code listings notes ke descriptions se teaching ke liye dobara banayi gayi hain. Asli code kitab ke online repository me hai.</li>
+    <li><strong>Figures recreations hain:</strong> saare diagrams notes ke descriptions se SVG me dobara banaye gaye hain — kitab ki original images nahi hain.</li>
+    <li><strong>OCI volumes Kubernetes version — teeno numbers rakhe gaye hain:</strong> ek jagah 1.35, Lessons Learned me 1.33, OCI section me 1.31. Ek ko silently chunna galat hota — teeno Ch 2 me diye gaye hain.</li>
+    <li><strong>Search card ka "34% complete" marker:</strong> ye O'Reilly platform ka progress display hai, kitab ka content nahi — isliye cover nahi kiya gaya.</li>
+    <li><strong>Afterword ka humorous aside:</strong> instruction-override example par joke ki wording reproduce nahi ki gayi hai — sirf uska matlab bataya gaya hai.</li>
+  </ul>
+  <div class="pn-nav"><a class="pn-btn" href="#/sources"><span class="pn-label">← Prev</span><span class="pn-title">Sources</span></a></div>
+
+</section>
+
+</div>
+</main>
+<script>
+
+"use strict";
+var sections = Array.prototype.slice.call(document.querySelectorAll(".section"));
+var links = Array.prototype.slice.call(document.querySelectorAll(".sb-link"));
+var byId = {};
+sections.forEach(function(s){ byId[s.id.replace("sec-","")] = s; });
+var order = sections.map(function(s){ return s.id.replace("sec-",""); });
+var sidebar = document.getElementById("sidebar");
+var scrim = document.getElementById("scrim");
+function closeDrawer(){ sidebar.classList.remove("open"); scrim.classList.remove("on"); }
+document.getElementById("menu-btn").addEventListener("click", function(){
+  var open = sidebar.classList.toggle("open"); scrim.classList.toggle("on", open);
+});
+scrim.addEventListener("click", closeDrawer);
+function show(slug){
+  if(!byId[slug]) slug = "home";
+  sections.forEach(function(s){ s.hidden = s.id !== "sec-" + slug; });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  var act = document.querySelector('.sb-link[data-nav="' + slug + '"]');
+  if(act && window.innerWidth > 900){ act.scrollIntoView({block:"nearest"}); }
+  var idx = order.indexOf(slug);
+  document.getElementById("progress-bar").style.width = (order.length > 1 ? (idx/(order.length-1))*100 : 0) + "%";
+  var tb = document.getElementById("tb-current");
+  if(tb){ var sec = byId[slug]; tb.textContent = sec ? (sec.getAttribute("data-title") || "Generative AI on Kubernetes") : "Generative AI on Kubernetes"; }
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+function route(){
+  var h = location.hash.replace(/^#\/?/, "");
+  show(h || "home");
+}
+window.addEventListener("hashchange", route);
+var search = document.getElementById("sb-search-input");
+search.addEventListener("input", function(){
+  var q = search.value.trim().toLowerCase();
+  links.forEach(function(a){
+    var hay = a.getAttribute("data-search") || "";
+    a.classList.toggle("hidden", q !== "" && hay.indexOf(q) === -1);
+  });
+  document.querySelectorAll(".sb-group").forEach(function(g){
+    var any = g.querySelector(".sb-link:not(.hidden)");
+    g.style.display = any ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); search.focus(); if(window.innerWidth<=900){ sidebar.classList.add("open"); scrim.classList.add("on"); } }
+});
+route();
+
+/* ---------- Lab 1: Model size ---------- */
+window.labModelSize = function(){
+  var parts = document.getElementById("ms-model").value.split("|");
+  var params = parseFloat(parts[0]), w16 = parseFloat(parts[1]);
+  var ctx = parts[2], hw = parts[3];
+  var prec = parseInt(document.getElementById("ms-prec").value, 10);
+  var bytes = prec === 16 ? 2 : (prec === 8 ? 1 : 0.5);
+  var size = params * bytes;
+  var note = prec === 16 ? "Full precision — koi quality loss nahi, lekin sabse bada." :
+    (prec === 8 ? "Aadha size — 3B par ≈ 3 GB, quality trade-off chhota." :
+    "Quarter size — 3B par ≈ 1.5–2 GB, quality trade-off sabse bada; chhota model hamesha 'wahi model' nahi hota.");
+  document.getElementById("ms-out-text").textContent =
+    params + "B model · " + prec + "-bit → Weights ≈ " + size.toFixed(1) + " GB (16-bit me " + w16 + " GB)" +
+    " | Context: " + ctx + " | Hardware (Table I-1): " + hw +
+    " | Yaad rakhein: weights ke upar KV cache aur overhead bhi chahiye — 7B ko sirf weights ke liye 14 GB chahiye." +
+    " | " + note;
+};
+
+/* ---------- Lab 2: KV cache ---------- */
+window.labKv = function(){
+  var L = parseFloat(document.getElementById("kv-layers").value) || 0;
+  var H = parseFloat(document.getElementById("kv-heads").value) || 0;
+  var D = parseFloat(document.getElementById("kv-dim").value) || 0;
+  var S = parseFloat(document.getElementById("kv-seq").value) || 0;
+  var B = parseFloat(document.getElementById("kv-batch").value) || 0;
+  var bytes = parseFloat(document.getElementById("kv-bytes").value) || 0;
+  var total = 2 * L * H * D * S * B * bytes;
+  var gb = total / (1024*1024*1024);
+  var gqa = gb / 4;
+  document.getElementById("kv-out-text").textContent =
+    "KV cache = 2 × " + L + " × " + H + " × " + D + " × " + S + " × " + B + " × " + bytes + " = " + total.toLocaleString("en-US") + " bytes ≈ " + gb.toFixed(2) + " GB" +
+    " | GQA jaisi technique (heads 32 → 8) ise " + gqa.toFixed(2) + " GB kar deti — 75% saving" +
+    " | High KV utilisation ka matlab hai server apni concurrency limit ke paas hai (Table 5-1).";
+};
+
+/* ---------- Lab 3: vLLM tuner ---------- */
+window.labVllm = function(){
+  var len = parseFloat(document.getElementById("vc-len").value) || 0;
+  var util = parseFloat(document.getElementById("vc-util").value) || 0;
+  var seqs = parseFloat(document.getElementById("vc-seqs").value) || 0;
+  var gpu = parseFloat(document.getElementById("vc-gpu").value) || 0;
+  var weights = 6;
+  var kvBudget = gpu * util - weights;
+  var perSeq = 2 * 32 * 32 * 128 * len * 2 / (1024*1024*1024);
+  var need = perSeq * seqs;
+  var verdict = need <= kvBudget ? "FIT: KV budget " + kvBudget.toFixed(1) + " GB me " + need.toFixed(1) + " GB ki zaroorat poori hoti hai." :
+    "OVER BUDGET: zaroorat " + need.toFixed(1) + " GB hai, budget " + kvBudget.toFixed(1) + " GB hai — max-model-len ghatao, max-num-seqs ghatao, ya bada GPU lo.";
+  document.getElementById("vc-out-text").textContent =
+    "GPU " + gpu + " GB × utilisation " + util + " = " + (gpu*util).toFixed(1) + " GB, minus weights ≈ " + weights + " GB (3B, 16-bit) → KV budget ≈ " + kvBudget.toFixed(1) + " GB" +
+    " | Per sequence KV (illustrative 32 layers × 32 heads × 128 dim, len " + len + "): ≈ " + perSeq.toFixed(3) + " GB × " + seqs + " seqs = " + need.toFixed(1) + " GB" +
+    " | " + verdict +
+    " | Yaad rakhein: lambi context = zyada KV cache; zyada seqs = zyada throughput lekin per-request latency badhti hai.";
+};
+
+/* ---------- Lab 4: KEDA autoscaler ---------- */
+window.labKeda = function(){
+  var q = parseFloat(document.getElementById("kd-queue").value) || 0;
+  var mn = parseInt(document.getElementById("kd-min").value, 10) || 0;
+  var mx = parseInt(document.getElementById("kd-max").value, 10) || 1;
+  document.getElementById("kd-queue-val").textContent = q;
+  var need = Math.ceil(q / 8);
+  var rep = Math.max(mn, Math.min(mx, need));
+  var warn = "";
+  if(q === 0){ warn = "Queue khaali hai — minimum replicas chal rahe hain."; }
+  else if(need > mx){ warn = "SATURATED: " + need + " replicas chahiye, lekin max " + mx + " hai — queue badhti rahegi, max badhao ya bada model capacity lo."; }
+  else if(mn === 0 && q === 0){ warn = "Scale-to-zero: cold start minutes leta hai (model download + load) — bade models ke liye usually worth nahi."; }
+  else { warn = "Queue handle ho rahi hai — KEDA Prometheus metric (waiting requests) par scale kar raha hai."; }
+  document.getElementById("kd-out-text").textContent =
+    "Waiting requests: " + q + " → zaroorat: " + need + " replicas (1 replica ≈ 8 waiting) → chal rahe: " + rep + " (min " + mn + ", max " + mx + ")" +
+    " | " + warn +
+    " | CPU-based HPA yahan galat hota — GPU utilisation aur queue length matter karte hain, CPU nahi.";
+};
+document.getElementById("kd-queue").addEventListener("input", function(){
+  document.getElementById("kd-queue-val").textContent = document.getElementById("kd-queue").value;
+});
+
+/* ---------- Lab 5: FT vs RAG ---------- */
+window.labFtRag = function(){
+  var ch = document.getElementById("fr-change").value;
+  var sk = document.getElementById("fr-skill").value;
+  var au = document.getElementById("fr-audit").value;
+  var rec;
+  if(ch === "yes" && sk === "yes"){ rec = "DONO — RAG facts ke liye, fine-tuning (LoRA) behaviour ke liye. Dono complementary hain, competing nahi."; }
+  else if(ch === "yes"){ rec = "RAG — knowledge badalta rehta hai to retrieval se grounded jawab milega, aur update fast hoga (document add karo, ho gaya)."; }
+  else if(sk === "yes"){ rec = "FINE-TUNING (LoRA se start karo) — model ko naya skill, style ya task format sikhana hai. LoRA default choice hai."; }
+  else { rec = "RAG se start karo — reversible aur auditable hai. Fine-tuning tabhi jab behaviour sikhana ho."; }
+  if(au === "yes"){ rec += " | Auditability chahiye to RAG ka grounded answer cite kar sakta hai — fine-tuning akele ye nahi deta."; }
+  document.getElementById("fr-out-text").textContent = rec +
+    " | Warning: facts sikhane ke liye fine-tune mat karo — model unhe hallucinate kar sakta hai.";
+};
+
+/* ---------- Lab 6: GPU sharing ---------- */
+window.labGpuShare = function(){
+  var w = document.getElementById("gs-work").value;
+  var D = {
+    prod: "WHOLE GPU — bade production model ke liye sabse simple aur predictable. Agar hard isolation chahiye to MIG (fixed slices, predictable performance). Sharing mat karo.",
+    dev: "TIME-SLICING — chhote, bursty dev workloads ke liye simple sharing. Koi memory isolation nahi aur koi performance guarantee nahi — dev ke liye theek hai, production ke liye nahi.",
+    multi: "MPS ya MIG — multi-tenant cost saving ke liye. MPS better sharing deta hai (memory shared rehti hai); MIG hard isolation deta hai (fixed partitions). Isolation chahiye to MIG, flexibility chahiye to MPS.",
+    frac: "DRA (Dynamic Resource Allocation) — ResourceClaim se attributes (memory/compute) ke hisaab se request karo; driver MIG slice ya GPU fraction match karta hai. Naya hai — driver aur Kubernetes version support check karo."
+  };
+  document.getElementById("gs-out-text").textContent = D[w] +
+    " | Trade-off yaad rakhein: sharing isolation ke badle utilisation deta hai (Table 3-1).";
+};
+
+/* ---------- Lab 7: Latency ---------- */
+window.labLatency = function(){
+  var p = parseFloat(document.getElementById("lt-prompt").value) || 0;
+  var o = parseFloat(document.getElementById("lt-out").value) || 0;
+  var pf = parseFloat(document.getElementById("lt-prefill").value) || 0;
+  var dc = parseFloat(document.getElementById("lt-decode").value) || 0;
+  var qw = parseFloat(document.getElementById("lt-queue").value) || 0;
+  var ttft = qw + p * pf;
+  var tpot = dc;
+  var e2e = ttft + o * dc;
+  var tps = 1000 / dc;
+  document.getElementById("lt-out-text").textContent =
+    "TTFT = queue " + qw + " ms + prefill " + p + " × " + pf + " ms = " + ttft.toFixed(0) + " ms (pehla token)" +
+    " | TPOT = " + tpot.toFixed(0) + " ms/token (decode gap)" +
+    " | End-to-end = TTFT + " + o + " × " + dc + " ms = " + e2e.toFixed(0) + " ms (" + (e2e/1000).toFixed(2) + " s)" +
+    " | Decode throughput ≈ " + tps.toFixed(1) + " tokens/sec" +
+    " | Lamba prompt TTFT badhata hai; zyada output tokens end-to-end badhate hain — prefill compute-heavy, decode memory-bandwidth-bound hai.";
+};
+
+/* ---------- Lab 8: Agent cost ---------- */
+window.labAgentCost = function(){
+  var steps = parseFloat(document.getElementById("ac-steps").value) || 0;
+  var tools = parseFloat(document.getElementById("ac-tools").value) || 0;
+  var tok = parseFloat(document.getElementById("ac-tokens").value) || 0;
+  var price = parseFloat(document.getElementById("ac-price").value) || 0;
+  var lat = parseFloat(document.getElementById("ac-lat").value) || 0;
+  var totalTok = steps * tok;
+  var cost = totalTok / 1000000 * price;
+  var toolCalls = steps * tools;
+  var toolTime = toolCalls * lat;
+  var spans = steps + toolCalls;
+  var verdict = cost > 0.10 ? "MEHENGA: $0.10/task se zyada — steps ghatao, chhota model istemal karo, ya tool calls kam karo." :
+    "REASONABLE: $0.10/task se kam — lekin 1000 tasks par $" + (cost*1000).toFixed(2) + " hota hai, scale par dhyaan do.";
+  document.getElementById("ac-out-text").textContent =
+    "Total tokens = " + steps + " steps × " + tok + " = " + totalTok.toLocaleString("en-US") +
+    " | Cost per task = " + totalTok.toLocaleString("en-US") + " / 1M × $" + price + " = $" + cost.toFixed(4) +
+    " | Tool calls: " + toolCalls + " × " + lat + " ms = " + toolTime.toLocaleString("en-US") + " ms tool time" +
+    " | Trace spans: " + spans + " (" + steps + " model + " + toolCalls + " tool)" +
+    " | " + verdict;
+};
+
+/* ---------- Trust Check ---------- */
+function tcCount(sel){ return document.querySelectorAll(sel).length; }
+function tcSet(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; }
+function refreshCounts(){
+  var docs = document.querySelectorAll('[data-doc="1"]');
+  var urls = {};
+  docs.forEach(function(d){ urls[d.getAttribute("data-url")] = true; });
+  tcSet("tc-sections", docs.length);
+  tcSet("tc-sidebar", document.querySelectorAll(".sb-link").length);
+  tcSet("tc-sources", tcCount('[data-doc="1"] .source-box'));
+  tcSet("tc-urls", Object.keys(urls).length);
+  tcSet("tc-figs", tcCount(".fig"));
+  tcSet("tc-labs", tcCount("[data-lab]"));
+  tcSet("tc-faqs", tcCount("[data-faq]"));
+  var text = document.body.textContent || "";
+  var markers = [" hai ", " ka ", " ki ", " mein ", " aur ", " yeh ", " matlab ", " jaise ", " liye ", " se ", " par ", " toh ", " bhi ", " nahi ", " karo ", " samjho ", " chahiye ", " hota hai ", " hoti hai ", " hote hain "];
+  var n = 0;
+  markers.forEach(function(m){ var parts = text.split(m); n += parts.length - 1; });
+  tcSet("tc-hinglish", n);
+}
+refreshCounts();
+var runBtn = document.getElementById("run-check");
+if(runBtn){ runBtn.addEventListener("click", function(){
+  refreshCounts();
+  var checks = [];
+  var docs = document.querySelectorAll('[data-doc="1"]');
+  var urls = {}, dup = 0, noSrc = 0, badHref = 0;
+  var BOOK = "https://learning.oreilly.com/library/view/generative-ai-on/9781098171919/";
+  docs.forEach(function(d){
+    var u = d.getAttribute("data-url");
+    if(urls[u]) dup++; urls[u] = true;
+    var sb = d.querySelector(".source-box a");
+    if(!sb) noSrc++;
+    else if(sb.getAttribute("href") !== BOOK) badHref++;
+  });
+  var distinct = Object.keys(urls).length;
+  checks.push([docs.length === 12, "Content sections = 12 (Preface + Introduction + Ch 1–9 + Afterword; mile: " + docs.length + ")"]);
+  checks.push([document.querySelectorAll(".sb-link").length === 17, "Sidebar entries = 17 (Home + 12 sections + 4 End Matter; mile: " + document.querySelectorAll(".sb-link").length + ")"]);
+  checks.push([noSrc === 0 && badHref === 0, "Har section ke paas Source line hai, wahi book URL ke saath (bina Source: " + noSrc + ", galat URL: " + badHref + ")"]);
+  checks.push([distinct === 1, "Distinct Source URL = 1 (ek hi kitab; mile: " + distinct + ")"]);
+  checks.push([tcCount(".fig") >= 30, "Figures ≥ 30, sab recreated SVG (mile: " + tcCount(".fig") + ")"]);
+  checks.push([tcCount("[data-lab]") === 8, "Interactive labs = 8 (mile: " + tcCount("[data-lab]") + ")"]);
+  checks.push([tcCount("[data-faq]") === 36, "Interview FAQs = 36 (mile: " + tcCount("[data-faq]") + ")"]);
+  var badFaq = 0;
+  document.querySelectorAll("[data-faq] .faq-q").forEach(function(q){
+    var t = q.textContent.trim();
+    if(/^(q|a)$/i.test(t) || /placeholder|lorem|todo/i.test(t)) badFaq++;
+  });
+  checks.push([badFaq === 0, "Koi placeholder FAQ nahi (mile: " + badFaq + ")"]);
+  var lazyCount = document.querySelectorAll("[loading]").length;
+  checks.push([lazyCount === 0, "Zero loading= attributes (mile: " + lazyCount + ")"]);
+  var text = document.body.textContent || "";
+  var markers = [" hai ", " ka ", " ki ", " mein ", " aur ", " yeh ", " matlab ", " jaise ", " liye ", " se ", " par ", " toh ", " bhi ", " nahi ", " karo ", " samjho ", " chahiye ", " hota hai ", " hoti hai ", " hote hain "];
+  var hn = 0;
+  markers.forEach(function(m){ hn += text.split(m).length - 1; });
+  checks.push([hn >= 200, "Hinglish markers ≥ 200 (mile: " + hn + ")"]);
+  var pass = checks.every(function(c){ return c[0]; });
+  var res = document.getElementById("check-result");
+  res.hidden = false; res.className = "check-result " + (pass ? "pass" : "fail");
+  res.innerHTML = "<strong>" + (pass ? "PASS — Preface + Introduction + 9 chapters + Afterword, 8 labs, 36 FAQs, sab kuch is SPA me hai." : "FAIL — neeche wali jaanch dekho.") + "</strong><ul>" +
+    checks.map(function(c){ return "<li>" + (c[0] ? "✓ " : "✗ ") + c[1] + "</li>"; }).join("") + "</ul>";
+  res.scrollIntoView({behavior:"smooth", block:"center"});
+}); }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Engineering for LLMs — Poora Book, Hinglish</title>
+<style>
+
+:root{
+  color-scheme: dark;
+  --bg:#121316; --surface-lowest:#0d0e11; --surface-low:#1b1b1f; --surface:#1f1f23;
+  --surface-high:#292a2d; --surface-highest:#343538; --bright:#38393c;
+  --text:#e3e2e6; --text-var:#c1cab0; --muted:#8b947d; --outline-var:#424936;
+  --lime:#9ee939; --lime-strong:#84cc16; --lime-dim:#334f00; --on-lime:#1f3700;
+  --blue:#7bd0ff; --blue-soft:#a1dbff;
+  --font-head:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue-soft)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-high);padding:.1em .38em;border-radius:4px;color:var(--lime);word-break:break-word}
+pre code{background:none;padding:0;color:inherit}
+strong{color:#fff}
+::selection{background:rgba(132,204,22,.35)}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:36px}
+/* ---------- layout ---------- */
+#topbar{display:none}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:var(--surface-low);border-right:1px solid var(--surface-highest);z-index:60;display:flex;flex-direction:column}
+.sb-top{padding:16px 16px 10px;border-bottom:1px solid var(--surface-high)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-logo{width:34px;height:34px;border-radius:8px;background:var(--lime-strong);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;flex:none}
+.sb-brand h2{font-family:var(--font-head);font-size:17px;margin:0;letter-spacing:-.01em}
+.sb-brand small{display:block;color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.sb-search{position:relative}
+.sb-search input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-body);font-size:13.5px;min-height:38px}
+.sb-search input:focus{outline:none;border-color:var(--lime-strong)}
+.sb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:var(--surface-highest) transparent}
+.sb-group{margin-bottom:14px}
+.sb-group-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 8px 4px}
+.sb-count{background:var(--surface-high);color:var(--text-var);border-radius:99px;padding:1px 8px;font-size:10.5px}
+.sb-group-intro{display:none}
+.sb-link{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;color:var(--text-var);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent;min-height:36px}
+.sb-link:hover{background:var(--surface);color:var(--text)}
+.sb-link.active{background:var(--surface-high);color:var(--lime);font-weight:600;border-left-color:var(--lime-strong)}
+.sb-num{font-family:var(--font-mono);font-size:10.5px;background:var(--surface-highest);color:var(--text-var);border-radius:5px;padding:2px 5px;min-width:27px;text-align:center;flex:none}
+.sb-link.active .sb-num{background:var(--lime-strong);color:var(--on-lime)}
+.sb-link.hidden{display:none}
+.sb-foot{padding:10px 16px;background:var(--surface-lowest);border-top:1px solid var(--surface-high);font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sb-dot{width:8px;height:8px;border-radius:99px;background:var(--lime);display:inline-block;margin-right:7px;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+#scrim{display:none}
+#main{margin-left:300px;min-height:100vh}
+#progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:70}
+#progress-bar{height:100%;width:0;background:var(--lime-strong);transition:width .25s}
+.wrap{max-width:880px;margin:0 auto;padding:34px 28px 70px}
+/* ---------- sections ---------- */
+.section h1{font-family:var(--font-head);font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 14px;font-weight:700}
+.section h3{font-family:var(--font-head);font-size:20px;margin:30px 0 10px;letter-spacing:-.01em;color:#fff}
+.section h4{font-family:var(--font-head);font-size:16.5px;margin:22px 0 8px;color:var(--text)}
+.section p{margin:10px 0;color:#d6d8ce}
+.section ul,.section ol{margin:10px 0;padding-left:22px;color:#d6d8ce}
+.section li{margin:5px 0}
+.section li>ul,.section li>ol{margin:4px 0}
+.sec-meta{display:flex;align-items:center;gap:10px}
+.num-chip{font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--lime-strong);color:var(--on-lime);border-radius:6px;padding:3px 9px}
+.num-chip.lab-chip{background:var(--blue);color:#00354a}
+.sec-group{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:17px;line-height:1.6;color:var(--text);background:var(--surface-low);border:1px solid var(--surface-high);border-radius:10px;padding:14px 16px;margin:14px 0 20px}
+.lead strong{color:var(--lime)}
+.codeblock{background:#0a0b0d;border:1px solid var(--surface-highest);border-radius:10px;margin:14px 0;overflow:hidden}
+.codeblock-head{display:flex;justify-content:space-between;align-items:center;background:var(--surface-high);padding:5px 12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.codeblock pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;color:#d9e7c8}
+.tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--surface-highest);border-radius:10px;background:var(--surface-low)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);background:var(--surface-high);padding:9px 12px}
+td{padding:8px 12px;border-top:1px solid var(--surface-high);vertical-align:top;color:#d6d8ce}
+td code{white-space:nowrap}
+.note{background:var(--surface-low);border:1px solid var(--outline-var);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:14px;color:var(--text-var)}
+.livecheck{background:#1d2410;border:1px solid var(--lime-dim);border-radius:10px;padding:13px 16px;margin:16px 0}
+.livecheck-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
+.livecheck p{margin:4px 0;color:#e6efc9}
+.source-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:13px 16px;margin:28px 0 8px;font-size:13.5px;word-break:break-all}
+.source-tag{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;background:var(--lime-strong);color:var(--on-lime);border-radius:5px;padding:3px 7px;flex:none}
+.source-box a{color:var(--blue-soft);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+.pn-nav{display:flex;gap:12px;margin-top:22px}
+.pn-btn{flex:1;background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px;text-decoration:none;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.pn-btn:hover{border-color:var(--lime-strong)}
+.pn-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pn-title{color:var(--text);font-weight:600;font-size:14.5px}
+.pn-btn:last-child{text-align:right}
+.pn-spacer{flex:1}
+/* ---------- labs ---------- */
+.lab{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:18px;margin:18px 0}
+.lab-head{display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+.lab-badge{background:var(--blue);color:#00354a;font-weight:700;border-radius:5px;padding:3px 8px;letter-spacing:.05em}
+.lab-label{display:block;font-size:13px;color:var(--text-var);margin-bottom:6px}
+.lab-input{width:100%;background:var(--surface);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.lab-input:focus{outline:none;border-color:var(--lime-strong)}
+.mono{font-family:var(--font-mono)}
+.lab-select{background:var(--surface);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13.5px;font-family:var(--font-mono);max-width:100%}
+.lab-controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.lab-controls label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-var);font-family:var(--font-mono)}
+.lab-controls label.lab-check{flex-direction:row;align-items:center;gap:8px;font-family:var(--font-body);font-size:13.5px;min-height:36px}
+.lab-check input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.lab-range{accent-color:var(--lime-strong);width:170px;min-height:36px}
+.lab-color{width:56px;height:38px;border:1px solid var(--surface-highest);border-radius:8px;background:var(--surface);padding:3px}
+.lab-presets{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip-btn{background:var(--surface-high);color:var(--text);border:1px solid var(--surface-highest);border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.chip-btn:hover{border-color:var(--lime-strong);color:var(--lime)}
+.chip-btn.on{background:var(--lime-strong);color:var(--on-lime);font-weight:600}
+.lab-stage{background:#0a0b0d;border:1px dashed var(--surface-highest);border-radius:10px;padding:18px;margin:12px 0;min-height:110px}
+.lab-out{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:12px 14px;margin-top:12px}
+.lab-out-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.lab-css{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#d9e7c8;white-space:pre-wrap;word-break:break-word}
+.lab-note{font-size:13.5px;color:var(--text-var);margin-top:10px}
+.demo-box{background:var(--lime-strong);color:var(--on-lime);font-family:var(--font-mono);font-weight:700;border-radius:8px;display:flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:10px}
+.demo-box.tall{min-height:84px}
+.fx-stage{display:flex;min-height:150px;background:var(--surface);border-radius:8px;padding:10px}
+.gr-stage{display:grid;background:var(--surface);border-radius:8px;padding:10px}
+.sp-stage{display:flex;justify-content:center}
+#sp-box{background:rgba(132,204,22,.22);border:1px solid var(--lime-dim);border-radius:6px;transition:padding .15s}
+.sp-inner{background:var(--surface-high);border-radius:6px;padding:16px 20px;text-align:center}
+.rp-box{border-radius:10px;padding:26px;text-align:center;font-family:var(--font-mono);font-weight:700;color:#12100a;transition:background .2s}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.st-cell{background:var(--surface);border:1px solid var(--surface-high);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.st-cell code{align-self:flex-start}
+.st-btn-hover{background:#0369a1;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-hover:hover{background:#075985}
+.st-input{width:100%;background:var(--bg);border:1px solid var(--surface-highest);border-radius:8px;color:var(--text);padding:9px 12px;font-size:14px}
+.st-input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.55)}
+.st-btn-active{background:#65a30d;color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px}
+.st-btn-active:active{background:#3f6212}
+.st-btn-disabled{background:#525252;color:#d4d4d4;border:none;border-radius:8px;padding:10px 16px;opacity:.5;cursor:not-allowed;font-size:14px}
+.st-group{cursor:pointer}
+.st-group-inner{border:1px solid var(--surface-highest);border-radius:8px;padding:12px;width:100%}
+.st-group:hover .st-group-inner{color:var(--lime);border-color:var(--lime-dim)}
+.st-peer-label{display:flex;gap:8px;align-items:center;min-height:36px;cursor:pointer}
+.st-peer-label input{width:19px;height:19px;accent-color:var(--lime-strong)}
+.st-peer-msg{visibility:hidden;background:#450a0a;color:#fca5a5;border-radius:6px;padding:8px 10px;font-size:13px}
+.st-peer-msg.show{visibility:visible}
+.dk-card{background:#fff;color:#374151;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.35);transition:background .25s,color .25s}
+.dk-card .dk-title{font-family:var(--font-head);font-weight:700;font-size:18px;color:#111827;margin-bottom:6px}
+.dk-card.dark{background:#1f2937;color:#9ca3af}
+.dk-card.dark .dk-title{color:#f9fafb}
+.mo-stage{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.mo-box{width:92px;height:92px;background:var(--blue);color:#00354a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;cursor:pointer}
+.mo-box:hover{transform:scale(1.18) rotate(8deg)}
+.mo-anim{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mo-dot{width:34px;height:34px;border-radius:99px;background:var(--lime-strong);display:block}
+.mo-anim-label{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.mo-spin{animation:mspin 1.4s linear infinite;border-radius:8px}
+@keyframes mspin{to{transform:rotate(360deg)}}
+.mo-pulse{animation:mpulse 1.6s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mo-bounce{animation:mbounce 1.2s ease-in-out infinite}
+@keyframes mbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.mo-ping{animation:mping 1.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes mping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.9);opacity:0}}
+.gd-box{height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:rgba(0,0,0,.55)}
+.th-swatches{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.th-swatch{border-radius:10px;padding:18px 14px;font-family:var(--font-mono);font-size:12.5px;flex:1;min-width:140px;text-align:center;background:var(--surface);border:1px solid var(--surface-high)}
+/* ---------- faq / sources / trust ---------- */
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.faq{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px}
+.faq summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq-q{font-weight:600;font-size:15px}
+.faq-num{font-family:var(--font-mono);font-size:11px;color:var(--lime);background:var(--surface-high);border-radius:5px;padding:2px 6px;margin-right:8px}
+.faq-a{padding:2px 16px 16px;color:#d6d8ce;font-size:14.5px}
+.src-list{list-style:none;padding:0;margin:6px 0 18px}
+.src-list li{padding:6px 0;border-bottom:1px solid var(--surface-high);display:flex;gap:10px;align-items:baseline}
+.src-num{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none}
+.src-list a{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.cnt{font-family:var(--font-mono);font-size:11px;background:var(--surface-high);border-radius:99px;padding:2px 8px;color:var(--text-var)}
+.tc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.tc-card{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:14px;text-align:center}
+.tc-num{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--lime)}
+.tc-lbl{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.tc-n{font-family:var(--font-mono)}
+.tc-ok{color:var(--lime);font-family:var(--font-mono);font-size:12px;font-weight:700}
+.run-check{background:var(--lime-strong);color:var(--on-lime);border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font-body)}
+.run-check:hover{background:var(--lime)}
+.check-result{margin-top:14px;border-radius:10px;padding:14px 16px;font-size:14.5px}
+.check-result.pass{background:#1d2410;border:1px solid var(--lime-dim);color:#e6efc9}
+.check-result.fail{background:#2a1215;border:1px solid #7f1d1d;color:#fecaca}
+.check-result ul{margin:8px 0 0;padding-left:20px}
+.oos li{margin:8px 0}
+/* ---------- home ---------- */
+.home-hero{padding:12px 0 6px}
+.home-hero h1{font-size:38px;margin-bottom:10px}
+.home-stats{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.home-stat{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:10px;padding:12px 16px}
+.home-stat b{font-family:var(--font-head);font-size:21px;color:var(--lime);display:block}
+.home-stat span{font-size:12px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em}
+.home-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:14px}
+.home-group{background:var(--surface-low);border:1px solid var(--surface-highest);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:block}
+.home-group:hover{border-color:var(--lime-strong)}
+.home-group h3{margin:0 0 6px;font-size:16.5px;color:#fff}
+.home-group p{margin:0;font-size:13.5px;color:var(--text-var)}
+.home-group .cnt{float:right}
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  #sidebar{display:none;width:300px;max-width:88vw}
+  #sidebar.open{display:flex;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  #scrim.on{display:block}
+  #main{margin-left:0}
+  #progress{left:0}
+  #topbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;background:rgba(18,19,22,.92);backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--surface-high)}
+  #topbar .tb-title{font-family:var(--font-head);font-weight:700;font-size:16px}
+  #topbar .tb-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  #menu-btn{background:var(--surface-high);border:1px solid var(--surface-highest);color:var(--text);border-radius:8px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:none}
+  .wrap{padding:22px 16px 60px}
+  .section h1{font-size:26px}
+  .home-hero h1{font-size:29px}
+  .pn-nav{flex-direction:column}
+  .pn-btn:last-child{text-align:left}
+  td code{white-space:normal}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .mo-spin,.mo-pulse,.mo-bounce,.mo-ping,.sb-dot{animation:none}
+}
+
+
+/* ---- figures (added for fresh build) ---- */
+.fig{max-width:100%;overflow-x:auto;background:var(--surface);border:1px solid var(--surface-high);border-radius:12px;padding:14px;margin:14px 0}
+.fig svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.fig-cap{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);margin:10px 0 0;text-align:center}
+figure.fig{margin:14px 0}
+img.fig,svg.fig{max-width:100%;height:auto}
+/* ---- callouts ---- */
+.callout{border:1px solid var(--surface-highest);border-left:3px solid var(--lime);background:var(--surface);border-radius:10px;padding:12px 14px;margin:14px 0}
+.callout-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);display:block;margin-bottom:6px}
+/* ---- hard guards ---- */
+pre{max-width:100%;overflow-x:auto}
+table{max-width:100%}
+img,svg,video{max-width:100%}
+/* ---- mobile bottom nav ---- */
+#bottomnav{display:none}
+@media (max-width:900px){
+  #bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(18,19,22,.97);border-top:1px solid var(--surface-high);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around}
+  #bottomnav a{flex:1;text-align:center;color:var(--muted);text-decoration:none;font-family:var(--font-mono);font-size:11px;padding:10px 2px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  #bottomnav a .bn-ic{font-size:18px;line-height:1}
+  #bottomnav a.active{color:var(--lime)}
+  body{padding-bottom:64px}
+  .sb-link{min-height:44px}
+  .chip-btn,.lab-select,.lab-input{min-height:44px}
+}
+
+</style>
+</head>
+<body>
+<header id="topbar">
+  <button id="menu-btn" type="button" aria-label="Sidebar kholo">☰</button>
+  <div><div class="tb-title">Prompt Engineering for LLMs</div><div class="tb-sub" id="tb-current">Home</div></div>
+</header>
+<div id="scrim"></div>
+<aside id="sidebar" aria-label="Saare sections">
+  <div class="sb-top">
+    <div class="sb-brand"><div class="sb-logo">PE</div><div><h2>Prompt Engineering for LLMs</h2><small>Poora book · Hinglish</small></div></div>
+    <div class="sb-search"><span>⌕</span><input id="sb-search-input" type="text" placeholder="Search karo… (Ctrl+K)" aria-label="Sections search karo"></div>
+  </div>
+  <nav class="sb-nav">
+<div class="sb-group"><a class="sb-link" href="#/home" data-nav="home" data-search="home shuruaat start"><span class="sb-num">⌂</span><span class="sb-title">Home</span></a></div>
+<div class="sb-group"><div class="sb-group-head"><span>Shuruaat</span><span class="sb-count">1</span></div>
+<a class="sb-link" href="#/preface" data-nav="preface" data-search="00 preface   kitab kaise bani aur kiske liye hai shuruaat"><span class="sb-num">00</span><span class="sb-title">Preface — kitab kaise bani aur kiske liye hai</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Part I — Foundations</span><span class="sb-count">4</span></div>
+<a class="sb-link" href="#/ch1-intro" data-nav="ch1-intro" data-search="01 ch 1   introduction to prompt engineering part i   foundations"><span class="sb-num">01</span><span class="sb-title">Ch 1 — Introduction to Prompt Engineering</span></a>
+<a class="sb-link" href="#/ch2-understanding-llms" data-nav="ch2-understanding-llms" data-search="02 ch 2   understanding llms part i   foundations"><span class="sb-num">02</span><span class="sb-title">Ch 2 — Understanding LLMs</span></a>
+<a class="sb-link" href="#/ch3-moving-to-chat" data-nav="ch3-moving-to-chat" data-search="03 ch 3   moving to chat part i   foundations"><span class="sb-num">03</span><span class="sb-title">Ch 3 — Moving to Chat</span></a>
+<a class="sb-link" href="#/ch4-designing-apps" data-nav="ch4-designing-apps" data-search="04 ch 4   designing llm applications part i   foundations"><span class="sb-num">04</span><span class="sb-title">Ch 4 — Designing LLM Applications</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Part II — Core Techniques</span><span class="sb-count">3</span></div>
+<a class="sb-link" href="#/ch5-prompt-content" data-nav="ch5-prompt-content" data-search="05 ch 5   prompt content part ii   core techniques"><span class="sb-num">05</span><span class="sb-title">Ch 5 — Prompt Content</span></a>
+<a class="sb-link" href="#/ch6-assembling-prompt" data-nav="ch6-assembling-prompt" data-search="06 ch 6   assembling the prompt part ii   core techniques"><span class="sb-num">06</span><span class="sb-title">Ch 6 — Assembling the Prompt</span></a>
+<a class="sb-link" href="#/ch7-taming-model" data-nav="ch7-taming-model" data-search="07 ch 7   taming the model part ii   core techniques"><span class="sb-num">07</span><span class="sb-title">Ch 7 — Taming the Model</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Part III — An Expert of the Craft</span><span class="sb-count">4</span></div>
+<a class="sb-link" href="#/ch8-conversational-agency" data-nav="ch8-conversational-agency" data-search="08 ch 8   conversational agency part iii   an expert of the craft"><span class="sb-num">08</span><span class="sb-title">Ch 8 — Conversational Agency</span></a>
+<a class="sb-link" href="#/ch9-llm-workflows" data-nav="ch9-llm-workflows" data-search="09 ch 9   llm workflows part iii   an expert of the craft"><span class="sb-num">09</span><span class="sb-title">Ch 9 — LLM Workflows</span></a>
+<a class="sb-link" href="#/ch10-evaluating" data-nav="ch10-evaluating" data-search="10 ch 10   evaluating llm applications part iii   an expert of the craft"><span class="sb-num">10</span><span class="sb-title">Ch 10 — Evaluating LLM Applications</span></a>
+<a class="sb-link" href="#/ch11-looking-ahead" data-nav="ch11-looking-ahead" data-search="11 ch 11   looking ahead part iii   an expert of the craft"><span class="sb-num">11</span><span class="sb-title">Ch 11 — Looking Ahead</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>Labs</span><span class="sb-count">8</span></div>
+<a class="sb-link" href="#/lab-token-counter" data-nav="lab-token-counter" data-search="lab L1 lab 1   token counter"><span class="sb-num lab-num">L1</span><span class="sb-title">Lab 1 — Token Counter</span></a>
+<a class="sb-link" href="#/lab-temperature-sampler" data-nav="lab-temperature-sampler" data-search="lab L2 lab 2   temperature sampler"><span class="sb-num lab-num">L2</span><span class="sb-title">Lab 2 — Temperature Sampler</span></a>
+<a class="sb-link" href="#/lab-the-loop" data-nav="lab-the-loop" data-search="lab L3 lab 3   the loop simulator"><span class="sb-num lab-num">L3</span><span class="sb-title">Lab 3 — The Loop Simulator</span></a>
+<a class="sb-link" href="#/lab-chat-roles" data-nav="lab-chat-roles" data-search="lab L4 lab 4   chat roles builder"><span class="sb-num lab-num">L4</span><span class="sb-title">Lab 4 — Chat Roles Builder</span></a>
+<a class="sb-link" href="#/lab-fewshot-bias" data-nav="lab-fewshot-bias" data-search="lab L5 lab 5   few shot bias checker"><span class="sb-num lab-num">L5</span><span class="sb-title">Lab 5 — Few-Shot Bias Checker</span></a>
+<a class="sb-link" href="#/lab-logprob-classifier" data-nav="lab-logprob-classifier" data-search="lab L6 lab 6   logprob classifier"><span class="sb-num lab-num">L6</span><span class="sb-title">Lab 6 — Logprob Classifier</span></a>
+<a class="sb-link" href="#/lab-tool-call" data-nav="lab-tool-call" data-search="lab L7 lab 7   tool call simulator"><span class="sb-num lab-num">L7</span><span class="sb-title">Lab 7 — Tool-Call Simulator</span></a>
+<a class="sb-link" href="#/lab-knapsack" data-nav="lab-knapsack" data-search="lab L8 lab 8   prompt assembly knapsack"><span class="sb-num lab-num">L8</span><span class="sb-title">Lab 8 — Prompt Assembly Knapsack</span></a>
+</div>
+<div class="sb-group"><div class="sb-group-head"><span>End Matter</span></div><a class="sb-link" href="#/faqs" data-nav="faqs" data-search="interview faqs questions"><span class="sb-num">F</span><span class="sb-title">Interview FAQs</span></a><a class="sb-link" href="#/sources" data-nav="sources" data-search="sources all urls reference"><span class="sb-num">S</span><span class="sb-title">Sources</span></a><a class="sb-link" href="#/trust" data-nav="trust" data-search="trust check verification coverage"><span class="sb-num">✓</span><span class="sb-title">Trust Check</span></a></div>
+  </nav>
+  <div class="sb-foot"><span><span class="sb-dot"></span>12 sections loaded</span><span>O&apos;Reilly</span></div>
+</aside>
+<div id="progress"><div id="progress-bar"></div></div>
+<main id="main"><div class="wrap">
+
+<article class="section" id="sec-home" data-title="Prompt Engineering for LLMs — Home" hidden>
+  <div class="home-hero">
+    <div class="sec-meta"><span class="num-chip">PE</span><span class="sec-group">Prompt Engineering for LLMs · Poora Book · Hinglish</span></div>
+    <h1>Prompt Engineering for LLMs, poora — ek hi jagah.</h1>
+    <p class="lead">Ye SPA <strong>Prompt Engineering for LLMs</strong> kitab ke <strong>poore content (Preface, Chapters 1–11)</strong> ko ek hi page me samjhata hai — Hinglish me, har concept, number aur table ke saath. Content asli kitab se liya gaya hai. Sidebar se koi bhi chapter kholo, beech-beech me <strong>8 interactive labs</strong> me haath se try karo, aur ant me <strong>Interview FAQs</strong> aur <strong>Trust Check</strong> ke saath apni taiyaari pakki karo.</p>
+    <div class="home-stats">
+      <div class="home-stat"><b>12</b><span>Sections</span></div>
+      <div class="home-stat"><b>11</b><span>Chapters + Preface</span></div>
+      <div class="home-stat"><b>8</b><span>Interactive labs</span></div>
+      <div class="home-stat"><b>36</b><span>Interview FAQs</span></div>
+      <div class="home-stat"><b>12</b><span>Source lines</span></div>
+      <div class="home-stat"><b>13</b><span>Figures (diagrams)</span></div>
+    </div>
+    <p>Shuruaat ke liye sabse sahi kram: pehle <strong>Preface</strong> aur <strong>Chapter 1</strong> se samjho ki prompt engineering playwriting kyun hai, phir <strong>Chapter 2</strong> me LLMs kaise kaam karte hain (tokens, temperature, inertness), phir <strong>Chapter 3</strong> me RLHF aur chat roles, phir <strong>Chapter 4</strong> me the loop — kitab ka central model — aur uske baad core techniques aur expert craft.</p>
+    <p>Kitab ke facts: O&apos;Reilly, November 2024, 282 pages, 8h 1m, Intermediate to advanced, 4.6/5 (9 reviews). Is copy me ISBN display nahi hota — isliye yahan koi ISBN invent nahi kiya gaya hai.</p>
+  </div>
+  <h3>Saare chapters</h3>
+  <div class="home-groups"><a class="home-group" href="#/preface"><span class="cnt">1 sections</span><h3>Shuruaat</h3><p>Preface — kitab kaise bani aur kiske liye hai</p></a><a class="home-group" href="#/ch1-intro"><span class="cnt">4 sections</span><h3>Part I — Foundations</h3><p>Ch 1 — Introduction to Prompt Engineering</p></a><a class="home-group" href="#/ch5-prompt-content"><span class="cnt">3 sections</span><h3>Part II — Core Techniques</h3><p>Ch 5 — Prompt Content</p></a><a class="home-group" href="#/ch8-conversational-agency"><span class="cnt">4 sections</span><h3>Part III — An Expert of the Craft</h3><p>Ch 8 — Conversational Agency</p></a></div>
+</article>
+
+
+<article class="section content-sec" id="sec-preface" data-title="Preface — kitab kaise bani aur kiske liye hai" hidden>
+  <div class="sec-meta"><span class="num-chip">00</span><span class="sec-group">Shuruaat</span></div>
+  <h1>Preface — kitab kaise bani aur kiske liye hai</h1>
+
+<p class="lead">Ye kitab is baat se shuru hoti hai ki prompt engineering sirf tricks ka bag nahi hai. Iske peeche kuch <strong>chhote, durable principles</strong> hain — aur poori kitab unhi principles ko samjhane ke liye likhi gayi hai. Lekhak dono ek bade code assistant par kaam karte hue mile, aur unhone paya ki LLMs ke baare me sochne ka unka tareeka us samay ke published advice se alag tha.</p>
+<h3>Kitab kaise bani</h3>
+<p>Lekhak batate hain ki unhone LLMs par kaam karte hue ek aisi soch develop ki jo sirf kisi ek provider ke interface ya fashion par based nahi thi. Unka focus is par tha ki <strong>language models asal me kaise behave karte hain</strong> — model ke andar kya hota hai, wo text ko kaise dekhta hai, aur us behaviour se kya conclusions nikalte hain. Isi liye kitab ke principles aaj bhi kaam karte hain, chahe model ka version badal jaye.</p>
+<h3>Kiske liye hai ye kitab</h3>
+<ul>
+<li><strong>Developers</strong> aur technically-minded product log jo LLMs ke upar applications banana chahte hain.</li>
+<li>Wo log jinhone <strong>prompting try karke dekha</strong> aur results uneven paye — kabhi kamaal, kabhi bekaar.</li>
+<li>Machine learning ki pehle se training <strong>zaroori nahi</strong> hai, lekin code aur software banane me comfortable hona expected hai.</li>
+<li>Ye kitab <strong>models ko scratch se train karne</strong> ke baare me nahi hai — ye unko use karke application banane ke baare me hai.</li>
+</ul>
+<h3>Tum kya seekhoge</h3>
+<p>Kitab ka arc teen hisso me hai: (1) <strong>LLMs kaise kaam karte hain</strong> — utna jitna ek builder ko chahiye; (2) <strong>prompt aur poori application design</strong> karna — model ke aas-paas ka system; (3) application ko <strong>reliable enough to ship</strong> banana — conversation, tools, workflows aur evaluation ke saath.</p>
+<h3>Contact aur acknowledgments</h3>
+<p>Preface me publisher ke usual channels diye gaye hain comments aur questions ke liye, aur bataya gaya hai ki publisher ki errata aur kitab ka companion material oreilly.com par milta hai. Acknowledgments me GitHub aur O'Reilly ke colleagues, early readers aur lekhako ke families ko shukriya kaha gaya hai.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 220" role="img" aria-label="Figure P-1 leverage diagram">
+<rect x="10" y="10" width="540" height="200" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure P-1 — Leverage: chhota input, bada output</text>
+<path d="M70 180 C 180 170, 260 150, 330 90 S 460 40, 500 30" stroke="#9ee939" stroke-width="3" fill="none"/>
+<path d="M70 180 C 180 175, 300 165, 500 150" stroke="#7bd0ff" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+<circle cx="70" cy="180" r="6" fill="#9ee939"/>
+<circle cx="500" cy="30" r="6" fill="#9ee939"/>
+<text x="70" y="200" text-anchor="middle" fill="#8b947d" font-size="11">chhota prompt</text>
+<text x="500" y="200" text-anchor="middle" fill="#8b947d" font-size="11">bada useful output</text>
+<text x="280" y="120" text-anchor="middle" fill="#c1cab0" font-size="12">achha prompt = disproportionate kaam</text>
+<text x="280" y="140" text-anchor="middle" fill="#8b947d" font-size="11">seedhi line: bina leverage ke input</text>
+</svg>
+<p class="fig-cap">Figure P-1 — Do curves: ek chhota input (prompt) bada useful output deta hai. Yehi leverage hai — achhi tarah chuna gaya prompt disproportionate kaam karta hai.</p>
+</figure>
+<p class="note">Yaad rakho: kitab ke mutabik prompt engineering ka matlab hai model ko behtar document likhne ke liye stage karna — sirf instruction dena nahi. Aage ke chapters isi idea ko step by step kholte hain.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/home"><span class="pn-label">← Pichhla</span><span class="pn-title">Home</span></a><a class="pn-btn" href="#/ch1-intro"><span class="pn-label">Agla →</span><span class="pn-title">Ch 1 — Introduction to Prompt Engineering</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch1-intro" data-title="Ch 1 — Introduction to Prompt Engineering" hidden>
+  <div class="sec-meta"><span class="num-chip">01</span><span class="sec-group">Part I — Foundations</span></div>
+  <h1>Ch 1 — Introduction to Prompt Engineering</h1>
+
+<p class="lead">ChatGPT ke public release ne LLMs ko achanak non-specialists ke liye visible bana diya. <strong>Prompt</strong> matlab wo text jo tum model ko dete ho — ek request, sawal, instruction, ya kisi document ki shuruaat jise model poora kare. <strong>Completion</strong> matlab wo text jo model badle me deta hai. Poori kitab isi simple exchange ke aas-paas banti hai.</p>
+<h3>LLMs Are Magic</h3>
+<p>Lekhak batate hain ki unhone model se aise kaam karwaye jo computer ke liye jaadui lagte the — likhna, summarise karna, translate karna, code likhna. Asli surprise is <strong>generality</strong> me hai: ek hi model, bina retraining ke, kai tasks kar sakta hai — bas task ko prompt me achhe se describe kar do. Yahi generality kitab ka subject hai.</p>
+<h3>Language Models: How Did We Get Here?</h3>
+<h4>Early Language Models</h4>
+<p>Shuru ke language models statistical the: kuch words diye, to wo agla word predict karte the — text me patterns gin kar, jaise Markov-style counting ki kaunsa word kiske baad aata hai. Phir neural sequence-to-sequence models aaye jinhone richer representations seekhe.</p>
+<h4>GPT Enters the Scene</h4>
+<p>Decisive turn transformer aur phir GPT tha: bade models, huge text par train kiye gaye, sirf <strong>agle token ko predict</strong> karne ke simple goal se — aur is simple goal ka side effect tha broad abilities. GPT-3 ki scale ne few-shot prompting practical bana di: prompt me examples do, model pattern follow karta hai. ChatGPT ne phir is ability ko conversational aur widely accessible bana diya.</p>
+<h3>Prompt Engineering</h3>
+<p>Prompt engineering ki definition: <strong>model ke behaviour ko prompt aur surrounding application se shape karne ki kala</strong>, model ke weights badle bina.</p>
+<div class="callout"><span class="callout-tag">Central metaphor — Playwriting</span>Model ko database ki tarah order mat do. Tum ek <strong>natak likhte ho</strong> jisme model ka ek role hai, aur wo us role ko nibhayega. Achha prompt ek scene, ek role, ek situation aur ek format set karta hai — taaki tumne jo document stage kiya hai, uska natural continuation wahi jawab ho jo tum chahte ho.</div>
+<h3>Conclusion — sophistication ke levels</h3>
+<p>Prompt engineering ke levels hain: ek single direct sawal se lekar staged documents tak, aur phir poori applications tak jo state, tools aur evaluation manage karti hain. Kitab in levels par order se chadhti hai.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 240" role="img" aria-label="Figure 1-4 model comparison">
+<rect x="10" y="10" width="540" height="220" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 1-4 — Ek hi capability, alag generations</text>
+<rect x="60" y="60" width="200" height="60" rx="8" fill="#292a2d" stroke="#343538"/>
+<text x="160" y="85" text-anchor="middle" fill="#7bd0ff" font-size="13" font-weight="bold">Purana model</text>
+<text x="160" y="106" text-anchor="middle" fill="#c1cab0" font-size="12">basic jawab deta hai</text>
+<rect x="300" y="60" width="200" height="60" rx="8" fill="#292a2d" stroke="#84cc16"/>
+<text x="400" y="85" text-anchor="middle" fill="#9ee939" font-size="13" font-weight="bold">Naya model</text>
+<text x="400" y="106" text-anchor="middle" fill="#c1cab0" font-size="12">behtar, nuanced jawab</text>
+<rect x="60" y="150" width="440" height="56" rx="8" fill="#1f1f23" stroke="#343538"/>
+<text x="280" y="176" text-anchor="middle" fill="#e3e2e6" font-size="12">Neeche ki capability wahi hai —</text>
+<text x="280" y="196" text-anchor="middle" fill="#8b947d" font-size="12">alag products aur generations me wahi dikhai deti hai</text>
+</svg>
+<p class="fig-cap">Figure 1-4 — GPT-4o vs GPT-3.5 jaisi comparisons dikhati hain ki wahi underlying capability alag products aur model generations me surface hoti hai. Figures 1-1, 1-2, 1-3, 1-5, 1-6 bhi yahi batate hain: ChatGPT exchange, search results, text-to-image, ChatGPT vs chhota model.</p>
+</figure>
+<p class="note">Chapter 1 ke figures: 1-1 ChatGPT exchange, 1-2 search results, 1-3 ChatGPT se "LLM kya hai" poochna, 1-4 GPT-4o vs GPT-3.5, 1-5 text-to-image generation, 1-6 ChatGPT vs GPT-4o mini.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/preface"><span class="pn-label">← Pichhla</span><span class="pn-title">Preface — kitab kaise bani aur kiske liye hai</span></a><a class="pn-btn" href="#/ch2-understanding-llms"><span class="pn-label">Agla →</span><span class="pn-title">Ch 2 — Understanding LLMs</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch2-understanding-llms" data-title="Ch 2 — Understanding LLMs" hidden>
+  <div class="sec-meta"><span class="num-chip">02</span><span class="sec-group">Part I — Foundations</span></div>
+  <h1>Ch 2 — Understanding LLMs</h1>
+
+<p class="lead">LLM ek aisi machine hai jo tokens ki sequence dekh kar <strong>agle token ki probabilities</strong> assign karti hai aur unme se sample karti hai. Wo enormous text corpora par train hoti hai — kitab The Pile ko example dataset ke roop me naam deti hai — taaki uski predictions real writing ke patterns ko reflect karein.</p>
+<h3>Auto-Regressive Models</h3>
+<p>"Auto-regressive" ka matlab: model ek token generate karta hai, use wapas input me daalta hai, aur agla token generate karta hai. Lamba jawab step by step banta hai, aur har step sirf wo dekh sakta hai jo pehle aa chuka hai. Kyunki wo documents ko continue karne ke liye train hota hai, uski basic skill hai <strong>patterns aur repetitions ko pehchanna aur extend karna</strong>: agar prompt ek pattern set karta hai, model use aage badhayega. Isi se few-shot learning samajh me aati hai (examples pattern set karte hain) aur failures bhi (galat pattern set ho gaya to model use bhi follow karega).</p>
+<h3>How LLMs See the World — insaan se 3 farak</h3>
+<h4>Difference 1: Deterministic Tokenizers</h4>
+<p>Text pehle tokens me split hoti hai ek fixed, deterministic procedure se (GPT tokenizer running example hai). Wahi string hamesha wahi tarah tokenise hoti hai. Token boundaries word boundaries se match karna zaroori nahi — common words aam taur par ek token hote hain, rare words tukdo me split ho jate hain.</p>
+<h4>Difference 2: LLMs Can't Slow Down and Examine Letters</h4>
+<p>Model token identities dekhta hai, token ke andar ke individual letters nahi — jab tak prompt unhe spell out na kare. Isi liye wo letters ginne, spelling, ya Scattergories jaise word games me kharab ho sakta hai jahan pehla letter matter karta hai — wo information use seedhe taur par visible hi nahi hoti.</p>
+<h4>Difference 3: LLMs See Text Differently</h4>
+<p>Wo insaan ki tarah meaning ke liye nahi padhta; wo surface statistical regularities par respond karta hai. Capitalisation, punctuation, spacing aur word order behaviour badal sakte hain — aise tareeke se jo insaan ko surprising lage — aur wahi request alag phrasing me alag quality ka jawab de sakti hai.</p>
+<h3>One Token at a Time — Counting Tokens aur Inertness</h3>
+<p>Kaam aur pricing ki unit <strong>token</strong> hai. Chapter token counting samjhata hai OpenAI ki tiktoken library aur Hugging Face tokenizer tools se. Model ka context window tokens me measure hota hai, words ya characters me nahi — isliye prompt budgeting tokens me karni hoti hai.</p>
+<div class="callout"><span class="callout-tag">Inertness</span>Kitab ka term <strong>inertness</strong> ka matlab: model calls ke beech kuch nahi karta — uski koi memory nahi, koi ongoing thought nahi, koi state nahi. Jo kuch use chahiye, wo <strong>current call ke prompt me</strong> hona chahiye. Prompt ek self-contained document hai; continuity chahiye to application ko history har baar prompt me wapas dalni hoti hai.</div>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Text</th><th>Tokens</th><th>Count</th></tr></thead>
+<tbody>
+<tr><td>"I am"</td><td>I, am</td><td>2</td></tr>
+<tr><td>"The meaning of life is 42."</td><td>The, meaning, of, life, is, 42, .</td><td>7</td></tr>
+<tr><td>"We call the model with a prompt. We use the word completion for the model's response."</td><td>We, call, the, model, with, a, prompt, ., We, use, the, word, completion, for, the, model's, response, .</td><td>18</td></tr>
+<tr><td>"Antidisestablishmentarianism"</td><td>Ant, idis, establish, ment, arian, ism</td><td>6</td></tr>
+<tr><td>Teen laughing-face emojis (🤣🤣🤣)</td><td>har emoji ek token</td><td>3</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 2-1 — token counts: dekho kaise common words ek token hote hain aur rare lamba word 6 tukdo me split hota hai.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python — tiktoken se token ginna</span><span>reconstructed</span></div><pre><code>import tiktoken
+
+enc = tiktoken.encoding_for_model("gpt-4o")
+text = "We call the model with a prompt."
+tokens = enc.encode(text)
+print(len(tokens))   # token count — context window budget ke liye
+print(tokens)        # token ids ki list</code></pre></div>
+<p class="note">Code reconstructed hai — kitab me tiktoken se string encode karke token list ki length ginne ka tareeka dikhaya gaya hai, prompt length measure karne aur context window ke andar rehne ke liye.</p>
+<h3>Temperature and Probabilities</h3>
+<p>Har step par model agle token par ek probability distribution deta hai. <strong>Temperature</strong> control karta hai ki us distribution se kitni sharply sample kiya jaye:</p>
+<ul>
+<li><strong>Low temperature (0 ke paas):</strong> sabse likely token lagbhag certain ho jata hai — output deterministic aur conservative.</li>
+<li><strong>High temperature:</strong> distribution flat ho jati hai — rare tokens ke choose hone ki chance badh jati hai, output varied aur zyada error-prone.</li>
+<li><strong>Top-p (nucleus sampling):</strong> related control — sampling ko un sabse chhote token set tak limit karta hai jinki probabilities ka sum p hota hai.</li>
+</ul>
+<p>Practical guidance: factual, repeatable kaam ke liye low temperature; variety chahiye tabhi high temperature — aur high-temperature model se reproducibility ki ummeed kabhi mat rakho.</p>
+<h3>The Transformer Architecture</h3>
+<p>Simplified explanation: attention ki layers har token ki representation ko context ke dusre tokens se inform hone deti hain, taaki model long-range context use kar sake. <strong>"Attention game"</strong> lekhako ka illustration hai — tokens ek dusre par attend karte hain. Transformer poora prompt parallel me layers me process karta hai (kitab ke informal term me "minibrains"), har layer representation ko refine karti hai, aur phir agla token generate hota hai.</p>
+<h4>Human Thought Versus LLM Processing</h4>
+<p>Insaan sequentially sochta hai — ruk sakta hai, dobara padh sakta hai, plan aur revise kar sakta hai. Model har token ke liye ek single forward pass karta hai, sochne ke liye ruk nahi sakta — sirf tokens generate karke soch sakta hai (isi liye chain-of-thought kaam karta hai: wo model ko sochne ke liye tokens deta hai), aur uska koi alag planning step nahi hota. Uski intelligence wahi hai jo ek achhe document ke agle hisse ko predict karne me hoti hai.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 230" role="img" aria-label="Figure 2-1 token split">
+<rect x="10" y="10" width="540" height="210" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 2-1 — Ek sentence tokens me</text>
+<text x="280" y="66" text-anchor="middle" fill="#c1cab0" font-size="14">"We call the model with a prompt."</text>
+<g font-family="monospace" font-size="13">
+<rect x="40" y="90" width="52" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="66" y="112" text-anchor="middle" fill="#9ee939">We</text>
+<rect x="100" y="90" width="52" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="126" y="112" text-anchor="middle" fill="#9ee939">call</text>
+<rect x="160" y="90" width="52" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="186" y="112" text-anchor="middle" fill="#9ee939">the</text>
+<rect x="220" y="90" width="66" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="253" y="112" text-anchor="middle" fill="#9ee939">model</text>
+<rect x="294" y="90" width="52" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="320" y="112" text-anchor="middle" fill="#9ee939">with</text>
+<rect x="354" y="90" width="40" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="374" y="112" text-anchor="middle" fill="#9ee939">a</text>
+<rect x="402" y="90" width="72" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="438" y="112" text-anchor="middle" fill="#9ee939">prompt</text>
+<rect x="482" y="90" width="30" height="34" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="497" y="112" text-anchor="middle" fill="#9ee939">.</text>
+</g>
+<text x="280" y="160" text-anchor="middle" fill="#8b947d" font-size="12">8 tokens — har token ek fixed piece, word boundary se match zaroori nahi</text>
+<text x="280" y="186" text-anchor="middle" fill="#c1cab0" font-size="12">Figure 2-2: tokens vectors ban jate hain · Figure 2-3: attention game</text>
+<text x="280" y="206" text-anchor="middle" fill="#8b947d" font-size="12">Figure 2-4: agle token ki distribution, top 3 candidates · Figure 2-5: layers "I am" ko process karti hain</text>
+</svg>
+<p class="fig-cap">Figure 2-1 — Sentence tokens me split. Figure 2-2 tokens ko vectors ke roop me dikhata hai, 2-3 attention game, 2-4 agle token ki probability distribution (top 3 candidates), 2-5 transformer layers input "I am" ko stack ke top par process karti hain.</p>
+</figure>
+<figure class="fig">
+<svg viewBox="0 0 560 200" role="img" aria-label="Figure 2-4 probability distribution">
+<rect x="10" y="10" width="540" height="180" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 2-4 — Agle token ki probability distribution</text>
+<rect x="80" y="120" width="80" height="40" fill="#84cc16" rx="4"/><text x="120" y="145" text-anchor="middle" fill="#1f3700" font-size="12" font-weight="bold">0.62</text>
+<rect x="200" y="135" width="80" height="25" fill="#7bd0ff" rx="4"/><text x="240" y="153" text-anchor="middle" fill="#00354a" font-size="12" font-weight="bold">0.21</text>
+<rect x="320" y="145" width="80" height="15" fill="#343538" rx="4"/><text x="360" y="158" text-anchor="middle" fill="#e3e2e6" font-size="12" font-weight="bold">0.09</text>
+<text x="120" y="180" text-anchor="middle" fill="#8b947d" font-size="11">top 1</text>
+<text x="240" y="180" text-anchor="middle" fill="#8b947d" font-size="11">top 2</text>
+<text x="360" y="180" text-anchor="middle" fill="#8b947d" font-size="11">top 3</text>
+<text x="470" y="145" text-anchor="middle" fill="#c1cab0" font-size="12">baaki sab chhota</text>
+<text x="280" y="66" text-anchor="middle" fill="#c1cab0" font-size="12">Temperature low ho to top 1 lagbhag certain; high ho to distribution flat</text>
+</svg>
+<p class="fig-cap">Figure 2-4 — Har step par model agle token ki distribution deta hai. Top 3 candidates dikhaye gaye hain — low temperature top token ko almost certain bana deta hai, high temperature distribution ko flat kar deta hai.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch1-intro"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 1 — Introduction to Prompt Engineering</span></a><a class="pn-btn" href="#/ch3-moving-to-chat"><span class="pn-label">Agla →</span><span class="pn-title">Ch 3 — Moving to Chat</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch3-moving-to-chat" data-title="Ch 3 — Moving to Chat" hidden>
+  <div class="sec-meta"><span class="num-chip">03</span><span class="sec-group">Part I — Foundations</span></div>
+  <h1>Ch 3 — Moving to Chat</h1>
+
+<p class="lead">Ek base model jo sirf documents complete karta hai, wo chat assistant kaise bana? Jawab hai <strong>reinforcement learning from human feedback (RLHF)</strong>. Ye chapter us process ko step by step kholta hai.</p>
+<h3>The Process of Building an RLHF Model</h3>
+<h4>Step 1 — Supervised fine-tuning (SFT)</h4>
+<p>Base model ko desired behaviour ke examples par aur train karo — prompts ke human-written responses — taaki wo sirf text continue karne ke bajay <strong>helpfully answer</strong> karna seekhe.</p>
+<h4>Step 2 — Reward model</h4>
+<p>Ek alag model train karo jo responses ko score kare: insaan batate hain ki ek hi prompt ke do responses me se kaunsa behtar tha; reward model ek <strong>human preference function</strong> seekh leta hai.</p>
+<h4>Step 3 — RLHF model</h4>
+<p>Proximal policy optimisation (PPO) se chat model ko adjust karo taaki uske responses reward model ke hisab se high score karein, lekin supervised model se zyada door na bhatkein. Result: ek model jo <strong>helpful, honest aur harmless (HHH alignment)</strong> banne ki koshish karta hai — HHH alignment Anthropic ne introduce kiya tha.</p>
+<h3>Trade-offs — Alignment Tax aur baaki effects</h3>
+<ul>
+<li><strong>Beware of the Alignment Tax:</strong> RLHF kuch tasks par raw capability ya knowledge kam kar sakta hai — alignment kuch breadth ki keemat par safe, helpful behaviour deta hai.</li>
+<li><strong>RLHF Packs a Lot of Bang for the Buck:</strong> lekhak zor dete hain ki thoda sa human feedback bhi base model ko useful product me badal deta hai — chhota investment, bada transformation.</li>
+<li><strong>Avoiding Idiosyncratic Behavior:</strong> model ek consistent persona seekhta hai, kisi ek document ki quirks imitate karne ke bajay.</li>
+<li><strong>Keeping LLMs Honest:</strong> RLHF uncertainty admit karne ko reward karta hai aur confident fabrication ko discourage karta hai — halanki hallucination poori tarah khatam nahi hoti.</li>
+</ul>
+<h3>The Changing API</h3>
+<p>API plain completion endpoints se <strong>chat-completion endpoint</strong> ki taraf move hui. Ek chat call messages ki list hoti hai, har message me ek role aur content hota hai.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Role</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td><code>system</code></td><td>Assistant ka behaviour set karne wali instructions, sabse pehle rakhi jati hain</td></tr>
+<tr><td><code>developer</code></td><td>Application developer ki instructions (naye APIs me)</td></tr>
+<tr><td><code>user</code></td><td>End user ke turns</td></tr>
+<tr><td><code>assistant</code></td><td>Model ke apne pichhle replies, history ke roop me wapas feed kiye jate hain</td></tr>
+<tr><td><code>tool</code></td><td>Tool se aaye results, taaki model dekh sake tool ko kya mila</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 3-1 — chat roles. Chat models completion models se alag hote hain: completion model document continue karta hai, chat model conversation me turn lene ke liye train hota hai. Instruct models beech ka step the — single turn me instructions follow karne ke liye fine-tune kiye gaye — aur chat models dialogue ke liye unse aage nikal gaye. Lekin kitab ka argument hai ki document ki tarah sochna chat ke andar bhi valuable rehta hai; completion model abhi bhi useful ho sakta hai jab task ko document finish karne ke roop me frame karna behtar ho.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python — chat completion call ka shape</span><span>reconstructed</span></div><pre><code>messages = [
+    {"role": "system", "content": "Tum ek helpful assistant ho."},
+    {"role": "user", "content": "LLM kya hai?"},
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=messages,
+    temperature=0.2,
+    max_tokens=500,
+)
+# assistant ka reply messages me append karo,
+# phir poori list dobara bhejo — model inert hai, use history chahiye</code></pre></div>
+<h3>A Play Within a Play</h3>
+<p>Ek conversation ek natak hai jisme model ka ek role hai. <strong>Managing conversations</strong> ka matlab hai transcript (poori message list) sambhalna aur har call par use dobara bhejna — kyunki model calls ke beech inert hai.</p>
+<ul>
+<li><strong>The Chat Format Versus The Model's Internal Format:</strong> API jo chat format dikhata hai, wo model ka internal format nahi hai — neeche, transcript special role markers aur separators ke saath ek token stream me serialize hoti hai. Lekin building ke liye message list hi working abstraction hai.</li>
+<li><strong>A Chat by Any Other Name:</strong> dusre providers alag role names aur formats use karte hain — kitab ChatML ko example deti hai, jo kuch open chat models me roles ke liye use hone wala markup hai. Concepts transfer hote hain.</li>
+<li><strong>Persisting Application State:</strong> model bhool jata hai, isliye application ko conversation aur baaki state (user preferences, task progress) khud store karni hoti hai — database ya session store me — aur prompt ko usse rebuild karna hota hai.</li>
+<li><strong>User Experience:</strong> interface application ki zimmedari hai, model ki nahi — tokens ko aate hi user ko stream karna, thinking dikhana, interruptions aur lambe turns handle karna.</li>
+<li><strong>Prompt Engineering as Playwriting:</strong> chapter wapas playwriting par aata hai — system message aur conversation history milkar wahi script hain jo model perform kar raha hai.</li>
+</ul>
+<figure class="fig">
+<svg viewBox="0 0 560 240" role="img" aria-label="Figure 3-5 conversation turn loop">
+<rect x="10" y="10" width="540" height="220" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 3-5 — Conversation-turn loop</text>
+<g font-size="12" fill="#e3e2e6" text-anchor="middle">
+<rect x="200" y="55" width="160" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="280" y="78">User bolta hai</text>
+<rect x="200" y="115" width="160" height="36" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="280" y="138">Transcript + prompt bhejo</text>
+<rect x="200" y="175" width="160" height="36" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="280" y="198">Model jawab deta hai</text>
+</g>
+<path d="M280 91 L280 115" stroke="#8b947d" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M280 151 L280 175" stroke="#8b947d" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M200 193 C 120 193, 120 73, 200 73" stroke="#9ee939" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#8b947d"/></marker></defs>
+<text x="100" y="140" text-anchor="middle" fill="#c1cab0" font-size="11">jawab transcript</text>
+<text x="100" y="156" text-anchor="middle" fill="#c1cab0" font-size="11">me append hota hai</text>
+</svg>
+<p class="fig-cap">Figure 3-5 — Conversation-turn loop: user bolta hai, transcript prompt ke saath bheji jati hai, model jawab deta hai, jawab transcript me append hota hai aur loop repeat hota hai. Figures 3-1 se 3-11 me chat exchange, transcript, role diagram, API call, token stream, stop sequence aur tool_choice bhi dikhaye gaye hain.</p>
+</figure>
+<p class="note">Stop sequence ka use: ek turn ko cleanly end karne ke liye stop sequence di jati hai, taaki model wahi ruke jahan turn khatam hona chahiye.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch2-understanding-llms"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 2 — Understanding LLMs</span></a><a class="pn-btn" href="#/ch4-designing-apps"><span class="pn-label">Agla →</span><span class="pn-title">Ch 4 — Designing LLM Applications</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch4-designing-apps" data-title="Ch 4 — Designing LLM Applications" hidden>
+  <div class="sec-meta"><span class="num-chip">04</span><span class="sec-group">Part I — Foundations</span></div>
+  <h1>Ch 4 — Designing LLM Applications</h1>
+
+<p class="lead">Ye chapter kitab ka <strong>central model</strong> deta hai — <strong>the loop</strong>. Har LLM application isi loop ke aas-paas banti hai.</p>
+<h3>The Anatomy of the Loop</h3>
+<ol>
+<li><strong>The User's Problem:</strong> user ki apne domain me ek problem hai.</li>
+<li><strong>Converting the User's Problem to the Model Domain:</strong> application us problem ko model ke domain me convert karti hai — matlab ek prompt me, ek document jise model complete kare. Ise lekhak <strong>"Little Red Riding Hood principle"</strong> kehte hain: user ki problem ko ek document-completion problem ke roop me recast karo jisme model achha hai. Running example: user ki request ko ek "homework problem" me convert karna — ek worked setup, ek clear sawal aur ek format do, taaki jawab natural completion ho.</li>
+<li><strong>Using the LLM to Complete the Prompt:</strong> model ek feedforward pass karta hai aur completion deta hai.</li>
+<li><strong>Transforming Back to User Domain:</strong> application completion ko wapas user ke domain me transform karti hai — parse karna, format karna, action lena — aur user ko dikhati hai.</li>
+<li><strong>Repeat:</strong> user respond karta hai aur loop repeat hota hai, history aage carry hoti hai.</li>
+</ol>
+<p>Loop ki complexity kai dimensions me badh sakti hai — turns ki sankhya, tools ki sankhya, context ki matra, branching — aur designer ko decide karna hota hai ki inme se kitna application manage karega aur kitna user.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 300" role="img" aria-label="Figure 4-1 the loop diagram">
+<rect x="10" y="10" width="540" height="280" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 4-1 — The Loop</text>
+<g font-size="12" fill="#e3e2e6" text-anchor="middle">
+<rect x="180" y="52" width="200" height="34" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="280" y="74">1. User ki problem</text>
+<rect x="180" y="102" width="200" height="34" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="280" y="124">2. Prompt me convert karo</text>
+<rect x="180" y="152" width="200" height="34" rx="8" fill="#292a2d" stroke="#9ee939"/><text x="280" y="174">3. Feedforward pass → completion</text>
+<rect x="180" y="202" width="200" height="34" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="280" y="224">4. Wapas user domain me transform</text>
+<rect x="180" y="252" width="200" height="30" rx="8" fill="#1f1f23" stroke="#343538"/><text x="280" y="271">5. Output dikhao → repeat</text>
+</g>
+<g stroke="#8b947d" stroke-width="2" fill="none">
+<path d="M280 86 L280 102"/><path d="M280 136 L280 152"/><path d="M280 186 L280 202"/><path d="M280 236 L280 252"/>
+</g>
+</svg>
+<p class="fig-cap">Figure 4-1 — The loop: user problem → prompt → feedforward pass → completion → transform back → output → user → repeat. Figure 4-2 wahi loop chat ke liye specialised hai, 4-3 transcript document dikhata hai, 4-4 feedback ka loop me wapas aana dikhata hai.</p>
+</figure>
+<h3>Zooming In to the Feedforward Pass</h3>
+<p>Pass ke andar stages hote hain, aur har stage ek lever deta hai:</p>
+<ul>
+<li><strong>Tool Usage:</strong> model ko tools call karne do (functions, search, calculators, databases) taaki wo facts le sake aur actions kar sake jo text prediction se nahi ho sakte.</li>
+<li><strong>Retrieval-Augmented Generation (RAG):</strong> model ko call karne se pehle relevant documents retrieve karo aur prompt me paste karo, taaki model memory se nahi, supplied evidence se jawab de.</li>
+<li><strong>Chain of Thought:</strong> model se step by step reason karne ko kaho (ek reasoning preamble) taaki wo intermediate tokens generate kare jo final answer ko behtar banate hain.</li>
+<li><strong>Counting Tokens:</strong> prompt ka budget karo.</li>
+<li><strong>Prompting:</strong> us document ko assemble karna jo feed kiya jata hai.</li>
+</ul>
+<p class="note">The Chat Is a Transcript Document: chat bhi ek transcript document hi hai — poori conversation ek document ki tarah treat hoti hai jise model aage badhata hai.</p>
+<h3>Evaluating LLM Application Quality</h3>
+<p>Yahan introduce kiya gaya hai aur Chapter 10 me depth me treat kiya gaya hai: application ko "achha" ka criteria chahiye, tabhi use improve kiya ja sakta hai — <strong>correctness, usefulness, safety, latency aur cost</strong>, real examples par measure kiye gaye.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch3-moving-to-chat"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 3 — Moving to Chat</span></a><a class="pn-btn" href="#/ch5-prompt-content"><span class="pn-label">Agla →</span><span class="pn-title">Ch 5 — Prompt Content</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch5-prompt-content" data-title="Ch 5 — Prompt Content" hidden>
+  <div class="sec-meta"><span class="num-chip">05</span><span class="sec-group">Part II — Core Techniques</span></div>
+  <h1>Ch 5 — Prompt Content</h1>
+
+<p class="lead">Sabse common failure hai <strong>unclear sawal</strong>. Is chapter ka pehla rule: sawal ko clear karo, phir content bharo. Prompt ka content kahan se aata hai, use kaise select aur organise karte hain — ye sab yahan hai.</p>
+<h3>Clarifying Your Question</h3>
+<p>Instructions ke rules of thumb: task, format aur constraints ke baare me <strong>specific</strong> raho; sirf ye mat batao ki kya nahi chahiye, ye batao ki <strong>kya chahiye</strong>; model ko ek role aur ek situation do; aur instruction ko us data se alag rakho jis par use kaam karna hai.</p>
+<p><strong>Worked example — book recommendation:</strong> vague "recommend a book" par generic jawab milta hai. Lekin jab prompt me reader ki taste, kya pasand aaya, kitni length aur tone chahiye, aur exact output format likha ho — to useful, specific recommendation milti hai. Farak sirf clarity ka hai.</p>
+<h3>Sources of Content — Static aur Dynamic</h3>
+<p>Prompt ka content do tarah ka hota hai:</p>
+<ul>
+<li><strong>Static content:</strong> developer ne likha fixed text — instructions aur templates.</li>
+<li><strong>Dynamic content:</strong> har call par badalne wala text — user ka input, retrieved documents, tool results, ya time aur date.</li>
+</ul>
+<p>Dynamic content ko chaar dimensions me describe kiya gaya hai: <strong>purpose</strong> (kyun hai), <strong>preparability</strong> (taiyaar karne me kitna kaam), <strong>latency</strong> (fetch karne me kitna time) aur <strong>urgency</strong> (kitna fresh hona chahiye).</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Dynamic content</th><th>Purpose</th><th>Preparability</th><th>Latency</th><th>Urgency</th></tr></thead>
+<tbody>
+<tr><td>Weather report</td><td>Model ko current conditions dena</td><td>Weather API call karna</td><td>API jitna time le</td><td>High — mausam badalta rehta hai</td></tr>
+<tr><td>Email</td><td>Summarise ya jawab dene ke liye document dena</td><td>Mailbox se fetch karna</td><td>Fetch ka time</td><td>Low se medium — email likhe jaane ke baad badalta nahi</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 5-1 — dynamic content ke do examples, paraphrased. Ek hi content har dimension me alag ho sakta hai — isi liye assembly me inhe alag treat karna hota hai.</p>
+<h3>Selecting and Organizing Context</h3>
+<p>Saara context equally useful nahi hota. Context ke sources: conversation history, retrieved documents, tool outputs aur user ki apni files. <strong>Context retrieval</strong> ka kaam hai sahi pieces dhoondhna; dynamic context dhoondhne ka matlab hai task ke paas (proximity), related documents me, aur pichhle turns me dekhna.</p>
+<h4>Snippetizing Documents</h4>
+<p>Lambe documents ko snippets (chunks) me todna hota hai jo prompt me fit hon: <strong>window size</strong>, <strong>step/stride size</strong> (window har baar kitna aage badhta hai), aur <strong>overlap</strong> taaki koi fact boundary par split na ho.</p>
+<h4>Summarization</h4>
+<p>Jab material bahut lamba ho, paste karne ke bajay summarise karo. <strong>General summaries</strong> overview deti hain; <strong>specific summaries</strong> ek particular sawal ke liye zaroori details bachati hain. <strong>Hierarchical summarization</strong> me pieces ko summarise karke phir summaries ko summarise kiya jata hai — isse "rumour problem" se bachte hain, jahan ek detail summary se summary retell hote hue distort ho jati hai.</p>
+<h3>Few-Shot Prompting</h3>
+<p>Model ko prompt me input→output pairs ke examples do, taaki wo pattern infer kare. Examples ki formatting matter karti hai: consistent formatting, clear separators, aur examples jo real distribution se match karein. Few-shot examples ke liye Amazon book-reviews dataset aur ek Kaggle dataset ka naam liya gaya hai.</p>
+<h4>Teen drawbacks — yaad rakhne layak</h4>
+<ol>
+<li><strong>Drawback 1 — context ke saath scale nahi karta:</strong> har example tokens kharch karta hai, aur kitne fit ho sakte hain iski limit hai.</li>
+<li><strong>Drawback 2 — model examples ki taraf bias ho jata hai:</strong> anchoring — model examples ki style, values aur errors copy karta hai; uski probability distribution us taraf khinch jati hai jo usne abhi dekha hai.</li>
+<li><strong>Drawback 3 — spurious patterns suggest kar sakta hai:</strong> model wo rule infer kar sakta hai jo intended nahi tha — jaise ordering effects: wo seekh sakta hai ki pehla jawab hamesha simple case hota hai aur baad wale errors hote hain ("straightforward first, errors later" pattern), ya "happy path first, then unhappy path" ordering.</li>
+</ol>
+<p>Remedy: examples carefully chuno, unhe vary karo, aur inferred rule ko check karo.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 220" role="img" aria-label="Figure 5-1 book recommendation example">
+<rect x="10" y="10" width="540" height="200" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 5-1 — Book recommendation: vague vs specific</text>
+<rect x="40" y="55" width="230" height="70" rx="8" fill="#292a2d" stroke="#343538"/>
+<text x="155" y="80" text-anchor="middle" fill="#c1cab0" font-size="12">"Recommend a book"</text>
+<text x="155" y="102" text-anchor="middle" fill="#8b947d" font-size="12">→ generic jawab</text>
+<rect x="290" y="55" width="230" height="70" rx="8" fill="#292a2d" stroke="#84cc16"/>
+<text x="405" y="80" text-anchor="middle" fill="#c1cab0" font-size="12">taste + length + tone + format</text>
+<text x="405" y="102" text-anchor="middle" fill="#9ee939" font-size="12">→ specific, useful jawab</text>
+<rect x="40" y="150" width="480" height="40" rx="8" fill="#1f1f23" stroke="#343538"/>
+<text x="280" y="175" text-anchor="middle" fill="#e3e2e6" font-size="12">Farak sirf clarity ka hai — instruction, data se alag, specific</text>
+</svg>
+<p class="fig-cap">Figure 5-1 — Book-recommendation example: vague sawal par generic jawab, specific prompt par useful jawab. Baaki figures static vs dynamic content aur summarisation hierarchy dikhate hain.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch4-designing-apps"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 4 — Designing LLM Applications</span></a><a class="pn-btn" href="#/ch6-assembling-prompt"><span class="pn-label">Agla →</span><span class="pn-title">Ch 6 — Assembling the Prompt</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch6-assembling-prompt" data-title="Ch 6 — Assembling the Prompt" hidden>
+  <div class="sec-meta"><span class="num-chip">06</span><span class="sec-group">Part II — Core Techniques</span></div>
+  <h1>Ch 6 — Assembling the Prompt</h1>
+
+<p class="lead">Prompt assemble karna ek design decision hai — aur kitab ke mutabik <strong>sabse important decision document ka type chunna</strong> hai. Prompt ko kaise assemble karte hain, ye chapter step by step batata hai.</p>
+<h3>Anatomy of the Ideal Prompt</h3>
+<p>Ideal prompt ke parts:</p>
+<ul>
+<li><strong>Introduction</strong> — ye document kya hai.</li>
+<li><strong>Preamble</strong> — context aur instructions.</li>
+<li><strong>Body of content</strong> — task aur uska data.</li>
+<li><strong>Postscript</strong> — final instruction jis par model ko action lena hai.</li>
+</ul>
+<p>Iske alawa uska ek <strong>recognisable start aur end</strong> hona chahiye — clear markers taaki model jaane uski completion kahan se shuru aur kahan khatam honi hai. Do problems se bachna hai: <strong>"lost in the middle"</strong> (lambe prompt ke beech ka material start ya end se kam attend kiya jata hai) aur <strong>"Valley of Meh"</strong> (prompt unfocused ho to quality me dip). Lambe prompts ke liye <strong>"sandwich" structure</strong> recommended hai — instructions shuru me aur phir end me bhi, data beech me.</p>
+<h3>What Kind of Document? — teen worked types</h3>
+<h4>1. The Advice Conversation</h4>
+<p>Ek helpful conversation ka transcript — freeform, multi-round, natural, persona ke saath. Open-ended help ke liye achha, lekin structure me kamzor.</p>
+<h4>2. The Analytic Report</h4>
+<p>Sections wala structured report (scope, findings, conclusions, recommendations), table of contents aur Markdown headings ke saath. Achha jab jawab organised aur checkable hona chahiye.</p>
+<h4>3. The Structured Document</h4>
+<p>Fields aur slots wala document — jaise JSON, YAML ya XML — aksar "Artifacts" style system prompt ke saath. Achha jab output machine-readable hona chahiye.</p>
+<p>Har type ke liye chapter format, editorial hints aur trade-offs describe karta hai.</p>
+<h3>Formatting Snippets</h3>
+<p>Snippets self-contained, labelled aur clear delimiters se separated hone chahiye. <strong>Composite strings</strong> ek pitfall hain — alag sources se strings jodne par aisa prompt ban sakta hai jiska matlab uske parts se alag ho. "More on inertness" wapas is point par aata hai: model sirf final assembled text dekhta hai.</p>
+<h3>Elastic Snippets</h3>
+<p>Ek technique jisme variable amount of material fixed token budget me fit hoti hai — snippets expand ya shrink kar sakte hain (jaise ellipsis "…" omitted material ke liye, ya full document ki jagah ek summary jab space tight ho). Prompt priority order se assemble hota hai taaki budget cut hone par sabse important snippets bach jayein.</p>
+<h3>Relationships Among Prompt Elements</h3>
+<p>Assembly ko teen relations govern karte hain:</p>
+<ul>
+<li><strong>Importance</strong> — kaunse elements sabse zyada matter karte hain aur space kam ho to kaunse bachne chahiye.</li>
+<li><strong>Position</strong> — element kahan baitha hai (start aur end sabse strong hote hain).</li>
+<li><strong>Dependency</strong> — kaunse elements kiske upar depend karte hain, taaki ek ko hatane se dusra na toote; incompatible elements combine nahi karne chahiye.</li>
+</ul>
+<h3>Putting It All Together — knapsack problem</h3>
+<p>Chapter poora prompt assemble karne ka walkthrough deta hai, use ek <strong>knapsack problem</strong> ke roop me treat karte hue: token budget me fit hone wala highest-value snippets ka set chuno. <strong>Greedy approaches</strong> practical approximations hain — additive greedy (best remaining snippet add karte jao jab tak full na ho) aur subtractive greedy (sab kuch se shuru karo aur least valuable hatate jao). <strong>Linear programming</strong> ko exact formulation ke roop me naam diya gaya hai. Assembled prompt phir wahi document hai jise model complete karta hai.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 260" role="img" aria-label="Figure 6-1 ideal prompt anatomy">
+<rect x="10" y="10" width="540" height="240" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 6-1 — Anatomy of the ideal prompt</text>
+<g font-size="12" fill="#e3e2e6" text-anchor="middle">
+<rect x="90" y="52" width="380" height="30" rx="6" fill="#292a2d" stroke="#84cc16"/><text x="280" y="71">Introduction — ye document kya hai</text>
+<rect x="90" y="90" width="380" height="30" rx="6" fill="#292a2d" stroke="#7bd0ff"/><text x="280" y="109">Preamble — context + instructions</text>
+<rect x="90" y="128" width="380" height="30" rx="6" fill="#292a2d" stroke="#343538"/><text x="280" y="147">Body — task + data</text>
+<rect x="90" y="166" width="380" height="30" rx="6" fill="#292a2d" stroke="#9ee939"/><text x="280" y="185">Postscript — final instruction</text>
+</g>
+<text x="280" y="222" text-anchor="middle" fill="#8b947d" font-size="12">Sandwich: instructions shuru aur end me, data beech me — "lost in the middle" se bacho</text>
+</svg>
+<p class="fig-cap">Figure 6-1 — Ideal prompt ki anatomy: introduction, preamble, body, postscript. Figures 6-2 se 6-7 teen document types, snippet formatting, elastic snippets aur final assembled prompt dikhate hain.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch5-prompt-content"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 5 — Prompt Content</span></a><a class="pn-btn" href="#/ch7-taming-model"><span class="pn-label">Agla →</span><span class="pn-title">Ch 7 — Taming the Model</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch7-taming-model" data-title="Ch 7 — Taming the Model" hidden>
+  <div class="sec-meta"><span class="num-chip">07</span><span class="sec-group">Part II — Core Techniques</span></div>
+  <h1>Ch 7 — Taming the Model</h1>
+
+<p class="lead">Prompts ki anatomy hoti hai, waise hi <strong>completions ki bhi anatomy</strong> hoti hai. Ye chapter batata hai ki model ke output ko kaise tame karein — aur uske andar jhankne ke liye logprobs kaise use karein.</p>
+<h3>Anatomy of the Ideal Completion</h3>
+<p>Achhi completion ke parts:</p>
+<ul>
+<li><strong>Preamble:</strong> aksar ek reasoning preamble — jawab se pehle step-by-step thinking. Chhota "fluff" preamble tokens waste karta hai, jabki reasoning preamble answers ko behtar banata hai. Structural boilerplate preamble useful hota hai jab output format fixed hona chahiye.</li>
+<li><strong>Recognizable Start and End:</strong> taaki application bata sake jawab kahan shuru aur kahan khatam hota hai.</li>
+<li><strong>Postscript:</strong> ek closing jise application strip kar sake ya use kar sake, jaise ek summary line.</li>
+</ul>
+<h4>Critical Points in the Prompt</h4>
+<p>Ye wo tokens hain jahan model ka choice outcome par sabse zyada asar dalta hai. Chapter sikhata hai ki unhe logprobs inspect karke aur prompt vary karke dhoondho, aur unhe <strong>unit tests ki tarah treat karo</strong>: wahan chhote changes ka bada effect hota hai.</p>
+<h4>How Good Is the Completion?</h4>
+<p>Test ye hai: kya completion sawal ka jawab deti hai, sahi format me, sahi content ke saath, aur confidence ke saath (uski probabilities se measure kiya gaya)?</p>
+<h3>Beyond the Text: Logprobs</h3>
+<p>API har generated token ke liye us token ki <strong>log probability (logprob)</strong> aur top alternatives ki logprobs return kar sakti hai. <code>exp()</code> se convert karke ordinary probability milti hai.</p>
+<p><strong>LLMs for Classification:</strong> model se "yes" ya "no" likhwane ke bajay, candidate tokens ki logprobs padho aur zyada probable ko chuno — logprob difference ek calibrated confidence measure hai. <strong>Gold standard</strong> known-correct answers ka set hai jisse classifier ko check karte hain: model ka chuna label gold label se compare karo aur accuracy measure karo, multi-label classification ke liye bhi. Logprobs se uncertainty detect kar sakte hain, critical points dhoondh sakte hain, aur voting implement kar sakte hain (n completions sample karo aur majority answer lo).</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Logprob concept</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td>Top token ki logprob sabse high (least negative)</td><td>Model ko is token par sabse zyada bharosa</td></tr>
+<tr><td>Top 2 candidates ke beech chhota gap</td><td>Asli choice hai — model genuinely undecided hai</td></tr>
+<tr><td>Top 2 ke beech bada gap</td><td>Jawab effectively determined hai</td></tr>
+<tr><td>exp(logprob)</td><td>Ordinary probability milti hai</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 7-1 — logprobs ka worked example, paraphrased: model se ek sentence complete karwaya jata hai aur har candidate next token ki logprob dikhayi jati hai. Exact numbers kitab ka illustration hain ki chhota gap genuine choice dikhata hai aur bada gap determined answer.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python — logprobs se classification</span><span>reconstructed</span></div><pre><code>import math
+
+resp = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Is review positive? Jawab: "}],
+    logprobs=True,
+    top_logprobs=5,
+    max_tokens=1,
+)
+# har candidate token ki logprob lo, exp() se probability banao,
+# aur sabse zyada probable label chuno — raw text par bharosa mat karo
+for cand in resp.choices[0].logprobs.content[0].top_logprobs:
+    print(cand.token, math.exp(cand.logprob))</code></pre></div>
+<p class="note">Code reconstructed hai — kitab me logprobs request karne, per-token values padhne, exp() se probabilities banane aur classification task ke liye candidate labels compare karne ka step-by-step tareeka describe kiya gaya hai.</p>
+<h3>Choosing the Model — checklist</h3>
+<ul>
+<li><strong>Intelligence:</strong> task par capability — benchmarks aur try karke judge karo, brand se nahi.</li>
+<li><strong>Size and speed:</strong> bada aam taur par behtar lekin slow aur mehenga.</li>
+<li><strong>Cost:</strong> per-token pricing; RLHF chat models quality ke hisab se aksar cost-effective hote hain.</li>
+<li><strong>Latency, ease of use, functionality:</strong> kya tools, structured output, long context, fine-tuning support karta hai.</li>
+<li><strong>Providers:</strong> OpenAI, Google, Anthropic, Cohere, Mistral, LLaMA aur Hugging Face ke through open-source models ka naam liya gaya hai.</li>
+<li><strong>Special requirements:</strong> data privacy, language, modality.</li>
+</ul>
+<p>Practical advice: model choice flexible rakho (LiteLLM jaisi thin abstraction use karo), model switch karte waqt static prompt context hatado (ek model ko coax karne ke liye jo chahiye tha, dusre ke liye zaroori nahi ho sakta), specialised tasks ke liye continued pre-training, full fine-tuning aur low-rank adaptation (LoRA) consider karo, aur "soft prompting" (learned prompt vectors) sirf tab use karo jab prompt text kaafi na ho. Artificial Analysis ko model quality aur price compare karne ke liye useful public site bataya gaya hai.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 210" role="img" aria-label="Figure 7-2 logprob distributions">
+<rect x="10" y="10" width="540" height="190" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 7-2 — Logprob distributions</text>
+<rect x="60" y="60" width="200" height="60" rx="8" fill="#292a2d" stroke="#84cc16"/>
+<text x="160" y="84" text-anchor="middle" fill="#9ee939" font-size="12" font-weight="bold">Bada gap</text>
+<text x="160" y="104" text-anchor="middle" fill="#c1cab0" font-size="12">jawab determined hai</text>
+<rect x="300" y="60" width="200" height="60" rx="8" fill="#292a2d" stroke="#7bd0ff"/>
+<text x="400" y="84" text-anchor="middle" fill="#7bd0ff" font-size="12" font-weight="bold">Chhota gap</text>
+<text x="400" y="104" text-anchor="middle" fill="#c1cab0" font-size="12">genuine choice hai</text>
+<text x="280" y="150" text-anchor="middle" fill="#e3e2e6" font-size="12">logprob = log(probability) · exp(logprob) = probability</text>
+<text x="280" y="176" text-anchor="middle" fill="#8b947d" font-size="12">Chat Completion API params: temperature, max_tokens, stop, stream, n, logit_bias, top_logprobs</text>
+</svg>
+<p class="fig-cap">Figure 7-2 — Logprob distributions: top candidates ke beech ka gap confidence batata hai. Figure 7-1 completion ki anatomy dikhata hai aur 7-3 model comparison.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch6-assembling-prompt"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 6 — Assembling the Prompt</span></a><a class="pn-btn" href="#/ch8-conversational-agency"><span class="pn-label">Agla →</span><span class="pn-title">Ch 8 — Conversational Agency</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch8-conversational-agency" data-title="Ch 8 — Conversational Agency" hidden>
+  <div class="sec-meta"><span class="num-chip">08</span><span class="sec-group">Part III — An Expert of the Craft</span></div>
+  <h1>Ch 8 — Conversational Agency</h1>
+
+<p class="lead"><strong>Conversational agency</strong> ka matlab hai ek conversational system ki ability user ki taraf se act karne ki — sirf jawab dena nahi, balki reasoning aur tools use karke ek goal pursue karna, jabki user control me rahe.</p>
+<h3>Building a Conversational Agent</h3>
+<p>Agent chat model ke aas-paas ek loop hai — transcript bhejo, reply ya tool call lo, tool execute karo, result append karo, repeat karo. Worked example <strong>thermostat agent</strong> hai: user temperature badalne ko kehta hai, model function call karta hai use set karne ke liye, result wapas aata hai, aur model confirm karta hai. State application ko persist karni hoti hai (model kuch yaad nahi rakhta), aur conversation ko manage karna hota hai taaki transcript context window ke andar rahe.</p>
+<h3>Reasoning — Chain of Thought aur Reasoning Depth</h3>
+<p>Chain-of-thought main lever hai — model se act karne se pehle step by step sochne ko kaho, jo "reasoning depth" badhata hai. Trade-off: zyada reasoning tokens reliability badhate hain lekin time aur paise kharch karte hain. Techniques: reasoning ki "TL;DR" summaries, aur <strong>pause tokens</strong> (extra tokens jo model ko compute karne ke liye time dete hain). Benchmark evidence: chain-of-thought maths aur multi-step reasoning tasks par results improve karta hai, PaLM 540B model ko early demonstration ke roop me naam diya gaya hai.</p>
+<h3>Tool Usage</h3>
+<p>Tools wo functions hain jinhe model call kar sakta hai. Chapter batata hai ki modern models tool use ke liye kaise train kiye jate hain (function-calling training), tools kaise define karte hain, aur underlying mechanism kya hai — model ek structured function call (JSON) output karta hai, application use execute karti hai, aur result tool message ke roop me wapas feed hota hai. "Take a Look Under the Hood" ek concrete tool definition aur call ko TypeScript/JavaScript me aur Python me walkthrough karta hai.</p>
+<h4>Guidelines for Tool Definitions</h4>
+<ul>
+<li>Har tool ko ek <strong>clear naam</strong> aur precise description do — wo kya karta hai aur kab use karna hai.</li>
+<li>Arguments ko types, required/optional flags aur descriptions ke saath define karo.</li>
+</ul>
+<h4>Naming Tools and Arguments</h4>
+<p>Clear, descriptive, camelCase names use karo; lowercase-only ambiguous names avoid karo; names ko informative banao — model naam ko prompt ka part samajh kar padhta hai.</p>
+<h4>Dealing with Arguments</h4>
+<p>Model arguments hallucinate kar sakta hai (koi value invent kar de), galat type ki value de, ya placeholder use kar de. Application ko arguments validate karne chahiye, defaults dene chahiye, aur clear error return karni chahiye taaki model khud ko correct kar sake.</p>
+<h4>Dealing with Tool Errors</h4>
+<p>Error ko tool result ke roop me wapas do aur model ko retry karne do — poora turn fail karne ke bajay.</p>
+<h4>Executing "Dangerous" Tools</h4>
+<p>Jo tools duniya ko badalte hain (message bhejna, card charge karna, data delete karna) unhe <strong>confirmation step</strong> chahiye — application ko request intercept karni chahiye, user ko dikhana chahiye kya hone wala hai, aur sirf approval ke saath execute karna chahiye. Authorisation aur private information application ko handle karni chahiye, model ki discretion par chhodni nahi chahiye.</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Tool-use cycle ka step</th><th>Kya hota hai</th></tr></thead>
+<tbody>
+<tr><td>1. Model proposes a call</td><td>Model structured JSON function call output karta hai</td></tr>
+<tr><td>2. Application validates</td><td>Naam, arguments aur types check karo; galat ho to error wapas do</td></tr>
+<tr><td>3. Application executes</td><td>Matching function chalao; dangerous ho to pehle confirmation lo</td></tr>
+<tr><td>4. Result returns</td><td>Tool ka result tool message ke roop me transcript me aata hai</td></tr>
+<tr><td>5. Model responds</td><td>Model result dekh kar final text jawab deta hai</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 8-1 — tool-use cycle ka summary, paraphrased.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python — set_room_temp tool aur driver</span><span>reconstructed</span></div><pre><code>tools = [{
+    "type": "function",
+    "function": {
+        "name": "set_room_temp",
+        "description": "Thermostat ka temperature set karta hai.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "temperature": {"type": "number",
+                                "description": "Celsius me naya temperature"}
+            },
+            "required": ["temperature"],
+        },
+    },
+}]
+
+# driver: messages bhejo, tool calls check karo,
+# matching function execute karo, tool result append karo,
+# jab tak model final text jawab na de, loop chalao</code></pre></div>
+<p class="note">Code reconstructed hai — kitab me set_room_temp tool ki definition (naam, description, JSON parameters), process_messages / run_conversation driver (messages bhejna, tool calls check karna, available_functions map se execute karna, tool result append karna, loop) aur tool_choice ka use (tool use force ya forbid karna) step by step describe kiya gaya hai.</p>
+<h3>User Experience and User Interface</h3>
+<p>Agent ka interface dikhana chahiye ki wo kya kar raha hai (kaunsa tool call kiya aur kyun), user ko beech me correct karne dena chahiye, aur conversation ke subjects (booking, document) ko <strong>stateful objects of discourse</strong> treat karna chahiye jinka dono taraf reference de sakte hain. Multimodal interaction — voice, images, video — interface ki direction batayi gayi hai.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 230" role="img" aria-label="Figure 8-4 tool result cycle">
+<rect x="10" y="10" width="540" height="210" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 8-4 — Tool-result cycle</text>
+<g font-size="12" fill="#e3e2e6" text-anchor="middle">
+<rect x="40" y="60" width="130" height="40" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="105" y="84">Model: tool call</text>
+<rect x="210" y="60" width="130" height="40" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="275" y="84">App: execute karo</text>
+<rect x="380" y="60" width="130" height="40" rx="8" fill="#292a2d" stroke="#9ee939"/><text x="445" y="84">Result wapas</text>
+</g>
+<path d="M170 80 L210 80" stroke="#8b947d" stroke-width="2"/>
+<path d="M340 80 L380 80" stroke="#8b947d" stroke-width="2"/>
+<path d="M445 100 L445 150 L105 150 L105 100" stroke="#9ee939" stroke-width="2" fill="none"/>
+<text x="280" y="140" text-anchor="middle" fill="#c1cab0" font-size="12">tool message transcript me append → model final jawab deta hai</text>
+<text x="280" y="180" text-anchor="middle" fill="#8b947d" font-size="12">Figure 8-1: thermostat example · 8-2: conversational loop · 8-3: tool call · 8-5: user interface</text>
+</svg>
+<p class="fig-cap">Figure 8-4 — Tool-result cycle: model tool call karta hai, application execute karti hai, result tool message ke roop me wapas aata hai, phir model final jawab deta hai.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch7-taming-model"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 7 — Taming the Model</span></a><a class="pn-btn" href="#/ch9-llm-workflows"><span class="pn-label">Agla →</span><span class="pn-title">Ch 9 — LLM Workflows</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch9-llm-workflows" data-title="Ch 9 — LLM Workflows" hidden>
+  <div class="sec-meta"><span class="num-chip">09</span><span class="sec-group">Part III — An Expert of the Craft</span></div>
+  <h1>Ch 9 — LLM Workflows</h1>
+
+<p class="lead">Kab conversation kaafi hai aur kab workflow chahiye? Conversational agent open-ended, user-driven kaam ke liye achha hai; workflow behtar hai jab task <strong>repeatable</strong> ho, uske steps pata hon, aur wo reliable aur efficient hona chahiye. Trade-off hai <strong>generality versus strength</strong>: general agent kai cheezein kar sakta hai lekin har ek kamzor tareeke se; specialised workflow ek cheez strongly karta hai. Kitab ki advice: sabse narrow workflow se shuru karo jo problem solve kare, aur generality tabhi add karo jab zaroorat ho.</p>
+<h3>Basic LLM Workflows</h3>
+<p>Workflow tasks ki sequence hoti hai. <strong>Task</strong> ek single LLM call hai jiska defined input, prompt aur output hota hai — jaise "email subject line likho" ya "is review ko summarise karo". Tasks ek <strong>directed acyclic graph (DAG)</strong> me assemble hote hain — bina cycles wali pipeline — aur order me execute hote hain, ek task ka output agle task me jata hai.</p>
+<h4>Example Workflow: Shopify Plug-in Marketing</h4>
+<p>Application ko ek Shopify plug-in ke liye marketing emails banane hain. Tasks order me: plug-in par research karna, email draft karna, brand voice ke against check karna, aur final version banana. Chapter ise build karne, har task ko alag se evaluate karne, aur optimise karne ka walkthrough deta hai (harness tests ke saath, aur TextGrad aur DSPy ko optimisation approaches ke roop me naam diya gaya hai). Orchestration ke liye Airflow aur Luigi frameworks ka naam liya gaya hai.</p>
+<h3>Advanced LLM Workflows</h3>
+<h4>Beyond ReAct</h4>
+<p><strong>ReAct</strong> iterative reasoning aur action hai — model sochta hai, tool se act karta hai, result observe karta hai, aur repeat karta hai; HotpotQA dataset aur ALFWorld par evaluate kiya gaya. ReAct se aage: <strong>Reflexion</strong> (agent apni failures par reflect karta hai aur lesson store karta hai), <strong>plan-and-solve prompting</strong>, aur <strong>branch-solve-merge</strong> (problem split karo, parts solve karo, answers combine karo).</p>
+<h4>Allowing an LLM Agent to Drive the Workflow</h4>
+<p>Agent ko tasks on the fly generate karne, tools chunne aur agla step decide karne ki ability do — powerful hai lekin control aur evaluate karna mushkil hai.</p>
+<h4>Roles and Delegation</h4>
+<p>Alag roles wale agents ki crews assemble karo (researcher, writer, editor), group-chat manager ya hierarchy ke saath; frameworks AutoGen aur CrewAI ka naam liya gaya hai.</p>
+<h4>Stateful Task Agents</h4>
+<p>Aise agents jo tasks ke across state rakhte hain, taaki wo kai calls par lambe job par kaam kar sakein.</p>
+<h4>Adding More Sophistication to Tasks</h4>
+<p>Self-correction, <strong>LLM-as-a-judge</strong> (dusra model pehle ko check kare), user proxies (simulated user), aur tasks ke liye unit tests add karo.</p>
+<h4>Add Variety to Your Task</h4>
+<p>Examples aur inputs vary karo taaki task ek hi phrasing par overfit na ho.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python — workflow driver (DAG order)</span><span>reconstructed</span></div><pre><code># har task: ya to templated prompt (template bharo, model call karo)
+# ya tool-based task (model function call karta hai, result parse hota hai)
+tasks = ["research", "draft", "brand_check", "finalise"]
+
+outputs = {}
+for task_name in tasks:  # DAG order me chalao
+    outputs[task_name] = run_task(task_name, outputs)
+    # har step record karo — evaluation ke liye</code></pre></div>
+<figure class="fig">
+<svg viewBox="0 0 560 250" role="img" aria-label="Figure 9-4 ReAct loop">
+<rect x="10" y="10" width="540" height="230" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 9-4 — ReAct: think–act–observe loop</text>
+<g font-size="12" fill="#e3e2e6" text-anchor="middle">
+<rect x="200" y="55" width="160" height="34" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="280" y="77">Think — socho</text>
+<rect x="200" y="110" width="160" height="34" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="280" y="132">Act — tool call karo</text>
+<rect x="200" y="165" width="160" height="34" rx="8" fill="#292a2d" stroke="#9ee939"/><text x="280" y="187">Observe — result dekho</text>
+</g>
+<path d="M280 89 L280 110" stroke="#8b947d" stroke-width="2"/>
+<path d="M280 144 L280 165" stroke="#8b947d" stroke-width="2"/>
+<path d="M200 182 C 130 182, 130 72, 200 72" stroke="#9ee939" stroke-width="2" fill="none"/>
+<text x="280" y="222" text-anchor="middle" fill="#8b947d" font-size="12">Figure 9-1: generality vs strength · 9-2: basic workflow DAG · 9-3: Shopify workflow · 9-5: agent-driven workflow</text>
+</svg>
+<p class="fig-cap">Figure 9-4 — ReAct loop: think, act, observe, repeat. Figure 9-1 generality-versus-strength trade-off dikhata hai, 9-2 basic workflow DAG, 9-3 Shopify marketing workflow, 9-5 agent-driven workflow.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch8-conversational-agency"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 8 — Conversational Agency</span></a><a class="pn-btn" href="#/ch10-evaluating"><span class="pn-label">Agla →</span><span class="pn-title">Ch 10 — Evaluating LLM Applications</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch10-evaluating" data-title="Ch 10 — Evaluating LLM Applications" hidden>
+  <div class="sec-meta"><span class="num-chip">10</span><span class="sec-group">Part III — An Expert of the Craft</span></div>
+  <h1>Ch 10 — Evaluating LLM Applications</h1>
+
+<p class="lead">Evaluation task level se shuru hoti hai — poori application test karne se pehle <strong>har task ko alag se test karo</strong> — aur har task ke liye decide karo ki "achha" ka matlab kya hai: functional correctness, usefulness, safety, latency aur cost.</p>
+<h3>What Are We Even Testing?</h3>
+<p>Chapter teen test types alag karta hai: <strong>harness tests</strong> (fixed inputs par application chalao aur expected outputs se compare karo), <strong>regression tests</strong> (change ke baad purane tests dobara chalao taaki breakage pakdi jaye) aur prompts aur tasks ke liye <strong>unit tests</strong>. Latency aur cost testing ke dauraan record karo, baad me nahi.</p>
+<h3>Offline Evaluation</h3>
+<p>Shipping se pehle ki evaluation, fixed examples par. <strong>Example suites</strong> examples ka collection hain, har ek me input aur gold-standard (known-correct) output hota hai; ye test suites se alag hain kyunki inhe exploration aur quality judge karne ke liye use kiya jata hai, sirf pass/fail ke liye nahi.</p>
+<h4>Finding Samples</h4>
+<p>Examples real usage se, edge cases ki directed exploration se, aur production logs se ikatthe karo. <strong>Sampling bias</strong> se bacho — jo examples aasani se milte hain, wo representative nahi hote.</p>
+<h4>Evaluating Solutions</h4>
+<ul>
+<li>Model ka output gold standard se compare karo (exact match, ya graded match).</li>
+<li><strong>Functional testing:</strong> kya output kaam karta hai — code ke liye, kya wo run hota hai; tool call ke liye, kya sahi tool sahi syntax se call hua.</li>
+<li><strong>LLM assessment:</strong> ek strong model ko judge banao, rubric ke saath.</li>
+<li><strong>SOMA assessment:</strong> kitab ka apna rubric — response ko simple pass/fail ke bajay ek scale par grade karta hai (SOMA mastery levels), taaki partial quality dikhai de.</li>
+<li><strong>A/B testing:</strong> offline evaluation ke under bhi cover hai — do versions ko wahi examples par chalao aur compare karo.</li>
+</ul>
+<div class="tbl-wrap"><table>
+<thead><tr><th>SOMA mastery level</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td>Low</td><td>Response task ko poora nahi karta ya galat hai</td></tr>
+<tr><td>Partial</td><td>Kuch hisse sahi, kuch missing ya galat</td></tr>
+<tr><td>Good</td><td>Task poora karta hai, chhoti kami ho sakti hai</td></tr>
+<tr><td>Excellent</td><td>Poora, sahi aur useful — gold standard ke barabar</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 10-1 — SOMA mastery levels, paraphrased: responses ko grade karne ke liye use hone wale levels. Exact level names aur scale kitab ke rubric ke hisab se hain; yahan meaning diya gaya hai, wording invent nahi ki gayi.</p>
+<h3>Online Evaluation</h3>
+<p>Shipping ke baad live traffic par evaluation. Metrics:</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Online metric</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td>Functional correctness</td><td>Application ne sahi kaam kiya ya nahi</td></tr>
+<tr><td>User acceptance</td><td>User ne result accept kiya ya nahi — acceptance rate, thumbs-up/thumbs-down signals</td></tr>
+<tr><td>Achieved impact</td><td>Business outcome improve hua ya nahi</td></tr>
+<tr><td>Direct feedback</td><td>Comments aur ratings</td></tr>
+<tr><td>Incidental metrics</td><td>Bina poochhe milne wale signals — jaise user kitni baar rephrase, retry ya abandon karta hai</td></tr>
+</tbody>
+</table></div>
+<p class="note">Table 10-2 — online metrics aur unki definitions, paraphrased.</p>
+<p>Chapter warn karta hai ki online metrics noisy hote hain, <strong>contrastive A/B testing</strong> (do versions alag users ko dikhana) change attribute karne ka sabse clean tareeka hai, aur offline aur online evaluation ko balance me rakhna chahiye: <strong>offline fast iteration ke liye, online ground truth ke liye</strong>.</p>
+<div class="codeblock"><div class="codeblock-head"><span>Python — eval harness ka shape</span><span>reconstructed</span></div><pre><code># harness: example suite load karo, har task chalao,
+# output ko gold standard se compare karo,
+# SOMA grade aur latency record karo, results aggregate karo
+for example in example_suite:
+    out = run_task(example.input)
+    grade = soma_grade(out, example.gold)
+    record(example.id, grade, latency(out))
+
+# A/B driver: traffic ko do versions me route karo,
+# acceptance rates compare karo</code></pre></div>
+<figure class="fig">
+<svg viewBox="0 0 560 210" role="img" aria-label="Figure 10-1 evaluation loop">
+<rect x="10" y="10" width="540" height="190" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 10-1 — Evaluation loop</text>
+<g font-size="12" fill="#e3e2e6" text-anchor="middle">
+<rect x="40" y="60" width="120" height="40" rx="8" fill="#292a2d" stroke="#84cc16"/><text x="100" y="84">Offline eval</text>
+<rect x="200" y="60" width="140" height="40" rx="8" fill="#292a2d" stroke="#7bd0ff"/><text x="270" y="84">Improve karo</text>
+<rect x="380" y="60" width="130" height="40" rx="8" fill="#292a2d" stroke="#9ee939"/><text x="445" y="84">Ship karo</text>
+</g>
+<path d="M160 80 L200 80" stroke="#8b947d" stroke-width="2"/>
+<path d="M340 80 L380 80" stroke="#8b947d" stroke-width="2"/>
+<path d="M445 100 L445 150 L100 150 L100 100" stroke="#9ee939" stroke-width="2" fill="none"/>
+<text x="280" y="140" text-anchor="middle" fill="#c1cab0" font-size="12">Online metrics → ground truth → wapas offline iteration me</text>
+<text x="280" y="176" text-anchor="middle" fill="#8b947d" font-size="12">Figures 10-2 se 10-9: example suites, gold standard, functional testing, LLM assessment, SOMA, A/B testing, online metrics, balance</text>
+</svg>
+<p class="fig-cap">Figure 10-1 — Evaluation loop: offline evaluation, improve, ship, online metrics se ground truth, wapas iteration me. Figure 10-9 offline aur online evaluation ke beech ka balance dikhata hai.</p>
+</figure>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch9-llm-workflows"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 9 — LLM Workflows</span></a><a class="pn-btn" href="#/ch11-looking-ahead"><span class="pn-label">Agla →</span><span class="pn-title">Ch 11 — Looking Ahead</span></a></nav>
+</article>
+
+<article class="section content-sec" id="sec-ch11-looking-ahead" data-title="Ch 11 — Looking Ahead" hidden>
+  <div class="sec-meta"><span class="num-chip">11</span><span class="sec-group">Part III — An Expert of the Craft</span></div>
+  <h1>Ch 11 — Looking Ahead</h1>
+
+<p class="lead">Aakhri chapter aage ki taraf dekhta hai: model intelligence kaise improve ho sakti hai, aur multimodality kya badalti hai. Lekin conclusion ye hai ki <strong>durable skill kisi ek model ke tricks nahi hain</strong> — documents, prompts, loops aur evaluation ke terms me sochne ki ability hai.</p>
+<h3>Intelligence</h3>
+<p>Model intelligence improve hone ke tareeke: bade models, behtar training, <strong>knowledge distillation</strong> (bada model chhote model ko sikhata hai), <strong>quantisation</strong> (model ko compress karna taaki wo saste me chale), aur naye benchmarks (Open LLM Leaderboard 2 ka naam liya gaya hai). Psychometric intelligence tests, jinme ARC-AGI shamil hai, use ho rahe hain ye probe karne ke liye ki models asal me kya kar sakte hain. Aur patterns aur repetitions — Chapter 2 ka core — mechanism ke neeche abhi bhi wahi hai.</p>
+<p>Lekhak artificial general intelligence (AGI) ke claims ke baare me cautious hain: progress real aur rapid hai, lekin kitab ke principles durable isliye hain kyunki wo models ke kaam karne ke tareeke se follow karte hain, kisi particular generation se nahi.</p>
+<h3>Multimodality</h3>
+<p>Agla frontier wo models hain jo text se zyada lete aur dete hain — images, audio aur video. Chapter samjhata hai ki in models me image processing convolutional neural networks (CNNs) aur embedding models use karti hai taaki image ko ek representation me badla ja sake jise transformer use kar sake. GPT-4 ko early widely used multimodal model ke roop me naam diya gaya hai.</p>
+<p>Multimodality user experience badalti hai (user model ko picture dikha sakta hai, ya bol sakta hai) aur prompt engineering badalti hai (prompt me images bhi ho sakti hain text ke saath) — lekin <strong>wahi principles apply hote hain</strong>: model abhi bhi ek document complete karta hai, abhi bhi clear scene aur role chahiye, aur abhi bhi evaluation chahiye.</p>
+<figure class="fig">
+<svg viewBox="0 0 560 210" role="img" aria-label="Figure 11-2 multimodal prompt">
+<rect x="10" y="10" width="540" height="190" rx="10" fill="#1b1b1f"/>
+<text x="280" y="34" text-anchor="middle" fill="#e3e2e6" font-size="14" font-weight="bold">Figure 11-2 — Multimodal prompt: image + text</text>
+<rect x="60" y="60" width="150" height="90" rx="8" fill="#292a2d" stroke="#7bd0ff"/>
+<text x="135" y="100" text-anchor="middle" fill="#7bd0ff" font-size="13">🖼 Image</text>
+<text x="135" y="122" text-anchor="middle" fill="#8b947d" font-size="11">CNN + embeddings</text>
+<rect x="240" y="60" width="150" height="90" rx="8" fill="#292a2d" stroke="#84cc16"/>
+<text x="315" y="100" text-anchor="middle" fill="#9ee939" font-size="13">Text prompt</text>
+<text x="315" y="122" text-anchor="middle" fill="#8b947d" font-size="11">scene + role + format</text>
+<rect x="420" y="60" width="90" height="90" rx="8" fill="#1f1f23" stroke="#343538"/>
+<text x="465" y="100" text-anchor="middle" fill="#e3e2e6" font-size="12">Model</text>
+<text x="465" y="120" text-anchor="middle" fill="#8b947d" font-size="11">completes</text>
+<text x="280" y="180" text-anchor="middle" fill="#c1cab0" font-size="12">Figure 11-1: model capability aur benchmarks ki growth</text>
+</svg>
+<p class="fig-cap">Figure 11-2 — Multimodal prompt: image aur text dono prompt me. Figure 11-1 model capability aur benchmarks ki growth dikhata hai.</p>
+</figure>
+<p class="note">Chapter ka conclusion: durable skill hai documents, prompts, loops aur evaluation ke terms me sochna — aur models badalte rahein to bhi seekhte rehna. Index ek alphabetical finding aid hai (Symbols se Z tak — A/B testing, alignment tax, chain-of-thought, logprobs, ReAct, RAG, SOMA assessment, tokenization, tool usage, zero-shot prompts jaise entries), isme koi naya exposition nahi hai, isliye use entry by entry summarise nahi kiya gaya. About The Authors me sirf biographical note hai.</p>
+<div class="source-box"><span class="source-tag">Source:</span><span>Prompt Engineering for LLMs — O'Reilly Learning: <a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a></span></div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch10-evaluating"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 10 — Evaluating LLM Applications</span></a><a class="pn-btn" href="#/lab-token-counter"><span class="pn-label">Agla →</span><span class="pn-title">Lab 1 — Token Counter</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-token-counter" data-title="Lab 1 — Token Counter" hidden>
+  <div class="sec-meta"><span class="num-chip">L1</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 1 — Token Counter</h1>
+  <p class="lead">Chapter 2 ka token counting haath se try karo. Text likho aur dekho kitne tokens bante hain — aur Table 2-1 ke book examples bhi check karo.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 1</span><span>Token Counter — Chapter 2</span></div>
+<label class="lab-label" for="lab1-text">Text likho:</label>
+<textarea id="lab1-text" class="lab-input" rows="3">We call the model with a prompt.</textarea>
+<div class="lab-presets">
+<button type="button" class="chip-btn" onclick="lab1Preset(0)">"I am" (2 tokens)</button>
+<button type="button" class="chip-btn" onclick="lab1Preset(1)">"The meaning of life is 42." (7 tokens)</button>
+<button type="button" class="chip-btn" onclick="lab1Preset(2)">Antidisestablishmentarianism (6 tokens)</button>
+</div>
+<button type="button" class="chip-btn run-check" onclick="lab1Count()">Tokens gino</button>
+<div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab1-out">Abhi count nahi kiya — button dabao.</pre></div>
+<p class="lab-note">Approximate counter hai (real tiktoken jaisa nahi): har word kam se kam 1 token, lambe words tukdo me. Context window tokens me measure hota hai — prompt budget hamesha tokens me karo.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/ch11-looking-ahead"><span class="pn-label">← Pichhla</span><span class="pn-title">Ch 11 — Looking Ahead</span></a><a class="pn-btn" href="#/lab-temperature-sampler"><span class="pn-label">Agla →</span><span class="pn-title">Lab 2 — Temperature Sampler</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-temperature-sampler" data-title="Lab 2 — Temperature Sampler" hidden>
+  <div class="sec-meta"><span class="num-chip">L2</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 2 — Temperature Sampler</h1>
+  <p class="lead">Chapter 2 ka temperature haath se try karo. Slider ghumao aur dekho kaise probability distribution sharp ya flat hoti hai.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 2</span><span>Temperature Sampler — Chapter 2</span></div>
+<label class="lab-label" for="lab2-temp">Temperature: <span id="lab2-temp-val" class="mono">0.7</span></label>
+<input id="lab2-temp" class="lab-range" type="range" min="0.1" max="2" step="0.1" value="0.7" oninput="lab2Update()">
+<div class="lab-stage" id="lab2-bars"></div>
+<button type="button" class="chip-btn run-check" onclick="lab2Sample()">Sample karo — agla token chuno</button>
+<div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab2-out">Abhi sample nahi kiya — button dabao.</pre></div>
+<p class="lab-note">Low temperature (0 ke paas) top token ko almost certain bana deta hai — factual kaam ke liye sahi. High temperature distribution ko flat karta hai — variety badhti hai, errors bhi.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-token-counter"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 1 — Token Counter</span></a><a class="pn-btn" href="#/lab-the-loop"><span class="pn-label">Agla →</span><span class="pn-title">Lab 3 — The Loop Simulator</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-the-loop" data-title="Lab 3 — The Loop Simulator" hidden>
+  <div class="sec-meta"><span class="num-chip">L3</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 3 — The Loop Simulator</h1>
+  <p class="lead">Chapter 4 ka central model — the loop — step by step chalao. Ek user problem se shuru karo aur dekho wo prompt, completion aur output me kaise badalti hai.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 3</span><span>The Loop Simulator — Chapter 4</span></div>
+<p class="lab-note">Example problem: <strong>"Mere dost ko birthday gift chahiye, wo sci-fi padhta hai aur budget 1000 rupay hai."</strong></p>
+<button type="button" class="chip-btn run-check" onclick="lab3Step()">Agla step chalao</button>
+<button type="button" class="chip-btn" onclick="lab3Reset()">Loop reset karo</button>
+<div class="lab-out"><div class="lab-out-title">Loop state</div><pre class="lab-css" id="lab3-out">Step 0 — shuru karo: button dabao.</pre></div>
+<p class="lab-note">Little Red Riding Hood principle: user ki problem ko document-completion problem me recast karo — ek worked setup, clear sawal aur format do, taaki jawab natural completion ho.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-temperature-sampler"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 2 — Temperature Sampler</span></a><a class="pn-btn" href="#/lab-chat-roles"><span class="pn-label">Agla →</span><span class="pn-title">Lab 4 — Chat Roles Builder</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-chat-roles" data-title="Lab 4 — Chat Roles Builder" hidden>
+  <div class="sec-meta"><span class="num-chip">L4</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 4 — Chat Roles Builder</h1>
+  <p class="lead">Chapter 3 ke chat roles haath se banao. Messages ki list banao aur dekho ki model inert hai — har call par poori transcript dobara bhejni hoti hai.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 4</span><span>Chat Roles Builder — Chapter 3</span></div>
+<div class="lab-controls">
+<label>Role
+<select id="lab4-role" class="lab-select">
+<option value="system">system</option>
+<option value="developer">developer</option>
+<option value="user" selected>user</option>
+<option value="assistant">assistant</option>
+<option value="tool">tool</option>
+</select></label>
+<label style="flex:1;min-width:200px">Content
+<input id="lab4-text" class="lab-input" type="text" value="LLM kya hai?"></label>
+</div>
+<button type="button" class="chip-btn run-check" onclick="lab4Add()">Message add karo</button>
+<button type="button" class="chip-btn" onclick="lab4Send()">Call bhejo (poori transcript)</button>
+<button type="button" class="chip-btn" onclick="lab4Reset()">Reset — model bhool gaya</button>
+<div class="lab-out"><div class="lab-out-title">Transcript</div><pre class="lab-css" id="lab4-out">Abhi koi message nahi — pehle system message add karo.</pre></div>
+<p class="lab-note">Inertness yaad rakho: model calls ke beech kuch nahi karta. Continuity chahiye to application ko history har baar prompt me wapas dalni hoti hai.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-the-loop"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 3 — The Loop Simulator</span></a><a class="pn-btn" href="#/lab-fewshot-bias"><span class="pn-label">Agla →</span><span class="pn-title">Lab 5 — Few-Shot Bias Checker</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-fewshot-bias" data-title="Lab 5 — Few-Shot Bias Checker" hidden>
+  <div class="sec-meta"><span class="num-chip">L5</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 5 — Few-Shot Bias Checker</h1>
+  <p class="lead">Chapter 5 ke few-shot drawbacks haath se dekho. Examples chuno aur dekho model unki taraf kaise bias ho jata hai — aur spurious pattern kaise seekh sakta hai.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 5</span><span>Few-Shot Bias Checker — Chapter 5</span></div>
+<p class="lab-note">Task: naye review ko Positive ya Negative label karo. Neeche examples chuno:</p>
+<div class="lab-controls">
+<label class="lab-check"><input type="checkbox" id="lab5-e1" checked> Example 1: "Maza aa gaya!" → Positive</label>
+<label class="lab-check"><input type="checkbox" id="lab5-e2" checked> Example 2: "Bilkul bakwaas." → Negative</label>
+<label class="lab-check"><input type="checkbox" id="lab5-e3"> Example 3: "Pehla wala theek tha, baaki sab bekaar." → Negative</label>
+</div>
+<label class="lab-label" for="lab5-q">Naya review:</label>
+<input id="lab5-q" class="lab-input" type="text" value="Pehla half achha tha, baad me bore ho gaya.">
+<button type="button" class="chip-btn run-check" onclick="lab5Run()">Model se poochho</button>
+<div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab5-out">Abhi nahi poochha — button dabao.</pre></div>
+<p class="lab-note">Drawback 2 (anchoring): model examples ki style aur values copy karta hai. Drawback 3 (spurious patterns): Example 3 jaisi ordering se model seekh sakta hai ki "pehla hamesha simple/achha, baad wale bekaar" — jo intended rule nahi hai.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-chat-roles"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 4 — Chat Roles Builder</span></a><a class="pn-btn" href="#/lab-logprob-classifier"><span class="pn-label">Agla →</span><span class="pn-title">Lab 6 — Logprob Classifier</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-logprob-classifier" data-title="Lab 6 — Logprob Classifier" hidden>
+  <div class="sec-meta"><span class="num-chip">L6</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 6 — Logprob Classifier</h1>
+  <p class="lead">Chapter 7 ke logprobs haath se try karo. Model se 'yes'/'no' likhwane ke bajay candidate tokens ki logprobs padho aur zyada probable label chuno.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 6</span><span>Logprob Classifier — Chapter 7</span></div>
+<label class="lab-label" for="lab6-review">Review chuno:</label>
+<select id="lab6-review" class="lab-select" onchange="lab6Run()">
+<option value="0">Review A: "Service bahut achhi thi, khana bhi badhiya."</option>
+<option value="1">Review B: "Bilkul bekaar experience, dobara nahi aaunga."</option>
+<option value="2">Review C: "Theek-thaak tha, kuch khaas nahi."</option>
+</select>
+<button type="button" class="chip-btn run-check" onclick="lab6Run()">Classify karo (logprobs se)</button>
+<div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab6-out">Abhi classify nahi kiya — button dabao.</pre></div>
+<p class="lab-note">Logprob difference calibrated confidence hai: bada gap matlab jawab determined; chhota gap matlab genuine choice. Gold standard se compare karke accuracy measure karte hain.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-fewshot-bias"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 5 — Few-Shot Bias Checker</span></a><a class="pn-btn" href="#/lab-tool-call"><span class="pn-label">Agla →</span><span class="pn-title">Lab 7 — Tool-Call Simulator</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-tool-call" data-title="Lab 7 — Tool-Call Simulator" hidden>
+  <div class="sec-meta"><span class="num-chip">L7</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 7 — Tool-Call Simulator</h1>
+  <p class="lead">Chapter 8 ka thermostat agent haath se chalao. Tool call karo, galat arguments par error dekho, aur dangerous tool par confirmation step dekho.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 7</span><span>Tool-Call Simulator — Chapter 8</span></div>
+<label class="lab-label" for="lab7-temp">Temperature set karo (Celsius):</label>
+<input id="lab7-temp" class="lab-input" type="text" value="22">
+<div class="lab-controls">
+<label class="lab-check"><input type="checkbox" id="lab7-danger"> Dangerous tool: saara data delete karo (confirmation chahiye)</label>
+</div>
+<button type="button" class="chip-btn run-check" onclick="lab7Run()">Tool call karo</button>
+<button type="button" class="chip-btn" onclick="lab7Confirm()">Confirm karo (dangerous tool)</button>
+<div class="lab-out"><div class="lab-out-title">Tool transcript</div><pre class="lab-css" id="lab7-out">Abhi koi tool call nahi — button dabao.</pre></div>
+<p class="lab-note">Guidelines: arguments validate karo, defaults do, error ko tool result ke roop me wapas do taaki model retry kar sake. Dangerous tools par confirmation step zaroori hai.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-logprob-classifier"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 6 — Logprob Classifier</span></a><a class="pn-btn" href="#/lab-knapsack"><span class="pn-label">Agla →</span><span class="pn-title">Lab 8 — Prompt Assembly Knapsack</span></a></nav>
+</article>
+
+<article class="section" id="sec-lab-knapsack" data-title="Lab 8 — Prompt Assembly Knapsack" hidden>
+  <div class="sec-meta"><span class="num-chip">L8</span><span class="sec-group">Interactive Lab</span></div>
+  <h1>Lab 8 — Prompt Assembly Knapsack</h1>
+  <p class="lead">Chapter 6 ka knapsack problem haath se solve karo. Token budget ke andar highest-value snippets chuno — additive aur subtractive greedy dono try karo.</p>
+
+<div class="lab">
+<div class="lab-head"><span class="lab-badge">LAB 8</span><span>Prompt Assembly Knapsack — Chapter 6</span></div>
+<label class="lab-label" for="lab8-budget">Token budget: <span id="lab8-budget-val" class="mono">100</span></label>
+<input id="lab8-budget" class="lab-range" type="range" min="40" max="200" step="10" value="100" oninput="lab8Budget()">
+<div class="lab-stage" id="lab8-list"></div>
+<button type="button" class="chip-btn run-check" onclick="lab8Additive()">Additive greedy chalao</button>
+<button type="button" class="chip-btn" onclick="lab8Subtractive()">Subtractive greedy chalao</button>
+<div class="lab-out"><div class="lab-out-title">Result</div><pre class="lab-css" id="lab8-out">Budget set karo aur greedy chalao.</pre></div>
+<p class="lab-note">Sandwich structure yaad rakho: instructions shuru aur end me, data beech me. Position matter karti hai — start aur end sabse strong hote hain.</p>
+</div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-tool-call"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 7 — Tool-Call Simulator</span></a><a class="pn-btn" href="#/faqs"><span class="pn-label">Agla →</span><span class="pn-title">Interview FAQs</span></a></nav>
+</article>
+
+<article class="section" id="sec-faqs" data-title="Interview FAQs" hidden>
+  <div class="sec-meta"><span class="num-chip">F</span><span class="sec-group">Interview FAQs</span></div>
+  <h1>Interview FAQs — Prompt Engineering for LLMs</h1>
+  <p class="lead">36 sawal-jawab jo aaj ke interviews me is kitab ke topics par poochhe jate hain. Har jawab kitab ke content par based hai.</p>
+  <div class="faq-list">
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q1</span>Prompt engineering ka matlab kya hai, aur ye fine-tuning se kaise alag hai?</summary><div class="faq-a"><p>Prompt engineering ka matlab hai model ke behaviour ko prompt aur surrounding application se shape karna, model ke weights badle bina. Fine-tuning me model ke weights badalte hain — training hoti hai. Prompt engineering me tum document likhte ho, model ko stage karte ho, aur usi model se behtar output nikalte ho. Kitab ka central metaphor playwriting hai: tum natak likhte ho, model usme apna role nibhata hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q2</span>Playwriting metaphor ka matlab kya hai? Model ko order kyun nahi dena chahiye?</summary><div class="faq-a"><p>Playwriting metaphor ka matlab hai ki model ko database ki tarah order mat do — 'ye karo' kehne ke bajay ek scene, role, situation aur format set karo, taaki tumne jo document stage kiya hai uska natural continuation wahi jawab ho jo tum chahte ho. Model documents complete karta hai, instructions execute nahi karta. Achha prompt wo hai jisme answer document ka natural aage ka hissa lage.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q3</span>LLM ka basic kaam kya hai? Ye text kaise generate karta hai?</summary><div class="faq-a"><p>LLM ka basic kaam hai tokens ki sequence dekh kar agle token ki probabilities assign karna aur unme se sample karna. Ye auto-regressive hota hai — ek token generate karta hai, use wapas input me daalta hai, aur agla token generate karta hai. Lamba jawab step by step banta hai, aur har step sirf wo dekh sakta hai jo pehle aa chuka hai. Isi liye ye documents continue karne me achha hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q4</span>Token kya hota hai, aur prompt budgeting tokens me kyun karni chahiye?</summary><div class="faq-a"><p>Token text ka wo piece hai jisme model text ko split karta hai — deterministic tokenizer se. Common words aam taur par ek token hote hain, rare words tukdo me split hote hain. Model ka context window tokens me measure hota hai, words ya characters me nahi, isliye prompt budgeting tokens me karni hoti hai. Tiktoken library ya Hugging Face tokenizer se count kar sakte ho — jaise 'I am' 2 tokens, 'The meaning of life is 42.' 7 tokens.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q5</span>Inertness kya hai, aur application design par iska kya asar hota hai?</summary><div class="faq-a"><p>Inertness kitab ka term hai: model calls ke beech kuch nahi karta — uski koi memory, ongoing thought ya state nahi hoti. Jo kuch use chahiye, wo current call ke prompt me hona chahiye. Iska asar ye hai ki application ko conversation history aur baaki state khud store karni hoti hai aur har call par prompt me wapas dalni hoti hai. Prompt ek self-contained document hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q6</span>Temperature kya control karta hai? Factual kaam ke liye kaunsi temperature sahi hai?</summary><div class="faq-a"><p>Temperature control karta hai ki agle token ki probability distribution se kitni sharply sample kiya jaye. Low temperature (0 ke paas) sabse likely token ko almost certain bana deta hai — output deterministic aur conservative hota hai. High temperature distribution ko flat karta hai — rare tokens zyada likely ho jate hain, output varied aur error-prone hota hai. Factual, repeatable kaam ke liye low temperature use karo; variety chahiye tabhi high temperature, aur high-temperature model se reproducibility ki ummeed mat rakho.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q7</span>Model letters ginne ya spelling me kharab kyun hota hai?</summary><div class="faq-a"><p>Kyunki model token identities dekhta hai, token ke andar ke individual letters nahi — jab tak prompt unhe spell out na kare. Ye Chapter 2 ki Difference 2 hai: LLMs slow down karke letters examine nahi kar sakte. Isi liye wo letters ginne, spelling, ya Scattergories jaise word games me kharab ho sakta hai jahan pehla letter matter karta hai — wo information use seedhe taur par visible hi nahi hoti.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q8</span>RLHF kya hai? Iske teen steps kya hain?</summary><div class="faq-a"><p>RLHF matlab reinforcement learning from human feedback. Teen steps: (1) Supervised fine-tuning (SFT) — base model ko human-written desired responses par aur train karo; (2) Reward model — alag model train karo jo responses ko score kare, insaan ki rankings se human preference function seekh kar; (3) RLHF model — PPO se chat model ko adjust karo taaki uske responses reward model ke hisab se high score karein, lekin supervised model se zyada door na bhatkein. Result helpful, honest aur harmless (HHH) alignment hota hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q9</span>Alignment tax kya hai?</summary><div class="faq-a"><p>Alignment tax ye observation hai ki RLHF kuch tasks par raw capability ya knowledge kam kar sakta hai — alignment kuch breadth ki keemat par safe, helpful behaviour deta hai. Lekin lekhak zor dete hain ki RLHF 'packs a lot of bang for the buck' — thoda sa human feedback bhi base model ko useful product me badal deta hai. Alignment se model consistent persona bhi seekhta hai aur uncertainty admit karna bhi seekhta hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q10</span>Chat roles kaunse hote hain aur har ek ka kya kaam hai?</summary><div class="faq-a"><p>Chat roles hain: system — assistant ka behaviour set karne wali instructions, sabse pehle; developer — application developer ki instructions (naye APIs me); user — end user ke turns; assistant — model ke apne pichhle replies, history ke roop me wapas feed kiye jate hain; tool — tool se aaye results, taaki model dekh sake tool ko kya mila. Chat call in messages ki list hoti hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q11</span>Chat model aur completion model me kya farak hai?</summary><div class="faq-a"><p>Completion model document continue karta hai; chat model conversation me turn lene ke liye train hota hai. Instruct models beech ka step the — single turn me instructions follow karne ke liye fine-tune kiye gaye. Chat models dialogue ke liye unse aage nikal gaye, lekin kitab ka argument hai ki document ki tarah sochna chat ke andar bhi valuable rehta hai, aur completion model abhi bhi useful ho sakta hai jab task document finish karne ke roop me frame karna behtar ho.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q12</span>The Loop kya hai? Uske paanch steps batao.</summary><div class="faq-a"><p>The Loop kitab ka central model hai: (1) user ki apne domain me problem hoti hai; (2) application use model ke domain me convert karti hai — ek prompt, ek document; (3) model feedforward pass karta hai aur completion deta hai; (4) application completion ko wapas user ke domain me transform karti hai — parse, format, action; (5) user respond karta hai aur loop repeat hota hai, history aage carry hoti hai. 'Little Red Riding Hood principle' step 2 ka naam hai: problem ko document-completion problem me recast karo.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q13</span>Little Red Riding Hood principle kya hai?</summary><div class="faq-a"><p>Ye lekhako ka naam hai loop ke step 2 ke liye: user ki problem ko ek document-completion problem ke roop me recast karo jisme model achha hai. Running example me user ki request ko ek 'homework problem' me convert kiya jata hai — worked setup, clear sawal aur format do, taaki jawab natural completion ho. Yehi conversion poori application design ka core hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q14</span>RAG kya hai aur ye hallucination kam kaise karta hai?</summary><div class="faq-a"><p>RAG matlab retrieval-augmented generation: model ko call karne se pehle relevant documents retrieve karo aur prompt me paste karo, taaki model memory se nahi, supplied evidence se jawab de. Isse hallucination kam hoti hai kyunki model ko facts prompt me mil jate hain — wo outdated ya missing knowledge par guess nahi karta. Ye feedforward pass ka ek lever hai, tool usage aur chain-of-thought ke saath.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q15</span>Chain-of-thought kyun kaam karta hai?</summary><div class="faq-a"><p>Chain-of-thought kaam karta hai kyunki model har token ke liye ek single forward pass karta hai aur sochne ke liye ruk nahi sakta — sirf tokens generate karke soch sakta hai. Step-by-step reasoning likhne ko kehne se model ko intermediate tokens milte hain jinse final answer behtar hota hai. Ye Chapter 2 ki insight hai: human pause karke soch sakta hai, model sirf tokens generate karke.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q16</span>Static aur dynamic prompt content me kya farak hai?</summary><div class="faq-a"><p>Static content developer ka likha fixed text hai — instructions aur templates. Dynamic content har call par badalta hai — user ka input, retrieved documents, tool results, ya time aur date. Dynamic content ko chaar dimensions me describe karte hain: purpose (kyun hai), preparability (taiyaar karne me kitna kaam), latency (fetch karne me kitna time) aur urgency (kitna fresh hona chahiye). Jaise weather report ki urgency high hoti hai, email ki low se medium.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q17</span>Snippetizing kya hai? Window, stride aur overlap kyun matter karte hain?</summary><div class="faq-a"><p>Snippetizing ka matlab hai lambe documents ko chhote snippets (chunks) me todna jo prompt me fit hon. Window size batata hai snippet kitna bada hai, step/stride size batata hai window har baar kitna aage badhta hai, aur overlap isliye chahiye taaki koi fact boundary par split na ho. Bina overlap ke ek important fact do snippets ke beech me kat sakta hai aur model use miss kar sakta hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q18</span>Hierarchical summarization kya hai aur 'rumour problem' kya hai?</summary><div class="faq-a"><p>Hierarchical summarization me pieces ko summarise karke phir summaries ko summarise kiya jata hai, jab material prompt me fit na ho. 'Rumour problem' wo hai jahan ek detail summary se summary retell hote hue distort ho jati hai — jaise khel me afwah badalti hai. Hierarchical approach me har level par summary banti hai, lekin distortion ka risk rehta hai, isliye specific summaries me zaroori details bachani hoti hain.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q19</span>Few-shot prompting ke teen drawbacks kya hain?</summary><div class="faq-a"><p>Pehla: ye context ke saath scale nahi karta — har example tokens kharch karta hai, aur kitne fit ho sakte hain iski limit hai. Dusra: ye model ko examples ki taraf bias karta hai (anchoring) — model examples ki style, values aur errors copy karta hai. Teesra: ye spurious patterns suggest kar sakta hai — model wo rule infer kar sakta hai jo intended nahi tha, jaise ordering effects ('pehla hamesha simple, baad wale errors'). Remedy: examples carefully chuno, vary karo, aur inferred rule check karo.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q20</span>Ideal prompt ki anatomy kya hai?</summary><div class="faq-a"><p>Ideal prompt ke chaar parts hote hain: introduction (ye document kya hai), preamble (context aur instructions), body of content (task aur uska data), aur postscript (final instruction jis par model ko action lena hai). Iske alawa uska recognisable start aur end hona chahiye. Do problems se bachna hai: 'lost in the middle' (lambe prompt ke beech ka material kam attend hota hai) aur 'Valley of Meh' (unfocused prompt par quality dip). Lambe prompts ke liye sandwich structure recommended hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q21</span>Sandwich structure kya hai aur ye kyun kaam karta hai?</summary><div class="faq-a"><p>Sandwich structure me instructions shuru me aur phir end me bhi di jati hain, data beech me rehta hai. Ye isliye kaam karta hai kyunki model lambe prompt ke start aur end par zyada attend karta hai, beech par kam ('lost in the middle'). Instructions dono strong positions par rakhne se wo miss nahi hoti, aur data beech me safe rehta hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q22</span>'Lost in the middle' aur 'Valley of Meh' kya hain?</summary><div class="faq-a"><p>'Lost in the middle' ye observation hai ki lambe prompt ke beech ka material start ya end se kam attend kiya jata hai — beech ki information miss ho sakti hai. 'Valley of Meh' quality me dip hai jab prompt unfocused hota hai. Dono se bachne ke liye prompt ko focused rakho, important cheezein start ya end me rakho, aur sandwich structure use karo.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q23</span>Teen document types kaunse hain aur kaunsa kab use karna chahiye?</summary><div class="faq-a"><p>Teen types: (1) Advice conversation — helpful conversation ka transcript, freeform aur natural; open-ended help ke liye achha, structure me kamzor. (2) Analytic report — sections wala structured report (scope, findings, conclusions, recommendations); jab jawab organised aur checkable hona chahiye. (3) Structured document — JSON/YAML/XML jaise fields aur slots; jab output machine-readable hona chahiye. Kitab ke mutabik document type chunna sabse important prompt decision hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q24</span>Elastic snippets kya hain?</summary><div class="faq-a"><p>Elastic snippets ek technique hai jisme variable amount of material fixed token budget me fit hoti hai — snippets expand ya shrink kar sakte hain, jaise ellipsis '…' omitted material ke liye, ya full document ki jagah ek summary jab space tight ho. Prompt priority order se assemble hota hai taaki budget cut hone par sabse important snippets bach jayein.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q25</span>Prompt assembly ko knapsack problem kyun kaha gaya hai?</summary><div class="faq-a"><p>Kyunki prompt assemble karna matlab hai token budget me fit hone wala highest-value snippets ka set chunna — bilkul knapsack problem ki tarah. Greedy approaches practical approximations hain: additive greedy (best remaining snippet add karte jao jab tak full na ho) aur subtractive greedy (sab kuch se shuru karo aur least valuable hatate jao). Linear programming ko exact formulation ke roop me naam diya gaya hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q26</span>Critical points in the prompt kya hain aur unhe kaise dhoondhte hain?</summary><div class="faq-a"><p>Critical points wo tokens hain jahan model ka choice outcome par sabse zyada asar dalta hai. Unhe logprobs inspect karke aur prompt vary karke dhoondhte hain, aur unhe unit tests ki tarah treat karte hain — wahan chhote changes ka bada effect hota hai. Yehi points hain jahan prompt engineering ka sabse zyada leverage hota hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q27</span>Logprobs se classification kaise karte hain? Ye raw text se behtar kyun hai?</summary><div class="faq-a"><p>API har generated token ki logprob aur top alternatives return kar sakti hai. Model se 'yes' ya 'no' likhwane ke bajay, candidate tokens ki logprobs padho aur zyada probable ko chuno — exp(logprob) se ordinary probability milti hai. Logprob difference ek calibrated confidence measure hai. Raw text par bharosa karne se behtar hai kyunki tumhe model ki uncertainty dikhti hai: bada gap matlab jawab determined, chhota gap matlab genuine choice.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q28</span>Model chunne ka checklist kya hai?</summary><div class="faq-a"><p>Checklist: intelligence (task par capability — benchmarks aur try karke judge karo, brand se nahi), size aur speed (bada behtar lekin slow aur mehenga), cost (per-token pricing), latency, ease of use, functionality (tools, structured output, long context, fine-tuning support), providers (OpenAI, Google, Anthropic, Cohere, Mistral, LLaMA, Hugging Face open-source), aur special requirements (data privacy, language, modality). Practical advice: choice flexible rakho, LiteLLM jaisi thin abstraction use karo.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q29</span>Conversational agency kya hai?</summary><div class="faq-a"><p>Conversational agency ek conversational system ki ability hai user ki taraf se act karne ki — sirf jawab dena nahi, balki reasoning aur tools use karke ek goal pursue karna, jabki user control me rahe. Agent chat model ke aas-paas ek loop hai: transcript bhejo, reply ya tool call lo, tool execute karo, result append karo, repeat karo. Worked example thermostat agent hai.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q30</span>Tool definitions ke liye guidelines kya hain?</summary><div class="faq-a"><p>Har tool ko clear naam aur precise description do — wo kya karta hai aur kab use karna hai. Arguments ko types, required/optional flags aur descriptions ke saath define karo. Names clear, descriptive aur camelCase hone chahiye — model naam ko prompt ka part samajh kar padhta hai. Arguments validate karo, defaults do, aur error ko tool result ke roop me wapas do taaki model retry kar sake.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q31</span>Dangerous tools ko kaise handle karna chahiye?</summary><div class="faq-a"><p>Jo tools duniya ko badalte hain — message bhejna, card charge karna, data delete karna — unhe confirmation step chahiye. Application ko request intercept karni chahiye, user ko dikhana chahiye kya hone wala hai, aur sirf approval ke saath execute karna chahiye. Authorisation aur private information application ko handle karni chahiye, model ki discretion par chhodni nahi chahiye.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q32</span>ReAct kya hai aur ye workflows me kahan fit hota hai?</summary><div class="faq-a"><p>ReAct iterative reasoning aur action hai — model sochta hai, tool se act karta hai, result observe karta hai, aur repeat karta hai. Ye HotpotQA dataset aur ALFWorld par evaluate kiya gaya. ReAct se aage Reflexion hai (agent apni failures par reflect karta hai aur lesson store karta hai), plan-and-solve prompting, aur branch-solve-merge (problem split karo, parts solve karo, answers combine karo).</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q33</span>Workflow aur conversational agent me se kab kya chunna chahiye?</summary><div class="faq-a"><p>Conversational agent open-ended, user-driven kaam ke liye achha hai; workflow behtar hai jab task repeatable ho, uske steps pata hon, aur wo reliable aur efficient hona chahiye. Trade-off generality versus strength hai: general agent kai cheezein kamzor tareeke se karta hai, specialised workflow ek cheez strongly karta hai. Advice: sabse narrow workflow se shuru karo jo problem solve kare, generality tabhi add karo jab zaroorat ho.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q34</span>SOMA assessment kya hai?</summary><div class="faq-a"><p>SOMA assessment kitab ka apna rubric hai: response ko simple pass/fail ke bajay ek scale par grade karta hai (SOMA mastery levels), taaki partial quality dikhai de. Ye offline evaluation ka part hai — gold-standard comparison aur functional testing ke saath. A/B testing bhi offline evaluation ke under aata hai: do versions ko wahi examples par chalao aur compare karo.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q35</span>Offline aur online evaluation me kya farak hai?</summary><div class="faq-a"><p>Offline evaluation shipping se pehle hoti hai, fixed example suites par — harness tests, regression tests, functional testing, LLM assessment, SOMA aur A/B testing. Online evaluation live traffic par hoti hai — metrics hain functional correctness, user acceptance (acceptance rate, thumbs-up/down), achieved impact, direct feedback aur incidental metrics (rephrase, retry, abandon). Offline fast iteration ke liye, online ground truth ke liye — dono ko balance me rakhna chahiye.</p></div></details>
+<details class="faq"><summary class="faq-q"><span class="faq-num">Q36</span>Multimodality prompt engineering ko kaise badalti hai?</summary><div class="faq-a"><p>Multimodality ka matlab hai models jo text se zyada lete aur dete hain — images, audio, video. Image processing CNNs aur embedding models use karti hai taaki image ko representation me badla ja sake jise transformer use kar sake. Prompt me images bhi ho sakti hain text ke saath, aur user model ko picture dikha sakta hai ya bol sakta hai. Lekin wahi principles apply hote hain: model abhi bhi document complete karta hai, clear scene aur role chahiye, aur evaluation chahiye.</p></div></details>
+  </div>
+<nav class="pn-nav"><a class="pn-btn" href="#/lab-knapsack"><span class="pn-label">← Pichhla</span><span class="pn-title">Lab 8 — Prompt Assembly Knapsack</span></a><a class="pn-btn" href="#/sources"><span class="pn-label">Agla →</span><span class="pn-title">Sources</span></a></nav>
+</article>
+
+<article class="section" id="sec-sources" data-title="Sources" hidden>
+  <div class="sec-meta"><span class="num-chip">S</span><span class="sec-group">Sources</span></div>
+  <h1>Sources</h1>
+  <p class="lead">Is SPA ka saara content kitab se liya gaya hai. Har section ke ant me Source line me wahi link diya gaya hai.</p>
+  <div class="src-list">
+    <div class="src-num">1</div>
+    <div><b>Prompt Engineering for LLMs (kitab)</b><br><a href="https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/" target="_blank" rel="noopener">https://learning.oreilly.com/library/view/prompt-engineering-for/9781098156145/</a><br><span class="mono">O&apos;Reilly Media, November 2024, 282 pages, 8h 1m — Preface, Chapters 1–11</span></div>
+  </div>
+  <div class="src-list">
+    <div class="src-num">2</div>
+    <div><b>ISBN note</b><br><span class="mono">Is copy me koi ISBN display nahi hota — isliye yahan koi ISBN nahi likha gaya hai. URL me dikhne wala number 9781098156145 sirf book-page URL ka hissa hai, use ISBN ke roop me present nahi kiya gaya hai.</span></div>
+  </div>
+  <p class="note">Figures kitab ke descriptions se dobara banaye gaye diagrams hain; code listings descriptions se reconstruct kiye gaye teaching excerpts hain — verbatim listings nahi.</p>
+<nav class="pn-nav"><a class="pn-btn" href="#/faqs"><span class="pn-label">← Pichhla</span><span class="pn-title">Interview FAQs</span></a><a class="pn-btn" href="#/trust"><span class="pn-label">Agla →</span><span class="pn-title">Trust Check</span></a></nav>
+</article>
+
+<article class="section" id="sec-trust" data-title="Trust Check" hidden>
+  <div class="sec-meta"><span class="num-chip">✓</span><span class="sec-group">Trust Check</span></div>
+  <h1>Trust Check — sab kuch included hai?</h1>
+  <p class="lead">Ye page khud ko check karta hai. Neeche diye gaye counts live page se gine jate hain — kitab ke notes se cross-check karo.</p>
+  <div class="tc-cards">
+    <div class="tc-card"><span class="tc-num" id="tc-sections">—</span><span class="tc-lbl">Sections</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-sidebar">—</span><span class="tc-lbl">Sidebar entries</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-sources">—</span><span class="tc-lbl">Source boxes</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-faqs">—</span><span class="tc-lbl">FAQs</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-labs">—</span><span class="tc-lbl">Labs</span></div>
+    <div class="tc-card"><span class="tc-num" id="tc-figs">—</span><span class="tc-lbl">Figures</span></div>
+  </div>
+  <p><button type="button" class="chip-btn run-check" onclick="runTrustCheck()">Self-check chalao</button></p>
+  <div id="trust-result" class="check-result">Abhi check nahi chalaya gaya — button dabao.</div>
+  <div id="trust-detail" class="livecheck"></div>
+  <h3>Cross-check — kitab ka TOC vs SPA</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Kitab ka hissa</th><th>SPA me</th><th>Status</th></tr></thead>
+    <tbody>
+<tr><td>Preface</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 1 — Introduction to Prompt Engineering</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 2 — Understanding LLMs</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 3 — Moving to Chat</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 4 — Designing LLM Applications</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 5 — Prompt Content</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 6 — Assembling the Prompt</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 7 — Taming the Model</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 8 — Conversational Agency</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 9 — LLM Workflows</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 10 — Evaluating LLM Applications</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+<tr><td>Ch 11 — Looking Ahead</td><td>1 section</td><td class="tc-ok">✓ Covered</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Honest out-of-scope list</h3>
+  <ul class="oos">
+    <li><strong>Verbatim code listings:</strong> kitab ki poori code listings yahan nahi hain — sirf descriptions se reconstruct kiye gaye teaching excerpts hain (tiktoken counting, chat call, logprob classification, set_room_temp tool, workflow driver, eval harness).</li>
+    <li><strong>Original figures:</strong> kitab ke figures jo notes me describe kiye gaye the, wo diagrams ke roop me dobara banaye gaye hain — original pixels nahi. Kuch figures (jaise 1-1, 1-2, 1-3, 1-5, 1-6 screenshots) sirf text me describe kiye gaye hain, diagram nahi banaya gaya.</li>
+    <li><strong>Index:</strong> Index ek alphabetical lookup reference hai, content chapter nahi — SPA me section nahi hai.</li>
+    <li><strong>About The Authors:</strong> biographical page hai, teaching chapter nahi — SPA me section nahi hai.</li>
+    <li><strong>ISBN:</strong> is copy me koi ISBN display nahi hota — invent nahi kiya gaya hai.</li>
+    <li><strong>Table 10-1 (SOMA levels):</strong> kitab ke rubric ke levels ka meaning paraphrase kiya gaya hai; exact level names aur scale notes me nahi diye gaye the, isliye wording invent nahi ki gayi.</li>
+    <li><strong>Table 7-1 (logprobs):</strong> exact numbers kitab ke illustration ke roop me describe kiye gaye hain — values notes me nahi di gayi thi, isliye invent nahi ki gayi.</li>
+  </ul>
+<nav class="pn-nav"><a class="pn-btn" href="#/sources"><span class="pn-label">← Pichhla</span><span class="pn-title">Sources</span></a></nav>
+</article>
+</div></main>
+<nav id="bottomnav" aria-label="Mobile navigation">
+  <a href="#/home" data-nav="home"><span class="bn-ic">⌂</span>Home</a>
+  <a href="#/lab-token-counter" data-nav="lab-token-counter"><span class="bn-ic">⚗</span>Labs</a>
+  <a href="#/faqs" data-nav="faqs"><span class="bn-ic">?</span>FAQs</a>
+  <a href="#/trust" data-nav="trust"><span class="bn-ic">✓</span>Trust</a>
+</nav>
+<script>
+
+var sections = Array.prototype.slice.call(document.querySelectorAll(".section"));
+var links = Array.prototype.slice.call(document.querySelectorAll(".sb-link"));
+var byId = {};
+sections.forEach(function(s){ byId[s.id.replace("sec-","")] = s; });
+var order = sections.map(function(s){ return s.id.replace("sec-",""); });
+var sidebar = document.getElementById("sidebar");
+var scrim = document.getElementById("scrim");
+function closeDrawer(){ sidebar.classList.remove("open"); scrim.classList.remove("on"); }
+document.getElementById("menu-btn").addEventListener("click", function(){
+  var open = sidebar.classList.toggle("open"); scrim.classList.toggle("on", open);
+});
+scrim.addEventListener("click", closeDrawer);
+function show(slug){
+  if(!byId[slug]) slug = "home";
+  sections.forEach(function(s){ s.hidden = s.id !== "sec-" + slug; });
+  links.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  var act = document.querySelector('.sb-link[data-nav="' + slug + '"]');
+  if(act && window.innerWidth > 900){ act.scrollIntoView({block:"nearest"}); }
+  var idx = order.indexOf(slug);
+  document.getElementById("progress-bar").style.width = (order.length > 1 ? (idx/(order.length-1))*100 : 0) + "%";
+  var tb = document.getElementById("tb-current");
+  if(tb){ var sec = byId[slug]; tb.textContent = sec ? (sec.getAttribute("data-title") || "Prompt Engineering for LLMs") : "Prompt Engineering for LLMs"; }
+  var bn = document.querySelectorAll("#bottomnav a");
+  bn.forEach(function(a){ a.classList.toggle("active", a.getAttribute("data-nav") === slug); });
+  window.scrollTo(0,0);
+  closeDrawer();
+}
+function route(){
+  var h = location.hash.replace(/^#\/?/, "");
+  show(h || "home");
+}
+window.addEventListener("hashchange", route);
+var search = document.getElementById("sb-search-input");
+search.addEventListener("input", function(){
+  var q = search.value.trim().toLowerCase();
+  links.forEach(function(a){
+    var hay = a.getAttribute("data-search") || "";
+    a.classList.toggle("hidden", q !== "" && hay.indexOf(q) === -1);
+  });
+  document.querySelectorAll(".sb-group").forEach(function(g){
+    var any = g.querySelector(".sb-link:not(.hidden)");
+    g.style.display = any ? "" : "none";
+  });
+});
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); search.focus(); if(window.innerWidth<=900){ sidebar.classList.add("open"); scrim.classList.add("on"); } }
+});
+route();
+
+</script>
+<script>
+
+var lab1Presets = ["I am", "The meaning of life is 42.", "Antidisestablishmentarianism"];
+var lab1BookCounts = [2, 7, 6];
+function lab1Preset(i) {
+  document.getElementById("lab1-text").value = lab1Presets[i];
+  lab1Count();
+}
+function lab1ApproxTokens(text) {
+  var words = text.trim().split(/\s+/).filter(function(w) { return w.length > 0; });
+  var total = 0;
+  var parts = [];
+  words.forEach(function(w) {
+    var n = 1;
+    if (w.length > 8) n = 2;
+    if (w.length > 14) n = 3;
+    total += n;
+    parts.push(w + " (" + n + ")");
+  });
+  return { total: total, parts: parts, words: words.length };
+}
+function lab1Count() {
+  var text = document.getElementById("lab1-text").value;
+  var r = lab1ApproxTokens(text);
+  var out = "Words: " + r.words + "  |  Approx tokens: " + r.total + String.fromCharCode(10);
+  out += "Breakdown: " + r.parts.join(", ") + String.fromCharCode(10);
+  var idx = lab1Presets.indexOf(text.trim());
+  if (idx >= 0) {
+    out += "Book ka Table 2-1 count: " + lab1BookCounts[idx] + " tokens (approx counter se thoda alag ho sakta hai).";
+  } else {
+    out += "Tip: rare lambe words zyada tokens lete hain — Table 2-1 me Antidisestablishmentarianism 6 tokens tha.";
+  }
+  document.getElementById("lab1-out").textContent = out;
+}
+window.lab1Preset = lab1Preset;
+window.lab1Count = lab1Count;
+
+
+var lab2Cands = [
+  { tok: "Paris", logit: 3.0 },
+  { tok: "London", logit: 1.8 },
+  { tok: "Delhi", logit: 1.0 },
+  { tok: "Tokyo", logit: 0.2 }
+];
+function lab2Softmax(temp) {
+  var mx = Math.max.apply(null, lab2Cands.map(function(c) { return c.logit / temp; }));
+  var exps = lab2Cands.map(function(c) { return Math.exp(c.logit / temp - mx); });
+  var sum = exps.reduce(function(a, b) { return a + b; }, 0);
+  return exps.map(function(e) { return e / sum; });
+}
+function lab2Update() {
+  var temp = parseFloat(document.getElementById("lab2-temp").value);
+  document.getElementById("lab2-temp-val").textContent = temp.toFixed(1);
+  var probs = lab2Softmax(temp);
+  var html = "";
+  lab2Cands.forEach(function(c, i) {
+    var pct = Math.round(probs[i] * 100);
+    html += '<div style="margin:6px 0"><span class="mono">' + c.tok + '</span> <span style="display:inline-block;height:14px;background:#84cc16;border-radius:4px;width:' + Math.max(pct, 2) + '%"></span> <span class="mono">' + (probs[i] * 100).toFixed(1) + '%</span></div>';
+  });
+  document.getElementById("lab2-bars").innerHTML = html;
+}
+function lab2Sample() {
+  var temp = parseFloat(document.getElementById("lab2-temp").value);
+  var probs = lab2Softmax(temp);
+  var r = Math.random();
+  var acc = 0, pick = lab2Cands[0].tok;
+  for (var i = 0; i < probs.length; i++) {
+    acc += probs[i];
+    if (r <= acc) { pick = lab2Cands[i].tok; break; }
+  }
+  var verdict = temp <= 0.3 ? "Low temperature: lagbhag hamesha top token — deterministic, repeatable." : (temp >= 1.5 ? "High temperature: rare tokens bhi aa sakte hain — varied lekin error-prone." : "Medium temperature: top token likely, lekin variety bhi hai.");
+  document.getElementById("lab2-out").textContent = "Temperature " + temp.toFixed(1) + " par sample: '" + pick + "'" + String.fromCharCode(10) + verdict;
+}
+window.lab2Update = lab2Update;
+window.lab2Sample = lab2Sample;
+
+
+var lab3StepN = 0;
+var lab3Steps = [
+  "Step 1 — User ki problem (user domain): dost ko birthday gift chahiye; sci-fi reader; budget 1000 rupay.",
+  "Step 2 — Model domain me convert: prompt banao — 'Ek sci-fi reader ke liye 1000 rupay ke andar 3 gift ideas do, har ek ke saath ek line me kyun achha hai.'",
+  "Step 3 — Feedforward pass: model completion deta hai — 3 gift ideas ki list, har ek ke saath reason.",
+  "Step 4 — Wapas user domain me transform: completion ko parse karo, gift cards ke roop me format karo, user ko dikhao.",
+  "Step 5 — User respond karta hai ('pehla wala pasand aaya') — history carry karke loop repeat hota hai."
+];
+function lab3Step() {
+  if (lab3StepN >= lab3Steps.length) { lab3StepN = 0; }
+  lab3StepN += 1;
+  var out = lab3Steps.slice(0, lab3StepN).join(String.fromCharCode(10) + String.fromCharCode(10));
+  if (lab3StepN >= lab3Steps.length) { out += String.fromCharCode(10) + String.fromCharCode(10) + "Loop poora hua — ab dobara chalao to history saath jayegi."; }
+  document.getElementById("lab3-out").textContent = out;
+}
+function lab3Reset() {
+  lab3StepN = 0;
+  document.getElementById("lab3-out").textContent = "Step 0 — shuru karo: button dabao.";
+}
+window.lab3Step = lab3Step;
+window.lab3Reset = lab3Reset;
+
+
+var lab4Msgs = [];
+function lab4Render() {
+  var el = document.getElementById("lab4-out");
+  if (lab4Msgs.length === 0) { el.textContent = "Abhi koi message nahi — pehle system message add karo."; return; }
+  var lines = lab4Msgs.map(function(m, i) { return (i + 1) + ". [" + m.role + "] " + m.content; });
+  el.textContent = lines.join(String.fromCharCode(10));
+}
+function lab4Add() {
+  var role = document.getElementById("lab4-role").value;
+  var text = document.getElementById("lab4-text").value.trim();
+  if (!text) { document.getElementById("lab4-out").textContent = "Pehle kuch text likho."; return; }
+  lab4Msgs.push({ role: role, content: text });
+  lab4Render();
+}
+function lab4Send() {
+  if (lab4Msgs.length === 0) { document.getElementById("lab4-out").textContent = "Pehle messages add karo."; return; }
+  var lines = lab4Msgs.map(function(m, i) { return (i + 1) + ". [" + m.role + "] " + m.content; });
+  var out = "Call bheji gayi — poori transcript (" + lab4Msgs.length + " messages) dobara bheji:" + String.fromCharCode(10) + lines.join(String.fromCharCode(10)) + String.fromCharCode(10) + "Model ko sirf yehi dikhta hai — calls ke beech uski koi memory nahi (inertness).";
+  document.getElementById("lab4-out").textContent = out;
+}
+function lab4Reset() {
+  lab4Msgs = [];
+  lab4Render();
+}
+window.lab4Add = lab4Add;
+window.lab4Send = lab4Send;
+window.lab4Reset = lab4Reset;
+
+
+function lab5Run() {
+  var e1 = document.getElementById("lab5-e1").checked;
+  var e2 = document.getElementById("lab5-e2").checked;
+  var e3 = document.getElementById("lab5-e3").checked;
+  var n = (e1 ? 1 : 0) + (e2 ? 1 : 0) + (e3 ? 1 : 0);
+  var q = document.getElementById("lab5-q").value;
+  var out = "Examples diye: " + n + " | Naya review: '" + q + "'" + String.fromCharCode(10);
+  if (n === 0) {
+    out += "Zero-shot: koi example nahi — model sirf instruction se jawab deta hai. Mixed review par jawab uncertain hota hai.";
+  } else if (e3) {
+    out += "Model ka jawab: Negative (anchored). Example 3 ki ordering ('pehla theek, baaki bekaar') ne model ko khinch liya — ye spurious pattern ho sakta hai, intended rule nahi.";
+  } else if (e1 && e2) {
+    out += "Model ka jawab: Negative — lekin halka. Dono taraf ke examples se model ne balance kiya; review mixed hai, isliye confidence kam hai.";
+  } else if (e1) {
+    out += "Model ka jawab: Positive (biased!). Sirf positive example diya to model positive ki taraf anchor ho gaya — drawback 2.";
+  } else {
+    out += "Model ka jawab: Negative (biased!). Sirf negative example diya to model negative ki taraf anchor ho gaya — drawback 2.";
+  }
+  out += String.fromCharCode(10) + "Remedy: examples carefully chuno, unhe vary karo, aur inferred rule ko check karo.";
+  document.getElementById("lab5-out").textContent = out;
+}
+window.lab5Run = lab5Run;
+
+
+var lab6Data = [
+  { name: "Review A", pos: -0.20, neg: -2.30, gold: "Positive" },
+  { name: "Review B", pos: -2.80, neg: -0.10, gold: "Negative" },
+  { name: "Review C", pos: -1.10, neg: -0.90, gold: "Negative" }
+];
+function lab6Run() {
+  var idx = parseInt(document.getElementById("lab6-review").value, 10);
+  var d = lab6Data[idx];
+  var pPos = Math.exp(d.pos);
+  var pNeg = Math.exp(d.neg);
+  var pick = pPos > pNeg ? "Positive" : "Negative";
+  var gap = Math.abs(d.pos - d.neg);
+  var conf = gap > 1.5 ? "bada gap — jawab effectively determined hai." : (gap > 0.5 ? "medium gap — reasonable confidence." : "chhota gap — genuine choice, model uncertain hai.");
+  var match = pick === d.gold ? "Gold standard se MATCH — sahi classification." : "Gold standard se MISMATCH — galat classification.";
+  var out = d.name + " — logprob Positive: " + d.pos + " (prob " + pPos.toFixed(3) + "), Negative: " + d.neg + " (prob " + pNeg.toFixed(3) + ")" + String.fromCharCode(10);
+  out += "Chuna gaya label: " + pick + " | Gap: " + gap.toFixed(2) + " — " + conf + String.fromCharCode(10) + match;
+  document.getElementById("lab6-out").textContent = out;
+}
+window.lab6Run = lab6Run;
+
+
+var lab7PendingDanger = false;
+function lab7Run() {
+  var out = document.getElementById("lab7-out");
+  if (document.getElementById("lab7-danger").checked) {
+    lab7PendingDanger = true;
+    out.textContent = "Model ne tool call propose kiya: delete_all_data()" + String.fromCharCode(10) + "INTERCEPTED — ye dangerous tool hai. User ko dikhaya gaya: 'Saara data delete ho jayega.' Approval ke bina execute NAHI hoga. Confirm button dabao ya checkbox hatao.";
+    return;
+  }
+  var raw = document.getElementById("lab7-temp").value.trim();
+  var t = parseFloat(raw);
+  if (isNaN(t)) {
+    out.textContent = "Tool call: set_room_temp(temperature='" + raw + "')" + String.fromCharCode(10) + "ERROR (tool result): temperature number hona chahiye, string nahi. Model ko error wapas mila — wo retry karega, poora turn fail nahi hoga.";
+    return;
+  }
+  if (t < 10 || t > 35) {
+    out.textContent = "Tool call: set_room_temp(temperature=" + t + ")" + String.fromCharCode(10) + "ERROR (tool result): temperature 10-35 ke beech hona chahiye. Model ko error wapas mila — wo sahi value se retry karega.";
+    return;
+  }
+  out.textContent = "Tool call: set_room_temp(temperature=" + t + ")" + String.fromCharCode(10) + "Tool result: thermostat " + t + "°C par set ho gaya." + String.fromCharCode(10) + "Model ka final jawab: 'Temperature " + t + "°C par set kar diya hai.'";
+}
+function lab7Confirm() {
+  var out = document.getElementById("lab7-out");
+  if (!lab7PendingDanger) { out.textContent = "Koi pending dangerous tool nahi hai — pehle dangerous tool checkbox tick karke Tool call karo."; return; }
+  lab7PendingDanger = false;
+  out.textContent = "User ne CONFIRM kiya. Tabhi delete_all_data() execute hua." + String.fromCharCode(10) + "Rule: authorisation aur private information application handle kare, model ki discretion par mat chhodo.";
+}
+window.lab7Run = lab7Run;
+window.lab7Confirm = lab7Confirm;
+
+
+var lab8Snippets = [
+  { name: "System instructions", tokens: 30, value: 90 },
+  { name: "User ka sawal", tokens: 15, value: 80 },
+  { name: "Retrieved doc A", tokens: 50, value: 70 },
+  { name: "Retrieved doc B", tokens: 40, value: 50 },
+  { name: "Conversation history", tokens: 45, value: 60 },
+  { name: "Few-shot example 1", tokens: 25, value: 40 },
+  { name: "Few-shot example 2", tokens: 25, value: 35 },
+  { name: "Format instruction (end)", tokens: 10, value: 75 }
+];
+function lab8Budget() {
+  document.getElementById("lab8-budget-val").textContent = document.getElementById("lab8-budget").value;
+  lab8RenderList([]);
+}
+function lab8RenderList(chosen) {
+  var html = "";
+  lab8Snippets.forEach(function(s, i) {
+    var on = chosen.indexOf(i) >= 0;
+    html += '<div style="margin:4px 0"><span class="mono">' + (on ? "[✓] " : "[ ] ") + s.name + ' — ' + s.tokens + ' tokens, value ' + s.value + ' (value/token ' + (s.value / s.tokens).toFixed(2) + ')</span></div>';
+  });
+  document.getElementById("lab8-list").innerHTML = html;
+}
+function lab8Report(chosen, method) {
+  var tokens = 0, value = 0;
+  chosen.forEach(function(i) { tokens += lab8Snippets[i].tokens; value += lab8Snippets[i].value; });
+  var budget = parseInt(document.getElementById("lab8-budget").value, 10);
+  var names = chosen.map(function(i) { return lab8Snippets[i].name; });
+  document.getElementById("lab8-out").textContent = method + ": chune gaye " + chosen.length + " snippets — " + names.join(", ") + String.fromCharCode(10) + "Total tokens: " + tokens + " / budget " + budget + " | Total value: " + value + String.fromCharCode(10) + "Exact solution linear programming se milta hai; greedy practical approximation hai.";
+  lab8RenderList(chosen);
+}
+function lab8Additive() {
+  var budget = parseInt(document.getElementById("lab8-budget").value, 10);
+  var order = lab8Snippets.map(function(s, i) { return i; }).sort(function(a, b) { return (lab8Snippets[b].value / lab8Snippets[b].tokens) - (lab8Snippets[a].value / lab8Snippets[a].tokens); });
+  var chosen = [], used = 0;
+  order.forEach(function(i) {
+    if (used + lab8Snippets[i].tokens <= budget) { chosen.push(i); used += lab8Snippets[i].tokens; }
+  });
+  lab8Report(chosen, "Additive greedy (best value/token pehle add karo)");
+}
+function lab8Subtractive() {
+  var budget = parseInt(document.getElementById("lab8-budget").value, 10);
+  var chosen = lab8Snippets.map(function(s, i) { return i; });
+  var used = lab8Snippets.reduce(function(a, s) { return a + s.tokens; }, 0);
+  while (used > budget) {
+    var worst = -1, worstRatio = 999;
+    chosen.forEach(function(i) {
+      var r = lab8Snippets[i].value / lab8Snippets[i].tokens;
+      if (r < worstRatio) { worstRatio = r; worst = i; }
+    });
+    chosen = chosen.filter(function(i) { return i !== worst; });
+    used -= lab8Snippets[worst].tokens;
+  }
+  lab8Report(chosen, "Subtractive greedy (sab se shuru, least valuable hatao)");
+}
+window.lab8Budget = lab8Budget;
+window.lab8Additive = lab8Additive;
+window.lab8Subtractive = lab8Subtractive;
+
+</script>
+<script>
+
+function runTrustCheck() {
+  var res = [];
+  var ok = true;
+  function check(name, cond, detail) {
+    res.push((cond ? "PASS" : "FAIL") + " — " + name + (detail ? " (" + detail + ")" : ""));
+    if (!cond) ok = false;
+  }
+  var nSec = document.querySelectorAll("article.content-sec").length;
+  var nSecContent = document.querySelectorAll("article.content-sec .source-box").length;
+  var nFaq = document.querySelectorAll("details.faq").length;
+  var nLab = document.querySelectorAll("article.section .lab").length;
+  var nFig = document.querySelectorAll(".fig").length;
+  var nSb = document.querySelectorAll(".sb-link").length;
+  document.getElementById("tc-sections").textContent = nSec;
+  document.getElementById("tc-sidebar").textContent = nSb;
+  document.getElementById("tc-sources").textContent = nSecContent;
+  document.getElementById("tc-faqs").textContent = nFaq;
+  document.getElementById("tc-labs").textContent = nLab;
+  document.getElementById("tc-figs").textContent = nFig;
+  check("Sections present", nSec === 12, nSec + " sections");
+  check("Har section me Source box", nSecContent === nSec, nSecContent + " source boxes");
+  check("FAQs exactly 36", nFaq === 36, nFaq + " FAQs");
+  check("Labs exactly 8", nLab === 8, nLab + " labs");
+  check("Figures present", nFig >= 12, nFig + " figures");
+  check("No loading=lazy", document.querySelectorAll("[loading]").length === 0, "0 lazy");
+  var badFaq = 0;
+  document.querySelectorAll("details.faq").forEach(function(d) {
+    var q = (d.querySelector(".faq-q") || {}).textContent || "";
+    var a = (d.querySelector(".faq-a") || {}).textContent || "";
+    var qt = q.trim();
+    var at = a.trim();
+    if (/^q$/i.test(qt) || /^a$/i.test(qt) || /^(placeholder|lorem|todo)/i.test(qt)) badFaq++;
+    if (/^q$/i.test(at) || /^a$/i.test(at) || /^(placeholder|lorem|todo)/i.test(at)) badFaq++;
+    if (qt.length < 20 || at.length < 80) badFaq++;
+  });
+  check("FAQs real content (no placeholders)", badFaq === 0, badFaq + " problem FAQs");
+  var missingSrc = 0;
+  document.querySelectorAll("article.content-sec").forEach(function(a) {
+    if (!a.querySelector(".source-box")) missingSrc++;
+  });
+  check("Content sections me Source line", missingSrc === 0, missingSrc + " missing");
+  var out = document.getElementById("trust-result");
+  out.textContent = ok ? "TRUST CHECK: PASS — sab kuch included hai." : "TRUST CHECK: FAIL — neeche dekho kya gadbad hai.";
+  out.className = "check-result " + (ok ? "pass" : "fail");
+  document.getElementById("trust-detail").innerHTML = res.map(function(r) { return "<div class=\"livecheck-tag\">" + r + "</div>"; }).join("");
+}
+window.runTrustCheck = runTrustCheck;
+
+</script>
+</body>
+</html>
